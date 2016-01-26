@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^login$', views.login, name='login'),
     url(r'^opinion/(?P<opinion_id>[0-9]+)/$', views.opinion, name='opinion'),
     url(r'^user/(?P<user_name>[ a-zA-Z_-]+)/$', views.user, name='user'),
+    url(r'^template$', views.template, name='template'),
 ]

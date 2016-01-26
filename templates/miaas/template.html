@@ -6,9 +6,20 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="template of MIAAS">
+    <meta name="author" content="Hanter Jung">
+{#    <link rel="icon" href="../../favicon.ico">#}
 
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/css/bootstrap.css' %}">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/assets/css/ie10-viewport-bug-workaround.css' %}">
+    <script src="{% static 'lib/bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="{% static 'lib/bootstrap/assets/js/ie8-responsive-file-warning.js' %}"></script><![endif]-->
+    <script src="{% static 'lib/bootstrap/assets/js/ie-emulation-modes-warning.js' %}"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -23,7 +34,35 @@
 </head>
 
 <body>
-<p>The Body</p>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collasped"
+                    data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">MIAAS</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li ><a href="#">Profile</a></li>
+                <li ><a href="#">Archive</a></li>
+                <li ><a href="#">Analysis</a></li>
+                <li ><a href="#">Consultation</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="container-body">
+
+    </div>
+</div>
 
 
 <script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>

@@ -26,7 +26,7 @@ def index(request):
     return render(request, 'miaas/index.html', context)
 
 def login(request):
-    return render(request, 'miaas/login.html', default_context);
+    return render(request, 'miaas/login.html', None);
 
 def opinion(request, opinion_id):
     return HttpResponse("Hello, opinion %s." % opinion_id)
@@ -34,3 +34,5 @@ def opinion(request, opinion_id):
 def user(request, user_name):
     return HttpResponse("Hello, user %s." % user_name)
 
+def template(request):
+    return render(request, 'miaas/template.html', None);
