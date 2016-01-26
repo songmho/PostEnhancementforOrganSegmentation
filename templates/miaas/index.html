@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+{% if has_session %}
+
+    <p>this is index page.</p>
+
+{% else %}
+{#    <script type="text/javascript">#}
+{#        location.replace(#}
+    <a href="{% url 'login' 33 %}"></a>
+{#           {% url 'miaas:login' %}#}
+{#        );#}
+{#    </script>#}
+{% endif %}
+
+</html>
