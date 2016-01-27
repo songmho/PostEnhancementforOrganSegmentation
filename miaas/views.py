@@ -18,15 +18,19 @@ from django.views import generic
 #         return ['fdsdf', 'asdfew', 'earsdfc', '2dfa', 'asdq']
 
 default_context = {}
+default_session = {
+    'session_id': 1234,
+    'session_start': '2016/01/27 14:06:33',
+    'user_info': {
+        'id': 'hanterkr',
+        'user_name': 'Hanter Jung',
+        'user_type': 'patient',
+    }
+}
 
 def index(request):
     context = {
-        'session': {
-            'id': 'hanterkr',
-            'user_name': 'Hanter Jung',
-            'session_id': 1234,
-            'session_start': '2016/01/27 14:06:33'
-        },
+        'session': default_session,
     }
     return render(request, 'miaas/index.html', context)
 
