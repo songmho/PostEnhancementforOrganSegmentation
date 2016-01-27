@@ -34,8 +34,11 @@ def index(request):
     }
     return render(request, 'miaas/index.html', context)
 
-def login(request):
-    return render(request, 'miaas/login.html', None)
+def signin(request):
+    return render(request, 'miaas/signin.html', None)
+
+def signup(request):
+    return render(request, 'miaas/signup.html', None)
 
 def opinion(request, opinion_id):
     return HttpResponse("Hello, opinion %s." % opinion_id)

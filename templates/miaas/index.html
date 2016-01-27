@@ -89,9 +89,7 @@
 {% else %}
     <script type="text/javascript">
         location.replace(
-{#    <a href="{% url 'miaas:login' %}">login</a>#}
-{#    <a href="{% url 'miaas:opinion' 44 %}">opinion44</a>#}
-                {{ "'" }}{% url 'miaas:login' %}{{ "'" }}
+                {{ "'" }}{% url 'miaas:signin' %}{{ "'" }}
         );
     </script>
 {% endif %}
