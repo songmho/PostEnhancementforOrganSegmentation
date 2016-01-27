@@ -21,12 +21,12 @@ default_context = {}
 
 def index(request):
     context = {
-        'has_session': False,
+        'session': False,
     }
     return render(request, 'miaas/index.html', context)
 
 def login(request):
-    return render(request, 'miaas/login.html', None);
+    return render(request, 'miaas/login.html', None)
 
 def opinion(request, opinion_id):
     return HttpResponse("Hello, opinion %s." % opinion_id)
