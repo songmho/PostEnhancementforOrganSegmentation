@@ -30,14 +30,14 @@
     <link rel="stylesheet" type="text/css" href="{% static 'miass/css/style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'miass/css/signin.css' %}">
 
-    <title>Login - MIAAS: Medical Image Archive & Analytics Service</title>
+    <title>Signin - MIAAS: Medical Image Archive & Analytics Service</title>
 </head>
 
 <body>
 
 <div class="container">
-    <section class="section section-login">
-        <form class="form-login">
+    <section class="section section-signin">
+        <form class="form-signin">
             <label for="inputId" class="sr-only">Username</label>
             <input type="text" id="inputId" class="form-control" placeholder="User ID" required autofocus>
             <label for="inputPw" class="sr-only">Password</label>
@@ -50,7 +50,7 @@
             <button class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
         </form>
 
-        <div class="additional-login">
+        <div class="additional-signin">
             <p><a>Lost your ID or Password?</a></p>
             <p><a href="{% url 'miaas:signup' %}">Signup Here</a></p>
         </div>
