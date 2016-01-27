@@ -1,0 +1,57 @@
+body {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #f2f2f1;
+}
+.section-signup {
+    max-width: 560px;
+    margin: 20px auto 0 auto;
+    padding-bottom: 20px;
+}
+@media (max-width: 767px) {
+    body {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    .section-signup {
+        margin: 10px auto 10px auto;
+        padding-bottom: 5px;
+    }
+}
+
+.form-signup {
+    padding: 12px 24px 32px 24px;
+    background-color: white;
+
+    border-radius: 2px;
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.13);
+    -moz-box-shadow: 0 1px 3px rgba(0,0,0,.13);
+    box-shadow: 0 1px 3px rgba(0,0,0,.13);
+}
+.form-signup .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+         -moz-box-sizing: border-box;
+                    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signup .form-control:focus {
+    z-index: 5;
+}
+.form-signup select.form-control {
+    padding: 10px;
+    font-size: 16px;
+    height: 44px;
+}
+.form-signup #inputPw {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signup #inputPwConfirm {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}

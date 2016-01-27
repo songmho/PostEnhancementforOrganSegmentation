@@ -37,8 +37,110 @@
 
 
 <div class="container">
-    <section class="section">
+    <section class="section section-signup">
+        <form class="form-signup" name="signupForm" action="#" method="post">
+            <div class="row row-signup-title">
+                <div class="col-xs-12">
+                    <h2 class="text-primary">Sign Up for MIAAS</h2>
+                </div>
+            </div>
+            <div class="row row-signup-content">
+                <div class="col-xs-12" id="col-signup-usertype">
+                    <h4>Step1: Choose Who You Are</h4>
+                    <h5>Are you a Patient? Or are you a Physician?</h5>
+                    <button id="btn-patient" type="button" class="btn btn-lg btn-primary btn-block">I'm a Patient</button>
+                    <button id="btn-physician" type="button" class="btn btn-lg btn-primary btn-block">I'm a Physician</button>
+                </div>
 
+                <div class="col-xs-12" id="col-signup-basic">
+                    <h4>Step2: Write Your Basic Information</h4>
+                    <div class="form-group">
+                        <label for="inputId" >Username</label>
+                        <input type="text" id="inputId" name="id" class="form-control"
+                               placeholder="User ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPw">Password</label>
+                        <input type="password" id="inputPw" name="pw" class="form-control"
+                               placeholder="Password" required>
+                        <input type="password" id="inputPwConfirm" name="pwConfirm" class="form-control"
+                               placeholder="Password Confirm" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputMobile">Phone Number</label>
+                        <input type="tel" id="inputMobile" name="mobile" class="form-control"
+                               placeholder="Mobile" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail">Email Address</label>
+                        <input type="email" id="inputEmail" name="mobile" class="form-control"
+                               placeholder="Email" required>
+                    </div>
+                    <br/>
+                    <div class="row" class="row-form-btns">
+                        <div id="btn-basic-prev" class="col-xs-6 col-md-4">
+                            <button class="btn btn-lg btn-primary btn-block" type="button">Prev</button>
+                        </div>
+                        <div id="btn-basic-next" class="col-xs-6 col-md-4 col-md-offset-4">
+                            <button class="btn btn-lg btn-primary btn-block" type="button">Next</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12" id="col-signup-detail-patient">
+                    <h4>Step3: Write Your Personal Information</h4>
+                    <div class="form-group">
+                        <label for="selectGender" >Gender</label>
+                        <select class="form-control" id="selectGender" name="gender" required>
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputAge">Age</label>
+                        <input type="number" id="inputAge" name="age" class="form-control"
+                               placeholder="Age" required>
+                    </div>
+                    <br/>
+                    <div class="row" class="row-form-btns">
+                        <div id="btn-patient-prev" class="col-xs-6 col-md-4">
+                            <button class="btn btn-lg btn-primary btn-block" type="button">Prev</button>
+                        </div>
+                        <div id="btn-patient-done" class="col-xs-6 col-md-4 col-md-offset-4">
+                            <button class="btn btn-lg btn-success btn-block" type="submit">Done</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12" id="col-signup-detail-physician">
+                    <h4>Step3: Write Your Physician Information</h4>
+                    <div class="form-group">
+                        <label for="selectField" >Medical Field</label>
+                        <select class="form-control" id="selectField" name="field" required>
+                            <option>Heart Specialist</option>
+                            <option>Brain Specialist</option>
+                            <option>Thoracic Specialist</option>
+                            <option>Orthopedic Specialist</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fileQualificiation">Qualification</label>
+                        <input type="file" id="fileQualificiation" name="qualification" class="form-control"
+                               placeholder="Qualification" required>
+                        <p class="help-block">Please upload your authenticatable thing (e.g. doctor's licence and etc.)</p>
+                    </div>
+                    <br/>
+                    <div class="row" class="row-form-btns">
+                        <div id="btn-physician-prev" class="col-xs-6 col-md-4">
+                            <button class="btn btn-lg btn-primary btn-block" type="button">Prev</button>
+                        </div>
+                        <div id="btn-physician-done" class="col-xs-6 col-md-4 col-md-offset-4">
+                            <button class="btn btn-lg btn-success btn-block" type="submit">Done</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </section>
 </div>
 
@@ -47,6 +149,8 @@
 <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <script src="{% static 'lib/bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
+
+<script src="{% static 'miass/js/signup.js' %}"></script>
 
 </body>
 </html>

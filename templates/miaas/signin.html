@@ -37,11 +37,13 @@
 
 <div class="container">
     <section class="section section-signin">
-        <form class="form-signin">
+        <form class="form-signin" name="signinForm" action="#" method="post">
             <label for="inputId" class="sr-only">Username</label>
-            <input type="text" id="inputId" class="form-control" placeholder="User ID" required autofocus>
+            <input type="text" id="inputId" name="id" class="form-control"
+                   placeholder="User ID" required autofocus>
             <label for="inputPw" class="sr-only">Password</label>
-            <input type="password" id="inputPw" class="form-control" placeholder="Password" required>
+            <input type="password" id="inputPw" name="pw" class="form-control"
+                   placeholder="Password" required>
             <div class="checkbox">
                 <label>
                     <input type="checkbox" value="remember"> Remember Me

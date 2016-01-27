@@ -1,55 +1,55 @@
 body {
-  padding-top: 40px;
-  padding-bottom: 40px;
-  background-color: #f2f2f1;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #f2f2f1;
 }
 .section-signin {
-  max-width: 360px;
-  padding-top: 16%;
-  padding-bottom: 40px;
-  margin: 20px auto 0 auto;
+    max-width: 360px;
+    padding-top: 16%;
+    padding-bottom: 40px;
+    margin: 20px auto 0 auto;
 }
 
 .form-signin {
-  padding: 32px 24px;
-  background-color: white;
+    padding: 32px 24px;
+    background-color: white;
 
-  border-radius: 2px;
-  -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.13);
-  -moz-box-shadow: 0 1px 3px rgba(0,0,0,.13);
-  box-shadow: 0 1px 3px rgba(0,0,0,.13);
+    border-radius: 2px;
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.13);
+    -moz-box-shadow: 0 1px 3px rgba(0,0,0,.13);
+    box-shadow: 0 1px 3px rgba(0,0,0,.13);
 }
 .form-signin .checkbox {
-  font-weight: normal;
+    font-weight: normal;
 }
 .form-signin .form-control {
-  position: relative;
-  height: auto;
-  -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
-  padding: 10px;
-  font-size: 16px;
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+         -moz-box-sizing: border-box;
+                    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
 }
 .form-signin .form-control:focus {
-  z-index: 2;
+    z-index: 2;
 }
 .form-signin input[type="text"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 .form-signin input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .additional-signin {
-  margin-top: 24px;
-  color: #7A7677;
+    margin-top: 24px;
+    color: #7A7677;
 }
 
 .additional-signin p {
-  padding: 0 24px;
+    padding: 0 24px;
 }
