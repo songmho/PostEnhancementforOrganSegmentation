@@ -1,0 +1,246 @@
+/* Blossom Hues Colors */
+.powderblue      { background-color: #BCE0DC !important; }
+.powderblue-text { color:            #BCE0DC !important; }
+.tender          { background-color: #C0E08A !important; }
+.tender-text     { color:            #C0E08A !important; }
+.silk            { background-color: #F4F1E0 !important; }
+.silk-text       { color:            #F4F1E0 !important; }
+.peach           { background-color: #F2C2B8 !important; }
+.peach-text      { color:            #F2C2B8 !important; }
+.beet            { background-color: #D76474 !important; }
+.beet-text       { color:            #D76474 !important; }
+.pastelgray      { background-color: #CFCFC4 !important; }
+.pastelgray-text { color:            #CFCFC4 !important; }
+.pastelgray-dark { background-color: #7A7677 !important; }
+.pastelgray-dark-text { color:       #7A7677 !important; }
+.black           { background-color: #000000 !important; }
+.black-text      { color:            #000000 !important; }
+.white           { background-color: #FFFFFF !important; }
+.white-text      { color:            #FFFFFF !important; }
+
+/* Navigation Bar */
+.navbar-blossom {
+    background-color: #F2C2B8;
+    border-color: #F0B7AB;
+}
+.navbar-blossom .navbar-brand {
+    color: white;
+}
+.navbar-blossom .navbar-nav > li > a {
+    color: white;
+}
+.navbar-blossom .navbar-toggle {
+    border-color: #D76474;
+}
+.navbar-blossom .navbar-collapse, .navbar-inverse .navbar-form {
+    border-color: #D76474;
+}
+
+/* Buttons */
+.btn-primary {
+    color: #fff;
+    background-color: #D76474;
+    border-color: #B32E40;  /*darken+6*/
+}
+.btn-primary:focus,
+.btn-primary.focus {
+  color: #fff;
+  background-color: #CE4053; /*darken+3*/
+  border-color: #8F2534;  /*darken+9*/
+}
+.btn-primary:hover {
+  color: #fff;
+  background-color: #CE4053;
+  border-color: #8F2534;
+}
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+  color: #fff;
+  background-color: #CE4053;
+  border-color: #8F2534;
+}
+.btn-primary:active:hover,
+.btn-primary.active:hover,
+.open > .dropdown-toggle.btn-primary:hover,
+.btn-primary:active:focus,
+.btn-primary.active:focus,
+.open > .dropdown-toggle.btn-primary:focus,
+.btn-primary:active.focus,
+.btn-primary.active.focus,
+.open > .dropdown-toggle.btn-primary.focus {
+  color: #fff;
+  background-color: #CE4053;
+  border-color: #8F2534;
+}
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+  background-image: none;
+}
+.btn-primary.disabled:hover,
+.btn-primary[disabled]:hover,
+fieldset[disabled] .btn-primary:hover,
+.btn-primary.disabled:focus,
+.btn-primary[disabled]:focus,
+fieldset[disabled] .btn-primary:focus,
+.btn-primary.disabled.focus,
+.btn-primary[disabled].focus,
+fieldset[disabled] .btn-primary.focus {
+  background-color: #D76474;
+  border-color: #B32E40;
+}
+.btn-primary .badge {
+  color: #D76474;
+  background-color: #fff;
+}
+.btn-success {
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+.btn-success:focus,
+.btn-success.focus {
+  color: #fff;
+  background-color: #449d44;
+  border-color: #255625;
+}
+.btn-success:hover {
+  color: #fff;
+  background-color: #449d44;
+  border-color: #398439;
+}
+.btn-success:active,
+.btn-success.active,
+.open > .dropdown-toggle.btn-success {
+  color: #fff;
+  background-color: #449d44;
+  border-color: #398439;
+}
+.btn-success:active:hover,
+.btn-success.active:hover,
+.open > .dropdown-toggle.btn-success:hover,
+.btn-success:active:focus,
+.btn-success.active:focus,
+.open > .dropdown-toggle.btn-success:focus,
+.btn-success:active.focus,
+.btn-success.active.focus,
+.open > .dropdown-toggle.btn-success.focus {
+  color: #fff;
+  background-color: #398439;
+  border-color: #255625;
+}
+.btn-success:active,
+.btn-success.active,
+.open > .dropdown-toggle.btn-success {
+  background-image: none;
+}
+.btn-success.disabled:hover,
+.btn-success[disabled]:hover,
+fieldset[disabled] .btn-success:hover,
+.btn-success.disabled:focus,
+.btn-success[disabled]:focus,
+fieldset[disabled] .btn-success:focus,
+.btn-success.disabled.focus,
+.btn-success[disabled].focus,
+fieldset[disabled] .btn-success.focus {
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+.btn-success .badge {
+  color: #5cb85c;
+  background-color: #fff;
+}
+.btn-info {
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+.btn-info:focus,
+.btn-info.focus {
+  color: #fff;
+  background-color: #31b0d5;
+  border-color: #1b6d85;
+}
+.btn-info:hover {
+  color: #fff;
+  background-color: #31b0d5;
+  border-color: #269abc;
+}
+.btn-info:active,
+.btn-info.active,
+.open > .dropdown-toggle.btn-info {
+  color: #fff;
+  background-color: #31b0d5;
+  border-color: #269abc;
+}
+.btn-info:active:hover,
+.btn-info.active:hover,
+.open > .dropdown-toggle.btn-info:hover,
+.btn-info:active:focus,
+.btn-info.active:focus,
+.open > .dropdown-toggle.btn-info:focus,
+.btn-info:active.focus,
+.btn-info.active.focus,
+.open > .dropdown-toggle.btn-info.focus {
+  color: #fff;
+  background-color: #269abc;
+  border-color: #1b6d85;
+}
+.btn-info:active,
+.btn-info.active,
+.open > .dropdown-toggle.btn-info {
+  background-image: none;
+}
+.btn-info.disabled:hover,
+.btn-info[disabled]:hover,
+fieldset[disabled] .btn-info:hover,
+.btn-info.disabled:focus,
+.btn-info[disabled]:focus,
+fieldset[disabled] .btn-info:focus,
+.btn-info.disabled.focus,
+.btn-info[disabled].focus,
+fieldset[disabled] .btn-info.focus {
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+.btn-info .badge {
+  color: #5bc0de;
+  background-color: #fff;
+}
+
+/* Texts */
+.text-muted {
+  color: #777;
+}
+.text-primary {
+  color: #D76474;
+}
+a.text-primary:hover,
+a.text-primary:focus {
+  color: #B32E40;
+}
+a {
+    color: #D76474;
+}
+a:hover, a:focus {
+    color: #B32E40;
+}
+.text-success {
+  color: #3c763d;
+}
+a.text-success:hover,
+a.text-success:focus {
+  color: #2b542c;
+}
+.text-info {
+  color: #31708f;
+}
+a.text-info:hover,
+a.text-info:focus {
+  color: #245269;
+}
+.bg-primary {
+  color: #fff;
+  background-color: #D76474;
+}

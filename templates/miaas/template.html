@@ -1,3 +1,5 @@
+{% if session %}
+
 {% load staticfiles %}
 
 <!DOCTYPE html>
@@ -15,7 +17,6 @@
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/assets/css/ie10-viewport-bug-workaround.css' %}">
-    <script src="{% static 'lib/bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="{% static 'lib/bootstrap/assets/js/ie8-responsive-file-warning.js' %}"></script><![endif]-->
@@ -34,7 +35,7 @@
 </head>
 
 <body>
-<nav class="navbar navbar-inverse navbar-blossom navbar-fixed-top">
+<nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collasped"
@@ -53,6 +54,18 @@
                 <li ><a href="#">Archive</a></li>
                 <li ><a href="#">Analysis</a></li>
                 <li ><a href="#">Consultation</a></li>
+
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><span id="navbar-logined-text"><span>Hi, Hanter </span></span><span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Account Setting</a></li>
+                        <li><a href="#">Logout</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
@@ -67,6 +80,18 @@
 
 <script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
 <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="{% static 'lib/bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
 
 </body>
 </html>
+
+{% else %}
+    <script type="text/javascript">
+        location.replace(
+{#    <a href="{% url 'miaas:login' %}">login</a>#}
+{#    <a href="{% url 'miaas:opinion' 44 %}">opinion44</a>#}
+                {{ "'" }}{% url 'miaas:login' %}{{ "'" }}
+        );
+    </script>
+{% endif %}

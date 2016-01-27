@@ -21,7 +21,12 @@ default_context = {}
 
 def index(request):
     context = {
-        'session': False,
+        'session': {
+            'id': 'hanterkr',
+            'user_name': 'Hanter Jung',
+            'session_id': 1234,
+            'session_start': '2016/01/27 14:06:33'
+        },
     }
     return render(request, 'miaas/index.html', context)
 
