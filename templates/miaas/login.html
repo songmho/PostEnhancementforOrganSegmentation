@@ -6,9 +6,20 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="template of MIAAS">
+    <meta name="author" content="Hanter Jung">
+{#    <link rel="icon" href="../../favicon.ico">#}
 
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/css/bootstrap.css' %}">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/assets/css/ie10-viewport-bug-workaround.css' %}">
+    <script src="{% static 'lib/bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="{% static 'lib/bootstrap/assets/js/ie8-responsive-file-warning.js' %}"></script><![endif]-->
+    <script src="{% static 'lib/bootstrap/assets/js/ie-emulation-modes-warning.js' %}"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -18,14 +29,33 @@
     <![endif]-->
 
     <link rel="stylesheet" type="text/css" href="{% static 'miass/css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'miass/css/login.css' %}">
 
-    <title>MIAAS: Medical Image Archive & Analytics Service</title>
+    <title>Login - MIAAS: Medical Image Archive & Analytics Service</title>
 </head>
 
 <body>
 
+<div class="container">
+    <section class="section section-login">
+        <form class="form-login">
+            <label for="inputId" class="sr-only">Username</label>
+            <input type="text" id="inputId" class="form-control" placeholder="User ID" required autofocus>
+            <label for="inputPw" class="sr-only">Password</label>
+            <input type="password" id="inputPw" class="form-control" placeholder="Password" required>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" value="remember"> Remember Me
+                </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
+        </form>
 
-
+        <div class="additional-login">
+            <p><a>Lost your ID or Password?</a></p>
+        </div>
+    </section>
+</div>
 
 <script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
 <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
