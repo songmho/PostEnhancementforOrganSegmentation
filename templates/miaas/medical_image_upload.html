@@ -1,0 +1,169 @@
+{% if session %}
+
+{% load staticfiles %}
+{% load my_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="template of MIAAS">
+    <meta name="author" content="Hanter Jung">
+{#    <link rel="icon" href="../../favicon.ico">#}
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/css/bootstrap.css' %}">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/assets/css/ie10-viewport-bug-workaround.css' %}">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="{% static 'lib/bootstrap/assets/js/ie8-responsive-file-warning.js' %}"></script><![endif]-->
+    <script src="{% static 'lib/bootstrap/assets/js/ie-emulation-modes-warning.js' %}"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="{% static 'miass/css/style.css' %}">
+
+    <title>MIAAS: Medical Image Archive & Analytics Service</title>
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collasped"
+                    data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'miaas:index' %}">MIAAS</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li ><a href="{% url 'miaas:profile' %}">Profile</a></li>
+                <li ><a href="{% url 'miaas:archive' %}">Archive</a></li>
+                <li ><a href="{% url 'miaas:interpretation' %}">Interpretation</a></li>
+
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><span id="navbar-logined-text">
+                        <span>Hi, {{ session.user_info.user_name }} </span></span><span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Account Setting</a></li>
+                        <li><a href="#">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <section class="section section-default">
+        <div class="row">
+            <div class="col-xs-12 col-title">
+                <h2 class="text-primary">Upload Medical Image</h2>
+            </div>
+            <div class="col-xs-12 col-form">
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-xs12 form-group">
+                        <label class="col-sm-2 control-label" for="inputAge" >Subject</label>
+                        <div class="col-sm-10 col-md-4">
+                            <input type="number" id="inputAge" name="age" class="form-control"
+                                   placeholder="Subject" required>
+                        </div>
+                    </div>
+
+                    <div class="col-xs12 form-group">
+                        <label class="col-sm-2 control-label" for="inputAge" >Image Type</label>
+                        <div class="col-sm-10 col-md-4">
+                            <input type="number" id="inputAge" name="age" class="form-control"
+                                   placeholder="Image Type" required>
+                        </div>
+                    </div>
+
+                    <div class="col-xs12 form-group">
+                        <label class="col-sm-2 control-label" for="inputAge" >Date</label>
+                        <div class="col-sm-10 col-md-4">
+                            <input type="number" id="inputAge" name="age" class="form-control"
+                                   placeholder="Date" required>
+                        </div>
+                    </div>
+
+                    <div class="col-xs12 form-group">
+                        <label class="col-sm-2 control-label" for="inputAge" >Taken From</label>
+                        <div class="col-sm-10 col-md-4">
+                            <input type="number" id="inputAge" name="age" class="form-control"
+                                   placeholder="Taken From" required>
+                        </div>
+                    </div>
+
+                    <div class="col-xs12 form-group">
+                        <label class="col-sm-2 control-label" for="inputAge" >Doctor</label>
+                        <div class="col-sm-10 col-md-4">
+                            <input type="number" id="inputAge" name="age" class="form-control"
+                                   placeholder="Doctor" required>
+                        </div>
+                    </div>
+
+                    <div class="col-xs12 form-group">
+                        <label class="col-sm-2 control-label" for="inputAge" >Place</label>
+                        <div class="col-sm-10 col-md-4">
+                            <input type="number" id="inputAge" name="age" class="form-control"
+                                   placeholder="Place" required>
+                        </div>
+                    </div>
+
+                    <div class="col-xs12 form-group">
+                        <label class="col-sm-2 control-label" for="inputAge" >Description</label>
+                        <div class="col-sm-10">
+                            <textarea type="number" id="inputAge" name="age" class="form-control"
+                                      placeholder="Description" rows="5"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-xs12 form-group">
+                        <label class="col-sm-2 control-label" for="inputAge" >Comments</label>
+                        <div class="col-sm-10">
+                            <textarea type="number" id="inputAge" name="age" class="form-control"
+                                      placeholder="Comments" rows="3"></textarea>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+<script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
+<script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="{% static 'lib/bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
+
+</body>
+</html>
+
+{% else %}
+    <script type="text/javascript">
+        location.replace(
+                {{ "'" }}{% url 'miaas:signin' %}{{ "'" }}
+        );
+    </script>
+{% endif %}

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'miaas.templatetags.my_filters',
 ]
 
 MIDDLEWARE_CLASSES = [

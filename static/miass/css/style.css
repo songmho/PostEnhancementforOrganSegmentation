@@ -30,4 +30,54 @@
 
 body {
     padding-top: 70px;
+    font-size: 15px;
+}
+
+/* Table */
+.table-container {
+    padding: 15px;
+    margin-top: 8px;
+    margin-left: 0;
+    margin-right: 0;
+    border: #ddd 1px solid;
+    border-radius: 4px;
+
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+.table-container .table-title {
+    padding: 4px 8px 10px 8px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #9d9d9d;
+    text-transform: uppercase;
+}
+.table-container .table thead {
+    color: black;
+    font-weight: 500;
+    font-size: 15px;
+}
+.table-striped.table-hover tbody tr:hover:not(thead) {
+    background-color: #d9edf7;
+}
+.table-page-container {
+    margin-top: 8px;
+    margin-bottom: 24px;
+    font-size: 18px;
+}
+
+/* Form */
+.form-container.form-boxed {
+    padding: 15px;
+    margin-top: 8px;
+    margin-left: 0;
+    margin-right: 0;
+    border: #ddd 1px solid;
+    border-radius: 4px;
+    background: #f8f8f8;
+
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
 }

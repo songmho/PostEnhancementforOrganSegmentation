@@ -1,3 +1,5 @@
+from miaas import sample_contexts
+
 __author__ = 'hanter'
 
 from django.shortcuts import render, get_object_or_404, render_to_response, redirect
@@ -7,6 +9,8 @@ from django.core.urlresolvers import reverse
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+
+from miaas import sample_contexts as sctx
 
 # get db data -> 404 template, urls in tutorial #3: https://docs.djangoproject.com/en/1.9/intro/tutorial03/
 # form, db class -> tutorial #4
@@ -20,32 +24,36 @@ from django.contrib.auth import authenticate, login, logout
 #         """Return the last five published questions."""
 #         return ['fdsdf', 'asdfew', 'earsdfc', '2dfa', 'asdq']
 
-default_context = {}
-default_session = {
-    'session_id': 1234,
-    'session_start': '2016/01/27 14:06:33',
-    'user_info': {
-        'id': 'hanterkr',
-        'user_name': 'Hanter Jung',
-        'user_type': 'patient',
-    }
-}
-
-def index(request):
+def index_page(request):
     context = {
-        'session': default_session,
+        'session': sctx.default_session,
     }
     return render(request, 'miaas/index.html', context)
 
 # login reference: https://www.fir3net.com/Web-Development/Django/django.html
-def signin(request):
+def signin_page(request):
     return render(request, 'miaas/signin.html', None)
+
+def signup_page(request):
+    return render(request, 'miaas/signup.html', None)
+
+def profile_page(request):
+    pass
+
+def archive_page(request):
+    return render(request, 'miaas/archive.html', sctx.archive_context)
+
+def archive_upload_page(request):
+    return render(request, 'miaas/medical_image_upload.html', sctx.default_context)
+
+def medical_image_page(request):
+    return render(request, 'miaas/medical_image.html', sctx.default_context)
+
+def interpretation_page(request):
+    pass
 
 def signout(request):
     pass
-
-def signup(request):
-    return render(request, 'miaas/signup.html', None)
 
 def opinion(request, opinion_id):
     return HttpResponse("Hello, opinion %s." % opinion_id)
