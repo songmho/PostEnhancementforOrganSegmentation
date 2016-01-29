@@ -46,7 +46,7 @@ def archive_page(request):
 def archive_upload_page(request):
     return render(request, 'miaas/medical_image_upload.html', sctx.default_context)
 
-def medical_image_page(request):
+def medical_image_page(request, img_num):
     return render(request, 'miaas/medical_image.html', sctx.default_context)
 
 def interpretation_page(request):

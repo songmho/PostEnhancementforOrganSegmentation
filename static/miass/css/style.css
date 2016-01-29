@@ -18,6 +18,11 @@
 .white           { background-color: #FFFFFF !important; }
 .white-text      { color:            #FFFFFF !important; }
 
+body {
+    padding-top: 70px;
+    font-size: 15px;
+}
+
 /* Navigation bar */
 @media (max-width: 767px) {
     #navbar-logined-text > span {
@@ -27,18 +32,17 @@
         content: 'Account';
     }
 }
-
-body {
-    padding-top: 70px;
-    font-size: 15px;
+.navbar-default .navbar-brand {
+    color: #D76474;
+}
+.navbar-default .navbar-brand:hover {
+    color: #BE3144;
 }
 
 /* Table */
 .table-container {
     padding: 15px;
-    margin-top: 8px;
-    margin-left: 0;
-    margin-right: 0;
+    margin: 8px 0 24px 0;
     border: #ddd 1px solid;
     border-radius: 4px;
 
@@ -63,16 +67,14 @@ body {
 }
 .table-page-container {
     margin-top: 8px;
-    margin-bottom: 24px;
+    margin-bottom: 8px;
     font-size: 18px;
 }
 
 /* Form */
 .form-container.form-boxed {
     padding: 15px;
-    margin-top: 8px;
-    margin-left: 0;
-    margin-right: 0;
+    margin: 8px 0 24px 0;
     border: #ddd 1px solid;
     border-radius: 4px;
     background: #f8f8f8;
@@ -80,4 +82,82 @@ body {
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
+}
+@media (max-width: 991px) {
+    .form-horizontal .form-group {
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+.form-btns-container {
+
+}
+.form-btns-container .form-button {
+    margin-bottom: 8px;
+}
+@media (min-width: 992px) {
+    .form-btns-innerbox .form-btns-container {
+        margin-left: 0;
+        margin-right: 0;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+}
+@media (max-width: 767px) {
+    .control-text {
+        margin-bottom: 7px;
+    }
+}
+@media (min-width: 768px) {
+    .control-text {
+        margin-bottom: 0;
+        padding-top: 7px;
+    }
+}
+
+/* Column */
+@media (min-width: 992px) {
+    .col-md-overlay {
+        position: absolute;
+    }
+    .col-md-overlay * {
+        position: relative;
+    }
+    .form-container.form-boxed .col-md-overlay {
+        top: 24px;
+    }
+    .form-container.form-boxed .col-md-overlay.col-md-overlay-right {
+        left: inherit;
+        right: 46px;
+        padding-right: 30px;
+    }
+    .form-container.form-boxed .col-md-overlay.col-md-overlay-2 {
+        top: 73px;
+    }
+}
+
+/* Medical Image */
+.medimage-preview-container {
+}
+.medimage-preview-wrapper {
+    padding-left: 30px;
+    padding-right: 15px;
+}
+@media (max-width: 991px) {
+    .medimage-preview-wrapper {
+        padding-left: 187px;
+    }
+}
+@media (max-width: 767px) {
+    .medimage-preview-wrapper {
+        padding-left: 15px;
+    }
+}
+.medimage-preview {
+    background-color: white;
+    height: 200px;
+
+    border: #ddd 1px solid;
 }
