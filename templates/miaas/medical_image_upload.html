@@ -78,75 +78,111 @@
             <div class="col-xs-12 col-title">
                 <h2 class="text-primary">Upload Medical Image</h2>
             </div>
-            <div class="col-xs-12 col-form">
+            <form class="col-xs-12 col-form">
                 <div class="form-container form-boxed form-horizontal row">
-                    <div class="col-xs12 form-group">
-                        <label class="col-sm-2 control-label" for="inputAge" >Subject</label>
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-2 control-label" for="inputSubject" >Subject</label>
                         <div class="col-sm-10 col-md-4">
-                            <input type="number" id="inputAge" name="age" class="form-control"
+                            <input type="text" id="inputSubject" name="subject" class="form-control"
                                    placeholder="Subject" required>
                         </div>
                     </div>
 
-                    <div class="col-xs12 form-group">
-                        <label class="col-sm-2 control-label" for="inputAge" >Image Type</label>
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-2 control-label" for="inputType" >Image Type</label>
                         <div class="col-sm-10 col-md-4">
-                            <input type="number" id="inputAge" name="age" class="form-control"
-                                   placeholder="Image Type" required>
+                            <select class="form-control" id="selectType" name="type" required>
+                                <option>EEG</option>
+                                <option>ECG</option>
+                                <option>EMG</option>
+                                <option>CT</option>
+                                <option>X-ray</option>
+                                <option>MRI</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="col-xs12 form-group">
-                        <label class="col-sm-2 control-label" for="inputAge" >Date</label>
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right form-group">
+                        <label class="col-sm-2 col-md-4 control-label" for="fileImage">Medical Image</label>
+                        <div class="col-sm-10 col-md-8">
+                            <input type="file" id="fileImage" name="medicalImage" class="form-control"
+                                   placeholder="Medical Image" required>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
+                                col-md-overlay-2 form-group medimage-preview-container">
+                        <div class="medimage-preview-wrapper">
+                            <div class="medimage-preview">
+                                <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-2 control-label" for="inputDate" >Date</label>
                         <div class="col-sm-10 col-md-4">
-                            <input type="number" id="inputAge" name="age" class="form-control"
+                            <input type="date" id="inputDate" name="date" class="form-control"
                                    placeholder="Date" required>
                         </div>
                     </div>
 
-                    <div class="col-xs12 form-group">
-                        <label class="col-sm-2 control-label" for="inputAge" >Taken From</label>
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-2 control-label" for="selectTaken" >Taken From</label>
                         <div class="col-sm-10 col-md-4">
-                            <input type="number" id="inputAge" name="age" class="form-control"
-                                   placeholder="Taken From" required>
+                            <select class="form-control" id="selectTaken" name="taken" required>
+                                <option>Home</option>
+                                <option>Hospital</option>
+                                <option>Health Center</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="col-xs12 form-group">
-                        <label class="col-sm-2 control-label" for="inputAge" >Doctor</label>
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-2 control-label" for="inputPhysician" >Physician</label>
                         <div class="col-sm-10 col-md-4">
-                            <input type="number" id="inputAge" name="age" class="form-control"
-                                   placeholder="Doctor" required>
+                            <input type="text" id="inputPhysician" name="physician" class="form-control"
+                                   placeholder="Examining Physician" required>
                         </div>
                     </div>
 
-                    <div class="col-xs12 form-group">
-                        <label class="col-sm-2 control-label" for="inputAge" >Place</label>
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-2 control-label" for="inputPlace" >Place</label>
                         <div class="col-sm-10 col-md-4">
-                            <input type="number" id="inputAge" name="age" class="form-control"
+                            <input type="text" id="inputPlace" name="place" class="form-control"
                                    placeholder="Place" required>
                         </div>
                     </div>
 
-                    <div class="col-xs12 form-group">
-                        <label class="col-sm-2 control-label" for="inputAge" >Description</label>
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-2 control-label" for="taDescription" >Description</label>
                         <div class="col-sm-10">
-                            <textarea type="number" id="inputAge" name="age" class="form-control"
+                            <textarea type="textarea" id="taDescription" name="description" class="form-control"
                                       placeholder="Description" rows="5"></textarea>
                         </div>
                     </div>
 
-                    <div class="col-xs12 form-group">
-                        <label class="col-sm-2 control-label" for="inputAge" >Comments</label>
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-2 control-label" for="taComment" >Comment</label>
                         <div class="col-sm-10">
-                            <textarea type="number" id="inputAge" name="age" class="form-control"
-                                      placeholder="Comments" rows="3"></textarea>
+                            <textarea type="textarea" id="taComment" name="comment" class="form-control"
+                                      placeholder="Comment" rows="3"></textarea>
                         </div>
                     </div>
-
-
                 </div>
-            </div>
+
+                <div class="form-btns-container row">
+                    <div id="btnFormCancel" class="col-xs-6 col-sm-4 col-md-2 col-md-offset-6 form-button">
+                        <button class="btn btn-lg btn-info btn-block" type="button">Cancel</button>
+                    </div>
+                    <div id="btnFormReset" class="col-xs-6 col-sm-4 col-md-2 form-button">
+                        <button class="btn btn-lg btn-info btn-block" type="reset">Reset</button>
+                    </div>
+                    <div id="btnFormConfirm" class="col-xs-12 col-sm-4 col-md-2 form-button">
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">Upload</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </section>
 </div>
