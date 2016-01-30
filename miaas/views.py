@@ -50,7 +50,16 @@ def medical_image_page(request, img_num):
     return render(request, 'miaas/medical_image.html', sctx.default_context)
 
 def interpretation_page(request):
-    pass
+    return render(request, 'miaas/interpretation.html', sctx.interpret_context)
+
+def interpretation_detail_page(request, interpret_num):
+    return render(request, 'miaas/interpretation_detail.html', sctx.default_context)
+
+def interpretation_request_page(request):
+    return render(request, 'miaas/interpretation_request.html', sctx.default_context)
+
+def interpretation_candidate_page(request, interpret_num):
+    return render(request, 'miaas/interpretation_candidiate.html', sctx.default_context)
 
 def signout(request):
     pass

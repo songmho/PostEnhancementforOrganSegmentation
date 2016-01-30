@@ -84,7 +84,7 @@
                         <label class="col-sm-3 col-md-2 control-label" for="inputSubject" >Subject</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="text" id="inputSubject" name="subject" class="form-control"
-                                   placeholder="Subject" required disabled>
+                                   placeholder="Subject" required readonly>
                         </div>
                     </div>
 
@@ -123,7 +123,7 @@
                         <label class="col-sm-3 col-md-2 control-label" for="inputDate" >Date</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="date" id="inputDate" name="date" class="form-control"
-                                   placeholder="Date" required disabled>
+                                   placeholder="Date" required readonly>
                         </div>
                     </div>
 
@@ -142,7 +142,7 @@
                         <label class="col-sm-3 col-md-2 control-label" for="inputPhysician" >Physician</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="text" id="inputPhysician" name="physician" class="form-control"
-                                   placeholder="Examining Physician" required disabled>
+                                   placeholder="Examining Physician" required readonly>
                         </div>
                     </div>
 
@@ -150,7 +150,7 @@
                         <label class="col-sm-3 col-md-2 control-label" for="inputPlace" >Place</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="text" id="inputPlace" name="place" class="form-control"
-                                   placeholder="Place" required disabled>
+                                   placeholder="Place" required readonly>
                         </div>
                     </div>
 
@@ -158,7 +158,7 @@
                         <label class="col-sm-3 col-md-2 control-label" for="taDescription" >Description</label>
                         <div class="col-sm-9 col-md-10">
                             <textarea type="textarea" id="taDescription" name="description" class="form-control"
-                                      placeholder="Description" rows="5" disabled></textarea>
+                                      placeholder="Description" rows="5" readonly></textarea>
                         </div>
                     </div>
 
@@ -166,13 +166,16 @@
                         <label class="col-sm-3 col-md-2 control-label" for="taComment" >Comment</label>
                         <div class="col-sm-9 col-md-10">
                             <textarea type="textarea" id="taComment" name="comment" class="form-control"
-                                      placeholder="Comment" rows="3" disabled></textarea>
+                                      placeholder="Comment" rows="3" readonly></textarea>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-btns-innerbox">
                         <div class="form-btns-container row">
-                            <div id="btnFormCancel" class="col-xs-6 col-sm-4 col-sm-offset-3 col-md-3 col-md-offset-6 form-button">
+                            <div id="btnRequest" class="col-xs-12 col-sm-9 col-sm-offset-3 col-md-4 col-md-offset-0 form-button">
+                                <a class="btn btn-lg btn-warning btn-block" href="{% url 'miaas:interpretation_request' %}" type="button">Request Interpretation</a>
+                            </div>
+                            <div id="btnFormCancel" class="col-xs-6 col-sm-4 col-sm-offset-3 col-md-3 col-md-offset-2 form-button">
                                 <button class="btn btn-lg btn-danger btn-block" type="button">Delete</button>
                             </div>
                             <div id="btnFormConfirm" class="col-xs-6 col-sm-5 col-md-3 form-button">
@@ -184,6 +187,7 @@
             </form>
         </div><!-- End of Image information Row -->
 
+        <!-- to be loop -->
         <div class="row">
             <div class="col-xs-12 col-title">
                 <h3 class="text-success" id="itp1-title">Interpretation #1</h3>
@@ -266,6 +270,12 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="form-btns-container row">
+            <div id="btnFormCancel" class="col-xs-12 col-md-4 col-md-offset-4 form-button">
+                <a class="btn btn-lg btn-success btn-block" onclick="javascript:history.back();">OK</a>
             </div>
         </div>
     </section>

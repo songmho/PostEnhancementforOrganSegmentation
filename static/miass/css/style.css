@@ -22,6 +22,9 @@ body {
     padding-top: 70px;
     font-size: 15px;
 }
+.section-default {
+    margin-bottom: 60px;
+}
 
 /* Navigation bar */
 @media (max-width: 767px) {
@@ -63,7 +66,7 @@ body {
     font-size: 15px;
 }
 .table-striped.table-hover tbody tr:hover:not(thead) {
-    background-color: #d9edf7;
+    background-color: #F2C2B8;
 }
 .table-page-container {
     margin-top: 8px;
@@ -161,3 +164,28 @@ body {
 
     border: #ddd 1px solid;
 }
+
+/* Interpretation */
+/*  status
+    0: 'Interpreted',
+    1: 'Waiting Interpretation',
+    2: 'Candidate Waiting',
+    3: 'Finding Physician', */
+.interpretation-status-1 {
+    color: #78A52C;
+}
+.interpretation-status-2 {
+    color: #D76464;
+}
+.interpretation-status-3 {
+    color: #53B0A5;
+}
+
+/* Common */
+.bold { font-weight: 500; }
+.extra-bold { font-weight: 700; }
+.no-pad-top { padding-top: 0 !important; }
+.no-pad-bot { padding-bottom: 0 !important; }
+.no-pad-left { padding-left: 0 !important; }
+.no-pad-right { padding-right: 0 !important; }
+.text-black { color: black !important;}

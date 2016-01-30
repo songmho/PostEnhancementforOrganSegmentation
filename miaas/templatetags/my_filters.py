@@ -18,3 +18,15 @@ def get_page_num(item_count, items_per_page):
     if item_count % items_per_page != 0:
         page_num += 1
     return page_num
+
+itprt_status = {
+    0: 'Interpreted',
+    1: 'Waiting Interpretation',
+    2: 'Candidate Waiting',
+    3: 'Finding Physician',
+}
+
+@register.filter(name='get_interpretation_status')
+def get_interpretation_status(status):
+    status = int(status)
+    return itprt_status.get(status, '-')

@@ -53,7 +53,7 @@
             <ul class="nav navbar-nav">
                 <li ><a href="{% url 'miaas:profile' %}">Profile</a></li>
                 <li ><a href="{% url 'miaas:archive' %}">Archive</a></li>
-                <li ><a href="{% url 'miaas:interpretation' %}">Interpretation</a></li>
+                <li ><a href="{% url 'miaas:interpretation' %}">Interpretations</a></li>
 
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -76,37 +76,25 @@
     <section class="section section-default">
         <div class="row">
             <div class="col-xs-12 col-title">
-                <h2 class="text-primary">Upload Medical Image</h2>
+                <h2 class="text-primary">Request New Interpretation</h2>
             </div>
             <form class="col-xs-12 col-form">
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputSubject" >Subject</label>
-                        <div class="col-sm-9 col-md-4">
+                        <label class="col-sm-3 col-md-2 control-label" for="inputSubject" >Image Subject</label>
+                        <div class="col-xs-12 col-sm-6 col-md-8">
                             <input type="text" id="inputSubject" name="subject" class="form-control"
                                    placeholder="Subject" required>
+                        </div>
+                        <div class="col-xs-12 col-sm-3 col-md-2">
+                            <a class="btn btn-primary btn-block" href="#">Search Image</a>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputType" >Image Type</label>
-                        <div class="col-sm-9 col-md-4">
-                            <select class="form-control" id="selectType" name="type" required>
-                                <option>EEG</option>
-                                <option>ECG</option>
-                                <option>EMG</option>
-                                <option>CT</option>
-                                <option>X-ray</option>
-                                <option>MRI</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right form-group">
-                        <label class="col-sm-3 col-md-4 control-label" for="fileImage">Medical Image</label>
-                        <div class="col-sm-9 col-md-8">
-                            <input type="file" id="fileImage" name="medicalImage" class="form-control"
-                                   placeholder="Medical Image" required>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Image Type</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="type" >ECG</span>
                         </div>
                     </div>
 
@@ -120,53 +108,64 @@
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputDate" >Date</label>
-                        <div class="col-sm-9 col-md-4">
-                            <input type="date" id="inputDate" name="date" class="form-control"
-                                   placeholder="Date" required>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Date</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="date" >2015/02/11</span>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="selectTaken" >Taken From</label>
-                        <div class="col-sm-9 col-md-4">
-                            <select class="form-control" id="selectTaken" name="taken" required>
-                                <option>Home</option>
-                                <option>Hospital</option>
-                                <option>Health Center</option>
-                            </select>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Taken From</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="taken" >Hospital</span>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputPhysician" >Physician</label>
-                        <div class="col-sm-9 col-md-4">
-                            <input type="text" id="inputPhysician" name="physician" class="form-control"
-                                   placeholder="Examining Physician" required>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="physician" >Dr.Peter</span>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputPlace" >Place</label>
-                        <div class="col-sm-9 col-md-4">
-                            <input type="text" id="inputPlace" name="place" class="form-control"
-                                   placeholder="Place" required>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Place</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="place" >Dr.Peter's Hospital</span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Description</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <div id="description" >
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sagittis lacus eget tincidunt vehicula. Nulla ullamcorper porttitor quam ut porta. Mauris posuere mauris non tortor laoreet commodo. Fusce lacinia euismod diam, vel viverra velit ornare non. Interdum et malesuada fames ac ante ipsum primis in faucibus. Curabitur felis nulla, ultrices et fringilla eu, scelerisque ac urna. Donec vitae pretium sem. Donec id arcu tempor, hendrerit justo nec, dapibus lorem. Nam nunc purus, sollicitudin nec dui vitae, convallis auctor quam. Donec sit amet condimentum lacus.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Comment</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <span id="comment" >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla egestas libero purus, ac suscipit augue porta a. Vivamus maximus arcu.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label no-pad-top" for="inputReqSubject" >Request Subject</label>
+                        <div class="col-xs-12 col-sm-6 col-md-10">
+                            <input type="text" id="inputReqSubject" name="reqSubject" class="form-control"
+                                   placeholder="Subject" required>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="taDescription" >Description</label>
+                        <label class="col-sm-3 col-md-2 control-label no-pad-top" for="taMessage" >Request Message</label>
                         <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="taDescription" name="description" class="form-control"
-                                      placeholder="Description" rows="5"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="taComment" >Comment</label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="taComment" name="comment" class="form-control"
-                                      placeholder="Comment" rows="3"></textarea>
+                            <textarea type="textarea" id="taMessage" name="message" class="form-control"
+                                      placeholder="Request Message" rows="5" required></textarea>
                         </div>
                     </div>
                 </div>
