@@ -38,7 +38,7 @@ def signup_page(request):
     return render(request, 'miaas/signup.html', None)
 
 def profile_page(request):
-    pass
+    return render(request, 'miaas/patient_profile.html', sctx.default_context)
 
 def archive_page(request):
     return render(request, 'miaas/archive.html', sctx.archive_context)
@@ -59,7 +59,7 @@ def interpretation_request_page(request):
     return render(request, 'miaas/interpretation_request.html', sctx.default_context)
 
 def interpretation_candidate_page(request, interpret_num):
-    return render(request, 'miaas/interpretation_candidiate.html', sctx.default_context)
+    return render(request, 'miaas/interpretation_candidate.html', sctx.default_context)
 
 def signout(request):
     pass
