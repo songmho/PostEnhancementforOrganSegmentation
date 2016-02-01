@@ -82,11 +82,22 @@ def interpretation_detail_page(request, interpret_num):
 def interpretation_request_page(request):
     return render(request, 'miaas/interpretation_request.html', sctx.default_context)
 
-def interpretation_candidate_page(request, interpret_num):
-    return render(request, 'miaas/interpretation_candidate.html', sctx.default_context)
+def physician_info_page(request):
+    return render(request, 'miaas/physician_info.html', sctx.default_context)
+
+def physician_profile_page(request):
+    return render(request, 'miaas/physician_profile.html', sctx.default_context)
+
+def physician_interpretation_page(request):
+    return render(request, 'miaas/interpretation_physician.html', sctx.default_context)
+
+def physician_interpretation_search(request):
+    return render(request, 'miaas/interpretation_search.html', sctx.default_context)
 
 def signout(request):
     pass
+
+
 
 def opinion(request, opinion_id):
     return HttpResponse("Hello, opinion %s." % opinion_id)

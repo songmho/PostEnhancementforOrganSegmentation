@@ -3,6 +3,11 @@
  */
 
 $(document).ready(function() {
+    $('.nav-tabs-group > .nav.navtabs a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
 
+    $('[data-toggle="tooltip"]').tooltip();
 });
 

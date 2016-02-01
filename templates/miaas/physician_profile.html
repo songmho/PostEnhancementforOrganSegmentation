@@ -1,0 +1,243 @@
+{% if session and session.user_info.user_type == 'physician' %}
+
+{% load staticfiles %}
+{% load my_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="template of MIAAS">
+    <meta name="author" content="Hanter Jung">
+{#    <link rel="icon" href="../../favicon.ico">#}
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/css/bootstrap.css' %}">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/assets/css/ie10-viewport-bug-workaround.css' %}">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="{% static 'lib/bootstrap/assets/js/ie8-responsive-file-warning.js' %}"></script><![endif]-->
+    <script src="{% static 'lib/bootstrap/assets/js/ie-emulation-modes-warning.js' %}"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="{% static 'miass/css/style.css' %}">
+
+    <title>MIAAS: Medical Image Archive & Analytics Service</title>
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collasped"
+                    data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'miaas:index' %}">MIAAS</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li ><a href="{% url 'miaas:physician_profile' %}">Physician Profile</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Interpretations</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'miaas:physician_interpretation' %}">Search Interpretation Request</a></li>
+                        <li><a href="{% url 'miaas:interpretation_search' %}">My Interpretations</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><span id="navbar-logined-text">
+                        <span>Hi, Dr. {{ session.user_info.user_name }} </span></span><span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Account Setting</a></li>
+                        <li><a href="#">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <section class="section section-default">
+        <div class="row">
+            <div class="col-xs-12 col-title">
+                <h2 class="text-primary">Physician Profile</h2>
+            </div>
+
+            <form class="col-xs-12 col-form">
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-xs-12 form-small-title">
+                        <h4 class="text-primary">Introduction</h4>
+                    </div>
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="taAbout" >About me</label>
+                        <div class="col-sm-9 col-md-10">
+                            <textarea type="textarea" id="taAbout" name="about" class="form-control"
+                                      placeholder="Introducing about me" rows="5"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="taSpecialism" >About Specialism</label>
+                        <div class="col-sm-9 col-md-10">
+                            <textarea type="textarea" id="taSpecialism" name="specialism" class="form-control"
+                                      placeholder="Introducing about my specialism" rows="5"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-xs-12 form-small-title">
+                        <h4 class="text-primary">Activity Summary</h4>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-3 control-label">Joined At</label>
+                        <div class="col-xs-12 col-sm-9 col-md-3 control-text">
+                            <span id="joinedAt">2014-12-27</span>
+                        </div>
+
+                        <label class="col-xs-12 col-sm-3 col-md-3 control-label">Recent Connection</label>
+                        <div class="col-xs-12 col-sm-9 col-md-3 control-text">
+                            <span id="recentConnection">2015-02-02</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-3 control-label">Interpretation Count</label>
+                        <div class="col-xs-12 col-sm-9 col-md-3 control-text">
+                            <span id="response">24</span>
+                        </div>
+
+                        <label class="col-xs-12 col-sm-3 col-md-3 control-label"><span data-toggle="tooltip" data-placement="left" title="Perfect score is 10.0">Score</span></label>
+                        <div class="col-xs-12 col-sm-9 col-md-3 control-text">
+                            <span id="score" data-toggle="tooltip" data-placement="right" title="Perfect score is 10.0">8.6</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- tab reference : http://www.nydoctorprofile.com/ -->
+                <div class="nav-tabs-group">
+                    <ul id="detailTabs" class="nav nav-tabs nav-tabs-for-boxed" role="tablist">
+                        <li role="presentation" class="active"><a href="#formEducation" aria-controls="formPractice" role="tab" data-toggle="tab">Education</a></li>
+                        <li role="presentation"><a href="#formPractice" aria-controls="formPractice" role="tab" data-toggle="tab">Practice info</a></li>
+                        <li role="presentation"><a href="#formLegal" aria-controls="formPractice" role="tab" data-toggle="tab">Legal Actions</a></li>
+                        <li role="presentation"><a href="#formProfessional" aria-controls="formPractice" role="tab" data-toggle="tab">Professional Activities</a></li>
+                        <li role="presentation"><a href="#formStatement" aria-controls="formPractice" role="tab" data-toggle="tab">Statement</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div id="formEducation" role="tabpanel" class="tab-pane active form-container form-boxed form-horizontal nav-tabs-content row">
+                            <div class="col-xs-12 form-group">
+                                <label class="col-sm-3 col-md-2 control-label" for="medicalSchool" >Medical School</label>
+                                <div class="col-sm-9 col-md-10">
+                                    <textarea type="textarea" id="medicalSchool" name="medicalSchool" class="form-control"
+                                              placeholder="Medical School" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 form-group">
+                                <label class="col-sm-3 col-md-2 control-label" for="graduate" >Graduate Medical Education</label>
+                                <div class="col-sm-9 col-md-10">
+                                    <textarea type="textarea" id="graduate" name="graduate" class="form-control"
+                                              placeholder="Graduate Medical Education" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 form-group">
+                                <label class="col-sm-3 col-md-2 control-label" for="certifications" >Board Certifications</label>
+                                <div class="col-sm-9 col-md-10">
+                                    <textarea type="textarea" id="certifications" name="certifications" class="form-control"
+                                              placeholder="Board Certifications" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 form-group">
+                                <label class="col-sm-3 col-md-2 control-label" for="memberships" >Professional Memberships</label>
+                                <div class="col-sm-9 col-md-10">
+                                    <textarea type="textarea" id="memberships" name="memberships" class="form-control"
+                                              placeholder="Professional Memberships" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="formPractice" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
+                            <div class="col-xs-12 form-group">
+                                <label class="col-sm-3 col-md-2 control-label" for="aaaa" >BBBBB</label>
+                                <div class="col-sm-9 col-md-10">
+                                    <textarea type="textarea" id="aaaa" name="bbbb" class="form-control"
+                                              placeholder="bbbbb" rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="formLegal" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
+                            <div class="col-xs-12 form-group">
+                                <label class="col-sm-3 col-md-2 control-label" for="aaaa" >CCCC</label>
+                                <div class="col-sm-9 col-md-10">
+                                    <textarea type="textarea" id="aaaa" name="bbbb" class="form-control"
+                                              placeholder="bbbbb" rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="formProfessional" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
+                            <div class="col-xs-12 form-group">
+                                <label class="col-sm-3 col-md-2 control-label" for="aaaa" >DDDD</label>
+                                <div class="col-sm-9 col-md-10">
+                                    <textarea type="textarea" id="aaaa" name="bbbb" class="form-control"
+                                              placeholder="bbbbb" rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="formStatement" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
+                            <div class="col-xs-12 form-group">
+                                <label class="col-sm-3 col-md-2 control-label" for="aaaa" >EEEEE</label>
+                                <div class="col-sm-9 col-md-10">
+                                    <textarea type="textarea" id="aaaa" name="bbbb" class="form-control"
+                                              placeholder="bbbbb" rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-btns-container row">
+                    <div id="btnFormUpdate" class="col-xs-12 col-sm-4 col-sm-offset-4 form-button">
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+
+<script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
+<script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="{% static 'lib/bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
+
+<script src="{% static 'miass/js/init.js' %}"></script>
+
+</body>
+</html>
+
+{% else %}
+    <script type="text/javascript">
+        location.replace(
+                {{ "'" }}{% url 'miaas:index' %}{{ "'" }}
+        );
+    </script>
+{% endif %}

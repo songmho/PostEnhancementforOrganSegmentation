@@ -5,6 +5,7 @@ default_session = {
         'id': 'hanterkr',
         'user_name': 'Hanter Jung',
         'user_type': 'patient',
+        # 'user_type': 'physician',
     }
 }
 
