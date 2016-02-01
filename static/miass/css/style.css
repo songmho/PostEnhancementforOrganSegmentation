@@ -66,12 +66,15 @@ body {
     font-size: 15px;
 }
 .table-striped.table-hover tbody tr:hover:not(thead) {
-    background-color: #F2C2B8;
+    background-color: #F4F1E0;
 }
 .table-page-container {
     margin-top: 8px;
     margin-bottom: 8px;
     font-size: 18px;
+}
+.vcenter {
+    vertical-align: middle !important;
 }
 
 /* Form */
@@ -125,10 +128,16 @@ body {
 
 /* Column */
 @media (min-width: 992px) {
+    .col-md-overlay-enable-container {
+        position: relative;
+    }
     .col-md-overlay {
         position: absolute;
     }
     .col-md-overlay * {
+        position: relative;
+    }
+    .row.form-container.form-boxed {
         position: relative;
     }
     .form-container.form-boxed .col-md-overlay {
@@ -137,10 +146,10 @@ body {
     .form-container.form-boxed .col-md-overlay.col-md-overlay-right {
         left: inherit;
         right: 46px;
-        padding-right: 30px;
+        padding-right: 15px;
     }
     .form-container.form-boxed .col-md-overlay.col-md-overlay-2 {
-        top: 73px;
+        top: 64px;
     }
 }
 

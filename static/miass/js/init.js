@@ -3,6 +3,6 @@
  */
 
 $(document).ready(function() {
-    //$('.col-md-overlay')
+
 });
 
