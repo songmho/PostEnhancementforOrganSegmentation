@@ -53,7 +53,12 @@ def interpretation_page(request):
     return render(request, 'miaas/interpretation.html', sctx.interpret_context)
 
 def interpretation_detail_page(request, interpret_num):
-    return render(request, 'miaas/interpretation_detail.html', sctx.default_context)
+    ctx = sctx.default_context.copy()
+    interpret_list = sctx.interpret_context['interpret']['interpret_list']
+    sel_num = len(interpret_list)-int(interpret_num)-1
+    ctx['status'] = interpret_list[sel_num]['status']
+    ctx['subject'] = interpret_list[sel_num]['subject']
+    return render(request, 'miaas/interpretation_detail.html', ctx)
 
 def interpretation_request_page(request):
     return render(request, 'miaas/interpretation_request.html', sctx.default_context)
