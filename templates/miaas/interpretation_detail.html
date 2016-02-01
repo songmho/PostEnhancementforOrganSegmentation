@@ -1,4 +1,4 @@
-{% if session %}
+{% if session and session.user_info.user_type == 'patient' %}
 
 {% load staticfiles %}
 {% load my_filters %}
@@ -324,6 +324,7 @@
                         <thead>
                             <td>Physician ID</td>
                             <td>Physician Name</td>
+                            <td>Medical Field</td>
                             <td>Acceptance Message</td>
                             <td>Select</td>
                         </thead>
@@ -332,6 +333,7 @@
                             <tr>
                                 <td><a class="text-primary" href="#">{{ physician.id }}</a></td>
                                 <td>{{ physician.name }}</td>
+                                <td>{{ physician.field }}</td>
                                 <td>{{ physician.message }}</td>
                                 <td class="valign vcenter"><a class="btn btn-success btn-block">SELECT</a></td>
                             </tr>
@@ -561,7 +563,7 @@
 {% else %}
     <script type="text/javascript">
         location.replace(
-                {{ "'" }}{% url 'miaas:signin' %}{{ "'" }}
+                {{ "'" }}{% url 'miaas:index' %}{{ "'" }}
         );
     </script>
 {% endif %}

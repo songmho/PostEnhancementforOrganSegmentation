@@ -63,14 +63,17 @@ def interpretation_detail_page(request, interpret_num):
             {
                 'id': 'hanterkr',
                 'name': 'Han Ter Jung',
+                'field': 'Heart Specialist',
                 'message': 'Nulla ut ipsum turpis. Quisque ac cursus velit. Morbi nisl odio, blandit eget dignissim eget, rutrum nec leo. Phasellus vitae ante metus. In tempor leo.'
             }, {
                 'id': 'khan',
                 'name': 'Ku Hwan An',
+                'field': 'Heart Specialist',
                 'message': 'Aenean id tellus orci. Phasellus eu pulvinar turpis. Pellentesque hendrerit interdum aliquet. Ut dignissim in arcu quis tincidunt. Vestibulum quis enim eu nunc lobortis sodales.'
             }, {
                 'id': 'mkdmkk',
                 'name': 'Moon Kwon Kim',
+                'field': 'Thoracic Specialist',
                 'message': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit rhoncus ultricies. Praesent viverra finibus tortor sed ultrices. Pellentesque habitant morbi tristique senectus et netus.'
             }
         ]

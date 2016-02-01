@@ -1,4 +1,5 @@
-{% if session %}
+{% if session and session.user_info.user_type == 'patient' %}
+{#{% if session and session.user_info.user_type == 'physician' %}#}
 
 {% load staticfiles %}
 {% load my_filters %}
@@ -92,7 +93,7 @@
 {% else %}
     <script type="text/javascript">
         location.replace(
-                {{ "'" }}{% url 'miaas:signin' %}{{ "'" }}
+                {{ "'" }}{% url 'miaas:index' %}{{ "'" }}
         );
     </script>
 {% endif %}
