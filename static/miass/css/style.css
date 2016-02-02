@@ -138,12 +138,19 @@ body {
     .control-text {
         margin-bottom: 7px;
     }
+    .table-search.form-group.form-inline {
+
+    }
 }
 @media (min-width: 768px) {
     .control-text {
         margin-bottom: 0;
         padding-top: 7px;
     }
+}
+.form-group.form-inline .pull-right {
+    margin-left: 2px;
+    margin-right: 2px;
 }
 
 /* Column */

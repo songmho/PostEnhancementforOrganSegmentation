@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^interpretation/request$', views.interpretation_request_page, name='interpretation_request'),
     url(r'^physicianinfo/(?P<physician_id>[a-zA-z0-9_-]+)$', views.physician_info_page, name='physician_info'),
 
-    url(r'^interpretations', views.physician_interpretation_page, name='physician_interpretation'),
+    url(r'^interpretations$', views.physician_interpretation_page, name='physician_interpretation'),
     url(r'^interpretations/search$', views.physician_interpretation_search, name='interpretation_search'),
 
 

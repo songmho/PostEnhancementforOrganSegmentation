@@ -1,7 +1,9 @@
 {% if session and session.user_info.user_type == 'physician' %}
 
+{% include "miaas/template_header_physician.html" %}
 {% load staticfiles %}
 {% load my_filters %}
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,8 +58,8 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">Interpretations</a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'miaas:physician_interpretation' %}">Search Interpretation Request</a></li>
-                        <li><a href="{% url 'miaas:interpretation_search' %}">My Interpretations</a></li>
+                        <li><a href="{% url 'miaas:interpretation_search' %}">Search Interpretation Request</a></li>
+                        <li><a href="{% url 'miaas:physician_interpretation' %}">My Interpretations</a></li>
                     </ul>
                 </li>
             </ul>
@@ -223,16 +225,7 @@
     </section>
 </div>
 
-
-<script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
-<script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="{% static 'lib/bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
-
-<script src="{% static 'miass/js/init.js' %}"></script>
-
-</body>
-</html>
+{% include "miaas/template_footer.html" %}
 
 {% else %}
     <script type="text/javascript">

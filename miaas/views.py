@@ -86,13 +86,13 @@ def physician_info_page(request):
     return render(request, 'miaas/physician_info.html', sctx.default_context)
 
 def physician_profile_page(request):
-    return render(request, 'miaas/physician_profile.html', sctx.default_context)
+    return render(request, 'miaas/physician_profile.html', sctx.default_physician_context)
 
 def physician_interpretation_page(request):
-    return render(request, 'miaas/interpretation_physician.html', sctx.default_context)
+    return render(request, 'miaas/interpretation_physician.html', sctx.interpret_physician_context)
 
 def physician_interpretation_search(request):
-    return render(request, 'miaas/interpretation_search.html', sctx.default_context)
+    return render(request, 'miaas/interpretation_search.html', sctx.interpret_search_context)
 
 def signout(request):
     pass

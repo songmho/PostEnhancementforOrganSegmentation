@@ -9,8 +9,22 @@ default_session = {
     }
 }
 
+default_physician_session = {
+    'session_id': 1234,
+    'session_start': '2016/01/27 14:06:33',
+    'user_info': {
+        'id': 'hanterkr',
+        'user_name': 'Hanter Jung',
+        'user_type': 'physician',
+    }
+}
+
 default_context = {
     'session': default_session,
+}
+
+default_physician_context = {
+    'session': default_physician_session,
 }
 
 archive_context = {
@@ -116,4 +130,53 @@ interpret_context = {
             }],
         'interpret_count': 67
     },
+}
+
+interpret_search_context = {
+    'session': default_physician_session,
+    'interpret_request': {
+        'request_list': [
+            {
+                'id': 4,
+                'date': '2015/01/12',
+                'type': 'ECG',
+                'subject': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            }, {
+                'id': 2,
+                'date': '2015/01/03',
+                'type': 'CT',
+                'subject': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            }, {
+                'id': 1,
+                'date': '2014/11/17',
+                'type': 'MRI',
+                'subject': 'liquam congue diam eget semper elementum. ',
+            },
+        ]
+    }
+
+}
+
+interpret_physician_context = {
+    'session': default_physician_session,
+    'interpret_request': {
+        'request_list': [
+            {
+                'id': 4,
+                'date': '2015/01/12',
+                'type': 'ECG',
+                'subject': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            }, {
+                'id': 2,
+                'date': '2015/01/03',
+                'type': 'CT',
+                'subject': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            }, {
+                'id': 1,
+                'date': '2014/11/17',
+                'type': 'MRI',
+                'subject': 'liquam congue diam eget semper elementum. ',
+            },
+        ]
+    }
 }
