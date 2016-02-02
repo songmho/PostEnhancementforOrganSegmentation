@@ -91,7 +91,7 @@ DATABASES = {
         'NAME': 'miaas',
         'USER': 'root',
         'PASSWORD': '1234',
-        'HOST': '52.79.52.179',
+        'HOST': '52.79.55.108',
         'PORT': '3306',
     }
 }
