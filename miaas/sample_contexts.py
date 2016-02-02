@@ -9,8 +9,22 @@ default_session = {
     }
 }
 
+default_physician_session = {
+    'session_id': 1234,
+    'session_start': '2016/01/27 14:06:33',
+    'user_info': {
+        'id': 'hanterkr',
+        'user_name': 'Hanter Jung',
+        'user_type': 'physician',
+    }
+}
+
 default_context = {
     'session': default_session,
+}
+
+default_physician_context = {
+    'session': default_physician_session,
 }
 
 archive_context = {
@@ -116,4 +130,14 @@ interpret_context = {
             }],
         'interpret_count': 67
     },
+}
+
+interpret_search_context = {
+    'session': default_physician_session,
+
+}
+
+interpret_physician_context = {
+    'session': default_physician_session,
+
 }
