@@ -1,104 +1,74 @@
-__author__ = 'mkk'
+from django.db import models
 
 
-class Sensor:
-    EHEALTHKIT = "ehealthkit"
-    MINDWAVE = "mindwave"
-    WITHINGS = "withings"
+class User(models.Model):
+    user_id = models.CharField(max_length=30, primary_key=True)
+    passwd = models.CharField(max_length=30)
+    mobile = models.CharField(max_length=30)
+    email = models.EmailField()
+    join_date = models.DateField()
+    deactivate_date = models.DateField()
 
 
-class Measurement:
-    PULSE = "pulse"
-    SPO2 = "spo2"
-    BLOOD_PRESSURE = "blood pressure"
-    GLUCOSE = "glucose"
-    ECG = "ecg"
-    EMG = "emg"
-    GSR = "gsr"
-    EEG = "eeg"
-    TEMPERATURE = "temperature"
-    WEIGHT = "weight"
-    FAT = "fat"
+class UserSession(models.Model):
+    session_id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
 
 
-class Context:
-    PULSE = "pulse"
-    SPO2 = "spo2"
-    BLOOD_PRESSURE = "blood pressure"
-    GLUCOSE = "glucose"
-    HEART = "heart activity"
-    MUSCLE = "muscle activity"
-    SKIN = "skin"
-    BRAIN = "brain"
-    BMI = "bmi"
-    FAT = "fat"
-    MENTAL_STABILITY = "mental stability"
-    MENTAL_STRESS = "mental stress"
-
-    NORMAL = "Normal"
-    NON_DIABETIC = "Non-diabetic"
-    LOW = "Low"
-    HIGH = "High"
-    MEDIUM = "Medium"
-    UNSTABLE = "Unstalbe"
-    MEDIUM_LOW = "Medium-Low"
-    OVERWEIGHT = "Overweight"
-
-    CATEGORIES = {
-        BMI: ['Very Severely Underweight', 'Severely Underweight', 'Underweight', 'Normal', 'Overweight',
-              'Obese_class1', 'Obese_class2', 'Obese_class3'],
-        FAT: ['Extremely Thin', 'Thin Like Athletes', 'Fitness', 'Normal', 'Obese'],
-        BLOOD_PRESSURE: ['Hypotension', 'Normal', 'Pre-Hypertension', 'Hypertension Stage 1', 'Hypertension Stage 2',
-                         'Hypertensive Emergency'],
-        GLUCOSE: ['Low', 'Normal', 'High'],
-        SPO2: ['Severely Low', 'Low', 'Mild Low', 'Normal'],
-        PULSE: ['Slow', 'Normal', 'Fast'],
-        HEART: ['Bad', 'Normal', 'Good'],
-        MENTAL_STABILITY: ['Very Low', 'Low', 'Normal', 'High', 'Very High'],
-        MENTAL_STRESS: ['Very Low', 'Low', 'Normal', 'High', 'Very High'],
-        MUSCLE: ['Bad', 'Normal', 'Good']
-    }
+class Patient(models.Model):
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    gender = models.CharField(max_length=30)
+    age = models.IntegerField()
+    nationality = models.CharField(max_length=30)
 
 
-class HealthIndex:
-    TOTAL_HI = "totalHI"
-    BLOOD_HI = "bloodHI"
-    HEART_HI = "heartHI"
-    BODY_FITNESS_HI = "bodyFitnessHI"
-    MUSCLE_HI = "muscleHI"
-    MENTAL_HI = "mentalHI"
+class PatientProfile(models.Model):
+    profile_id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    type = models.CharField(max_length=30)
+    value = models.CharField(max_length=30)
+    timestamp = models.DateTimeField()
+    status = models.CharField(max_length=30)
 
 
-class UerProfile:
-    WATER_INTAKE = "water_intake"
-    ALCOHOL_CONSUMPTION = "alcohol_consumption"
-    ALCOHOL_FREQUENCY = "alcohol_freq"
-    SMOKING_STATE = "smoking_state",
-    EXERCISE_TIME = "exercise_time",
-    SLEEP_TIME = "sleep_time",
-    HEIGHT = "height"
+class Physician(models.Model):
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    field = models.CharField(max_length=30)
+    score = models.FloatField()
+    qualification = models.CharField(max_length=30)
 
 
-context_meas_relations = {
-    Context.PULSE: [Measurement.PULSE],
-    Context.BLOOD_PRESSURE: [Measurement.BLOOD_PRESSURE],
-    Context.BMI: [Measurement.WEIGHT],
-    Context.FAT: [Measurement.FAT],
-    Context.HEART: [Measurement.ECG],
-    Context.SPO2: [Measurement.SPO2],
-    Context.GLUCOSE: [Measurement.GLUCOSE],
-    Context.MUSCLE: [Measurement.EMG],
-    Context.MENTAL_STABILITY: [Measurement.EEG],
-    Context.MENTAL_STRESS: [Measurement.GSR]
-}
+class PhysicianProfile(models.Model):
+    profile_id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey(Physician, on_delete=models.CASCADE)
+    type = models.CharField(max_length=30)
+    value = models.CharField(max_length=30)
+    timestamp = models.DateTimeField()
+    status = models.CharField(max_length=30)
 
-hi_context_relations = {
-    HealthIndex.BLOOD_HI: [Context.PULSE, Context.SPO2, Context.BLOOD_PRESSURE, Context.GLUCOSE, Context.HEART],
-    HealthIndex.BODY_FITNESS_HI: [Context.BMI, Context.FAT],
-    HealthIndex.HEART_HI: [Context.BLOOD_PRESSURE, Context.BMI, Context.HEART, Context.PULSE],
-    HealthIndex.MENTAL_HI: [Context.MENTAL_STRESS, Context.MENTAL_STABILITY],
-    HealthIndex.MUSCLE_HI: [Context.BMI, Context.FAT, Context.MUSCLE],
-    HealthIndex.TOTAL_HI: [Context.BLOOD_PRESSURE, Context.MUSCLE, Context.FAT, Context.BMI, Context.GLUCOSE,
-                           Context.HEART, Context.MENTAL_STRESS, Context.MENTAL_STABILITY, Context.PULSE,
-                           Context.SPO2]
-}
+
+class MedicalImage(models.Model):
+    mi_id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    type = models.CharField(max_length=30)
+    timestamp = models.DateTimeField()
+    file_location = models.CharField(max_length=255)
+
+
+class Interpretation(models.Model):
+    mi_id = models.AutoField(primary_key=True)
+    inpr_type = models.CharField(max_length=30)
+    description = models.CharField(max_length=255)
+    date = models.DateTimeField()
+
+
+class Opinion(models.Model):
+    user_id = models.ForeignKey(Physician, on_delete=models.CASCADE)
+    mi_id = models.ForeignKey(MedicalImage, on_delete=models.CASCADE)
+    opinion = models.CharField(max_length=255)
+    date = models.DateTimeField()
+
+
+
