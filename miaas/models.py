@@ -26,15 +26,15 @@ class Patient(models.Model):
 
 class PatientProfile(models.Model):
     profile_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
     type = models.CharField(max_length=30)
-    value = models.CharField(max_length=30)
+    value = models.CharField(max_length=1000)
     timestamp = models.DateTimeField()
     status = models.CharField(max_length=30)
 
 
 class Physician(models.Model):
-    user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    physician_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     field = models.CharField(max_length=30)
     score = models.FloatField()
     qualification = models.CharField(max_length=30)
@@ -44,9 +44,7 @@ class PhysicianProfile(models.Model):
     profile_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(Physician, on_delete=models.CASCADE)
     type = models.CharField(max_length=30)
-    value = models.CharField(max_length=30)
-    timestamp = models.DateTimeField()
-    status = models.CharField(max_length=30)
+    value = models.CharField(max_length=1000)
 
 
 class MedicalImage(models.Model):
