@@ -113,7 +113,7 @@ interpret_context = {
                 'id': 1,
                 'upload_date': '2015/11/17',
                 'interpret_date': '2015/12/02',
-                'subject': 'EEG measured in my home at 2015-11-17',
+                'subject': 'EEG measured at home, 2015-11-17',
                 'type': 'EEG',
                 'level': '1',
                 'summary': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam congue diam eget semper elementum. Nam non purus dictum, pharetra.',
