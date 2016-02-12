@@ -81,6 +81,165 @@
 
         {% if status == '0' or status == 0 %} {# Interpreted #}
 
+            {% if level == '1' or level == 1 %}
+
+            <div class="col-xs-12 col-form">
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-xs-12 form-title">
+                        <h3 class="text-center">Analytics Result</h3>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <span id="itp-level" >Level 1 - By Softwarem, Free of Charge, No Legal Liability</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Health Type</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <span id="itp-anal-type" >Heart</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Health Status</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <span id="itp-anal-type" >Danger *</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Possible Cause</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <div id="itp-anal-cause" >
+                                - High Cholesterol Level <br />
+                                - Hypertension (High Blood Pressure) <br />
+                                - Smoking <br />
+                                - Diabetes <br />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Symptom</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <div id="itp-anal-symptom" >
+                                - Chest Pain <br />
+                                - Breath Shortness <br />
+                                - Abnormal Heart Rhythm <br />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Suspected Disease</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <span id="itp-anal-result" >
+                                - Coronary Artery Stenosis <br />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="imgSubject" >EEG measured in my home at 2015-11-17</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Image Type</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="type" >ECG</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
+                                col-md-overlay-2 form-group medimage-preview-container">
+                        <div class="medimage-preview-wrapper">
+                            <div class="medimage-preview">
+                                <div id="dygraph-medimage"></div>
+{#                                <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>#}
+                            </div>
+                        </div>
+                    </div>
+                    <script src="{% static 'lib/dygraph/dygraph-combined.js' %}"></script>
+                    <script src="{% static 'lib/dygraph/smooth-plotter.js' %}"></script>
+                    <script>
+                        var data = "{% static 'miass/sample-image/ecg-cas-sample.csv' %}";
+                        smoothPlotter.smoothing = 0.333;
+                        var g = new Dygraph(
+                                document.getElementById("dygraph-medimage"),
+                                data, {
+                                    width: 398,
+                                    height: 198,
+{#                                    valueRange: [-5, 5],#}
+                                    axes: {
+                                        y: {
+                                            drawAxis: false
+                                        }, x: {
+                                            drawAxis: false,
+                                            drawGrid: false
+                                        }
+                                    },
+                                    strokeWidth: 2,
+                                    color: '#D76474',
+                                    plotter: smoothPlotter
+                                }
+                        );
+                    </script>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Date</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="date" >2015/11/17</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Taken From</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="taken" >Home</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="physician" >Dr.Peter</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Place</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="place" >Dr.Peter's Hospital</span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Description</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <div id="description" >
+                                <p>I bought ECG sensor and e-Health kit. This image is measured by using them for the first time.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Comment</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <span id="comment" >I bought ECG sensor and e-Health kit. This image is measured by using them for the first time.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-btns-container row">
+                    <div id="btnFormCancel" class="col-xs-12 col-md-4 col-md-offset-4 form-button">
+                        <a class="btn btn-lg btn-success btn-block" onclick="javascript:history.back();">OK</a>
+                    </div>
+                </div>
+            </div>
+
+            {% else %}
             <div class="col-xs-12 col-form">
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-title">
@@ -94,13 +253,13 @@
 
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="itp1-name" >James Raynor</span>
+                            <span id="itp1-name" >James Park</span>
                         </div>
                     </div>
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp1-level" >Level 3 - With available images and patient interview/symptom</span>
+                            <span id="itp1-level" >Level 3 - With available images and patient interview & symptom</span>
                         </div>
                     </div>
                     <div class="col-sm-12 form-group">
@@ -214,6 +373,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
 
         {% elif status == '1' or status == 1 %} {# Waiting Interpretation #}
 

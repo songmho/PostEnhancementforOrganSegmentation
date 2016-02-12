@@ -76,7 +76,7 @@
     <section class="section section-default">
         <div class="row">
             <div class="col-xs-12 col-title">
-                <h2 class="text-primary" id="titleSubject">My First Medical Image</h2>
+                <h2 class="text-primary" id="titleSubject">My Chest CT on February 2, 2016</h2>
             </div>
             <form class="col-xs-12 col-form">
                 <div class="form-container form-boxed form-horizontal row">
@@ -84,7 +84,7 @@
                         <label class="col-sm-3 col-md-2 control-label" for="inputSubject" >Subject</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="text" id="inputSubject" name="subject" class="form-control"
-                                   placeholder="Subject" required readonly>
+                                   placeholder="Subject" required readonly value="My Chest CT on February 2, 2016">
                         </div>
                     </div>
 
@@ -92,12 +92,12 @@
                         <label class="col-sm-3 col-md-2 control-label" for="inputType" >Image Type</label>
                         <div class="col-sm-9 col-md-4">
                             <select class="form-control" id="selectType" name="type" required disabled>
-                                <option>EEG</option>
-                                <option>ECG</option>
-                                <option>EMG</option>
                                 <option>CT</option>
                                 <option>X-ray</option>
                                 <option>MRI</option>
+                                <option>EEG</option>
+                                <option>ECG</option>
+                                <option>EMG</option>
                             </select>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
                         <label class="col-sm-3 col-md-4 control-label" for="fileImage">Medical Image</label>
                         <div class="col-sm-9 col-md-8">
                             <input type="file" id="fileImage" name="medicalImage" class="form-control"
-                                   placeholder="Medical Image" required disabled>
+                                   placeholder="Medical Image" required readonly>
                         </div>
                     </div>
 
@@ -123,7 +123,7 @@
                         <label class="col-sm-3 col-md-2 control-label" for="inputDate" >Date</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="date" id="inputDate" name="date" class="form-control"
-                                   placeholder="Date" required readonly>
+                                   placeholder="Date" required readonly value="2016-02-02">
                         </div>
                     </div>
 
@@ -131,9 +131,9 @@
                         <label class="col-sm-3 col-md-2 control-label" for="selectTaken" >Taken From</label>
                         <div class="col-sm-9 col-md-4">
                             <select class="form-control" id="selectTaken" name="taken" required disabled>
-                                <option>Home</option>
                                 <option>Hospital</option>
                                 <option>Health Center</option>
+                                <option>Home</option>
                             </select>
                         </div>
                     </div>
@@ -142,7 +142,7 @@
                         <label class="col-sm-3 col-md-2 control-label" for="inputPhysician" >Physician</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="text" id="inputPhysician" name="physician" class="form-control"
-                                   placeholder="Examining Physician" required readonly>
+                                   placeholder="Examining Physician" required readonly value="Yo Han Lee">
                         </div>
                     </div>
 
@@ -150,7 +150,7 @@
                         <label class="col-sm-3 col-md-2 control-label" for="inputPlace" >Place</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="text" id="inputPlace" name="place" class="form-control"
-                                   placeholder="Place" required readonly>
+                                   placeholder="Place" required readonly value="Top Hospital, Incheon">
                         </div>
                     </div>
 
@@ -158,7 +158,7 @@
                         <label class="col-sm-3 col-md-2 control-label" for="taDescription" >Description</label>
                         <div class="col-sm-9 col-md-10">
                             <textarea type="textarea" id="taDescription" name="description" class="form-control"
-                                      placeholder="Description" rows="5" readonly></textarea>
+                                      placeholder="Description" rows="5" readonly>The physician who examined me said I needed to get a more complete medical checkup. His opinion was that I've already had malignant pleural effusion. But I doubt because I'm healthy until examination in the year before last.</textarea>
                         </div>
                     </div>
 
@@ -166,7 +166,7 @@
                         <label class="col-sm-3 col-md-2 control-label" for="taComment" >Comment</label>
                         <div class="col-sm-9 col-md-10">
                             <textarea type="textarea" id="taComment" name="comment" class="form-control"
-                                      placeholder="Comment" rows="3" readonly></textarea>
+                                      placeholder="Comment" rows="3" readonly>This image is the CT scans for the first time.</textarea>
                         </div>
                     </div>
 
@@ -197,12 +197,12 @@
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician ID</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="itp1-id"><a href="#">drjames</a></span>
+                            <span id="itp1-id"><a href="#">mdjames</a></span>
                         </div>
 
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="itp1-name" >James Raynor</span>
+                            <span id="itp1-name" >James Park, MD</span>
                         </div>
                     </div>
                     <div class="col-sm-12 form-group">
@@ -214,16 +214,36 @@
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp1-summary" >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla egestas libero purus, ac suscipit augue porta a. Vivamus maximus arcu.</span>
+                            <span id="itp1-summary" >I agree your first doctor's opinion. You may already have malignant pleural effusion. I recommend that you need to take the medical examination again to make sure.</span>
                         </div>
                     </div>
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
                             <div id="itp1-interpretation" >
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sagittis lacus eget tincidunt vehicula. Nulla ullamcorper porttitor quam ut porta. Mauris posuere mauris non tortor laoreet commodo. Fusce lacinia euismod diam, vel viverra velit ornare non. Interdum et malesuada fames ac ante ipsum primis in faucibus. Curabitur felis nulla, ultrices et fringilla eu, scelerisque ac urna. Donec vitae pretium sem. Donec id arcu tempor, hendrerit justo nec, dapibus lorem. Nam nunc purus, sollicitudin nec dui vitae, convallis auctor quam. Donec sit amet condimentum lacus.</p>
-                                <p>Sed vulputate mi ut justo varius, vitae varius massa lacinia. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Proin bibendum turpis nec quam placerat porta. Donec nisl dui, viverra vitae varius a, consequat quis urna. Nulla eu volutpat est. Quisque dapibus dui odio, nec laoreet arcu convallis a. Phasellus vestibulum nunc at augue tristique, nec mollis mauris tempor. In quis ante euismod, varius sapien vitae, maximus turpis. Cras facilisis enim vel tellus viverra, quis finibus sapien suscipit.</p>
-                                <p>In vehicula odio id fringilla dignissim. Vestibulum sed ex at nunc faucibus venenatis eu et tellus. Proin gravida sem non nulla tincidunt pulvinar. Cras porttitor maximus enim at congue. Nam ornare est ac urna tristique fermentum. Pellentesque ultrices nulla id sapien sagittis, id gravida mi tristique. Maecenas aliquet rutrum sem vitae auctor. Sed felis tortor, euismod pulvinar convallis in, mattis quis arcu. Maecenas sed massa eu tellus accumsan pulvinar id pharetra arcu. Phasellus blandit nec urna ut eleifend. Suspendisse tempus non risus sed molestie. Etiam molestie ante sed auctor finibus. Pellentesque pretium mollis augue eget semper. Quisque risus odio, tincidunt vel ligula sit amet, pellentesque sagittis nulla. Cras odio arcu, suscipit vel ligula eget, fringilla rhoncus ipsum.</p>
+                                <p>
+                                    Transudative pleural effusions are formed when normal hydrostatic and oncotic pressures are disrupted. Exudative pleural effusions occur when pleural membranes or vasculature are damaged or disrupted therefore leading to increased capillary permeability or decreased lymphatic drainage.
+                                    <br/>
+                                    <br/>
+                                    TREE-IN-BUD<br/>
+                                    &nbsp;&nbsp;- Infection: Tuberculosis, mycobacterium avium intracellulare complex (MAC), bacterial, fungal<br/>
+                                    &nbsp;&nbsp;- Airway disease (i.e. cystic fibrosis or bronchiectasis)<br/>
+                                    &nbsp;&nbsp;- Allergic bronchopulmonary aspergilosis (rare)<br/>
+                                    <br/>
+                                    GROUND GLASS OPACITY (CHRONIC)<br/>
+                                    &nbsp;&nbsp;- Desquamative interstitial pneumonitis<br/>
+                                    &nbsp;&nbsp;- Idiopathic pulmonary fibrosis<br/>
+                                    &nbsp;&nbsp;- Alveolar proteinosis<br/>
+                                    &nbsp;&nbsp;- Hypersensitivity pneumonitis - chronic<br/>
+                                    <br/>
+                                    PLEURAL EFFUSION<br/>
+                                    &nbsp;&nbsp;- Pulmonary edema<br/>
+                                    &nbsp;&nbsp;- Lymphangitic spread of carcinoma - often unilateral<br/>
+                                    &nbsp;&nbsp;- Tuberculosis<br/>
+                                    &nbsp;&nbsp;- Lymphangiomyomatosis<br/>
+                                    &nbsp;&nbsp;- Asbestosis<br/>
+                                    <!-- https://www.med-ed.virginia.edu/courses/rad/hrct/effusion.html -->
+                                </p>
                             </div>
                         </div>
                     </div>

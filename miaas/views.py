@@ -58,6 +58,7 @@ def interpretation_detail_page(request, interpret_num):
     sel_num = len(interpret_list)-int(interpret_num)-1
     ctx['status'] = interpret_list[sel_num]['status']
     ctx['subject'] = interpret_list[sel_num]['subject']
+    ctx['level'] = interpret_list[sel_num]['level']
     if(ctx['status'] == '2' or ctx['status'] == 2):
         ctx['candidate_list'] = [
             {
