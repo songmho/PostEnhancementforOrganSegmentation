@@ -1,8 +1,9 @@
 __author__ = 'Jincheul'
 
+from .model import *
+
 import pymysql
 from pymysql.err import OperationalError
-from model import *
 
 class DbManager():
     def __init__(self):
@@ -29,8 +30,11 @@ class DbManager():
         is_deleted = False;
         return is_deleted
 
-    def retrieve_patient(self, user_id):
-        patient = Patient()
+    def get_user_type(self, user_id):
+        return 'patient'
+
+    def retrieve_patient(self, user_id, password=None):
+        patient = {}
         # db_query = "SELECT * FROM user WHERE user_id=%s AND password=%s"
         # with self.mariadb_connector.cursor() as cursor:
         #     try:
@@ -42,15 +46,16 @@ class DbManager():
         #     except Exception as e:
         #         return False
         # Dummy 'User'
-        patient.id = 'Patient_Min'
-        patient.password = '1234'
-        patient.user_name = 'Ah Young Min'
-        patient.birth_date = '1992-10-18'
-        patient.gender = 'Female'
-        patient.mobile = '01045586587'
-        patient.email = 'min1018@gmail.com'
-        patient.join_date = '2015-12-17'
-        patient.deactivate_date = None
+        patient['id'] = 'min'
+        patient['password'] = '1234'
+        patient['user_name'] = 'Ah Young Min'
+        patient['birth_date'] = '1992-10-18'
+        patient['gender'] = 'Female'
+        patient['mobile'] = '01045586587'
+        patient['email'] = 'min1018@gmail.com'
+        patient['join_date'] = '2015-12-17'
+        patient['deactivate_date'] = None
+        patient['user_type'] = 'patient'
         return patient
 
     def retrieve_patient_profile(self, user_id):
@@ -78,12 +83,11 @@ class DbManager():
         physician.id = 'Physician_Han'
         physician.password = '1234'
         physician.user_name = 'Ye Hwa Han'
-        physician.birth_date = '1988-08-18'
-        physician.gender = 'Female'
         physician.mobile = '01075681589'
         physician.email = 'han0818@gmail.com'
         physician.join_date = '2015-09-20'
         physician.deactivate_date = None
+        physician.user_type = 'physician'
         physician.license_number = 'HIENLN23057AHEN-32HLKLKJ-KLKJ23'
         physician.major = 'Brain Specialist'
         physician.certificate_dir = ''
