@@ -1,9 +1,18 @@
-{% if session and session.user_info.user_type == 'physician' %}
+{% if not session or session.user_info.user_type != 'physician' %}
+<script type="text/javascript">
+location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
+</script>
+{% endif %}
 
-{% include "miaas/template_header_physician.html" %}
 {% load staticfiles %}
 {% load my_filters %}
 
+{% include 'miaas/template_header.html' %}
+
+<!-- custom css -->
+
+
+{% include 'miaas/template_nav_physician.html' %}
 
 <div class="container">
     <section class="section section-default">
@@ -56,13 +65,10 @@
     </section>
 </div>
 
-{% include "miaas/template_footer.html" %}
+{% include 'miaas/template_footer.html' %}
 
-{% else %}
-    aa
-    <script type="text/javascript">
-        location.replace(
-                {{ "'" }}{% url 'miaas:index' %}{{ "'" }}
-        );
-    </script>
-{% endif %}
+<!-- custom javascript -->
+
+
+</body>
+</html>

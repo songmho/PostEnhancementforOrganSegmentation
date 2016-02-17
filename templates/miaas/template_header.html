@@ -1,5 +1,10 @@
-{% load staticfiles %}
+{#{% if not user_session %}#}
+{#<script type="text/javascript">#}
+{#location.replace({{ "'" }}{% url 'signin' %}{{ "'" }});#}
+{#</script>#}
+{#{% endif %}#}
 
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +14,7 @@
     <meta name="description" content="template of MIAAS">
     <meta name="author" content="Hanter Jung">
 {#    <link rel="icon" href="../../favicon.ico">#}
+    <title>MIAAS: Medical Image Archive & Analytics Service</title>
 
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/css/bootstrap.css' %}">
@@ -28,48 +34,3 @@
     <![endif]-->
 
     <link rel="stylesheet" type="text/css" href="{% static 'miass/css/style.css' %}">
-
-    <title>MIAAS: Medical Image Archive & Analytics Service</title>
-</head>
-
-<body>
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collasped"
-                    data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{% url 'miaas:index' %}">MIAAS</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li ><a href="{% url 'miaas:physician_profile' %}">Physician Profile</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">Interpretations</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{% url 'miaas:interpretation_search' %}">Search Interpretation Request</a></li>
-                        <li><a href="{% url 'miaas:physician_interpretation' %}">My Interpretations</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><span id="navbar-logined-text">
-                        <span>Hi, Dr. {{ session.user_info.user_name }} </span></span><span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Account Setting</a></li>
-                        <li><a href="#">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
