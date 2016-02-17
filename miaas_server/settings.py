@@ -150,3 +150,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     '/var/www/static/',
 ]
+if __name__ == '__main__':
+    from django.conf import settings
+    settings.configure()
