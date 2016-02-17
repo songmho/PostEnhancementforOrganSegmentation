@@ -1,7 +1,7 @@
 __author__ = 'hanter'
 
 from django.conf.urls import url
-from . import views
+from . import views, apis
 
 app_name = 'miaas'
 urlpatterns = [
@@ -29,4 +29,11 @@ urlpatterns = [
     url(r'^opinion/(?P<opinion_id>[0-9]+)/$', views.opinion, name='opinion'),
     url(r'^user/(?P<user_name>[ a-zA-Z_-]+)/$', views.user, name='user'),
     url(r'^template$', views.template, name='template'),
+
+    url(r'^test$', views.test_page, name='test'),
+
+
+    ### for APIs ###
+    url(r'^api/sessions', apis.handle_session_mgt),
+    url(r'^api/users', apis.handle_user_mgt),
 ]

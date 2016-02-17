@@ -1,9 +1,47 @@
-{% if latest_question_list %}
-    <ul>
-    {% for question in latest_question_list %}
-        <li><a href="/opinion/{{ question }}/">{{ question }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No polls are available.</p>
-{% endif %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <style></style>
+
+</head>
+<body>
+
+<button id="login">login</button>
+<button id="logout">logout</button>
+
+</body>
+
+<script src="{% static "lib/jquery/jquery-2.2.0.min.js" %}"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#login").click(function() {
+            $.ajax("api/sessions", {
+                method: 'POST',
+                data: JSON.stringify({
+                    userId: "min",
+                    password: "1234"
+                }),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+        $("#logout").click(function() {
+            $.ajax("api/sessions", {
+                method: 'DELETE',
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+    });
+</script>
+
+</html>

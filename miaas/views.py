@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
 from miaas import sample_contexts as sctx
+import logging
 
 # get db data -> 404 template, urls in tutorial #3: https://docs.djangoproject.com/en/1.9/intro/tutorial03/
 # form, db class -> tutorial #4
@@ -23,6 +24,13 @@ from miaas import sample_contexts as sctx
 #     def get_queryset(self):
 #         """Return the last five published questions."""
 #         return ['fdsdf', 'asdfew', 'earsdfc', '2dfa', 'asdq']
+
+logging.basicConfig(
+    format="[%(name)s][%(asctime)s] %(message)s",
+    handlers=[logging.StreamHandler()],
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
 def index_page(request):
     context = {
@@ -38,7 +46,11 @@ def signup_page(request):
     return render(request, 'miaas/signup.html', None)
 
 def profile_page(request):
-    return render(request, 'miaas/patient_profile.html', sctx.default_context)
+    context = {}
+    if 'user' in request.session.keys():
+        context['user_session'] = request.session['user']
+    logger.info(context)
+    return render(request, 'miaas/patient_profile.html', context)
 
 def archive_page(request):
     return render(request, 'miaas/archive.html', sctx.archive_context)
@@ -108,3 +120,6 @@ def user(request, user_name):
 
 def template(request):
     return render(request, 'miaas/template.html', None)
+
+def test_page(request):
+    return render(request, 'miaas/test.html', None)

@@ -1,7 +1,8 @@
-{% if not session or session.user_info.user_type != 'patient' %}
+{% if not user_session or user_session.user_type != 'patient' %}
 <script type="text/javascript">
 location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 </script>
+
 {% endif %}
 
 {% load staticfiles %}
@@ -13,6 +14,11 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
 
 {% include 'miaas/template_nav_patient.html' %}
+
+<script>
+    var session = '{{ user_session }}';
+{#    console.log(JSON.parse(session));#}
+</script>
 
 <div class="container">
     <section class="section section-default">
