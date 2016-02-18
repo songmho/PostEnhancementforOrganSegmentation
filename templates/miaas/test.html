@@ -13,6 +13,7 @@
 
 <button id="login">login</button>
 <button id="logout">logout</button>
+<button id="signup">signup</button>
 
 </body>
 
@@ -35,6 +36,22 @@
         $("#logout").click(function() {
             $.ajax("api/sessions", {
                 method: 'DELETE',
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+        $("#signup").click(function() {
+            $.ajax("api/user", {
+                method: 'POST',
+                data: JSON.stringify({
+                    user_type: 'patient',
+                    user: {
+                        userId: "min",
+                        password: "1234"
+                    }
+                }),
                 dataType: 'json',
                 success: function(res) {
                     console.log(JSON.stringify(res));
