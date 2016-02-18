@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 db = cloud_db.DbManager()
 
 @csrf_exempt
-def handle_session_mgt(request, first_try=True):
+def handle_session_mgt(request):
     """
     Handle login and logout requests.
     :param request:
@@ -70,10 +70,34 @@ def handle_session_mgt(request, first_try=True):
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
-def handle_user_mgt(request, first_try=True):
+def handle_user_mgt(request):
     """
     Retrieve, update, or inactivate a user.
     :param request: The body of request is a JSON object of a user.
     :return:
     """
+    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
+
+@csrf_exempt
+def handle_patient_profile_mgt(request):
+    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
+
+@csrf_exempt
+def handle_physician_profile_mgt(request):
+    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
+
+@csrf_exempt
+def handle_medical_image_mgt(request):
+    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
+
+@csrf_exempt
+def handle_interpretation_mgt(request):
+    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
+
+@csrf_exempt
+def handle_analytics_mgt(request):
+    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
+
+@csrf_exempt
+def handle_payment_mgt(request):
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
