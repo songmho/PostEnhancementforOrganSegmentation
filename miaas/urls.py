@@ -35,5 +35,10 @@ urlpatterns = [
 
     ### for APIs ###
     url(r'^api/sessions', apis.handle_session_mgt),
-    url(r'^api/users', apis.handle_user_mgt),
+    url(r'^api/patient_profile', apis.handle_user_mgt),
+    url(r'^api/physician_profile', apis.handle_user_mgt),
+    url(r'^api/medical_image', apis.handle_user_mgt),
+    url(r'^api/interpretation', apis.handle_user_mgt),
+    url(r'^api/analytics', apis.handle_user_mgt),
+    url(r'^api/payment', apis.handle_user_mgt),
 ]
