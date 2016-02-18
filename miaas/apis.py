@@ -77,8 +77,20 @@ def handle_user_mgt(request):
     db = cloud_db.DbManager();
     try:
         if(request.method) == 'GET':
+            # get userinfo
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
+            data = json.loads(request.body.decode("utf-8"))
+            user_id = data['userId']
+            user = db.retrieve_patient(user_id)
+            return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
+        if(request.method) == 'POST':
+            # signup (register)
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+            data = json.loads(request.body.decode("utf-8"))
+            logger.info(data)
+            return JsonResponse(constants.CODE_SUCCESS)
 
     except Exception as e:
         logger.exception(e)
