@@ -74,28 +74,98 @@ def handle_user_mgt(request):
     :param request: The body of request is a JSON object of a user.
     :return:
     """
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_patient_profile_mgt(request):
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_physician_profile_mgt(request):
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_medical_image_mgt(request):
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_interpretation_mgt(request):
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_analytics_mgt(request):
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_payment_mgt(request):
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
