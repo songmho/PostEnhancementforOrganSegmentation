@@ -37,7 +37,10 @@ $(document).ready(function() {
         $('#col-signup-basic').hide();
         $('#col-signup-usertype').show();
     });
-    $('#btn-basic-next').click(function() {
+    //$('#btn-basic-next').click(function() {
+    $('#col-signup-basic').on('submit', function(e) {
+        e.preventDefault();
+
         $('#col-signup-basic').hide();
         if (usertype == 'patient') {
             $('#col-signup-detail-patient').show();
@@ -54,5 +57,14 @@ $(document).ready(function() {
     $('#btn-physician-prev').click(function() {
         $('#col-signup-detail-physician').hide();
         $('#col-signup-basic').show();
-    })
+    });
+
+    $('#col-signup-detail-patient').on('submit', function(e) {
+        e.preventDefault();
+
+    });
+    $('#col-signup-detail-physician').on('submit', function(e) {
+        e.preventDefault();
+
+    });
 });
