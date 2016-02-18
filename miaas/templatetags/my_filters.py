@@ -1,4 +1,5 @@
 from django import template
+from django.utils.html import escapejs
 import json
 
 register = template.Library()
@@ -31,3 +32,7 @@ itprt_status = {
 def get_interpretation_status(status):
     status = int(status)
     return itprt_status.get(status, '-')
+
+@register.filter(name='jsonstr')
+def to_jsonstr(dict):
+    return escapejs(json.dumps(dict))
