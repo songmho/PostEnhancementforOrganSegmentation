@@ -1,4 +1,8 @@
 from __future__ import division
+
+from pprint import pprint
+
+import pandas as pd
 import pywt
 import json
 import numpy as np
@@ -24,7 +28,7 @@ class ImageInterpreter:
             return True, error_message
         return False, "No Error"
 
-    def analyze_context(self, user_id, meas_set):
+    def analyze_context(self, meas_set):
         pass
 
 
@@ -282,10 +286,61 @@ class ECGInterpreter(ImageInterpreter):
                 ab_sinus_rhythms.append(ecg)
         for ecg in ab_sinus_rhythms:
             sinus_rhythms.remove(ecg)
+        plt.plot(signals, color='k')
+        for ecg in sinus_rhythms:
+            plt.annotate("P_peak", xy=(ecg.p['peak'], signals[ecg.p['peak']]),
+                         xytext=(ecg.p['peak'], signals[ecg.p['peak']]), fontsize=10)
+            plt.annotate("P_onset", xy=(ecg.p['onset'], signals[ecg.p['onset']]),
+                         xytext=(ecg.p['onset'], signals[ecg.p['onset']]), fontsize=10)
+            plt.annotate("P_offset", xy=(ecg.p['offset'], signals[ecg.p['offset']]),
+                         xytext=(ecg.p['offset'], signals[ecg.p['offset']]), fontsize=10)
+            plt.plot(ecg.p['peak'], signals[ecg.p['peak']], marker='v', color='b')
+            plt.plot(ecg.p['onset'], signals[ecg.p['onset']], marker='>', color='b')
+            plt.plot(ecg.p['offset'], signals[ecg.p['offset']], marker='<', color='b')
 
+            plt.annotate("Q_peak", xy=(ecg.q['peak'], signals[ecg.q['peak']]),
+                         xytext=(ecg.q['peak'], signals[ecg.q['peak']]), fontsize=10)
+            plt.annotate("Q_onset", xy=(ecg.q['onset'], signals[ecg.q['onset']]),
+                         xytext=(ecg.q['onset'], signals[ecg.q['onset']]), fontsize=10)
+            plt.annotate("Q_offset", xy=(ecg.q['offset'], signals[ecg.q['offset']]),
+                         xytext=(ecg.q['offset']-0.1, signals[ecg.q['offset']]-0.1), fontsize=10)
+            plt.plot(ecg.q['peak'], signals[ecg.q['peak']], marker='v', color='g')
+            plt.plot(ecg.q['onset'], signals[ecg.q['onset']], marker='>', color='g')
+
+            plt.annotate("R_peak", xy=(ecg.r['peak'], signals[ecg.r['peak']]),
+                         xytext=(ecg.r['peak'], signals[ecg.r['peak']]), fontsize=10)
+            plt.annotate("R_onset", xy=(ecg.r['onset'], signals[ecg.r['onset']]),
+                         xytext=(ecg.r['onset'], signals[ecg.r['onset']]), fontsize=10)
+            plt.annotate("R_offset", xy=(ecg.r['offset'], signals[ecg.r['offset']]),
+                         xytext=(ecg.r['offset'], signals[ecg.r['offset']]), fontsize=10)
+
+            plt.plot(ecg.r['peak'], signals[ecg.r['peak']], marker='v', color='r')
+            plt.plot(ecg.r['onset'], signals[ecg.r['onset']], marker='d', color='r')
+            plt.plot(ecg.r['offset'], signals[ecg.r['offset']], marker='d', color='r')
+
+            plt.annotate("S_peak", xy=(ecg.s['peak'], signals[ecg.s['peak']]),
+                         xytext=(ecg.s['peak'], signals[ecg.s['peak']]), fontsize=10)
+            plt.annotate("S_onset", xy=(ecg.s['onset'], signals[ecg.s['onset']]),
+                         xytext=(ecg.s['onset']-0.1, signals[ecg.s['onset']]-0.1), fontsize=10)
+            plt.annotate("S_offset", xy=(ecg.s['offset'], signals[ecg.s['offset']]),
+                         xytext=(ecg.s['offset'], signals[ecg.s['offset']]), fontsize=10)
+
+            plt.plot(ecg.s['peak'], signals[ecg.s['peak']], marker='v', color='c')
+            plt.plot(ecg.s['offset'], signals[ecg.s['offset']], marker='<', color='c')
+
+            plt.annotate("T_peak", xy=(ecg.t['peak'], signals[ecg.t['peak']]),
+                         xytext=(ecg.t['peak'], signals[ecg.t['peak']]), fontsize=10)
+            plt.annotate("T_onset", xy=(ecg.t['onset'], signals[ecg.t['onset']]),
+                         xytext=(ecg.t['onset'], signals[ecg.t['onset']]), fontsize=10)
+            plt.annotate("T_offset", xy=(ecg.t['offset'], signals[ecg.t['offset']]),
+                         xytext=(ecg.t['offset'], signals[ecg.t['offset']]), fontsize=10)
+            plt.plot(ecg.t['peak'], signals[ecg.t['peak']], marker='v', color='y')
+            plt.plot(ecg.t['onset'], signals[ecg.t['onset']], marker='>', color='y')
+            plt.plot(ecg.t['offset'], signals[ecg.t['offset']], marker='<', color='y')
+        plt.show()
         return sinus_rhythms
 
-    def analyze_context(self, user_id, context):
+    def interprete(self, context):
         ret, error_message = self.check_meas_validity(context)
         if ret:
             return None
@@ -369,7 +424,6 @@ class ECGInterpreter(ImageInterpreter):
         PR_segment /= len(sinus_rhythms)
         ST_segment /= len(sinus_rhythms)
         rhythm_irregularity = standardDeviation(RR_intervals, 0)
-        print(rhythm_irregularity)
         max_duration = np.mean(RR_intervals)
         max_height = R_height + S_height
         # handle the exception that the length of ECG measurements is too short
@@ -462,7 +516,7 @@ class ECGInterpreter(ImageInterpreter):
                 idx=i
 
         summary = {'score':score, 'irregularity':ab_classes[idx].irregularity,'related_diseases':ab_classes[idx].diseases, "probability":ab_classes[idx].probability}
-        return context
+        return summary
 
 
 class AbClass():
@@ -482,4 +536,8 @@ irregular_PRS = AbClass("Elevated or Depressed PR Segment",["Wolf-Parkinson-Whit
 ECG_IRREGULARITIES = [irregular_p, irregular_Q, irregular_R,irregular_T, irregular_rhythm, irregular_QRSC, irregular_STS, irregular_PRS]
 
 if __name__ == '__main__':
+    df=pd.read_csv('../ecg.csv')
+    df = df[["0","1"]]
+    signals = df.as_matrix()
+    pprint(ECGInterpreter().interprete(signals))
     pass
