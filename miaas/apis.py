@@ -24,8 +24,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-db = cloud_db.DbManager()
-
 @csrf_exempt
 def handle_session_mgt(request):
     """
@@ -33,7 +31,7 @@ def handle_session_mgt(request):
     :param request:
     :return:
     """
-    global db
+    db = cloud_db.DbManager()
     try:
         if request.method == 'POST':
             ### login ###
