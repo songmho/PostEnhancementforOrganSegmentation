@@ -1,4 +1,4 @@
-{% if not session or session.user_info.user_type != 'patient' %}
+{% if not user_session or user_session.user_type != 'patient' %}
 <script type="text/javascript">
 location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 </script>
