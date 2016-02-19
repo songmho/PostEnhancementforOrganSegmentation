@@ -33,10 +33,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def index_page(request):
-    context = {
-        'session': sctx.default_session,
-    }
-    return render(request, 'miaas/index.html', context)
+    context = _get_session_context(request)
+    # context = {
+    #     'session': sctx.default_session,
+    # }
+    return render(request, 'miaas/index.html', sctx.default_context)
 
 # login reference: https://www.fir3net.com/Web-Development/Django/django.html
 def signin_page(request):
@@ -46,16 +47,15 @@ def signup_page(request):
     return render(request, 'miaas/signup.html', None)
 
 def profile_page(request):
-    context = {}
-    if 'user' in request.session.keys():
-        context['user_session'] = request.session['user']
+    context = _get_session_context(request)
     logger.info(context)
-    return render(request, 'miaas/patient_profile.html', context)
+    return render(request, 'miaas/patient_profile.html', sctx.default_context)
 
 def archive_page(request):
     return render(request, 'miaas/archive.html', sctx.archive_context)
 
 def archive_upload_page(request):
+    context = _get_session_context(request)
     return render(request, 'miaas/medical_image_upload.html', sctx.default_context)
 
 def medical_image_page(request, img_num):
@@ -109,6 +109,13 @@ def physician_interpretation_search(request):
 
 def signout(request):
     pass
+
+
+def _get_session_context(request):
+    context = {}
+    if 'user' in request.session.keys():
+        context['user_session'] = request.session['user']
+    return context
 
 
 

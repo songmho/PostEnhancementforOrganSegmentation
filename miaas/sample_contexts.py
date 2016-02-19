@@ -1,34 +1,26 @@
 default_session = {
-    'session_id': 1234,
-    'session_start': '2016/01/27 14:06:33',
-    'user_info': {
-        'id': 'hanterkr',
-        'user_name': 'Hanter Jung',
-        'user_type': 'patient',
-        # 'user_type': 'physician',
-    }
+    'id': 'hanterkr',
+    'user_name': 'Hanter Jung',
+    'user_type': 'patient',
+    # 'user_type': 'physician',
 }
 
 default_physician_session = {
-    'session_id': 1234,
-    'session_start': '2016/01/27 14:06:33',
-    'user_info': {
-        'id': 'hanterkr',
-        'user_name': 'Hanter Jung',
-        'user_type': 'physician',
-    }
+    'id': 'hanterkr',
+    'user_name': 'Hanter Jung',
+    'user_type': 'physician',
 }
 
 default_context = {
-    'session': default_session,
+    'user_session': default_session,
 }
 
 default_physician_context = {
-    'session': default_physician_session,
+    'user_session': default_physician_session,
 }
 
 archive_context = {
-    'session': default_session,
+    'user_session': default_session,
     'archive': {
         'image_list': [{
                 'id': 4,
@@ -71,7 +63,7 @@ archive_context = {
     # 2: 'Candidate Waiting',
     # 3: 'Finding Physician',
 interpret_context = {
-    'session': default_session,
+    'user_session': default_session,
     'interpret': {
         'interpret_list': [{
                 'id': 5,
@@ -133,7 +125,7 @@ interpret_context = {
 }
 
 interpret_search_context = {
-    'session': default_physician_session,
+    'user_session': default_physician_session,
     'interpret_request': {
         'request_list': [
             {
@@ -158,7 +150,7 @@ interpret_search_context = {
 }
 
 interpret_physician_context = {
-    'session': default_physician_session,
+    'user_session': default_physician_session,
     'interpret_request': {
         'request_list': [
             {
