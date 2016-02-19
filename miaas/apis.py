@@ -83,15 +83,16 @@ def handle_user_mgt(request):
                 raise Exception(MSG_INVALID_PARAMS)
             action = request.GET.get('action')
             if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+
+            if action == 'getPatient':
                 user = db.retrieve_patient(user_id)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
+            elif action == 'getPhysician':
+                pass
             else:
-                # check user id is already existed.
-                if(request.GET.get('action') == 'checkId'):
-                    #user_id ...
-                    return JsonResponse(dict(constants.CODE_SUCCESS, **{'isValidId': True}))
-                else:
-                    raise Exception(MSG_INVALID_PARAMS)
+                #retrieve user_id ...
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'isValidId': True}))
 
         if(request.method) == 'POST':
             # signup (register)
@@ -112,6 +113,14 @@ def handle_patient_profile_mgt(request):
     db = cloud_db.DbManager()
     try:
         if(request.method) == 'GET':
+            # retrieve patient profile
+            logger.info(request.GET)
+            user_id = request.GET.get('userId')
+            if not user_id:
+                raise Exception(MSG_INVALID_PARAMS)
+            patient_profile = db.retrieve_patient_profile(user_id)
+            return JsonResponse(dict(constants.CODE_SUCCESS, **{'profile': patient_profile}))
+        else:
             pass
 
     except Exception as e:
