@@ -14,6 +14,7 @@
 <button id="login">login</button>
 <button id="logout">logout</button>
 <button id="signup">signup</button>
+<button id="idcheck">idcheck</button>
 
 </body>
 
@@ -52,6 +53,19 @@
                         password: "1234"
                     }
                 }),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+        $("#idcheck").click(function() {
+            $.ajax("api/user", {
+                method: 'GET',
+                data: {
+                    action: 'checkId',
+                    userId: 'min'
+                },
                 dataType: 'json',
                 success: function(res) {
                     console.log(JSON.stringify(res));

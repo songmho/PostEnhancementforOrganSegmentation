@@ -41,12 +41,38 @@ $(document).ready(function() {
     $('#col-signup-basic').on('submit', function(e) {
         e.preventDefault();
 
-        $('#col-signup-basic').hide();
-        if (usertype == 'patient') {
-            $('#col-signup-detail-patient').show();
-        } else if (usertype == 'physician') {
-            $('#col-signup-detail-physician').show();
-        }
+        //id check
+        $.ajax("api/user", {
+            method: 'GET',
+            data: {
+                action: 'checkId',
+                userId: $('#inputId').val()
+            },
+            dataType: 'json',
+            success: function (res) {
+                console.log(res);
+                if (res['code'] == 'SUCCESS') {
+                    if (res['isValidId']==true) {
+                        //pw check
+                        if($('#inputPw').val() != $('#inputPwConfirm').val()) {
+                            openSignupFailModal("Password Confirm is not same.");
+                            return;
+                        }
+
+                        $('#col-signup-basic').hide();
+                        if (usertype == 'patient') {
+                            $('#col-signup-detail-patient').show();
+                        } else if (usertype == 'physician') {
+                            $('#col-signup-detail-physician').show();
+                        }
+                    } else {
+                        openSignupFailModal("ID is already existed.")
+                    }
+                } else {
+                    openSignupFailModal("Checking ID is failed. Please try again.")
+                }
+            }
+        });
     });
 
     $('#btn-patient-prev').click(function() {
@@ -61,10 +87,54 @@ $(document).ready(function() {
 
     $('#col-signup-detail-patient').on('submit', function(e) {
         e.preventDefault();
-
+        signup('patient');
     });
     $('#col-signup-detail-physician').on('submit', function(e) {
         e.preventDefault();
-
+        signup('physician');
     });
 });
+
+function signup(usertype) {
+    var user = {};
+    user['userId'] = $('#inputId').val();
+    user['password'] = $('#inputPw').val();
+    user['name'] = $('#inputName').val();
+    user['mobile'] = $('#inputMobile').val();
+    user['email'] = $('#inputEmail').val();
+
+    if(usertype == 'patient') {
+        user['gender'] = $('#selectGender').val();
+        user['birthday'] = $('#inputBirthday').val();
+    } else if(usertype == 'physician') {
+        user['major'] = $('#selectField').val();
+        user['qualification'] = $('#fileQualificiation').val();
+    }
+
+    $.ajax("api/user", {
+        method: 'POST',
+        data: JSON.stringify({
+            user_type: usertype,
+            user: user
+        }),
+        dataType: 'json',
+        success: function(res) {
+            if(res['code'] == 'SUCCESS') {
+                location.href = indexPage;
+            } else {
+                openSignupFailModal(res['msg']);
+            }
+        }
+    });
+}
+
+function openSignupFailModal(msg, title) {
+    if (title!=undefined && title!=null && title!='') {
+        $('#signupFailedTitle').text(title)
+    }
+    if (msg==undefined || msg==null || msg=='') {
+        msg = 'Sign up failed. Please try again.'
+    }
+    $('#signupFailedModal .modal-body').text(msg);
+    $('#signupFailedModal').modal();
+}

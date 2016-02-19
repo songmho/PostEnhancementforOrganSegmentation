@@ -77,13 +77,22 @@ def handle_user_mgt(request):
     db = cloud_db.DbManager();
     try:
         if(request.method) == 'GET':
-            # get userinfo
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
-            data = json.loads(request.body.decode("utf-8"))
-            user_id = data['userId']
-            user = db.retrieve_patient(user_id)
-            return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
+            logger.info(request.GET)
+            user_id = request.GET.get('userId')
+            if not user_id:
+                raise Exception(MSG_INVALID_PARAMS)
+            action = request.GET.get('action')
+            if not action:
+                user = db.retrieve_patient(user_id)
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
+            else:
+                # check user id is already existed.
+                if(request.GET.get('action') == 'checkId'):
+                    #user_id ...
+                    return JsonResponse(dict(constants.CODE_SUCCESS, **{'isValidId': True}))
+                else:
+                    raise Exception(MSG_INVALID_PARAMS)
+
         if(request.method) == 'POST':
             # signup (register)
             if len(request.body) == 0:
@@ -100,11 +109,10 @@ def handle_user_mgt(request):
 
 @csrf_exempt
 def handle_patient_profile_mgt(request):
-    db = cloud_db.DbManager();
+    db = cloud_db.DbManager()
     try:
         if(request.method) == 'GET':
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
+            pass
 
     except Exception as e:
         logger.exception(e)
@@ -117,8 +125,7 @@ def handle_physician_profile_mgt(request):
     db = cloud_db.DbManager();
     try:
         if(request.method) == 'GET':
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
+            pass
 
     except Exception as e:
         logger.exception(e)
@@ -131,8 +138,7 @@ def handle_medical_image_mgt(request):
     db = cloud_db.DbManager();
     try:
         if(request.method) == 'GET':
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
+            pass
 
     except Exception as e:
         logger.exception(e)
@@ -145,8 +151,7 @@ def handle_interpretation_mgt(request):
     db = cloud_db.DbManager();
     try:
         if(request.method) == 'GET':
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
+            pass
 
     except Exception as e:
         logger.exception(e)
@@ -159,8 +164,7 @@ def handle_analytics_mgt(request):
     db = cloud_db.DbManager();
     try:
         if(request.method) == 'GET':
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
+            pass
 
     except Exception as e:
         logger.exception(e)
@@ -173,8 +177,7 @@ def handle_payment_mgt(request):
     db = cloud_db.DbManager();
     try:
         if(request.method) == 'GET':
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
+            pass
 
     except Exception as e:
         logger.exception(e)
