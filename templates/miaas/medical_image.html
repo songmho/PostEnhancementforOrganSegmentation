@@ -74,8 +74,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-sm-3 col-md-2 control-label" for="selectTaken" >Taken From</label>
                         <div class="col-sm-9 col-md-4">
                             <select class="form-control" id="selectTaken" name="taken" required disabled>
-                                <option>Hospital</option>
-                                <option>Health Center</option>
+                                <option>Medical Clinic</option>
                                 <option>Home</option>
                             </select>
                         </div>
@@ -90,9 +89,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputPlace" >Place</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="inputClinic" >Clinic Name</label>
                         <div class="col-sm-9 col-md-4">
-                            <input type="text" id="inputPlace" name="place" class="form-control"
+                            <input type="text" id="inputClinic" name="clinic" class="form-control"
                                    placeholder="Place" required readonly value="Top Hospital, Incheon">
                         </div>
                     </div>
@@ -102,14 +101,6 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <div class="col-sm-9 col-md-10">
                             <textarea type="textarea" id="taDescription" name="description" class="form-control"
                                       placeholder="Description" rows="5" readonly>The physician who examined me said I needed to get a more complete medical checkup. His opinion was that I've already had malignant pleural effusion. But I doubt because I'm healthy until examination in the year before last.</textarea>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="taComment" >Comment</label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="taComment" name="comment" class="form-control"
-                                      placeholder="Comment" rows="3" readonly>This image is the CT scans for the first time.</textarea>
                         </div>
                     </div>
 

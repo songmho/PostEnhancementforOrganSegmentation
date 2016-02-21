@@ -18,7 +18,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     <section class="section section-default">
         <div class="row">
             <div class="col-xs-12 col-title">
-                <h2 class="text-primary" id="titleSubject">Analytics Result for "{{ subject }}"</h2>
+{#                <h2 class="text-primary" id="titleSubject">Analytics Result for "{{ subject }}"</h2>#}
+                <h2 class="text-primary" id="titleSubject">Interpretation Result for "Chest X-ray taken 01/24"</h2>
             </div>
 
         {% if status == '0' or status == 0 %} {# Interpreted #}
@@ -186,39 +187,50 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             {% else %}
             <div class="col-xs-12 col-form">
                 <div class="form-container form-boxed form-horizontal row">
-                    <div class="col-xs-12 form-title">
-                        <h3 class="text-center">Physician's Interpretation</h3>
-                    </div>
+{#                    <div class="col-xs-12 form-title">#}
+{#                        <h3 class="text-center">Physician's Interpretation</h3>#}
+{#                    </div>#}
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician ID</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="itp1-id"><a href="#">drjames</a></span>
+                            <span id="itp1-id"><a href="#">jinny555</a></span>
                         </div>
 
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="itp1-name" >James Park</span>
+                            <span id="itp1-name" >Ji Eun Oh</span>
                         </div>
                     </div>
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp1-level" >Level 3 - With available images and patient interview & symptom</span>
+                            <span id="itp1-level" >Level 2 - Only with available images, Fee-based</span>
                         </div>
                     </div>
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp1-summary" >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla egestas libero purus, ac suscipit augue porta a. Vivamus maximus arcu.</span>
+                            <span id="itp1-summary" >You would be expected to know that intravenous contrast material is nephrotoxic and so you should ensure that renal function is normal.</span>
                         </div>
                     </div>
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
                             <div id="itp1-interpretation" >
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sagittis lacus eget tincidunt vehicula. Nulla ullamcorper porttitor quam ut porta. Mauris posuere mauris non tortor laoreet commodo. Fusce lacinia euismod diam, vel viverra velit ornare non. Interdum et malesuada fames ac ante ipsum primis in faucibus. Curabitur felis nulla, ultrices et fringilla eu, scelerisque ac urna. Donec vitae pretium sem. Donec id arcu tempor, hendrerit justo nec, dapibus lorem. Nam nunc purus, sollicitudin nec dui vitae, convallis auctor quam. Donec sit amet condimentum lacus.</p>
-                                <p>Sed vulputate mi ut justo varius, vitae varius massa lacinia. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Proin bibendum turpis nec quam placerat porta. Donec nisl dui, viverra vitae varius a, consequat quis urna. Nulla eu volutpat est. Quisque dapibus dui odio, nec laoreet arcu convallis a. Phasellus vestibulum nunc at augue tristique, nec mollis mauris tempor. In quis ante euismod, varius sapien vitae, maximus turpis. Cras facilisis enim vel tellus viverra, quis finibus sapien suscipit.</p>
-                                <p>In vehicula odio id fringilla dignissim. Vestibulum sed ex at nunc faucibus venenatis eu et tellus. Proin gravida sem non nulla tincidunt pulvinar. Cras porttitor maximus enim at congue. Nam ornare est ac urna tristique fermentum. Pellentesque ultrices nulla id sapien sagittis, id gravida mi tristique. Maecenas aliquet rutrum sem vitae auctor. Sed felis tortor, euismod pulvinar convallis in, mattis quis arcu. Maecenas sed massa eu tellus accumsan pulvinar id pharetra arcu. Phasellus blandit nec urna ut eleifend. Suspendisse tempus non risus sed molestie. Etiam molestie ante sed auctor finibus. Pellentesque pretium mollis augue eget semper. Quisque risus odio, tincidunt vel ligula sit amet, pellentesque sagittis nulla. Cras odio arcu, suscipit vel ligula eget, fringilla rhoncus ipsum.</p>
+                                <p id="itp1-findings" >I found some irregular part in the image;
+                                    1. Very large ring-like shadow forming the appearance of a cavity seen in the right lung upper/middle zones<br/>
+                                    2. Increased density of right hilar structures</br>
+                                    3. Old, healed fractures of the left clavicle and ribs</p>
+                                <p>You would be expected to know that intravenous contrast material is nephrotoxic and so you should ensure that renal function is normal.<br/>
+                                        It is also necessary to check that there is no history of previous allergic reaction to intravenous contrast.</p>
+                                <p>A differential diagnosis of cavitating lung lesions...<br/>
+                                        Infection - including Staphylococcus aureus, mycobacterium species, Klebsiella pneumoniae, hydatid cyst, and fungal disease such as aspergillosis<br/>
+                                        Malignancy - primary or secondary (squamous cell carcinoma often cavitates - as in this case), and lymphoma<br/>
+                                        Other causes of cavitating lung lesions include vasculitis, rheumatoid nodules, congenital cysts, septic emboli, cystic bronchiectasis<br/></p>
+                                <p>You should test other medical examination.<br/>
+                                        If there are lymph nodes which are clinically palpable, or superficial lymph nodes seen on the CT scan, then ultrasound-guided sampling may be an option.<br/>
+                                        Sampling of the lung lesion using percutaneous imaging-guided techniques would carry high risk of complications, such as pneumothorax.<br/>
+                                        The liver could be more easily biopsied under ultrasound guidance.<br/></p>
                             </div>
                         </div>
                     </div>
