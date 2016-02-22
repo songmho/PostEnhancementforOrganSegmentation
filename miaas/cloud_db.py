@@ -28,10 +28,9 @@ class DbManager():
                 phone_number = patient['phone_number']
                 email = patient['email']
                 join_date = patient['join_date']
-                deactivate_date = patient['deactivate_date']
                 user_type = patient['user_type']
-                db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, deactivate_date, user_type) values (%s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, deactivate_date, user_type))
+                db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, user_type) values (%s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, user_type))
                 self.connector.commit()
                 # Add patient information to 'user' table
                 gender = patient['gender']
@@ -118,10 +117,9 @@ class DbManager():
                 phone_number = physician['phone_number']
                 email = physician['email']
                 join_date = physician['join_date']
-                deactivate_date = physician['deactivate_date']
                 user_type = physician['user_type']
-                db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, deactivate_date, user_type) values (%s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, deactivate_date, user_type))
+                db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, user_type) values (%s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, user_type))
                 self.connector.commit()
                 # Add physician information to 'physician' table
                 license_number = physician['license_number']
@@ -201,19 +199,18 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 # Add a medical image information to 'medical_image' table
-                patient_id = medical_image['patient_id']
                 subject = medical_image['subject']
-                size = medical_image['size']
-                type = medical_image['type']
-                hospital = medical_image['hospital']
-                asmt_date = medical_image['asmt_date']
-                upload_date = medical_image['upload_date']
-                exam_physician = medical_image['exam_physician']
+                image_type = medical_image['image_type']
+                taken_from = medical_image['taken_from']
+                physician = medical_image['physician']
                 place = medical_image['place']
                 description = medical_image['description']
                 comment = medical_image['comment']
-                db_query = "INSERT INTO medical_image (patient_id, subject, size, type, hospital, asmt_date, upload_date, exam_physician, place, description, comment) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query, (patient_id, subject, size, type, hospital, asmt_date, upload_date, exam_physician, place, description, comment))
+                image_dir = medical_image['image_dir']
+                user_id = medical_image['user_id']
+                size = medical_image['size']
+                db_query = "INSERT INTO medical_image (subject, image_type, taken_from, physician, place, description, comment, image_dir, user_id, size) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (subject, image_type, taken_from, physician, place, description, comment, image_dir, user_id, size))
                 self.connector.commit()
                 row_id = cursor.lastrowid
                 if row_id > 0:
@@ -325,20 +322,20 @@ if __name__ == '__main__':
     # }
     # db.add_physician(physician)
 
-    # image = {
-    #     'patient_id': 9,
-    #     'subject': 'Heart',
-    #     'size': 20,
-    #     'type': 'ECG',
-    #     'hospital': 'Seoul Hospital',
-    #     'asmt_date': 1450469913000,
-    #     'upload_date': 1480969913000,
-    #     'exam_physician': 'Dr.Choi',
-    #     'place': 'Seoul Hospital',
-    #     'description': 'None',
-    #     'comment': 'None'
-    # }
-    # db.add_medical_image(image)
+    image = {
+        'user_id': 'hanterkr',
+        'subject': 'Heart Image',
+        'image_type': 'ECG',
+        'date': 1480969913000,
+        'taken_from': 1450469913000,
+        'physician': 'Dr.Choi',
+        'place': 'Seoul Hospital',
+        'description': 'None',
+        'comment': 'None',
+        'image_dir': '/db/db/first_image.png',
+        'size': 20
+    }
+    db.add_medical_image(image)
 
     # intpr = {
     #     'physician_id': 3,
