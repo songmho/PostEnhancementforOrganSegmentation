@@ -46,12 +46,12 @@ class DbManager():
             finally:
                 return if_inserted
 
-    def retrieve_patient(self, patient_id):
+    def retrieve_patient(self, patient_id, password):
         user = {}
-        db_query = "SELECT u.password, u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
+        db_query = "SELECT u.password, u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, (patient_id))
+                cursor.execute(db_query, (patient_id, password))
                 self.connector.commit()
                 for row in cursor:
                     user['user_id'] = patient_id
@@ -138,12 +138,12 @@ class DbManager():
             finally:
                 return if_inserted
 
-    def retrieve_physician(self, physician_id):
+    def retrieve_physician(self, physician_id, password):
         user = {}
-        db_query = "SELECT u.password, u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
+        db_query = "SELECT u.password, u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, (physician_id))
+                cursor.execute(db_query, (physician_id, password))
                 self.connector.commit()
                 for row in cursor:
                     user['user_id'] = physician_id
@@ -299,22 +299,22 @@ class DbManager():
 
 if __name__ == '__main__':
     db = DbManager()
-    patient = {
-        'user_id': 'hhh',
-        'password': 1234,
-        'name': 'Han Ter Jung',
-        'phone_number': '010-9363-8209',
-        'email': 'hanterkr@gmail.com',
-        'join_date': 1450165348000,
-        'deactivate_date': 0,
-        'user_type': 'Patient',
-        'gender': 'Male',
-        'birthday': 643334400000
-    }
-    print(db.add_patient(patient))
+    # patient = {
+    #     'user_id': 'hhh',
+    #     'password': 1234,
+    #     'name': 'Han Ter Jung',
+    #     'phone_number': '010-9363-8209',
+    #     'email': 'hanterkr@gmail.com',
+    #     'join_date': 1450165348000,
+    #     'deactivate_date': 0,
+    #     'user_type': 'Patient',
+    #     'gender': 'Male',
+    #     'birthday': 643334400000
+    # }
+    # print(db.add_patient(patient))
 
     # physician = {
-    #     'user_id': 'minjookr',
+    #     'user_id': 'minjookr1234',
     #     'password': 1234,
     #     'name': 'Min Joo Choi',
     #     'phone_number': '010-1568-6585',
@@ -326,7 +326,7 @@ if __name__ == '__main__':
     #     'major': 'Heart Specialist',
     #     'certificate_dir': '/db/dd/djkel.jpg',
     # }
-    # db.add_physician(physician)
+    # print(db.add_physician(physician))
 
     # image = {
     #     'user_id': 'hanterkr',
