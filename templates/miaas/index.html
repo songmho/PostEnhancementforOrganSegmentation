@@ -1,6 +1,6 @@
-{% if not session %}
+{% if not user_session or user_session.user_type != 'patient' %}
 <script type="text/javascript">
-location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
+location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
 </script>
 {% endif %}
 
@@ -12,9 +12,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 <!-- custom css -->
 
 
-{% if session.user_info.user_type == 'patient' %}
+{% if user_session.user_type == 'patient' %}
     {% include 'miaas/template_nav_patient.html' %}
-{% elif session.user_info.user_type == 'physician' %}
+{% elif user_session.user_type == 'physician' %}
     {% include 'miaas/template_nav_physician.html' %}
 {% else %}
     <script type="text/javascript">

@@ -74,28 +74,122 @@ def handle_user_mgt(request):
     :param request: The body of request is a JSON object of a user.
     :return:
     """
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            logger.info(request.GET)
+            user_id = request.GET.get('userId')
+            if not user_id:
+                raise Exception(MSG_INVALID_PARAMS)
+            action = request.GET.get('action')
+            if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+
+            if action == 'getPatient':
+                user = db.retrieve_patient(user_id)
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
+            elif action == 'getPhysician':
+                pass
+            else:
+                #retrieve user_id ...
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'isValidId': True}))
+
+        if(request.method) == 'POST':
+            # signup (register)
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+            data = json.loads(request.body.decode("utf-8"))
+            logger.info(data)
+            return JsonResponse(constants.CODE_SUCCESS)
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_patient_profile_mgt(request):
+    db = cloud_db.DbManager()
+    try:
+        if(request.method) == 'GET':
+            # retrieve patient profile
+            logger.info(request.GET)
+            user_id = request.GET.get('userId')
+            if not user_id:
+                raise Exception(MSG_INVALID_PARAMS)
+            patient_profile = db.retrieve_patient_profile(user_id)
+            return JsonResponse(dict(constants.CODE_SUCCESS, **{'profile': patient_profile}))
+        else:
+            pass
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_physician_profile_mgt(request):
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            pass
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_medical_image_mgt(request):
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            pass
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_interpretation_mgt(request):
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            pass
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_analytics_mgt(request):
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            pass
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_payment_mgt(request):
+    db = cloud_db.DbManager();
+    try:
+        if(request.method) == 'GET':
+            pass
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))

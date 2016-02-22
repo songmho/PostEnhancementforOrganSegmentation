@@ -168,7 +168,8 @@ body {
         position: relative;
     }
     .form-container.form-boxed .col-md-overlay {
-        top: 24px;
+        /*top: 24px;*/
+        top: 15px;
     }
     .form-container.form-boxed .col-md-overlay.col-md-overlay-right {
         left: inherit;
