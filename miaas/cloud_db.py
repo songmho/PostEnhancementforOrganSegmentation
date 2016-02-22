@@ -38,8 +38,8 @@ class DbManager():
                 db_query = "INSERT INTO patient (user_id, gender, birthday) VALUES (%s, %s, %s)"
                 cursor.execute(db_query, (user_id, gender, birthday))
                 self.connector.commit()
-                row_id = cursor.lastrowid
-                if row_id > 0:
+                row_countd = cursor.rowcount
+                if row_countd > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -80,8 +80,8 @@ class DbManager():
                 db_query = "INSERT INTO patient_profile (user_id, type, value, timestamp) VALUES (%s, %s, %s, %s)"
                 cursor.execute(db_query, (user_id, type, value, timestamp))
                 self.connector.commit()
-                row_id = cursor.lastrowid
-                if row_id > 0:
+                row_countd = cursor.rowcount
+                if row_countd > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -130,8 +130,8 @@ class DbManager():
                 db_query = "INSERT INTO physician (user_id, license_number, medicine_field, certificate_dir) values (%s, %s, %s, %s)"
                 cursor.execute(db_query, (user_id, license_number, medicine_field, certificate_dir))
                 self.connector.commit()
-                row_id = cursor.lastrowid
-                if row_id > 0:
+                row_countd = cursor.rowcount
+                if row_countd > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -172,8 +172,8 @@ class DbManager():
                 db_query = "INSERT INTO physician_profile (user_id, type, value) VALUES (%s, %s, %s)"
                 cursor.execute(db_query, (user_id, type, value))
                 self.connector.commit()
-                row_id = cursor.lastrowid
-                if row_id > 0:
+                row_countd = cursor.rowcount
+                if row_countd > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -216,8 +216,8 @@ class DbManager():
                 db_query = "INSERT INTO medical_image (subject, image_type, taken_from, physician, place, description, comment, image_dir, user_id, size) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (subject, image_type, taken_from, physician, place, description, comment, image_dir, user_id, size))
                 self.connector.commit()
-                row_id = cursor.lastrowid
-                if row_id > 0:
+                row_countd = cursor.rowcount
+                if row_countd > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -266,8 +266,8 @@ class DbManager():
                 db_query = "INSERT INTO interpretation (physician_id, image_id, level, fee, date, summary, status) VALUES (%s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (physician_id, image_id, level, fee, date, summary, status))
                 self.connector.commit()
-                row_id = cursor.lastrowid
-                if row_id > 0:
+                row_countd = cursor.rowcount
+                if row_countd > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -299,19 +299,19 @@ class DbManager():
 
 if __name__ == '__main__':
     db = DbManager()
-    # patient = {
-    #     'user_id': 'hanterkr',
-    #     'password': 1234,
-    #     'name': 'Han Ter Jung',
-    #     'phone_number': '010-9363-8209',
-    #     'email': 'hanterkr@gmail.com',
-    #     'join_date': 1450165348000,
-    #     'deactivate_date': 0,
-    #     'user_type': 'Patient',
-    #     'gender': 'Male',
-    #     'birthday': 643334400000
-    # }
-    # db.add_patient(patient)
+    patient = {
+        'user_id': 'hhh',
+        'password': 1234,
+        'name': 'Han Ter Jung',
+        'phone_number': '010-9363-8209',
+        'email': 'hanterkr@gmail.com',
+        'join_date': 1450165348000,
+        'deactivate_date': 0,
+        'user_type': 'Patient',
+        'gender': 'Male',
+        'birthday': 643334400000
+    }
+    print(db.add_patient(patient))
 
     # physician = {
     #     'user_id': 'minjookr',
@@ -328,20 +328,20 @@ if __name__ == '__main__':
     # }
     # db.add_physician(physician)
 
-    image = {
-        'user_id': 'hanterkr',
-        'subject': 'Heart Image',
-        'image_type': 'ECG',
-        'date': 1480969913000,
-        'taken_from': 1450469913000,
-        'physician': 'Dr.Choi',
-        'place': 'Seoul Hospital',
-        'description': 'None',
-        'comment': 'None',
-        'image_dir': '/db/db/first_image.png',
-        'size': 20
-    }
-    db.add_medical_image(image)
+    # image = {
+    #     'user_id': 'hanterkr',
+    #     'subject': 'Heart Image',
+    #     'image_type': 'ECG',
+    #     'date': 1480969913000,
+    #     'taken_from': 1450469913000,
+    #     'physician': 'Dr.Choi',
+    #     'place': 'Seoul Hospital',
+    #     'description': 'None',
+    #     'comment': 'None',
+    #     'image_dir': '/db/db/first_image.png',
+    #     'size': 20
+    # }
+    # db.add_medical_image(image)
 
     # intpr = {
     #     'physician_id': 3,
