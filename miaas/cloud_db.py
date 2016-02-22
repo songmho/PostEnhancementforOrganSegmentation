@@ -43,7 +43,8 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
-        return if_inserted
+            finally:
+                return if_inserted
 
     def retrieve_patient(self, patient_id):
         user = {}
@@ -84,7 +85,8 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
-        return if_inserted
+            finally:
+                return if_inserted
 
     def retrieve_patient_profile(self, patient_id, time_from=None):
         profiles = []
@@ -133,7 +135,8 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
-        return if_inserted
+            finally:
+                return if_inserted
 
     def retrieve_physician(self, physician_id):
         user = {}
@@ -174,7 +177,8 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
-        return if_inserted
+            finally:
+                return if_inserted
 
     def retrieve_physician_profile(self, physician_id):
         profiles = []
@@ -217,7 +221,8 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
-        return if_inserted
+            finally:
+                return if_inserted
 
     def retrieve_medical_image(self, patient_id, time_from=None):
         images = []
@@ -266,7 +271,8 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
-        return if_inserted
+            finally:
+                return if_inserted
 
     def retrieve_intpr(self, image_id, time_from = None):
         intprs = []
