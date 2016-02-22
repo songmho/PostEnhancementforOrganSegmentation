@@ -5,7 +5,7 @@ import pymysql
 
 class DbManager():
     def __init__(self):
-        host = 'ec2-52-79-101-24.ap-northeast-2.compute.amazonaws.com'
+        host = 'rainbowdb.czg2t6iatylv.us-west-2.rds.amazonaws.com'
         user = 'root'
         port = 3306
         password = 'lovejesus'
