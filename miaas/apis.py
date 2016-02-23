@@ -9,13 +9,14 @@ from . import constants, model, cloud_db
 MSG_DB_FAILED = "Failed to handle DB requests."
 MSG_NO_USER_LOGGEDIN = "No user logged in."
 MSG_ALREADY_LOGGEDIN = "Already logged in."
-MSG_SIGNUP_FAILED = "Sign up Failed"
+MSG_SIGNUP_FAILED = "Sign up failed."
 MSG_INVALID_IDPW = "Invalid ID and/or PW."
 MSG_INVALID_PARAMS = "Invalid parameters."
 MSG_NODATA = "No data."
 MSG_NO_EMAIL = "No email entered."
 MSG_NO_USER_FOUND = "No user found."
 MSG_UNKNOWN_ERROR = "Unknown error."
+MSG_PROFILE_FAILED = "Profile update failed."
 
 logging.basicConfig(
     format="[%(name)s][%(asctime)s] %(message)s",
@@ -87,7 +88,7 @@ def handle_user_mgt(request):
     db = cloud_db.DbManager()
     try:
         if(request.method) == 'GET':
-            logger.info(request.GET)
+            # logger.info(request.GET)
             user_id = request.GET.get('user_id')
             if not user_id:
                 raise Exception(MSG_INVALID_PARAMS)
@@ -148,13 +149,26 @@ def handle_patient_profile_mgt(request):
         if(request.method) == 'GET':
             # retrieve patient profile
             logger.info(request.GET)
-            user_id = request.GET.get('userId')
+            user_id = request.GET.get('user_id')
             if not user_id:
                 raise Exception(MSG_INVALID_PARAMS)
             patient_profile = db.retrieve_patient_profile(user_id)
             return JsonResponse(dict(constants.CODE_SUCCESS, **{'profile': patient_profile}))
-        else:
-            pass
+
+        elif (request.method) == 'POST':
+            # update patient profile
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+            data = json.loads(request.body.decode("utf-8"))
+            if not data.get('user_id') or not data.get('profiles') or not data.get('timestamp'):
+                raise Exception(MSG_INVALID_PARAMS)
+            user_id = data['user_id']
+            timestamp = data['timestamp']
+            for key, value in data['profiles'].items():
+                if not db.add_patient_profile(user_id, key, value, timestamp):
+                    raise Exception(MSG_PROFILE_FAILED)
+                # logger.info('userid=%s key=%s value=%s' % (user_id, key, value))
+            return JsonResponse(constants.CODE_SUCCESS)
 
     except Exception as e:
         logger.exception(e)
@@ -164,10 +178,30 @@ def handle_patient_profile_mgt(request):
 
 @csrf_exempt
 def handle_physician_profile_mgt(request):
-    db = cloud_db.DbManager();
+    db = cloud_db.DbManager()
     try:
         if(request.method) == 'GET':
-            pass
+            # retrieve physician profile
+            logger.info(request.GET)
+            user_id = request.GET.get('user_id')
+            if not user_id:
+                raise Exception(MSG_INVALID_PARAMS)
+            physician_profile = db.retrieve_physician_profile(user_id)
+            return JsonResponse(dict(constants.CODE_SUCCESS, **{'profile': physician_profile}))
+
+        elif (request.method) == 'POST':
+            # update physician profile
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+            data = json.loads(request.body.decode("utf-8"))
+            if not data.get('user_id') or not data.get('profiles'):
+                raise Exception(MSG_INVALID_PARAMS)
+            user_id = data['user_id']
+            for key, value in data['profiles'].items():
+                if not db.add_physician_profile(user_id, key, value):
+                    raise Exception(MSG_PROFILE_FAILED)
+                # logger.info('userid=%s key=%s value=%s' % (user_id, key, value))
+            return JsonResponse(constants.CODE_SUCCESS)
 
     except Exception as e:
         logger.exception(e)

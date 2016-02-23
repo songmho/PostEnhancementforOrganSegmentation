@@ -1,4 +1,8 @@
-{% if session and session.user_info.user_type == 'physician' %}
+{% if not user_session or user_session.user_type != 'physician' %}
+<script type="text/javascript">
+location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
+</script>
+{% endif %}
 
 {% load staticfiles %}
 {% load my_filters %}

@@ -18,12 +18,16 @@
 <button id="idcheck">idcheck</button>
 <button id="getPatientInfo">getPatientInfo</button>
 <button id="getPatientProfile">getPatientProfile</button>
+<button id="addPatientProfile">addPatientProfile</button>
+<button id="getPhysicianInfo">getPhysicianInfo</button>
+<button id="getPhysicianProfile">getPhysicianProfile</button>
+<button id="addPhysicianProfile">addPhysicianProfile</button>
 
 </body>
 
 <script src="{% static "lib/jquery/jquery-2.2.0.min.js" %}"></script>
 <script type="text/javascript">
-    $(function () {
+    $(document).ready(function () {
         $("#login").click(function() {
             $.ajax("api/sessions", {
                 method: 'POST',
@@ -96,7 +100,7 @@
                 method: 'GET',
                 data: {
                     action: 'checkId',
-                    userId: 'min'
+                    user_id: 'min'
                 },
                 dataType: 'json',
                 success: function(res) {
@@ -109,7 +113,7 @@
                 method: 'GET',
                 data: {
                     action: 'getPatient',
-                    userId: 'min'
+                    user_id: 'hanter'
                 },
                 dataType: 'json',
                 success: function(res) {
@@ -121,8 +125,68 @@
             $.ajax("api/patient_profile", {
                 method: 'GET',
                 data: {
-                    userId: 'min'
+                    user_id: 'hanter'
                 },
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+        $("#addPatientProfile").click(function() {
+            $.ajax("api/patient_profile", {
+                method: 'POST',
+                data: JSON.stringify({
+                    user_id: 'hanter',
+                    profiles: {
+                        height: '168 Centimeters',
+                        drinkingCapacity: 5,
+                        diseaseHistory: 'Diabetes'
+                    },
+                    timestamp: new Date().getTime()
+                }),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+        $("#getPhysicianInfo").click(function() {
+            $.ajax("api/user", {
+                method: 'GET',
+                data: {
+                    action: 'getPhysician',
+                    user_id: 'drhanter'
+                },
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+        $("#getPhysicianProfile").click(function() {
+            $.ajax("api/physician_profile", {
+                method: 'GET',
+                data: {
+                    user_id: 'drhanter'
+                },
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+        $("#addPhysicianProfile").click(function() {
+            $.ajax("api/physician_profile", {
+                method: 'POST',
+                data: JSON.stringify({
+                    user_id: 'drhanter',
+                    profiles: {
+                        aboutMe: 'I want to diagnose your diseases!',
+                        aboutSpecialism: 'I am very special doctor.'
+                    },
+                    timestamp: new Date().getTime()
+                }),
                 dataType: 'json',
                 success: function(res) {
                     console.log(JSON.stringify(res));

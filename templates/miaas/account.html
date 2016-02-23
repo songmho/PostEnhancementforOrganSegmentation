@@ -1,0 +1,38 @@
+{% if not user_session %}
+<script type="text/javascript">
+location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
+</script>
+{% endif %}
+
+{% load staticfiles %}
+{% load my_filters %}
+
+{% include 'miaas/template_header.html' %}
+
+<!-- custom css -->
+
+
+{% if user_session.user_type == 'patient' %}
+    {% include 'miaas/template_nav_patient.html' %}
+{% elif user_session.user_type == 'physician' %}
+    {% include 'miaas/template_nav_physician.html' %}
+{% else %}
+    <script type="text/javascript">
+        //logout?
+        location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
+    </script>
+{% endif %}
+
+<div class="container">
+    <section class="section section-signup">
+
+    </section>
+</div>
+
+{% include 'miaas/template_footer.html' %}
+
+<!-- custom javascript -->
+
+
+</body>
+</html>
