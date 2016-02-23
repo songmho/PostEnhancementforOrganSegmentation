@@ -1,0 +1,196 @@
+{% if not user_session %}
+<script type="text/javascript">
+location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
+</script>
+{% endif %}
+
+{% load staticfiles %}
+{% load my_filters %}
+
+{% include 'miaas/template_header.html' %}
+
+<!-- custom css -->
+
+
+{% if user_session.user_type == 'patient' %}
+    {% include 'miaas/template_nav_patient.html' %}
+{% elif user_session.user_type == 'physician' %}
+    {% include 'miaas/template_nav_physician.html' %}
+{% else %}
+    <script type="text/javascript">
+        //logout?
+        location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
+    </script>
+{% endif %}
+
+<div class="container">
+    <section class="section section-signup">
+        <div class="row">
+            <div class="col-xs-12 col-title">
+                <h2 class="text-primary">Account Information</h2>
+            </div>
+            <form id="accountForm" class="col-xs-12 col-form">
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputId" >ID</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <input type="text" id="inputId" name="id" class="form-control" readonly
+                                value="{{ user_session.user_id }}"/>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputName" >Name</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <input type="text" id="inputName" name="name" class="form-control" required
+                                value="{{ user_session.name }}" />
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPw" >Password</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <input type="password" id="inputPw" name="pw" class="form-control" required
+                                placeholder="Input Password" />
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPwConfirm" >Password Confirm</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <input type="password" id="inputPwConfirm" name="confirm" class="form-control" required
+                                placeholder="Input Password Confirm" />
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPw" >Phone Number</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <input type="tel" id="inputMobile" name="mobile" class="form-control" required
+                                value="{{ user_session.phone_number }}" />
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPw" >Email Address</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <input type="email" id="inputEmail" name="email" class="form-control" required
+                                value="{{ user_session.email }}" />
+                        </div>
+                    </div>
+
+                {% if user_session.user_type == 'patient' %}
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="selectGender" >Gender</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <select class="form-control" id="selectGender" name="gender" required>
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPw" >Birthday</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <input type="date" id="inputBirthday" name="birthday" class="form-control" required />
+                        </div>
+                    </div>
+
+                {% elif user_session.user_type == 'physician' %}
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="selectField" >Field of Medicine</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <select class="form-control" id="selectField" name="field" required >
+                                <option>Heart Specialist</option>
+                                <option>Brain Specialist</option>
+                                <option>Thoracic Specialist</option>
+                                <option>Orthopedic Specialist</option>
+                                <option>Pediatrics</option>
+                                <option>Psychiatry</option>
+                                <option>Internal Medicine</option>
+                                <option>Family Practice</option>
+                                <option>Emergency Medicine</option>
+                                <option>Interventional Cardiology</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputLicence" >Licence ID</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <input type="text" id="inputLicence" name="licence" class="form-control" required
+                                value="{{ user_session.license_number }}" />
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="fileCertification" >Certification</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <input type="file" id="fileCertification" name="certification" class="form-control"
+                                value="{{ user_session.certificate_dir }}" />
+                        </div>
+                    </div>
+                {% endif %}
+
+                </div>
+
+                <div class="form-btns-container row">
+                    <div id="btnFormReset" class="col-xs-6 col-sm-4 col-md-2 col-md-offset-4 form-button">
+                        <button class="btn btn-lg btn-primary btn-block" type="button">Reset</button>
+                    </div>
+                    <div id="btnFormUpdate" class="col-xs-12 col-sm-4 col-md-2 form-button">
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="updateFailedModal" tabindex="-1" role="dialog" aria-labelledby="updateFailedTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="updateFailedTitle">Update Failed</h4>
+        </div>
+        <div class="modal-body">
+        Signup failed
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="updatedModal" tabindex="-1" role="dialog" aria-labelledby="updatedTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="updatedTitle">Update Success</h4>
+        </div>
+        <div class="modal-body">
+        Account information is successfully updated.
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+
+{% include 'miaas/template_footer.html' %}
+
+<!-- custom javascript -->
+<script type="text/javascript">
+    var user = JSON.parse("{{ user_session | jsonstr }}");
+</script>
+<script src="{% static 'miass/js/account.js' %}"></script>
+
+</body>
+</html>

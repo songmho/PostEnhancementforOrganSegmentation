@@ -34,7 +34,7 @@
                         <span>Hi, Dr. {{ user_session.name }} </span></span><span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Account Setting</a></li>
+                        <li><a href="{% url 'miaas:account' %}">Account Setting</a></li>
                         <li><a href="#" onclick="signout()">Logout</a></li>
                     </ul>
                 </li>
