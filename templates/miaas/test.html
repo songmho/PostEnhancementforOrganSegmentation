@@ -16,9 +16,11 @@
 <button id="signup">signup</button>
 <button id="signup2">signup2</button>
 <button id="idcheck">idcheck</button>
+<button id="updatePatientInfo">updatePatientInfo</button>
 <button id="getPatientInfo">getPatientInfo</button>
 <button id="getPatientProfile">getPatientProfile</button>
 <button id="addPatientProfile">addPatientProfile</button>
+<button id="updatePhysicianInfo">updatePhysicianInfo</button>
 <button id="getPhysicianInfo">getPhysicianInfo</button>
 <button id="getPhysicianProfile">getPhysicianProfile</button>
 <button id="addPhysicianProfile">addPhysicianProfile</button>
@@ -54,9 +56,10 @@
             $.ajax("api/user", {
                 method: 'POST',
                 data: JSON.stringify({
+                    action: 'signup',
                     user: {
                         user_type: 'patient',
-                        user_id: "minm",
+                        user_id: "minm2",
                         password: "1234",
                         name: 'Min Han',
                         phone_number: '010-1234-5678',
@@ -76,6 +79,7 @@
             $.ajax("api/user", {
                 method: 'POST',
                 data: JSON.stringify({
+                    action: 'signup',
                     user: {
                         user_type: 'physician',
                         user_id: "phphph",
@@ -87,6 +91,51 @@
                         license_number: 'a1je8dfjkq90cx09231',
                         certificate_dir: 'here',
                         join_date: new Date().getTime()
+                    }
+                }),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+        $("#updatePatientInfo").click(function() {
+            $.ajax("api/user", {
+                method: 'POST',
+                data: JSON.stringify({
+                    action: 'update',
+                    user: {
+                        user_type: 'patient',
+                        user_id: "minm2",
+                        password: "43210",
+                        name: 'Min Han',
+                        phone_number: '010-1234-5678',
+                        email: 'abcd@text.com',
+                        gender: 'Male',
+                        birthday: Date.parse('1971-05-23')
+                    }
+                }),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+        $("#updatePhysicianInfo").click(function() {
+            $.ajax("api/user", {
+                method: 'POST',
+                data: JSON.stringify({
+                    action: 'update',
+                    user: {
+                        user_type: 'physician',
+                        user_id: "phphph",
+                        password: "43210",
+                        name: 'Min Han',
+                        phone_number: '010-1234-5678',
+                        email: 'abcd@text.com',
+                        medicine_field: 'Male',
+                        license_number: 'a1je8dfjkq90cx09231',
+                        certificate_dir: 'here'
                     }
                 }),
                 dataType: 'json',

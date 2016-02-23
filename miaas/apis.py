@@ -17,6 +17,8 @@ MSG_NO_EMAIL = "No email entered."
 MSG_NO_USER_FOUND = "No user found."
 MSG_UNKNOWN_ERROR = "Unknown error."
 MSG_PROFILE_FAILED = "Profile update failed."
+MSG_ACCOUNT_FAILED = "Account update failed."
+MSG_NO_CHANGE = "There is no change."
 
 logging.basicConfig(
     format="[%(name)s][%(asctime)s] %(message)s",
@@ -113,27 +115,49 @@ def handle_user_mgt(request):
                 raise Exception(MSG_NODATA)
             data = json.loads(request.body.decode("utf-8"))
 
-            if not data.get('user'):
+            if not data.get('action') or not data.get('user'):
                 raise Exception(MSG_INVALID_PARAMS)
+            action = data['action']
             user = data['user']
             user_type = user['user_type']
-            # logger.info("sign up with userid=%s and usertype=%s" % (data['user']['user_id'], data['user_type']))
-            logger.info(user)
 
-            if user_type == 'patient':
-                if db.add_patient(user):
-                    request.session['user'] = user
-                    return JsonResponse(constants.CODE_SUCCESS)
+            if action == 'signup':
+                if user_type == 'patient':
+                    if db.add_patient(user):
+                        request.session['user'] = user
+                        return JsonResponse(constants.CODE_SUCCESS)
+                    else:
+                        logger.info('signup patient fail')
+                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
+                elif user_type == 'physician':
+                    if db.add_physician(user):
+                        request.session['user'] = user
+                        return JsonResponse(constants.CODE_SUCCESS)
+                    else:
+                        logger.info('signup physician fail')
+                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
                 else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
-            elif user_type == 'physician':
-                if db.add_physician(user):
-                    request.session['user'] = user
-                    return JsonResponse(constants.CODE_SUCCESS)
+                    raise Exception(MSG_INVALID_PARAMS)
+            elif action == 'update':
+                if user_type == 'patient':
+                    logger.info(user)
+                    if db.update_patient(user):
+                        # request.session['user'].update(user)
+                        request.session['user'] = update_session(request.session['user'], user)
+                        return JsonResponse(constants.CODE_SUCCESS)
+                    else:
+                        logger.info('update patient fail')
+                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_CHANGE}))
+                elif user_type == 'physician':
+                    if db.update_physician(user):
+                        # request.session['user'].update(user)
+                        request.session['user'] = update_session(request.session['user'], user)
+                        return JsonResponse(constants.CODE_SUCCESS)
+                    else:
+                        logger.info('update patient fail')
+                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_CHANGE}))
                 else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
-            else:
-                raise Exception(MSG_INVALID_PARAMS)
+                    raise Exception(MSG_INVALID_PARAMS)
             return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
     except Exception as e:
@@ -260,3 +284,9 @@ def handle_payment_mgt(request):
         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
 
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
+
+def update_session(old_user, updated_user):
+    for key, value in updated_user.items():
+        if key in old_user:
+            old_user[key] = value
+    return old_user

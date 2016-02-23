@@ -122,6 +122,7 @@ function signup(usertype) {
     $.ajax("api/user", {
         method: 'POST',
         data: JSON.stringify({
+            action: 'signup',
             user: user
         }),
         dataType: 'json',

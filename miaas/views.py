@@ -130,7 +130,8 @@ def _get_session_context(request):
     context = {}
     if 'user' in request.session.keys():
         context['user_session'] = request.session['user']
-        context['user_session'].pop('password', None)
+        if context.get('user_session'):
+            context['user_session'].pop('password', None)
     return context
 
 

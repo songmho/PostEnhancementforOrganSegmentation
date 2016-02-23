@@ -16,7 +16,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
 <script>
     var session = "{{ user_session | jsonstr }}";
-    console.log(JSON.parse(session));
+{#    console.log(JSON.parse(session));#}
 </script>
 
 <div class="container">
