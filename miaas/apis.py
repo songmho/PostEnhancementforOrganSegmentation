@@ -47,7 +47,16 @@ def handle_session_mgt(request):
             user_id = data['user_id']
             password = data['password']
 
-            user = db.retrieve_patient(user_id, password)
+            user = {}
+            user_type = db.retrieve_user(user_id, password)
+            if user_type is None:
+                raise Exception(MSG_INVALID_IDPW)
+            elif user_type == 'patient':
+                user = db.retrieve_patient(user_id, password)
+            elif user_type == 'physician':
+                user = db.retrieve_physician(user_id, password)
+            else:
+                raise Exception(MSG_INVALID_IDPW)
             if not user.get('user_id'):
                 raise Exception(MSG_INVALID_IDPW)
             request.session['user'] = user
