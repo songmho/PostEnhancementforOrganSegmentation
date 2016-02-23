@@ -13,7 +13,8 @@ $(document).ready(function() {
     $('#btn-patient').click(function() {
         usertype = 'patient';
         $('#selectField').removeAttr('required');
-        $('#fileQualificiation').removeAttr('required');
+        $('#inputLicence').removeAttr('required');
+        $('#fileCertification').removeAttr('required');
         $('#selectGender').attr('required', '');
         $('#inputAge').attr('required', '');
 
@@ -25,7 +26,8 @@ $(document).ready(function() {
         $('#selectGender').removeAttr('required');
         $('#inputAge').removeAttr('required');
         $('#selectField').attr('required', '');
-        $('#fileQualificiation').attr('required', '');
+        $('#inputLicence').attr('required', '');
+        $('#fileCertification').attr('required', '');
 
         $('#col-signup-usertype').hide();
         $('#col-signup-basic').show();
@@ -46,7 +48,7 @@ $(document).ready(function() {
             method: 'GET',
             data: {
                 action: 'checkId',
-                userId: $('#inputId').val()
+                user_id: $('#inputId').val()
             },
             dataType: 'json',
             success: function (res) {
@@ -97,24 +99,29 @@ $(document).ready(function() {
 
 function signup(usertype) {
     var user = {};
-    user['userId'] = $('#inputId').val();
+    user['join_date'] = new Date().getTime();
+    user['user_id'] = $('#inputId').val();
     user['password'] = $('#inputPw').val();
     user['name'] = $('#inputName').val();
-    user['mobile'] = $('#inputMobile').val();
+    user['phone_number'] = $('#inputMobile').val();
     user['email'] = $('#inputEmail').val();
+    user['user_type'] = usertype;
 
     if(usertype == 'patient') {
         user['gender'] = $('#selectGender').val();
-        user['birthday'] = $('#inputBirthday').val();
+        user['birthday'] = Date.parse($('#inputBirthday').val());
     } else if(usertype == 'physician') {
         user['major'] = $('#selectField').val();
-        user['qualification'] = $('#fileQualificiation').val();
+        user['license_number'] = $('#inputLicence').val();
+        //user['certificate_dir'] = $('#fileCertification').val();
+        user['certificate_dir'] = 'here';
     }
+
+    console.log(user);
 
     $.ajax("api/user", {
         method: 'POST',
         data: JSON.stringify({
-            user_type: usertype,
             user: user
         }),
         dataType: 'json',

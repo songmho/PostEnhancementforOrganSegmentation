@@ -1,4 +1,4 @@
-{% if not user_session or user_session.user_type != 'patient' %}
+{% if not user_session %}
 <script type="text/javascript">
 location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
 </script>

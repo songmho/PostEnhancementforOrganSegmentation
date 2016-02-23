@@ -2,6 +2,14 @@ __author__ = 'Jincheul'
 
 
 import pymysql
+import logging
+
+logging.basicConfig(
+    format="[%(name)s][%(asctime)s] %(message)s",
+    handlers=[logging.StreamHandler()],
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
 class DbManager():
     def __init__(self):
@@ -97,14 +105,12 @@ class DbManager():
                 print("Exception: ", e)
         return user
 
-    def add_patient_profile(self, profile):
+    def add_patient_profile(self, user_id, type, value, timestamp):
+        logger.info('user_id=%s type=%s value=%s' % (user_id, type, value))
+
         if_inserted = False
         with self.connector.cursor() as cursor:
             try:
-                user_id = profile['user_id']
-                type = profile['type']
-                value = profile['value']
-                timestamp = profile['timestamp']
                 # Add patient profile to 'patient_profile' table
                 db_query = "INSERT INTO patient_profile (user_id, type, value, timestamp) VALUES (%s, %s, %s, %s)"
                 cursor.execute(db_query, (user_id, type, value, timestamp))
@@ -190,14 +196,11 @@ class DbManager():
                 print("Exception: ", e)
         return user
 
-    def add_physician_profile(self, profile):
+    def add_physician_profile(self, user_id, type, value):
         if_inserted = False
         with self.connector.cursor() as cursor:
             try:
                 # Add physician profile to 'physician_profile' table
-                user_id = profile['user_id']
-                type = profile['type']
-                value = profile['value']
                 db_query = "INSERT INTO physician_profile (user_id, type, value) VALUES (%s, %s, %s)"
                 cursor.execute(db_query, (user_id, type, value))
                 self.connector.commit()
