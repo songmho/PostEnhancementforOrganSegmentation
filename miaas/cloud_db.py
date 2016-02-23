@@ -31,6 +31,21 @@ class DbManager():
             finally:
                 return user_type
 
+    def find_user(self, user_id):
+        if_exist = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT * FROM user WHERE user_id=%s"
+                cursor.execute(db_query, (user_id))
+                self.connector.commit()
+                row = cursor.fetchone()
+                if row is not None:
+                    if_exist = True
+            except Exception as e:
+                print("Exception: ", e)
+            finally:
+                return if_exist
+
     def add_patient(self, patient):
         if_inserted = False
         with self.connector.cursor() as cursor:
@@ -310,100 +325,3 @@ class DbManager():
             except Exception as e:
                 print("Exception: ", e)
         return intprs
-
-# if __name__ == '__main__':
-#     db = DbManager()
-    # patient = {
-    #     'user_id': 'hhh',
-    #     'password': 1234,
-    #     'name': 'Han Ter Jung',
-    #     'phone_number': '010-9363-8209',
-    #     'email': 'hanterkr@gmail.com',
-    #     'join_date': 1450165348000,
-    #     'deactivate_date': 0,
-    #     'user_type': 'Patient',
-    #     'gender': 'Male',
-    #     'birthday': 643334400000
-    # }
-    # print(db.add_patient(patient))
-
-    # physician = {
-    #     'user_id': 'minjookr1234',
-    #     'password': 1234,
-    #     'name': 'Min Joo Choi',
-    #     'phone_number': '010-1568-6585',
-    #     'email': 'minjookr@gmail.com',
-    #     'join_date': 1450165348000,
-    #     'deactivate_date': 0,
-    #     'user_type': 'Physician',
-    #     'license_number': '23kljlfkaj9032k-234jl-lk23lk',
-    #     'major': 'Heart Specialist',
-    #     'certificate_dir': '/db/dd/djkel.jpg',
-    # }
-    # print(db.add_physician(physician))
-
-    # image = {
-    #     'user_id': 'hanterkr',
-    #     'subject': 'Heart Image',
-    #     'image_type': 'ECG',
-    #     'date': 1480969913000,
-    #     'taken_from': 1450469913000,
-    #     'physician': 'Dr.Choi',
-    #     'place': 'Seoul Hospital',
-    #     'description': 'None',
-    #     'comment': 'None',
-    #     'image_dir': '/db/db/first_image.png',
-    #     'size': 20
-    # }
-    # db.add_medical_image(image)
-
-    # intpr = {
-    #     'physician_id': 3,
-    #     'image_id': 1,
-    #     'level': 1,
-    #     'fee': 0,
-    #     'date': 1450469913000,
-    #     'summary': 'None',
-    #     'status': 'None'
-    # }
-    # db.add_interpretation(intpr)
-
-    # type = "['height', 'weight', 'Drinking Capacity', 'Drinking Frequency', 'Sleeping Hours', 'Exercise Hours', 'Smoking Status', 'Water Intake', 'Disease History', 'Medication', 'Family History', 'Significant', 'Notice']"
-    # value = "[172, 55, 2, 2, 5, 1, 'Nonsmoker', 8, 'None', 'None', 'None', 'None', 'None']"
-    # patient_profile = {
-    #     'user_id': 'hanterkr',
-    #     'type': type,
-    #     'value': value,
-    #     'timestamp': 1450424548000
-    # }
-    # db.add_patient_profile(patient_profile)
-
-    # type = "['Graduate Medical School', 'Practice Year']"
-    # value = "['Seoul Medical University', 3]"
-    # physician_profile = {
-    #     'user_id': 'minjookr',
-    #     'type': type,
-    #     'value': value
-    # }
-    # db.add_physician_profile(physician_profile)
-
-    # patient = db.retrieve_patient('hanterkr')
-    # print(patient)
-
-    # physician = db.retrieve_physician('minjookr')
-    # print(physician)
-
-    # intprs = db.retrieve_intpr(1)
-    # print(intprs)
-
-    # images = db.retrieve_medical_image(9)
-    # print(images)
-
-    # profiles = db.retrieve_patient_profile('hanterkr')
-    # print(profiles)
-
-    # profiles = db.retrieve_physician_profile('minjookr')
-    # print(profiles)
-
-    # user_type = db.retrieve_user('hanterkr', '1234')
-    # print(user_type)
