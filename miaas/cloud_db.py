@@ -152,21 +152,47 @@ class DbManager():
     def retrieve_patient_profile(self, patient_id, type=None):
         profiles = []
         if type is None:
-            db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s"
+            # Retrieve all profile types
+            db_query = "SELECT type FROM patient_profile WHERE user_id=%s"
+            with self.connector.cursor() as cursor:
+                try:
+                    cursor.execute(db_query, (patient_id))
+                    self.connector.commit()
+                    profile_types = []
+                    for row in cursor:
+                        profile_type = row[0]
+                        if profile_type not in profile_types:
+                            profile_types.append(profile_type)
+                except Exception as e:
+                    print("Retrieve_Patient_Profile type list: ", e)
+            # Retrieve patient profiles on 'type is not None'
+            with self.connector.cursor() as cursor:
+                db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and type=%s ORDER BY timestamp DESC LIMIT 1"
+                try:
+                    for item in profile_types:
+                        cursor.execute(db_query, (patient_id, item))
+                        self.connector.commit()
+                        row = cursor.fetchone()
+                        profile = {}
+                        profile['type'] = row[0]
+                        profile['value'] = row[1]
+                        profile['timestamp'] = row[2]
+                        profiles.append(profile)
+                except Exception as e:
+                    print("Retrieve_Patient_Profile with 'type is not None':", e)
         else:
             db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and type=%s"
-        with self.connector.cursor() as cursor:
-            try:
-                cursor.execute(db_query, (patient_id, type))
-                self.connector.commit()
-                for row in cursor:
-                    profile = {}
-                    profile['type'] = row[0]
-                    profile['value'] = row[1]
-                    profile['timestamp'] = row[2]
-                    profiles.append(profile)
-            except Exception as e:
-                print("Exception: ", e)
+            with self.connector.cursor() as cursor:
+                try:
+                    cursor.execute(db_query, (patient_id, type))
+                    self.connector.commit()
+                    for row in cursor:
+                        profile = {}
+                        profile['type'] = row[0]
+                        profile['value'] = row[1]
+                        profile['timestamp'] = row[2]
+                except Exception as e:
+                    print("Exception: ", e)
         return profiles
 
     def add_physician(self, physician):
@@ -265,12 +291,16 @@ class DbManager():
             finally:
                 return if_inserted
 
-    def retrieve_physician_profile(self, physician_id):
+    def retrieve_physician_profile(self, physician_id, type=None):
         profiles = []
-        db_query = "SELECT type, value FROM physician_profile WHERE user_id=%s"
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, physician_id)
+                if type is None:
+                    db_query = "SELECT type, value FROM physician_profile WHERE user_id=%s"
+                    cursor.execute(db_query, physician_id)
+                else:
+                    db_query = "SELECT type, value FROM physician_profile WHERE user_id=%s and type=%s"
+                    cursor.execute(db_query, physician_id, type)
                 self.connector.commit()
                 for row in cursor:
                     profile = {}
