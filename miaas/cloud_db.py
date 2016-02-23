@@ -2,6 +2,14 @@ __author__ = 'Jincheul'
 
 
 import pymysql
+import logging
+
+logging.basicConfig(
+    format="[%(name)s][%(asctime)s] %(message)s",
+    handlers=[logging.StreamHandler()],
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
 class DbManager():
     def __init__(self):
@@ -83,6 +91,8 @@ class DbManager():
         return user
 
     def add_patient_profile(self, user_id, type, value, timestamp):
+        logger.info('user_id=%s type=%s value=%s' % (user_id, type, value))
+
         if_inserted = False
         with self.connector.cursor() as cursor:
             try:
