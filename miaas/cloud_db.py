@@ -277,20 +277,38 @@ class DbManager():
         return if_updated
 
     def add_physician_profile(self, user_id, type, value):
-        if_inserted = False
+        if_exist = False
+        # Check type existence
         with self.connector.cursor() as cursor:
             try:
-                # Add physician profile to 'physician_profile' table
-                db_query = "INSERT INTO physician_profile (user_id, type, value) VALUES (%s, %s, %s)"
-                cursor.execute(db_query, (user_id, type, value))
+                db_query = "SELECT value FROM physician_profile WHERE user_id=%s AND type=%s"
+                cursor.execute(db_query, (user_id, type))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
-                    if_inserted = True
+                    if_exist = True
+                if if_exist:
+                    # Update current physician profile
+                    if_updated = False
+                    db_query = "UPDATE physician_profile SET value=%s WHERE user_id=%s AND type=%s"
+                    cursor.execute(db_query, (value, user_id, type))
+                    self.connector.commit()
+                    row_count = cursor.rowcount
+                    if row_count > 0:
+                        if_updated = True
+                    return if_updated
+                else:
+                    # Add physician profile to 'physician_profile' table
+                    if_inserted = False
+                    db_query = "INSERT INTO physician_profile (user_id, type, value) VALUES (%s, %s, %s)"
+                    cursor.execute(db_query, (user_id, type, value))
+                    self.connector.commit()
+                    row_count = cursor.rowcount
+                    if row_count > 0:
+                        if_inserted = True
+                    return if_inserted
             except Exception as e:
-                print("Exception: ", e)
-            finally:
-                return if_inserted
+                print("Add_Physician_Profile: ", e)
 
     def retrieve_physician_profile(self, physician_id, type=None):
         profiles = []
