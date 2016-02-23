@@ -75,8 +75,8 @@ class DbManager():
                 db_query = "INSERT INTO patient (user_id, gender, birthday) VALUES (%s, %s, %s)"
                 cursor.execute(db_query, (user_id, gender, birthday))
                 self.connector.commit()
-                row_countd = cursor.rowcount
-                if row_countd > 0:
+                row_count = cursor.rowcount
+                if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -105,6 +105,25 @@ class DbManager():
                 print("Exception: ", e)
         return user
 
+    def update_patient(self, user):
+        if_updated = False
+        user_id = user['user_id']
+        password = user['password']
+        name = user['name']
+        phone_number = user['phone_number']
+        email = user['email']
+        gender = user['gender']
+        birthday = user['birthday']
+        with self.connector.cursor() as cursor:
+            db_query = "UPDATE user as u INNER JOIN patient as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.gender=%s, p.birthday=%s WHERE u.user_id=%s"
+            cursor.execute(db_query, (password, name, phone_number, email, gender, birthday, user_id))
+            self.connector.commit()
+            row_count=cursor.rowcount
+            print(row_count)
+            if row_count > 0:
+                if_updated = True
+        return if_updated
+
     def add_patient_profile(self, user_id, type, value, timestamp):
         logger.info('user_id=%s type=%s value=%s' % (user_id, type, value))
 
@@ -115,8 +134,8 @@ class DbManager():
                 db_query = "INSERT INTO patient_profile (user_id, type, value, timestamp) VALUES (%s, %s, %s, %s)"
                 cursor.execute(db_query, (user_id, type, value, timestamp))
                 self.connector.commit()
-                row_countd = cursor.rowcount
-                if row_countd > 0:
+                row_count = cursor.rowcount
+                if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -126,18 +145,16 @@ class DbManager():
     def retrieve_patient_profile(self, patient_id, time_from=None):
         profiles = []
         time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM patient_profile WHERE user_id=%s and timestamp>=%s"
+        db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and timestamp>=%s"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (patient_id, time_from))
                 self.connector.commit()
-                profile = {}
                 for row in cursor:
-                    profile['patient_profile_id'] = row[0]
-                    profile['user_id'] = row[1]
-                    profile['type'] = row[2]
-                    profile['value'] = row[3]
-                    profile['timestamp'] = row[4]
+                    profile = {}
+                    profile['type'] = row[0]
+                    profile['value'] = row[1]
+                    profile['timestamp'] = row[2]
                     profiles.append(profile)
             except Exception as e:
                 print("Exception: ", e)
@@ -165,8 +182,8 @@ class DbManager():
                 db_query = "INSERT INTO physician (user_id, license_number, medicine_field, certificate_dir) values (%s, %s, %s, %s)"
                 cursor.execute(db_query, (user_id, license_number, medicine_field, certificate_dir))
                 self.connector.commit()
-                row_countd = cursor.rowcount
-                if row_countd > 0:
+                row_count = cursor.rowcount
+                if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -196,6 +213,26 @@ class DbManager():
                 print("Exception: ", e)
         return user
 
+    def update_physician(self, user):
+        if_updated = False
+        user_id = user['user_id']
+        password = user['password']
+        name = user['name']
+        phone_number = user['phone_number']
+        email = user['email']
+        license_number = user['license_number']
+        medicine_field = user['medicine_field']
+        certificate_dir = user['certificate_dir']
+        with self.connector.cursor() as cursor:
+            db_query = "UPDATE user as u INNER JOIN physician as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.license_number=%s, p.medicine_field=%s, p.certificate_dir=%s WHERE u.user_id=%s"
+            cursor.execute(db_query, (password, name, phone_number, email, license_number, medicine_field, certificate_dir, user_id))
+            self.connector.commit()
+            row_count=cursor.rowcount
+            print(row_count)
+            if row_count > 0:
+                if_updated = True
+        return if_updated
+
     def add_physician_profile(self, user_id, type, value):
         if_inserted = False
         with self.connector.cursor() as cursor:
@@ -204,8 +241,8 @@ class DbManager():
                 db_query = "INSERT INTO physician_profile (user_id, type, value) VALUES (%s, %s, %s)"
                 cursor.execute(db_query, (user_id, type, value))
                 self.connector.commit()
-                row_countd = cursor.rowcount
-                if row_countd > 0:
+                row_count = cursor.rowcount
+                if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -214,17 +251,15 @@ class DbManager():
 
     def retrieve_physician_profile(self, physician_id):
         profiles = []
-        db_query = "SELECT * FROM physician_profile WHERE user_id=%s"
+        db_query = "SELECT type, value FROM physician_profile WHERE user_id=%s"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, physician_id)
                 self.connector.commit()
-                profile = {}
                 for row in cursor:
-                    profile['physician_profile_id'] = row[0]
-                    profile['user_id'] = row[1]
-                    profile['type'] = row[2]
-                    profile['value'] = row[3]
+                    profile = {}
+                    profile['type'] = row[0]
+                    profile['value'] = row[1]
                     profiles.append(profile)
             except Exception as e:
                 print("Exception: ", e)
@@ -248,8 +283,8 @@ class DbManager():
                 db_query = "INSERT INTO medical_image (subject, image_type, taken_from, physician, place, description, comment, image_dir, user_id, size) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (subject, image_type, taken_from, physician, place, description, comment, image_dir, user_id, size))
                 self.connector.commit()
-                row_countd = cursor.rowcount
-                if row_countd > 0:
+                row_count = cursor.rowcount
+                if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -298,8 +333,8 @@ class DbManager():
                 db_query = "INSERT INTO interpretation (physician_id, image_id, level, fee, date, summary, status) VALUES (%s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (physician_id, image_id, level, fee, date, summary, status))
                 self.connector.commit()
-                row_countd = cursor.rowcount
-                if row_countd > 0:
+                row_count = cursor.rowcount
+                if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
