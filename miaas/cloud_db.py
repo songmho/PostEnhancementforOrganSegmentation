@@ -191,6 +191,7 @@ class DbManager():
                         profile['type'] = row[0]
                         profile['value'] = row[1]
                         profile['timestamp'] = row[2]
+                        profiles.append(profile)
                 except Exception as e:
                     print("Exception: ", e)
         return profiles
