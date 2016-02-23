@@ -83,24 +83,30 @@ class DbManager():
             finally:
                 return if_inserted
 
-    def retrieve_patient(self, patient_id, password):
+    def retrieve_patient(self, patient_id, password=None):
         user = {}
-        db_query = "SELECT u.password, u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
+        if password is None:
+            db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
+        else:
+            db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday, u.password FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (patient_id, password))
                 self.connector.commit()
                 for row in cursor:
                     user['user_id'] = patient_id
-                    user['password'] = row[0]
-                    user['name'] = row[1]
-                    user['phone_number'] = row[2]
-                    user['email'] = row[3]
-                    user['join_date'] = row[4]
-                    user['deactivate_date'] = row[5]
-                    user['user_type'] = row[6]
-                    user['gender'] = row[7]
-                    user['birthday'] = row[8]
+                    user['name'] = row[0]
+                    user['phone_number'] = row[1]
+                    user['email'] = row[2]
+                    user['join_date'] = row[3]
+                    user['deactivate_date'] = row[4]
+                    user['user_type'] = row[5]
+                    user['gender'] = row[6]
+                    user['birthday'] = row[7]
+                    if password is None:
+                        user['password'] = None
+                    else:
+                        user['password'] = row[8]
             except Exception as e:
                 print("Exception: ", e)
         return user
@@ -192,23 +198,29 @@ class DbManager():
 
     def retrieve_physician(self, physician_id, password):
         user = {}
-        db_query = "SELECT u.password, u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
+        if password is None:
+            db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
+        else:
+            db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir, u.password FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (physician_id, password))
                 self.connector.commit()
                 for row in cursor:
                     user['user_id'] = physician_id
-                    user['password'] = row[0]
-                    user['name'] = row[1]
-                    user['phone_number'] = row[2]
-                    user['email'] = row[3]
-                    user['join_date'] = row[4]
-                    user['deactivate_date'] = row[5]
-                    user['user_type'] = row[6]
-                    user['license_number'] = row[7]
-                    user['medicine_field'] = row[8]
-                    user['certificate_dir'] = row[9]
+                    user['name'] = row[0]
+                    user['phone_number'] = row[1]
+                    user['email'] = row[2]
+                    user['join_date'] = row[3]
+                    user['deactivate_date'] = row[4]
+                    user['user_type'] = row[5]
+                    user['license_number'] = row[6]
+                    user['medicine_field'] = row[7]
+                    user['certificate_dir'] = row[8]
+                    if password is None:
+                        user['password'] = None
+                    else:
+                        user['password'] = row[9]
             except Exception as e:
                 print("Exception: ", e)
         return user
