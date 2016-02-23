@@ -85,13 +85,14 @@ class DbManager():
 
     def retrieve_patient(self, patient_id, password=None):
         user = {}
-        if password is None:
-            db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
-        else:
-            db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday, u.password FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, (patient_id, password))
+                if password is None:
+                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
+                    cursor.execute(db_query, (patient_id))
+                else:
+                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday, u.password FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
+                    cursor.execute(db_query, (patient_id, password))
                 self.connector.commit()
                 for row in cursor:
                     user['user_id'] = patient_id
@@ -148,13 +149,15 @@ class DbManager():
             finally:
                 return if_inserted
 
-    def retrieve_patient_profile(self, patient_id, time_from=None):
+    def retrieve_patient_profile(self, patient_id, type=None):
         profiles = []
-        time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and timestamp>=%s"
+        if type is None:
+            db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s"
+        else:
+            db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and type=%s"
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, (patient_id, time_from))
+                cursor.execute(db_query, (patient_id, type))
                 self.connector.commit()
                 for row in cursor:
                     profile = {}
@@ -196,15 +199,16 @@ class DbManager():
             finally:
                 return if_inserted
 
-    def retrieve_physician(self, physician_id, password):
+    def retrieve_physician(self, physician_id, password=None):
         user = {}
-        if password is None:
-            db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
-        else:
-            db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir, u.password FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, (physician_id, password))
+                if password is None:
+                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
+                    cursor.execute(db_query, (physician_id))
+                else:
+                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir, u.password FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
+                    cursor.execute(db_query, (physician_id, password))
                 self.connector.commit()
                 for row in cursor:
                     user['user_id'] = physician_id
