@@ -14,6 +14,7 @@
 <button id="login">login</button>
 <button id="logout">logout</button>
 <button id="signup">signup</button>
+<button id="signup2">signup2</button>
 <button id="idcheck">idcheck</button>
 <button id="getPatientInfo">getPatientInfo</button>
 <button id="getPatientProfile">getPatientProfile</button>
@@ -27,7 +28,7 @@
             $.ajax("api/sessions", {
                 method: 'POST',
                 data: JSON.stringify({
-                    userId: "min",
+                    user_id: "min",
                     password: "1234"
                 }),
                 dataType: 'json',
@@ -49,10 +50,39 @@
             $.ajax("api/user", {
                 method: 'POST',
                 data: JSON.stringify({
-                    user_type: 'patient',
                     user: {
-                        userId: "min",
-                        password: "1234"
+                        user_type: 'patient',
+                        user_id: "minm",
+                        password: "1234",
+                        name: 'Min Han',
+                        phone_number: '010-1234-5678',
+                        email: 'abcd@text.com',
+                        gender: 'Female',
+                        birthday: Date.parse('1991-05-23'),
+                        join_date: new Date().getTime()
+                    }
+                }),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+        $("#signup2").click(function() {
+            $.ajax("api/user", {
+                method: 'POST',
+                data: JSON.stringify({
+                    user: {
+                        user_type: 'physician',
+                        user_id: "phphph",
+                        password: "1234",
+                        name: 'Min Han',
+                        phone_number: '010-1234-5678',
+                        email: 'abcd@text.com',
+                        major: 'Male',
+                        license_number: 'a1je8dfjkq90cx09231',
+                        certificate_dir: 'here',
+                        join_date: new Date().getTime()
                     }
                 }),
                 dataType: 'json',

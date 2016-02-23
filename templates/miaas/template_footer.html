@@ -8,3 +8,18 @@
 
 <script src="{% static 'miass/js/init.js' %}"></script>
 
+<script type="text/javascript">
+function signout() {
+     $.ajax("api/sessions", {
+        method: 'DELETE',
+        dataType: 'json',
+        success: function(res) {
+            if(res['code'] == 'SUCCESS') {
+                location.href = "{% url 'miaas:signin' %}";
+            } else {
+                console.log(res);
+            }
+        }
+    });
+}
+</script>

@@ -9,6 +9,7 @@ from . import constants, model, cloud_db
 MSG_DB_FAILED = "Failed to handle DB requests."
 MSG_NO_USER_LOGGEDIN = "No user logged in."
 MSG_ALREADY_LOGGEDIN = "Already logged in."
+MSG_SIGNUP_FAILED = "Sign up Failed"
 MSG_INVALID_IDPW = "Invalid ID and/or PW."
 MSG_INVALID_PARAMS = "Invalid parameters."
 MSG_NODATA = "No data."
@@ -39,15 +40,15 @@ def handle_session_mgt(request):
                 raise Exception(MSG_NODATA)
             data = json.loads(request.body.decode("utf-8"))
 
-            if not data.get('userId') and not data.get('password'):
+            if not data.get('user_id') or not data.get('password'):
                 raise Exception(MSG_INVALID_PARAMS)
             if request.session.get('user'):
                 raise Exception(MSG_ALREADY_LOGGEDIN)
-            user_id = data['userId']
+            user_id = data['user_id']
             password = data['password']
 
             user = db.retrieve_patient(user_id, password)
-            if not user:
+            if not user.get('user_id'):
                 raise Exception(MSG_INVALID_IDPW)
             request.session['user'] = user
 
@@ -74,11 +75,11 @@ def handle_user_mgt(request):
     :param request: The body of request is a JSON object of a user.
     :return:
     """
-    db = cloud_db.DbManager();
+    db = cloud_db.DbManager()
     try:
         if(request.method) == 'GET':
             logger.info(request.GET)
-            user_id = request.GET.get('userId')
+            user_id = request.GET.get('user_id')
             if not user_id:
                 raise Exception(MSG_INVALID_PARAMS)
             action = request.GET.get('action')
@@ -90,17 +91,40 @@ def handle_user_mgt(request):
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
             elif action == 'getPhysician':
                 pass
-            else:
+            elif action == 'checkId':
                 #retrieve user_id ...
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'isValidId': True}))
+            else:
+                return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
 
         if(request.method) == 'POST':
             # signup (register)
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
             data = json.loads(request.body.decode("utf-8"))
-            logger.info(data)
-            return JsonResponse(constants.CODE_SUCCESS)
+
+            if not data.get('user'):
+                raise Exception(MSG_INVALID_PARAMS)
+            user = data['user']
+            user_type = user['user_type']
+            # logger.info("sign up with userid=%s and usertype=%s" % (data['user']['user_id'], data['user_type']))
+            logger.info(user)
+
+            if user_type == 'patient':
+                if db.add_patient(user):
+                    request.session['user'] = user
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
+            elif user_type == 'physician':
+                if db.add_physician(user):
+                    request.session['user'] = user
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
+            else:
+                raise Exception(MSG_INVALID_PARAMS)
+            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
     except Exception as e:
         logger.exception(e)
