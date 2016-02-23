@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^signup$', views.signup_page, name='signup'),
     url(r'^profile$', views.profile_page, name='profile'),
     url(r'^physician$', views.physician_profile_page, name='physician_profile'),
+    url(r'^account$', views.account_page, name='account'),
 
     url(r'^archive$', views.archive_page, name='archive'),
     url(r'^archive/upload$', views.archive_upload_page, name='archive_upload'),

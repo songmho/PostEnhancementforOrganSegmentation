@@ -111,7 +111,7 @@ function signup(usertype) {
         user['gender'] = $('#selectGender').val();
         user['birthday'] = Date.parse($('#inputBirthday').val());
     } else if(usertype == 'physician') {
-        user['major'] = $('#selectField').val();
+        user['medicine_field'] = $('#selectField').val();
         user['license_number'] = $('#inputLicence').val();
         //user['certificate_dir'] = $('#fileCertification').val();
         user['certificate_dir'] = 'here';

@@ -47,9 +47,13 @@ def signin_page(request):
 def signup_page(request):
     return render(request, 'miaas/signup.html', None)
 
+def account_page(request):
+    context = _get_session_context(request)
+    return render(request, 'miaas/account.html', context)
+
 def profile_page(request):
     context = _get_session_context(request)
-    logger.info(context)
+    # logger.info(context)
     return render(request, 'miaas/patient_profile.html', context)
 
 def archive_page(request):
@@ -112,7 +116,7 @@ def physician_info_page(request):
 
 def physician_profile_page(request):
     context = _get_session_context(request)
-    return render(request, 'miaas/physician_profile.html', sctx.default_physician_context)
+    return render(request, 'miaas/physician_profile.html', context)
 
 def physician_interpretation_page(request):
     context = _get_session_context(request)
@@ -126,6 +130,7 @@ def _get_session_context(request):
     context = {}
     if 'user' in request.session.keys():
         context['user_session'] = request.session['user']
+        context['user_session'].pop('password', None)
     return context
 
 
