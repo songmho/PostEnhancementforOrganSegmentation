@@ -335,52 +335,77 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 # Add a medical image information to 'medical_image' table
+                image_id = medical_image['image_id']
+                user_id = medical_image['user_id']
                 subject = medical_image['subject']
                 image_type = medical_image['image_type']
                 taken_from = medical_image['taken_from']
                 physician = medical_image['physician']
                 place = medical_image['place']
                 description = medical_image['description']
-                comment = medical_image['comment']
                 image_dir = medical_image['image_dir']
-                user_id = medical_image['user_id']
                 size = medical_image['size']
-                db_query = "INSERT INTO medical_image (subject, image_type, taken_from, physician, place, description, comment, image_dir, user_id, size) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query, (subject, image_type, taken_from, physician, place, description, comment, image_dir, user_id, size))
+                timestamp = medical_image['timestamp']
+                db_query = "INSERT INTO medical_image (image_id, user_id, subject, image_type, taken_from, physician, place, description, image_dir, size, timestamp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (image_id, user_id, subject, image_type, taken_from, physician, place, description, image_dir, size, timestamp))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
                     if_inserted = True
             except Exception as e:
-                print("Exception: ", e)
+                print("Add_Medical_Image: ", e)
             finally:
                 return if_inserted
 
-    def retrieve_medical_image(self, patient_id, time_from=None):
+    def retrieve_medical_image(self, user_id, time_from=None):
         images = []
         date = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM medical_image WHERE patient_id=%s and asmt_date>%s"
+        db_query = "SELECT * FROM medical_image WHERE patient_id=%s and timestamp>=%s"
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, (patient_id, date))
+                cursor.execute(db_query, (user_id, time_from))
                 self.connector.commit()
-                image = {}
                 for row in cursor:
+                    image = {}
                     image['image_id'] = row[0]
-                    image['patient_id'] = row[1]
+                    image['user_id'] = row[1]
                     image['subject'] = row[2]
-                    image['size'] = row[3]
-                    image['type'] = row[4]
-                    image['hospital'] = row[5]
-                    image['asmt_date'] = row[6]
-                    image['upload_date'] = row[7]
-                    image['exam_physician'] = row[8]
-                    image['place'] = row[9]
-                    image['description'] = row[10]
-                    image['comment'] = row[11]
+                    image['image_type'] = row[3]
+                    image['taken_from'] = row[4]
+                    image['physician'] = row[5]
+                    image['place'] = row[6]
+                    image['description'] = row[7]
+                    image['image_dir'] = row[8]
+                    image['size'] = row[9]
+                    image['timestamp'] = row[10]
                     images.append(image)
             except Exception as e:
-                print("Exception: ", e)
+                print("Retrieve_Medical_Image: ", e)
+        return images
+
+    def retrieve_medical_image_by_id(self, image_id):
+        images = []
+        db_query = "SELECT * FROM medical_image WHERE image_id=%s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, (image_id))
+                self.connector.commit()
+                row = cursor.fetchone()
+                image = {}
+                image['image_id'] = row[0]
+                image['user_id'] = row[1]
+                image['subject'] = row[2]
+                image['image_type'] = row[3]
+                image['taken_from'] = row[4]
+                image['physician'] = row[5]
+                image['place'] = row[6]
+                image['description'] = row[7]
+                image['image_dir'] = row[8]
+                image['size'] = row[9]
+                image['timestamp'] = row[10]
+                images.append(image)
+            except Exception as e:
+                print("Retrieve_Medical_Image_By_Id: ", e)
         return images
 
     def add_interpretation(self, intpr):
