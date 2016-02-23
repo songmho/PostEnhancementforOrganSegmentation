@@ -39,6 +39,21 @@ class DbManager():
             finally:
                 return user_type
 
+    def find_user(self, user_id):
+        if_exist = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT * FROM user WHERE user_id=%s"
+                cursor.execute(db_query, (user_id))
+                self.connector.commit()
+                row = cursor.fetchone()
+                if row is not None:
+                    if_exist = True
+            except Exception as e:
+                print("Exception: ", e)
+            finally:
+                return if_exist
+
     def add_patient(self, patient):
         if_inserted = False
         with self.connector.cursor() as cursor:
@@ -60,35 +75,61 @@ class DbManager():
                 db_query = "INSERT INTO patient (user_id, gender, birthday) VALUES (%s, %s, %s)"
                 cursor.execute(db_query, (user_id, gender, birthday))
                 self.connector.commit()
-                row_countd = cursor.rowcount
-                if row_countd > 0:
+                row_count = cursor.rowcount
+                if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
             finally:
                 return if_inserted
 
-    def retrieve_patient(self, patient_id, password):
+    def retrieve_patient(self, patient_id, password=None):
         user = {}
-        db_query = "SELECT u.password, u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, (patient_id, password))
+                if password is None:
+                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
+                    cursor.execute(db_query, (patient_id))
+                else:
+                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday, u.password FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
+                    cursor.execute(db_query, (patient_id, password))
                 self.connector.commit()
                 for row in cursor:
                     user['user_id'] = patient_id
-                    user['password'] = row[0]
-                    user['name'] = row[1]
-                    user['phone_number'] = row[2]
-                    user['email'] = row[3]
-                    user['join_date'] = row[4]
-                    user['deactivate_date'] = row[5]
-                    user['user_type'] = row[6]
-                    user['gender'] = row[7]
-                    user['birthday'] = row[8]
+                    user['name'] = row[0]
+                    user['phone_number'] = row[1]
+                    user['email'] = row[2]
+                    user['join_date'] = row[3]
+                    user['deactivate_date'] = row[4]
+                    user['user_type'] = row[5]
+                    user['gender'] = row[6]
+                    user['birthday'] = row[7]
+                    if password is None:
+                        user['password'] = None
+                    else:
+                        user['password'] = row[8]
             except Exception as e:
                 print("Exception: ", e)
         return user
+
+    def update_patient(self, user):
+        if_updated = False
+        user_id = user['user_id']
+        password = user['password']
+        name = user['name']
+        phone_number = user['phone_number']
+        email = user['email']
+        gender = user['gender']
+        birthday = user['birthday']
+        with self.connector.cursor() as cursor:
+            db_query = "UPDATE user as u INNER JOIN patient as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.gender=%s, p.birthday=%s WHERE u.user_id=%s"
+            cursor.execute(db_query, (password, name, phone_number, email, gender, birthday, user_id))
+            self.connector.commit()
+            row_count=cursor.rowcount
+            print(row_count)
+            if row_count > 0:
+                if_updated = True
+        return if_updated
 
     def add_patient_profile(self, user_id, type, value, timestamp):
         logger.info('user_id=%s type=%s value=%s' % (user_id, type, value))
@@ -100,32 +141,59 @@ class DbManager():
                 db_query = "INSERT INTO patient_profile (user_id, type, value, timestamp) VALUES (%s, %s, %s, %s)"
                 cursor.execute(db_query, (user_id, type, value, timestamp))
                 self.connector.commit()
-                row_countd = cursor.rowcount
-                if row_countd > 0:
+                row_count = cursor.rowcount
+                if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
             finally:
                 return if_inserted
 
-    def retrieve_patient_profile(self, patient_id, time_from=None):
+    def retrieve_patient_profile(self, patient_id, type=None):
         profiles = []
-        time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM patient_profile WHERE user_id=%s and timestamp>=%s"
-        with self.connector.cursor() as cursor:
-            try:
-                cursor.execute(db_query, (patient_id, time_from))
-                self.connector.commit()
-                profile = {}
-                for row in cursor:
-                    profile['patient_profile_id'] = row[0]
-                    profile['user_id'] = row[1]
-                    profile['type'] = row[2]
-                    profile['value'] = row[3]
-                    profile['timestamp'] = row[4]
-                    profiles.append(profile)
-            except Exception as e:
-                print("Exception: ", e)
+        if type is None:
+            # Retrieve all profile types
+            db_query = "SELECT type FROM patient_profile WHERE user_id=%s"
+            with self.connector.cursor() as cursor:
+                try:
+                    cursor.execute(db_query, (patient_id))
+                    self.connector.commit()
+                    profile_types = []
+                    for row in cursor:
+                        profile_type = row[0]
+                        if profile_type not in profile_types:
+                            profile_types.append(profile_type)
+                except Exception as e:
+                    print("Retrieve_Patient_Profile type list: ", e)
+            # Retrieve patient profiles on 'type is not None'
+            with self.connector.cursor() as cursor:
+                db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and type=%s ORDER BY timestamp DESC LIMIT 1"
+                try:
+                    for item in profile_types:
+                        cursor.execute(db_query, (patient_id, item))
+                        self.connector.commit()
+                        row = cursor.fetchone()
+                        profile = {}
+                        profile['type'] = row[0]
+                        profile['value'] = row[1]
+                        profile['timestamp'] = row[2]
+                        profiles.append(profile)
+                except Exception as e:
+                    print("Retrieve_Patient_Profile with 'type is not None':", e)
+        else:
+            db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and type=%s"
+            with self.connector.cursor() as cursor:
+                try:
+                    cursor.execute(db_query, (patient_id, type))
+                    self.connector.commit()
+                    for row in cursor:
+                        profile = {}
+                        profile['type'] = row[0]
+                        profile['value'] = row[1]
+                        profile['timestamp'] = row[2]
+                        profiles.append(profile)
+                except Exception as e:
+                    print("Exception: ", e)
         return profiles
 
     def add_physician(self, physician):
@@ -150,36 +218,63 @@ class DbManager():
                 db_query = "INSERT INTO physician (user_id, license_number, medicine_field, certificate_dir) values (%s, %s, %s, %s)"
                 cursor.execute(db_query, (user_id, license_number, medicine_field, certificate_dir))
                 self.connector.commit()
-                row_countd = cursor.rowcount
-                if row_countd > 0:
+                row_count = cursor.rowcount
+                if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
             finally:
                 return if_inserted
 
-    def retrieve_physician(self, physician_id, password):
+    def retrieve_physician(self, physician_id, password=None):
         user = {}
-        db_query = "SELECT u.password, u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, (physician_id, password))
+                if password is None:
+                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
+                    cursor.execute(db_query, (physician_id))
+                else:
+                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir, u.password FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
+                    cursor.execute(db_query, (physician_id, password))
                 self.connector.commit()
                 for row in cursor:
                     user['user_id'] = physician_id
-                    user['password'] = row[0]
-                    user['name'] = row[1]
-                    user['phone_number'] = row[2]
-                    user['email'] = row[3]
-                    user['join_date'] = row[4]
-                    user['deactivate_date'] = row[5]
-                    user['user_type'] = row[6]
-                    user['license_number'] = row[7]
-                    user['medicine_field'] = row[8]
-                    user['certificate_dir'] = row[9]
+                    user['name'] = row[0]
+                    user['phone_number'] = row[1]
+                    user['email'] = row[2]
+                    user['join_date'] = row[3]
+                    user['deactivate_date'] = row[4]
+                    user['user_type'] = row[5]
+                    user['license_number'] = row[6]
+                    user['medicine_field'] = row[7]
+                    user['certificate_dir'] = row[8]
+                    if password is None:
+                        user['password'] = None
+                    else:
+                        user['password'] = row[9]
             except Exception as e:
                 print("Exception: ", e)
         return user
+
+    def update_physician(self, user):
+        if_updated = False
+        user_id = user['user_id']
+        password = user['password']
+        name = user['name']
+        phone_number = user['phone_number']
+        email = user['email']
+        license_number = user['license_number']
+        medicine_field = user['medicine_field']
+        certificate_dir = user['certificate_dir']
+        with self.connector.cursor() as cursor:
+            db_query = "UPDATE user as u INNER JOIN physician as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.license_number=%s, p.medicine_field=%s, p.certificate_dir=%s WHERE u.user_id=%s"
+            cursor.execute(db_query, (password, name, phone_number, email, license_number, medicine_field, certificate_dir, user_id))
+            self.connector.commit()
+            row_count=cursor.rowcount
+            print(row_count)
+            if row_count > 0:
+                if_updated = True
+        return if_updated
 
     def add_physician_profile(self, user_id, type, value):
         if_inserted = False
@@ -189,27 +284,29 @@ class DbManager():
                 db_query = "INSERT INTO physician_profile (user_id, type, value) VALUES (%s, %s, %s)"
                 cursor.execute(db_query, (user_id, type, value))
                 self.connector.commit()
-                row_countd = cursor.rowcount
-                if row_countd > 0:
+                row_count = cursor.rowcount
+                if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
             finally:
                 return if_inserted
 
-    def retrieve_physician_profile(self, physician_id):
+    def retrieve_physician_profile(self, physician_id, type=None):
         profiles = []
-        db_query = "SELECT * FROM physician_profile WHERE user_id=%s"
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, physician_id)
+                if type is None:
+                    db_query = "SELECT type, value FROM physician_profile WHERE user_id=%s"
+                    cursor.execute(db_query, physician_id)
+                else:
+                    db_query = "SELECT type, value FROM physician_profile WHERE user_id=%s and type=%s"
+                    cursor.execute(db_query, physician_id, type)
                 self.connector.commit()
-                profile = {}
                 for row in cursor:
-                    profile['physician_profile_id'] = row[0]
-                    profile['user_id'] = row[1]
-                    profile['type'] = row[2]
-                    profile['value'] = row[3]
+                    profile = {}
+                    profile['type'] = row[0]
+                    profile['value'] = row[1]
                     profiles.append(profile)
             except Exception as e:
                 print("Exception: ", e)
@@ -233,8 +330,8 @@ class DbManager():
                 db_query = "INSERT INTO medical_image (subject, image_type, taken_from, physician, place, description, comment, image_dir, user_id, size) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (subject, image_type, taken_from, physician, place, description, comment, image_dir, user_id, size))
                 self.connector.commit()
-                row_countd = cursor.rowcount
-                if row_countd > 0:
+                row_count = cursor.rowcount
+                if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -283,8 +380,8 @@ class DbManager():
                 db_query = "INSERT INTO interpretation (physician_id, image_id, level, fee, date, summary, status) VALUES (%s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (physician_id, image_id, level, fee, date, summary, status))
                 self.connector.commit()
-                row_countd = cursor.rowcount
-                if row_countd > 0:
+                row_count = cursor.rowcount
+                if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 print("Exception: ", e)
@@ -313,100 +410,3 @@ class DbManager():
             except Exception as e:
                 print("Exception: ", e)
         return intprs
-
-# if __name__ == '__main__':
-#     db = DbManager()
-    # patient = {
-    #     'user_id': 'hhh',
-    #     'password': 1234,
-    #     'name': 'Han Ter Jung',
-    #     'phone_number': '010-9363-8209',
-    #     'email': 'hanterkr@gmail.com',
-    #     'join_date': 1450165348000,
-    #     'deactivate_date': 0,
-    #     'user_type': 'Patient',
-    #     'gender': 'Male',
-    #     'birthday': 643334400000
-    # }
-    # print(db.add_patient(patient))
-
-    # physician = {
-    #     'user_id': 'minjookr1234',
-    #     'password': 1234,
-    #     'name': 'Min Joo Choi',
-    #     'phone_number': '010-1568-6585',
-    #     'email': 'minjookr@gmail.com',
-    #     'join_date': 1450165348000,
-    #     'deactivate_date': 0,
-    #     'user_type': 'Physician',
-    #     'license_number': '23kljlfkaj9032k-234jl-lk23lk',
-    #     'major': 'Heart Specialist',
-    #     'certificate_dir': '/db/dd/djkel.jpg',
-    # }
-    # print(db.add_physician(physician))
-
-    # image = {
-    #     'user_id': 'hanterkr',
-    #     'subject': 'Heart Image',
-    #     'image_type': 'ECG',
-    #     'date': 1480969913000,
-    #     'taken_from': 1450469913000,
-    #     'physician': 'Dr.Choi',
-    #     'place': 'Seoul Hospital',
-    #     'description': 'None',
-    #     'comment': 'None',
-    #     'image_dir': '/db/db/first_image.png',
-    #     'size': 20
-    # }
-    # db.add_medical_image(image)
-
-    # intpr = {
-    #     'physician_id': 3,
-    #     'image_id': 1,
-    #     'level': 1,
-    #     'fee': 0,
-    #     'date': 1450469913000,
-    #     'summary': 'None',
-    #     'status': 'None'
-    # }
-    # db.add_interpretation(intpr)
-
-    # type = "['height', 'weight', 'Drinking Capacity', 'Drinking Frequency', 'Sleeping Hours', 'Exercise Hours', 'Smoking Status', 'Water Intake', 'Disease History', 'Medication', 'Family History', 'Significant', 'Notice']"
-    # value = "[172, 55, 2, 2, 5, 1, 'Nonsmoker', 8, 'None', 'None', 'None', 'None', 'None']"
-    # patient_profile = {
-    #     'user_id': 'hanterkr',
-    #     'type': type,
-    #     'value': value,
-    #     'timestamp': 1450424548000
-    # }
-    # db.add_patient_profile(patient_profile)
-
-    # type = "['Graduate Medical School', 'Practice Year']"
-    # value = "['Seoul Medical University', 3]"
-    # physician_profile = {
-    #     'user_id': 'minjookr',
-    #     'type': type,
-    #     'value': value
-    # }
-    # db.add_physician_profile(physician_profile)
-
-    # patient = db.retrieve_patient('hanterkr')
-    # print(patient)
-
-    # physician = db.retrieve_physician('minjookr')
-    # print(physician)
-
-    # intprs = db.retrieve_intpr(1)
-    # print(intprs)
-
-    # images = db.retrieve_medical_image(9)
-    # print(images)
-
-    # profiles = db.retrieve_patient_profile('hanterkr')
-    # print(profiles)
-
-    # profiles = db.retrieve_physician_profile('minjookr')
-    # print(profiles)
-
-    # user_type = db.retrieve_user('hanterkr', '1234')
-    # print(user_type)
