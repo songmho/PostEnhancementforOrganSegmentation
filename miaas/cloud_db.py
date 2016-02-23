@@ -17,6 +17,20 @@ class DbManager():
             print(e)
             self.is_connected = False
 
+    def retrieve_user(self, user_id, password):
+        user_type = None
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT user_type FROM user WHERE user_id=%s and password=%s"
+                cursor.execute(db_query, (user_id, password))
+                self.connector.commit()
+                row = cursor.fetchone()
+                user_type = row[0]
+            except Exception as e:
+                print("Exception: ", e)
+            finally:
+                return user_type
+
     def add_patient(self, patient):
         if_inserted = False
         with self.connector.cursor() as cursor:
@@ -297,8 +311,8 @@ class DbManager():
                 print("Exception: ", e)
         return intprs
 
-if __name__ == '__main__':
-    db = DbManager()
+# if __name__ == '__main__':
+#     db = DbManager()
     # patient = {
     #     'user_id': 'hhh',
     #     'password': 1234,
@@ -390,3 +404,6 @@ if __name__ == '__main__':
 
     # profiles = db.retrieve_physician_profile('minjookr')
     # print(profiles)
+
+    # user_type = db.retrieve_user('hanterkr', '1234')
+    # print(user_type)
