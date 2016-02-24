@@ -177,7 +177,7 @@ def handle_patient_profile_mgt(request):
             if not user_id:
                 raise Exception(MSG_INVALID_PARAMS)
             patient_profile = db.retrieve_patient_profile(user_id)
-            return JsonResponse(dict(constants.CODE_SUCCESS, **{'profile': patient_profile}))
+            return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': patient_profile}))
 
         elif (request.method) == 'POST':
             # update patient profile
@@ -188,10 +188,15 @@ def handle_patient_profile_mgt(request):
                 raise Exception(MSG_INVALID_PARAMS)
             user_id = data['user_id']
             timestamp = data['timestamp']
-            for key, value in data['profiles'].items():
+            # for key, value in data['profiles'].items():
+            # logger.info(data)
+            for prof in data['profiles']:
+                # logger.info(prof)
+                key = prof['type']
+                value = prof['value']
                 if not db.add_patient_profile(user_id, key, value, timestamp):
                     raise Exception(MSG_PROFILE_FAILED)
-                # logger.info('userid=%s key=%s value=%s' % (user_id, key, value))
+                logger.info('userid=%s key=%s value=%s' % (user_id, key, value))
             return JsonResponse(constants.CODE_SUCCESS)
 
     except Exception as e:
@@ -211,7 +216,7 @@ def handle_physician_profile_mgt(request):
             if not user_id:
                 raise Exception(MSG_INVALID_PARAMS)
             physician_profile = db.retrieve_physician_profile(user_id)
-            return JsonResponse(dict(constants.CODE_SUCCESS, **{'profile': physician_profile}))
+            return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': physician_profile}))
 
         elif (request.method) == 'POST':
             # update physician profile
@@ -235,7 +240,7 @@ def handle_physician_profile_mgt(request):
 
 @csrf_exempt
 def handle_medical_image_mgt(request):
-    db = cloud_db.DbManager();
+    db = cloud_db.DbManager()
     try:
         if(request.method) == 'GET':
             pass
@@ -248,7 +253,7 @@ def handle_medical_image_mgt(request):
 
 @csrf_exempt
 def handle_interpretation_mgt(request):
-    db = cloud_db.DbManager();
+    db = cloud_db.DbManager()
     try:
         if(request.method) == 'GET':
             pass
@@ -261,7 +266,7 @@ def handle_interpretation_mgt(request):
 
 @csrf_exempt
 def handle_analytics_mgt(request):
-    db = cloud_db.DbManager();
+    db = cloud_db.DbManager()
     try:
         if(request.method) == 'GET':
             pass
@@ -274,7 +279,7 @@ def handle_analytics_mgt(request):
 
 @csrf_exempt
 def handle_payment_mgt(request):
-    db = cloud_db.DbManager();
+    db = cloud_db.DbManager()
     try:
         if(request.method) == 'GET':
             pass

@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load my_filters %}
 
 <!-- script -->
 <script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
@@ -22,4 +23,6 @@ function signout() {
         }
     });
 }
+
+var user = JSON.parse("{{ user_session | jsonstr }}");
 </script>
