@@ -35,7 +35,7 @@ class DbManager():
                 row = cursor.fetchone()
                 user_type = row[0]
             except Exception as e:
-                print("Exception: ", e)
+                print("Retrieve_User: ", e)
             finally:
                 return user_type
 
@@ -50,7 +50,7 @@ class DbManager():
                 if row is not None:
                     if_exist = True
             except Exception as e:
-                print("Exception: ", e)
+                print("Find_User: ", e)
             finally:
                 return if_exist
 
@@ -79,9 +79,8 @@ class DbManager():
                 if row_count > 0:
                     if_inserted = True
             except Exception as e:
-                print("Exception: ", e)
-            finally:
-                return if_inserted
+                print("Add_Patient: ", e)
+        return if_inserted
 
     def retrieve_patient(self, patient_id, password=None):
         user = {}
@@ -109,7 +108,7 @@ class DbManager():
                     else:
                         user['password'] = row[8]
             except Exception as e:
-                print("Exception: ", e)
+                print("Retrieve_Patient: ", e)
         return user
 
     def update_patient(self, user):
@@ -122,18 +121,20 @@ class DbManager():
         gender = user['gender']
         birthday = user['birthday']
         with self.connector.cursor() as cursor:
-            db_query = "UPDATE user as u INNER JOIN patient as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.gender=%s, p.birthday=%s WHERE u.user_id=%s"
-            cursor.execute(db_query, (password, name, phone_number, email, gender, birthday, user_id))
-            self.connector.commit()
-            row_count=cursor.rowcount
-            print(row_count)
-            if row_count > 0:
-                if_updated = True
+            try:
+                db_query = "UPDATE user as u INNER JOIN patient as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.gender=%s, p.birthday=%s WHERE u.user_id=%s"
+                cursor.execute(db_query, (password, name, phone_number, email, gender, birthday, user_id))
+                self.connector.commit()
+                row_count=cursor.rowcount
+                print(row_count)
+                if row_count > 0:
+                    if_updated = True
+            except Exception as e:
+                print('Update_Patient: ', e)
         return if_updated
 
     def add_patient_profile(self, user_id, type, value, timestamp):
         logger.info('user_id=%s type=%s value=%s' % (user_id, type, value))
-
         if_inserted = False
         with self.connector.cursor() as cursor:
             try:
@@ -145,9 +146,8 @@ class DbManager():
                 if row_count > 0:
                     if_inserted = True
             except Exception as e:
-                print("Exception: ", e)
-            finally:
-                return if_inserted
+                print("Add_Patient_Profile: ", e)
+        return if_inserted
 
     def retrieve_patient_profile(self, patient_id, type=None):
         profiles = []
@@ -164,7 +164,7 @@ class DbManager():
                         if profile_type not in profile_types:
                             profile_types.append(profile_type)
                 except Exception as e:
-                    print("Retrieve_Patient_Profile type list: ", e)
+                    print("Retrieve_Patient_Profile on type list: ", e)
             # Retrieve patient profiles on 'type is not None'
             with self.connector.cursor() as cursor:
                 db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and type=%s ORDER BY timestamp DESC LIMIT 1"
@@ -179,7 +179,7 @@ class DbManager():
                         profile['timestamp'] = row[2]
                         profiles.append(profile)
                 except Exception as e:
-                    print("Retrieve_Patient_Profile with 'type is not None':", e)
+                    print("Retrieve_Patient_Profile with type is None:", e)
         else:
             db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and type=%s"
             with self.connector.cursor() as cursor:
@@ -193,7 +193,7 @@ class DbManager():
                         profile['timestamp'] = row[2]
                         profiles.append(profile)
                 except Exception as e:
-                    print("Exception: ", e)
+                    print("Retrieve_Patient_Profile with type is not None: ", e)
         return profiles
 
     def add_physician(self, physician):
@@ -222,7 +222,7 @@ class DbManager():
                 if row_count > 0:
                     if_inserted = True
             except Exception as e:
-                print("Exception: ", e)
+                print("Add_Physician: ", e)
             finally:
                 return if_inserted
 
@@ -253,7 +253,7 @@ class DbManager():
                     else:
                         user['password'] = row[9]
             except Exception as e:
-                print("Exception: ", e)
+                print("Retrieve_Physician: ", e)
         return user
 
     def update_physician(self, user):
@@ -267,13 +267,16 @@ class DbManager():
         medicine_field = user['medicine_field']
         certificate_dir = user['certificate_dir']
         with self.connector.cursor() as cursor:
-            db_query = "UPDATE user as u INNER JOIN physician as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.license_number=%s, p.medicine_field=%s, p.certificate_dir=%s WHERE u.user_id=%s"
-            cursor.execute(db_query, (password, name, phone_number, email, license_number, medicine_field, certificate_dir, user_id))
-            self.connector.commit()
-            row_count=cursor.rowcount
-            print(row_count)
-            if row_count > 0:
-                if_updated = True
+            try:
+                db_query = "UPDATE user as u INNER JOIN physician as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.license_number=%s, p.medicine_field=%s, p.certificate_dir=%s WHERE u.user_id=%s"
+                cursor.execute(db_query, (password, name, phone_number, email, license_number, medicine_field, certificate_dir, user_id))
+                self.connector.commit()
+                row_count=cursor.rowcount
+                print(row_count)
+                if row_count > 0:
+                    if_updated = True
+            except Exception as e:
+                print("Update_Physician:", e)
         return if_updated
 
     def add_physician_profile(self, user_id, type, value):
@@ -408,33 +411,55 @@ class DbManager():
                 print("Retrieve_Medical_Image_By_Id: ", e)
         return images
 
-    def add_interpretation(self, intpr):
+    def add_intpr(self, intpr):
         if_inserted = False
         with self.connector.cursor() as cursor:
             try:
                 # Add a interpretation result to 'interpretation' table
+                patient_id = intpr['patient_id']
                 physician_id = intpr['physician_id']
                 image_id = intpr['image_id']
                 level = intpr['level']
                 fee = intpr['fee']
-                date = intpr['date']
+                timestamp = intpr['timestamp']
                 summary = intpr['summary']
-                status = intpr['status']
-                db_query = "INSERT INTO interpretation (physician_id, image_id, level, fee, date, summary, status) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query, (physician_id, image_id, level, fee, date, summary, status))
+                interpretation = intpr['interpretation']
+                db_query = "INSERT INTO interpretation (patient_id, physician_id, image_id, level, fee, timestamp, summary, interpretation) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (patient_id, physician_id, image_id, level, fee, timestamp, summary, interpretation))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
                     if_inserted = True
             except Exception as e:
-                print("Exception: ", e)
+                print("Add_Interpretation: ", e)
             finally:
                 return if_inserted
 
-    def retrieve_intpr(self, image_id, time_from = None):
+    def retrieve_intpr_by_id(self, intpr_id):
+        db_query = "SELECT * FROM interpretation WHERE intpr_id=%s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, (intpr_id))
+                self.connector.commit()
+                row = cursor.fetchone()
+                intpr = {}
+                intpr['intpr_id'] = row[0]
+                intpr['physician_id'] = row[1]
+                intpr['patient_id'] = row[2]
+                intpr['image_id'] = row[3]
+                intpr['level'] = row[4]
+                intpr['fee'] = row[5]
+                intpr['timestamp'] = row[6]
+                intpr['summary'] = row[7]
+                intpr['interpretation'] = row[8]
+            except Exception as e:
+                print("Retrieve_Interpretation_By_Id: ", e)
+        return intpr
+
+    def retrieve_image_intpr(self, image_id, time_from = None):
         intprs = []
         date = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM interpretation WHERE image_id=%s and date>%s"
+        db_query = "SELECT * FROM interpretation WHERE image_id=%s and timestamp>%s"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (image_id, date))
@@ -443,13 +468,62 @@ class DbManager():
                 for row in cursor:
                     intpr['intpr_id'] = row[0]
                     intpr['physician_id'] = row[1]
-                    intpr['image_id'] = row[2]
-                    intpr['level'] = row[3]
-                    intpr['fee'] = row[4]
-                    intpr['date'] = row[5]
-                    intpr['summary'] = row[6]
-                    intpr['status'] = row[7]
+                    intpr['patient_id'] = row[2]
+                    intpr['image_id'] = row[3]
+                    intpr['level'] = row[4]
+                    intpr['fee'] = row[5]
+                    intpr['timestamp'] = row[6]
+                    intpr['summary'] = row[7]
+                    intpr['interpretation'] = row[8]
                     intprs.append(intpr)
             except Exception as e:
-                print("Exception: ", e)
+                print("Retrieve_Interpretation: ", e)
+        return intprs
+
+    def retrieve_physician_intpr(self, physician_id, time_from=None):
+        intprs = []
+        time_from = int(time_from) if time_from is not None else 0
+        db_query = "SELECT * FROM interpretation WHERE physician_id=%s and timestamp>%s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, (physician_id, time_from))
+                self.connector.commit()
+                intpr = {}
+                for row in cursor:
+                    intpr['intpr_id'] = row[0]
+                    intpr['physician_id'] = row[1]
+                    intpr['patient_id'] = row[2]
+                    intpr['image_id'] = row[3]
+                    intpr['level'] = row[4]
+                    intpr['fee'] = row[5]
+                    intpr['timestamp'] = row[6]
+                    intpr['summary'] = row[7]
+                    intpr['interpretation'] = row[8]
+                    intprs.append(intpr)
+            except Exception as e:
+                print("Retrieve_Physician_Interpretation: ", e)
+        return intprs
+
+    def retrieve_patient_intpr(self, patient_id, time_from=None):
+        intprs = []
+        time_from = int(time_from) if time_from is not None else 0
+        db_query = "SELECT * FROM interpretation WHERE patient_id=%s and timestamp>%s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, (patient_id, time_from))
+                self.connector.commit()
+                intpr = {}
+                for row in cursor:
+                    intpr['intpr_id'] = row[0]
+                    intpr['physician_id'] = row[1]
+                    intpr['patient_id'] = row[2]
+                    intpr['image_id'] = row[3]
+                    intpr['level'] = row[4]
+                    intpr['fee'] = row[5]
+                    intpr['timestamp'] = row[6]
+                    intpr['summary'] = row[7]
+                    intpr['interpretation'] = row[8]
+                    intprs.append(intpr)
+            except Exception as e:
+                print("Retrieve_Physician_Interpretation: ", e)
         return intprs
