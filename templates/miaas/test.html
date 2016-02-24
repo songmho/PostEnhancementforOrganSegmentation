@@ -187,11 +187,11 @@
                 method: 'POST',
                 data: JSON.stringify({
                     user_id: 'hanter',
-                    profiles: {
-                        height: '168 Centimeters',
-                        drinkingCapacity: 5,
-                        diseaseHistory: 'Diabetes'
-                    },
+                    profiles: [
+                        {type:'height', value:'168 Centimeters'},
+                        {type:'dirinkingCapacity', value:'5'},
+                        {type:'diseaseHistory', value:'Diabetes'}
+                    ],
                     timestamp: new Date().getTime()
                 }),
                 dataType: 'json',
@@ -230,10 +230,10 @@
                 method: 'POST',
                 data: JSON.stringify({
                     user_id: 'drhanter',
-                    profiles: {
-                        aboutMe: 'I want to diagnose your diseases!',
-                        aboutSpecialism: 'I am very special doctor.'
-                    },
+                    profiles: [
+                        {type:'aboutMe', value:'I want to diagnose your diseases.'},
+                        {type:'aboutSpecialism', value:'I am very special doctor.'}
+                    ],
                     timestamp: new Date().getTime()
                 }),
                 dataType: 'json',

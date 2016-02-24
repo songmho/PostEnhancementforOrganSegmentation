@@ -102,7 +102,8 @@ def handle_user_mgt(request):
                 user = db.retrieve_patient(user_id)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
             elif action == 'getPhysician':
-                pass
+                user = db.retrieve_physician(user_id)
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
             elif action == 'checkId':
                 #retrieve user_id ...
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'isValidId': True}))
@@ -226,10 +227,18 @@ def handle_physician_profile_mgt(request):
             if not data.get('user_id') or not data.get('profiles'):
                 raise Exception(MSG_INVALID_PARAMS)
             user_id = data['user_id']
-            for key, value in data['profiles'].items():
-                if not db.add_physician_profile(user_id, key, value):
-                    raise Exception(MSG_PROFILE_FAILED)
-                # logger.info('userid=%s key=%s value=%s' % (user_id, key, value))
+            is_updated = False
+            for prof in data['profiles']:
+                key = prof['type']
+                value = prof['value']
+                prof_updated = db.add_physician_profile(user_id, key, value)
+                if prof_updated:
+                    is_updated = True
+            if is_updated:
+                return JsonResponse(constants.CODE_SUCCESS)
+            else:
+                logger.info('update phsycian profile fail')
+                return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_CHANGE}))
             return JsonResponse(constants.CODE_SUCCESS)
 
     except Exception as e:
