@@ -48,6 +48,7 @@ function updateUser() {
         updatingUser['certificate_dir'] = 'here';
     }
 
+    $.LoadingOverlay('show');
     $.ajax("api/user", {
         method: 'POST',
         data: JSON.stringify({
@@ -57,6 +58,7 @@ function updateUser() {
         dataType: 'json',
         success: function(res) {
             console.log(res);
+            $.LoadingOverlay('hide');
             if(res['code'] == 'SUCCESS') {
                 user = updatingUser;
                 openUpdatedModal();

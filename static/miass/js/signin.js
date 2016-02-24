@@ -17,6 +17,7 @@ $(document).ready(function() {
 });
 
 function signin() {
+    $.LoadingOverlay('show');
     $.ajax("api/sessions", {
         method: 'POST',
         data: JSON.stringify({
@@ -25,7 +26,7 @@ function signin() {
         }),
         dataType: 'json',
         success: function(res) {
-            console.log(res);
+            $.LoadingOverlay('hide');
             if(res['code'] == "SUCCESS") {
                 if($('#checkRemember').prop('checked')) {
                     $.cookie('saved_id', $('#inputId').val());

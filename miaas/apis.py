@@ -106,7 +106,7 @@ def handle_user_mgt(request):
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
             elif action == 'checkId':
                 #retrieve user_id ...
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'isValidId': True}))
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'existedId': db.find_user(user_id)}))
             else:
                 return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
 

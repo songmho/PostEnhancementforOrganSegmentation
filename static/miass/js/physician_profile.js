@@ -5,6 +5,7 @@
 var profiles = {};
 
 $(document).ready(function() {
+    $.LoadingOverlay('show');
     $.ajax("api/physician_profile", {
         method: 'GET',
         data: {
@@ -12,7 +13,8 @@ $(document).ready(function() {
         },
         dataType: 'json',
         success: function(res) {
-            console.log(JSON.stringify(res));
+            $.LoadingOverlay('hide');
+            //console.log(JSON.stringify(res));
             if(res['code'] == 'SUCCESS') {
                 profiles = res['profiles'];
                 resetProfile();
@@ -57,6 +59,7 @@ function updateProfile() {
         newProfiles.push(nowProf);
     });
 
+    $.LoadingOverlay('show');
     $.ajax("api/physician_profile", {
         method: 'POST',
         data: JSON.stringify({
@@ -65,7 +68,8 @@ function updateProfile() {
         }),
         dataType: 'json',
         success: function(res) {
-            console.log(JSON.stringify(res));
+            //console.log(JSON.stringify(res));
+            $.LoadingOverlay('hide');
             if(res['code'] = 'SUCCESS') {
                 profiles = newProfiles;
                 openUpdatedModal();
