@@ -363,7 +363,7 @@ class DbManager():
     def retrieve_medical_image(self, user_id, time_from=None):
         images = []
         date = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM medical_image WHERE patient_id=%s and timestamp>=%s"
+        db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (user_id, time_from))
