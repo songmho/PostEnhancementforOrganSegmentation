@@ -338,7 +338,6 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 # Add a medical image information to 'medical_image' table
-                image_id = medical_image['image_id']
                 user_id = medical_image['user_id']
                 subject = medical_image['subject']
                 image_type = medical_image['image_type']
@@ -346,11 +345,12 @@ class DbManager():
                 physician = medical_image['physician']
                 place = medical_image['place']
                 description = medical_image['description']
-                image_dir = medical_image['image_dir']
-                size = medical_image['size']
+                # image_dir = medical_image['image_dir']
+                image_dir = 'DUMMY_DIR'
+                # size = medical_image['size']
                 timestamp = medical_image['timestamp']
-                db_query = "INSERT INTO medical_image (image_id, user_id, subject, image_type, taken_from, physician, place, description, image_dir, size, timestamp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query, (image_id, user_id, subject, image_type, taken_from, physician, place, description, image_dir, size, timestamp))
+                db_query = "INSERT INTO medical_image (user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
@@ -387,7 +387,6 @@ class DbManager():
         return images
 
     def retrieve_medical_image_by_id(self, image_id):
-        images = []
         db_query = "SELECT * FROM medical_image WHERE image_id=%s"
         with self.connector.cursor() as cursor:
             try:
@@ -406,10 +405,9 @@ class DbManager():
                 image['image_dir'] = row[8]
                 image['size'] = row[9]
                 image['timestamp'] = row[10]
-                images.append(image)
             except Exception as e:
                 print("Retrieve_Medical_Image_By_Id: ", e)
-        return images
+        return image
 
     def add_intpr(self, intpr):
         if_inserted = False
