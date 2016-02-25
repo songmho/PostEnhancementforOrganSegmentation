@@ -156,7 +156,7 @@ location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
             <h4 class="modal-title" id="updateFailedTitle">Update Failed</h4>
         </div>
         <div class="modal-body">
-        Signup failed
+        Updating account failed.
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -187,9 +187,6 @@ location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
-<script type="text/javascript">
-    var user = JSON.parse("{{ user_session | jsonstr }}");
-</script>
 <script src="{% static 'miass/js/account.js' %}"></script>
 
 </body>

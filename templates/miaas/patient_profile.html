@@ -14,27 +14,22 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
 {% include 'miaas/template_nav_patient.html' %}
 
-<script>
-    var session = "{{ user_session | jsonstr }}";
-{#    console.log(JSON.parse(session));#}
-</script>
-
 <div class="container">
     <section class="section section-default">
         <div class="row">
             <div class="col-xs-12 col-title">
                 <h2 class="text-primary">Personal Profile</h2>
             </div>
-            <form class="col-xs-12 col-form">
+            <form id="patientProfileForm" class="col-xs-12 col-form">
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputHeight" >Height</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="height" >Height</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="inputHeight" name="height" class="form-control"
+                            <input type="number" id="height" name="height" class="form-control"
                                    >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4">
-                            <select class="form-control" id="selectHeightType" name="heightType">
+                            <select class="form-control" id="heightType" name="heightType">
                                 <option>Centimeters</option>
                                 <option>Inch</option>
                                 <option>Feet</option>
@@ -43,13 +38,13 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputWeight" >Weight</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="weight" >Weight</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="inputWeight" name="weight" class="form-control"
+                            <input type="number" id="weight" name="weight" class="form-control"
                                    >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4">
-                            <select class="form-control" id="selectWeightType" name="weightType">
+                            <select class="form-control" id="weightType" name="weightType">
                                 <option>Kilogram</option>
                                 <option>Pound</option>
                             </select>
@@ -57,9 +52,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputDrinkingCapacity" >Drinking Capacity</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingCapacity" >Drinking Capacity</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="inputDrinkingCapacity" name="drinkingCapacity" class="form-control"
+                            <input type="number" id="drinkingCapacity" name="drinkingCapacity" class="form-control"
                                    >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text">
@@ -68,9 +63,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputDrinkingFrequency" >Drinking Frequency</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingFrequency" >Drinking Frequency</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="inputDrinkingFrequency" name="drinkingFrequency" class="form-control"
+                            <input type="number" id="drinkingFrequency" name="drinkingFrequency" class="form-control"
                                    >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text no-pad-right">
@@ -79,9 +74,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputSleeping" >Sleeping Hours</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="sleeping" >Sleeping Hours</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="inputSleeping" name="sleeping" class="form-control"
+                            <input type="number" id="sleeping" name="sleeping" class="form-control"
                                    >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text">
@@ -90,9 +85,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputExercise" >Exercise Hours</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="exercise" >Exercise Hours</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="inputExercise" name="exercise" class="form-control"
+                            <input type="number" id="exercise" name="exercise" class="form-control"
                                    >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text no-pad-right">
@@ -101,9 +96,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="selectSmoking" >Smoking Status</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="smoking" >Smoking Status</label>
                         <div class="col-sm-9 col-md-7">
-                            <select class="form-control" id="selectSmoking" name="smoking">
+                            <select class="form-control" id="smoking" name="smoking">
                                 <option>Nonsmoker</option>
                                 <option>Scarcely</option>
                                 <option>Sometimes</option>
@@ -120,9 +115,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputWater" >Water Intake</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="water" >Water Intake</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="inputWater" name="water" class="form-control"
+                            <input type="number" id="water" name="water" class="form-control"
                                    >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text">
@@ -133,37 +128,37 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="taDisease" >Disease History</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="diseaseHistory" >Disease History</label>
                         <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="taDisease" name="disease" class="form-control"
+                            <textarea type="textarea" id="diseaseHistory" name="diseaseHistory" class="form-control"
                                       placeholder="Diseases" rows="5"></textarea>
                         </div>
                     </div>
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="taMedication" > Medication</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="medication" > Medication</label>
                         <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="taMedication" name="medication" class="form-control"
+                            <textarea type="textarea" id="medication" name="medication" class="form-control"
                                       placeholder="Medications" rows="5"></textarea>
                         </div>
                     </div>
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="taFamilyHistory" >Family History</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="familyHistory" >Family History</label>
                         <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="taFamilyHistory" name="familyHistory" class="form-control"
+                            <textarea type="textarea" id="familyHistory" name="familyHistory" class="form-control"
                                       placeholder="Family History (Heritability)" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="taSignificant" >Significant</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="significant" >Significant</label>
                         <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="taSignificant" name="significant" class="form-control"
+                            <textarea type="textarea" id="significant" name="significant" class="form-control"
                                       placeholder="Significant Cases" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="taNotice" >Notice</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="notice" >Notice</label>
                         <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="taNotice" name="notice" class="form-control"
+                            <textarea type="textarea" id="notice" name="notice" class="form-control"
                                       placeholder="Notices" rows="3"></textarea>
                         </div>
                     </div>
@@ -171,7 +166,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
                 <div class="form-btns-container row">
                     <div id="btnFormReset" class="col-xs-6 col-sm-4 col-md-2 col-md-offset-4 form-button">
-                        <button class="btn btn-lg btn-primary btn-block" type="reset">Reset</button>
+                        <button class="btn btn-lg btn-primary btn-block" type="button">Reset</button>
                     </div>
                     <div id="btnFormUpdate" class="col-xs-12 col-sm-4 col-md-2 form-button">
                         <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
@@ -180,6 +175,42 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             </form>
         </div>
     </section>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="updateFailedModal" tabindex="-1" role="dialog" aria-labelledby="updateFailedTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="updateFailedTitle">Update Failed</h4>
+        </div>
+        <div class="modal-body">
+        Signup failed
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="updatedModal" tabindex="-1" role="dialog" aria-labelledby="updatedTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="updatedTitle">Update Success</h4>
+        </div>
+        <div class="modal-body">
+        Your profile is successfully updated.
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
 </div>
 
 {% include 'miaas/template_footer.html' %}

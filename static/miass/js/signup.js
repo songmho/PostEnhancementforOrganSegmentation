@@ -44,6 +44,7 @@ $(document).ready(function() {
         e.preventDefault();
 
         //id check
+        $.LoadingOverlay('show');
         $.ajax("api/user", {
             method: 'GET',
             data: {
@@ -52,9 +53,11 @@ $(document).ready(function() {
             },
             dataType: 'json',
             success: function (res) {
-                console.log(res);
+                //console.log(res);
+
+                $.LoadingOverlay('hide');
                 if (res['code'] == 'SUCCESS') {
-                    if (res['isValidId']==true) {
+                    if (res['existedId']==false) {
                         //pw check
                         if($('#inputPw').val() != $('#inputPwConfirm').val()) {
                             openSignupFailModal("Password Confirm is not same.");
@@ -68,7 +71,7 @@ $(document).ready(function() {
                             $('#col-signup-detail-physician').show();
                         }
                     } else {
-                        openSignupFailModal("ID is already existed.")
+                        openSignupFailModal("ID is already existed. Please use another ID.")
                     }
                 } else {
                     openSignupFailModal("Checking ID is failed. Please try again.")
@@ -119,6 +122,7 @@ function signup(usertype) {
 
     console.log(user);
 
+    $.LoadingOverlay('show');
     $.ajax("api/user", {
         method: 'POST',
         data: JSON.stringify({
@@ -127,6 +131,7 @@ function signup(usertype) {
         }),
         dataType: 'json',
         success: function(res) {
+            $.LoadingOverlay('hide');
             if(res['code'] == 'SUCCESS') {
                 location.href = indexPage;
             } else {

@@ -1,8 +1,10 @@
 {% load staticfiles %}
+{% load my_filters %}
 
 <!-- script -->
 <script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
 <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'lib/jquery/plugins/loadingoverlay.min.js' %}"></script>
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <script src="{% static 'lib/bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
 
@@ -10,10 +12,12 @@
 
 <script type="text/javascript">
 function signout() {
-     $.ajax("api/sessions", {
+    $.LoadingOverlay('show');
+    $.ajax("api/sessions", {
         method: 'DELETE',
         dataType: 'json',
         success: function(res) {
+            $.LoadingOverlay('hide');
             if(res['code'] == 'SUCCESS') {
                 location.href = "{% url 'miaas:signin' %}";
             } else {
@@ -22,4 +26,6 @@ function signout() {
         }
     });
 }
+
+var user = JSON.parse("{{ user_session | jsonstr }}");
 </script>

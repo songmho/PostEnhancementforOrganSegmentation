@@ -1,12 +1,12 @@
 /**
- * Created by hanter on 2016. 2. 23..
+ * Created by hanter on 2016. 2. 24..
  */
 
 var profiles = {};
 
 $(document).ready(function() {
     $.LoadingOverlay('show');
-    $.ajax("api/patient_profile", {
+    $.ajax("api/physician_profile", {
         method: 'GET',
         data: {
             user_id: user.user_id
@@ -24,46 +24,28 @@ $(document).ready(function() {
         }
     });
 
-    $('#btnFormReset').click(resetProfile);
-    $('#patientProfileForm').on('submit', function(e) {
+    $('#physicianProfileForm').on('submit', function(e) {
         e.preventDefault();
 
         updateProfile();
     });
 });
 
-
 function resetProfile() {
-    $('#patientProfileForm input, #patientProfileForm textarea').each(function() {
+    $('#physicianProfileForm input, #physicianProfileForm textarea').each(function() {
         $(this).val('');
     });
 
-    console.log(profiles);
-
     for (var i in profiles) {
         var profile = profiles[i];
-
-        if(profile.type == "height") {
-            var height = profile.value.split(" ");
-            $('#height').val(height[0]);
-            $('#heightType').val(height[1]).attr("selected", "selected");
-        } else if(profile.type == "weight") {
-            var weight = profile.value.split(" ");
-            $('#weight').val(weight[0]);
-            $('#weightType').val(weight[1]).attr("selected", "selected");
-        } else if(profile.type == "smoking") {
-            $('#smoking').val(profile.value).attr("selected", "selected");
-        } else {
-            $('#'+profile.type).val(profile.value);
-        }
+        $('#'+profile.type).val(profile.value);
     }
 }
 
-var newProfiles = [];
 function updateProfile() {
     newProfiles = [];
 
-    $('#patientProfileForm input, #patientProfileForm textarea').each(function() {
+    $('#physicianProfileForm input, #physicianProfileForm textarea').each(function() {
         var id = $(this).attr('id');
         var value = $(this).val();
         var nowProf = {};
@@ -73,30 +55,21 @@ function updateProfile() {
         }
 
         nowProf['type'] = id;
-        if (id == "height") {
-            nowProf['value'] = value + ' ' + $('#heightType').val()
-        } else if (id == "weight") {
-            nowProf['value'] = value + ' ' + $('#weightType').val()
-        } else {
-            nowProf['value'] = value;
-        }
+        nowProf['value'] = value;
         newProfiles.push(nowProf);
     });
-    newProfiles.push({type: 'smoking', value: $('#smoking').val()});
 
-    //console.log(newProfiles);
     $.LoadingOverlay('show');
-    $.ajax("api/patient_profile", {
+    $.ajax("api/physician_profile", {
         method: 'POST',
         data: JSON.stringify({
             user_id: user.user_id,
-            profiles: newProfiles,
-            timestamp: new Date().getTime()
+            profiles: newProfiles
         }),
         dataType: 'json',
         success: function(res) {
-            $.LoadingOverlay('hide');
             //console.log(JSON.stringify(res));
+            $.LoadingOverlay('hide');
             if(res['code'] = 'SUCCESS') {
                 profiles = newProfiles;
                 openUpdatedModal();
@@ -106,7 +79,6 @@ function updateProfile() {
         }
     });
 }
-
 function openUpdateFailModal(msg, title) {
     if (title!=undefined && title!=null && title!='') {
         $('#updateFailedTitle').text(title)
