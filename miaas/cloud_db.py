@@ -362,10 +362,11 @@ class DbManager():
 
     def retrieve_medical_image(self, user_id, time_from=None):
         images = []
-        date = int(time_from) if time_from is not None else 0
+        time_from = int(time_from) if time_from is not None else 0
         db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s"
         with self.connector.cursor() as cursor:
             try:
+                print(user_id, time_from)
                 cursor.execute(db_query, (user_id, time_from))
                 self.connector.commit()
                 for row in cursor:
