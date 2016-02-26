@@ -181,7 +181,7 @@ class DbManager():
                 except Exception as e:
                     print("Retrieve_Patient_Profile with type is None:", e)
         else:
-            db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and type=%s"
+            db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and type=%s ORDER BY timestamp DESC"
             with self.connector.cursor() as cursor:
                 try:
                     cursor.execute(db_query, (patient_id, type))
@@ -363,7 +363,7 @@ class DbManager():
     def retrieve_medical_image(self, user_id, time_from=None):
         images = []
         time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s"
+        db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY timestamp DESC"
         with self.connector.cursor() as cursor:
             try:
                 print(user_id, time_from)
@@ -458,13 +458,13 @@ class DbManager():
     def retrieve_image_intpr(self, image_id, time_from = None):
         intprs = []
         date = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM interpretation WHERE image_id=%s and timestamp>%s"
+        db_query = "SELECT * FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (image_id, date))
                 self.connector.commit()
-                intpr = {}
                 for row in cursor:
+                    intpr = {}
                     intpr['intpr_id'] = row[0]
                     intpr['physician_id'] = row[1]
                     intpr['patient_id'] = row[2]
@@ -482,13 +482,13 @@ class DbManager():
     def retrieve_physician_intpr(self, physician_id, time_from=None):
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM interpretation WHERE physician_id=%s and timestamp>%s"
+        db_query = "SELECT * FROM interpretation WHERE physician_id=%s and timestamp>%s ORDER BY timestamp DESC"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (physician_id, time_from))
                 self.connector.commit()
-                intpr = {}
                 for row in cursor:
+                    intpr = {}
                     intpr['intpr_id'] = row[0]
                     intpr['physician_id'] = row[1]
                     intpr['patient_id'] = row[2]
@@ -506,13 +506,13 @@ class DbManager():
     def retrieve_patient_intpr(self, patient_id, time_from=None):
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM interpretation WHERE patient_id=%s and timestamp>%s"
+        db_query = "SELECT * FROM interpretation WHERE patient_id=%s and timestamp>%s ORDER BY timestamp DESC"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (patient_id, time_from))
                 self.connector.commit()
-                intpr = {}
                 for row in cursor:
+                    intpr = {}
                     intpr['intpr_id'] = row[0]
                     intpr['physician_id'] = row[1]
                     intpr['patient_id'] = row[2]
