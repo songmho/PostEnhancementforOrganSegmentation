@@ -19,6 +19,7 @@ MSG_UNKNOWN_ERROR = "Unknown error."
 MSG_PROFILE_FAILED = "Profile update failed."
 MSG_ACCOUNT_FAILED = "Account update failed."
 MSG_NO_CHANGE = "There is no change."
+MSG_NO_MEDICAL_IMAGE = "There is not the requested medical image."
 
 logging.basicConfig(
     format="[%(name)s][%(asctime)s] %(message)s",
@@ -251,8 +252,43 @@ def handle_physician_profile_mgt(request):
 def handle_medical_image_mgt(request):
     db = cloud_db.DbManager()
     try:
-        if(request.method) == 'GET':
-            pass
+        if request.method == 'GET':
+            #retrieve medical image
+            logger.info(request.GET)
+            action = request.GET.get('action')
+            if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+            if action == 'getImage':
+                image_id = request.GET.get('image_id')
+                image = db.retrieve_medical_image_by_id(image_id)
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'medical_image': image}))
+                pass
+            elif action == 'getImages':
+                user_id = request.GET.get('user_id')
+                image_list = db.retrieve_medical_image(user_id)
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'image_list': image_list}))
+            else:
+                raise Exception(MSG_INVALID_PARAMS)
+        elif request.method == 'POST':
+            #add medical image
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+            data = json.loads(request.body.decode("utf-8"))
+            if not data.get('action') or not data.get('medical_image'):
+                raise Exception(MSG_INVALID_PARAMS)
+            action = data['action']
+            medical_image = data['medical_image']
+            if action == 'upload':
+                if db.add_medical_image(medical_image):
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_MEDICAL_IMAGE}))
+            elif action == 'update':
+                # update image
+                pass
+            else:
+                raise Exception(MSG_INVALID_PARAMS)
+
 
     except Exception as e:
         logger.exception(e)

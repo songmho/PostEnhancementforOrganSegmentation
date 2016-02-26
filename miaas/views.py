@@ -73,8 +73,8 @@ def medical_image_page(request, img_num):
 
 def interpretation_page(request):
     context = _get_session_context(request)
-    # return render(request, 'miaas/interpretation.html', sctx.interpret_context)
-    return render(request, 'miaas/interpretation.html', context)
+    return render(request, 'miaas/interpretation.html', sctx.interpret_context)
+    # return render(request, 'miaas/interpretation.html', context)
 
 def interpretation_detail_page(request, interpret_num):
     context = _get_session_context(request)

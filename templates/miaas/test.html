@@ -11,20 +11,31 @@
 </head>
 <body>
 
-<button id="login">login</button>
-<button id="logout">logout</button>
-<button id="signup">signup</button>
-<button id="signup2">signup2</button>
-<button id="idcheck">idcheck</button>
-<button id="updatePatientInfo">updatePatientInfo</button>
-<button id="getPatientInfo">getPatientInfo</button>
-<button id="getPatientProfile">getPatientProfile</button>
-<button id="addPatientProfile">addPatientProfile</button>
-<button id="updatePhysicianInfo">updatePhysicianInfo</button>
-<button id="getPhysicianInfo">getPhysicianInfo</button>
-<button id="getPhysicianProfile">getPhysicianProfile</button>
-<button id="addPhysicianProfile">addPhysicianProfile</button>
-
+<div>
+    <button id="login">login</button>
+    <button id="logout">logout</button>
+    <button id="signup">signup</button>
+    <button id="signup2">signup2</button>
+    <button id="idcheck">idcheck</button>
+</div>
+<div>
+    <button id="updatePatientInfo">updatePatientInfo</button>
+    <button id="getPatientInfo">getPatientInfo</button>
+    <button id="getPatientProfile">getPatientProfile</button>
+    <button id="addPatientProfile">addPatientProfile</button>
+</div>
+<div>
+    <button id="updatePhysicianInfo">updatePhysicianInfo</button>
+    <button id="getPhysicianInfo">getPhysicianInfo</button>
+    <button id="getPhysicianProfile">getPhysicianProfile</button>
+    <button id="addPhysicianProfile">addPhysicianProfile</button>
+</div>
+<div>
+    <button id="addMedicalImage">addMedicalImage</button>
+    <button id="retrieveMedicalImage">retrieveMedicalImage</button>
+    <button id="retrieveMedicalImages">retrieveMedicalImages</button>
+    <button id="deleteMedicalImage">deleteMedicalImage</button>
+</div>
 </body>
 
 <script src="{% static "lib/jquery/jquery-2.2.0.min.js" %}"></script>
@@ -242,6 +253,67 @@
                 }
             });
         });
+
+        $('#addMedicalImage').click(function() {
+            $.ajax("api/medical_image", {
+                method: 'POST',
+                data: JSON.stringify({
+                    action: 'upload',
+                    medical_image: {
+                        user_id: 'hanter',
+                        subject: 'My First X-ray Image',
+                        image_type: 'X-ray',
+                        taken_from: 'Medical Clinic',
+                        place: 'SEL Hospital',
+                        physician: 'Ku Hwan An',
+                        description: 'the fist xray image',
+                        timestamp: new Date().getTime()
+                    }
+                }),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            })
+        });
+        $('#retrieveMedicalImage').click(function() {
+            $.ajax("api/medical_image", {
+                method: 'GET',
+                data: {
+                    action: 'getImage',
+                    image_id: '3'
+                },
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            })
+        })
+        $('#retrieveMedicalImages').click(function() {
+            $.ajax("api/medical_image", {
+                method: 'GET',
+                data: {
+                    action: 'getImages',
+                    user_id: 'hanter'
+                },
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            })
+        })
+        $('#deleteMedicalImage').click(function() {
+            $.ajax("api/medical_image", {
+                method: 'DELETE',
+                data: JSON.stringify({
+                    image_id: '1'
+                }),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            })
+        })
     });
 </script>
 
