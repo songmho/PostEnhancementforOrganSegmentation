@@ -8,6 +8,7 @@ from . import constants, model, cloud_db
 
 MSG_DB_FAILED = "Failed to handle DB requests."
 MSG_NO_USER_LOGGEDIN = "No user logged in."
+MSG_NOT_MATCHED_USER = "logged in user is not match with request user"
 MSG_ALREADY_LOGGEDIN = "Already logged in."
 MSG_SIGNUP_FAILED = "Sign up failed."
 MSG_INVALID_IDPW = "Invalid ID and/or PW."
@@ -141,6 +142,11 @@ def handle_user_mgt(request):
                 else:
                     raise Exception(MSG_INVALID_PARAMS)
             elif action == 'update':
+                if not request.session.get('user'):
+                    raise Exception(MSG_NO_USER_LOGGEDIN)
+                if request.session['user']['user_id'] != user['user_id']:
+                    raise Exception(MSG_NOT_MATCHED_USER)
+
                 if user_type == 'patient':
                     logger.info(user)
                     if db.update_patient(user):
@@ -172,12 +178,19 @@ def handle_user_mgt(request):
 def handle_patient_profile_mgt(request):
     db = cloud_db.DbManager()
     try:
+        if not request.session.get('user'):
+            raise Exception(MSG_NO_USER_LOGGEDIN)
+
         if(request.method) == 'GET':
             # retrieve patient profile
             logger.info(request.GET)
             user_id = request.GET.get('user_id')
             if not user_id:
                 raise Exception(MSG_INVALID_PARAMS)
+
+            if request.session['user']['user_id'] != user_id:
+                raise Exception(MSG_NOT_MATCHED_USER)
+
             patient_profile = db.retrieve_patient_profile(user_id)
             return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': patient_profile}))
 
@@ -190,6 +203,10 @@ def handle_patient_profile_mgt(request):
                 raise Exception(MSG_INVALID_PARAMS)
             user_id = data['user_id']
             timestamp = data['timestamp']
+
+            if request.session['user']['user_id'] != user_id:
+                raise Exception(MSG_NOT_MATCHED_USER)
+
             # for key, value in data['profiles'].items():
             # logger.info(data)
             for prof in data['profiles']:
@@ -211,12 +228,18 @@ def handle_patient_profile_mgt(request):
 def handle_physician_profile_mgt(request):
     db = cloud_db.DbManager()
     try:
+        if not request.session.get('user'):
+            raise Exception(MSG_NO_USER_LOGGEDIN)
+
         if(request.method) == 'GET':
             # retrieve physician profile
             logger.info(request.GET)
             user_id = request.GET.get('user_id')
             if not user_id:
                 raise Exception(MSG_INVALID_PARAMS)
+            if request.session['user']['user_id'] != user_id:
+                raise Exception(MSG_NOT_MATCHED_USER)
+
             physician_profile = db.retrieve_physician_profile(user_id)
             return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': physician_profile}))
 
@@ -228,6 +251,9 @@ def handle_physician_profile_mgt(request):
             if not data.get('user_id') or not data.get('profiles'):
                 raise Exception(MSG_INVALID_PARAMS)
             user_id = data['user_id']
+            if request.session['user']['user_id'] != user_id:
+                raise Exception(MSG_NOT_MATCHED_USER)
+
             is_updated = False
             for prof in data['profiles']:
                 key = prof['type']
@@ -252,6 +278,9 @@ def handle_physician_profile_mgt(request):
 def handle_medical_image_mgt(request):
     db = cloud_db.DbManager()
     try:
+        if not request.session.get('user'):
+            raise Exception(MSG_NO_USER_LOGGEDIN)
+
         if request.method == 'GET':
             #retrieve medical image
             logger.info(request.GET)
@@ -265,6 +294,9 @@ def handle_medical_image_mgt(request):
                 pass
             elif action == 'getImages':
                 user_id = request.GET.get('user_id')
+                if request.session['user']['user_id'] != user_id:
+                    raise Exception(MSG_NOT_MATCHED_USER)
+
                 image_list = db.retrieve_medical_image(user_id)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'image_list': image_list}))
             else:
@@ -278,6 +310,10 @@ def handle_medical_image_mgt(request):
                 raise Exception(MSG_INVALID_PARAMS)
             action = data['action']
             medical_image = data['medical_image']
+
+            if request.session['user']['user_id'] != medical_image['user_id']:
+                raise Exception(MSG_NOT_MATCHED_USER)
+
             if action == 'upload':
                 if db.add_medical_image(medical_image):
                     return JsonResponse(constants.CODE_SUCCESS)
@@ -300,6 +336,9 @@ def handle_medical_image_mgt(request):
 def handle_interpretation_mgt(request):
     db = cloud_db.DbManager()
     try:
+        if not request.session.get('user'):
+            raise Exception(MSG_NO_USER_LOGGEDIN)
+
         if(request.method) == 'GET':
             pass
 
@@ -313,6 +352,9 @@ def handle_interpretation_mgt(request):
 def handle_analytics_mgt(request):
     db = cloud_db.DbManager()
     try:
+        if not request.session.get('user'):
+            raise Exception(MSG_NO_USER_LOGGEDIN)
+
         if(request.method) == 'GET':
             pass
 
@@ -326,6 +368,9 @@ def handle_analytics_mgt(request):
 def handle_payment_mgt(request):
     db = cloud_db.DbManager()
     try:
+        if not request.session.get('user'):
+            raise Exception(MSG_NO_USER_LOGGEDIN)
+
         if(request.method) == 'GET':
             pass
 
