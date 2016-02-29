@@ -149,6 +149,7 @@ class DbManager():
                 print("Add_Patient_Profile: ", e)
         return if_inserted
 
+    # type='None' (performance low)
     def retrieve_patient_profile(self, patient_id, type=None):
         profiles = []
         if type is None:
@@ -360,14 +361,19 @@ class DbManager():
             finally:
                 return if_inserted
 
-    def retrieve_medical_image(self, user_id, time_from=None):
+    def retrieve_medical_image(self, user_id, time_from=None, offset=None, limit=None):
         images = []
         time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY timestamp DESC"
+        offset = int(offset) if offset is not None else 0
+        limit = int(limit) if limit is not None else 0
         with self.connector.cursor() as cursor:
             try:
-                print(user_id, time_from)
-                cursor.execute(db_query, (user_id, time_from))
+                if limit is 0:
+                    db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY timestamp DESC"
+                    cursor.execute(db_query, (user_id, time_from))
+                else:
+                    db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY timestamp DESC LIMIT %s OFFSET %s"
+                    cursor.execute(db_query, (user_id, time_from, limit, offset))
                 self.connector.commit()
                 for row in cursor:
                     image = {}
@@ -458,7 +464,7 @@ class DbManager():
     def retrieve_image_intpr(self, image_id, time_from = None):
         intprs = []
         date = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC"
+        db_query = "SELECT * FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC LIMIT %s OFFSET %s"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (image_id, date))
