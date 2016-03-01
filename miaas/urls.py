@@ -10,6 +10,7 @@ urlpatterns = [
 
     url(r'^signin$', views.signin_page, name='signin'),
     url(r'^signup$', views.signup_page, name='signup'),
+    url(r'^find$', views.find_page, name='find'),
     url(r'^profile$', views.profile_page, name='profile'),
     url(r'^physician$', views.physician_profile_page, name='physician_profile'),
     url(r'^account$', views.account_page, name='account'),

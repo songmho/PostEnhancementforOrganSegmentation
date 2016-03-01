@@ -48,6 +48,9 @@ def signin_page(request):
 def signup_page(request):
     return render(request, 'miaas/signup.html', None)
 
+def find_page(request):
+    return render(request, 'miaas/find.html', None)
+
 def account_page(request):
     context = _get_session_context(request)
     return render(request, 'miaas/account.html', context)
