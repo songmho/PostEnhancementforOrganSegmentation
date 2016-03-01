@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
 from miaas import sample_contexts as sctx
+from miaas import cloud_db, constants
 import logging, json
 
 # get db data -> 404 template, urls in tutorial #3: https://docs.djangoproject.com/en/1.9/intro/tutorial03/
@@ -58,6 +59,48 @@ def profile_page(request):
 
 def archive_page(request):
     context = _get_session_context(request)
+
+    if request.session.get('user') and request.session['user']['user_type']:
+        image_cnt = request.session.get('image_cnt')
+        if not image_cnt:
+            logger.info('no image cnt session. call db')
+            db = cloud_db.DbManager()
+            image_cnt = db.retrieve_medical_image_amount(request.session['user']['user_id'])
+        logger.info('image_cnt=%s', image_cnt)
+        if image_cnt <= 0:
+            return render(request, 'miaas/archive.html', context)
+        archive = {}
+        request.session['image_cnt'] = image_cnt
+        archive['image_cnt'] = image_cnt
+
+        now_page = request.GET.get('page')
+        if now_page: now_page = int(now_page)
+        max_page = image_cnt // constants.CNT_CONTENTS_IN_PAGE
+        if image_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
+            max_page += 1
+        if not now_page or now_page > max_page:
+            now_page = 1
+        archive['now_page'] = now_page
+        archive['max_page'] = max_page
+        logger.info('now_page=%s, max_page=%s' % (now_page, max_page))
+
+        start_page = now_page - 4
+        if start_page < 1: start_page = 1
+        end_page = start_page + 9
+        if end_page > max_page: end_page = max_page
+        archive['start_page'] = start_page
+        archive['end_page'] = end_page
+        logger.info('start_page=%s, end_page=%s' % (start_page, max_page))
+
+        db = cloud_db.DbManager()
+        images = db.retrieve_medical_image(user_id=request.session['user']['user_id'],
+                                           offset=(now_page-1)*constants.CNT_CONTENTS_IN_PAGE,
+                                           limit=constants.CNT_CONTENTS_IN_PAGE)
+        archive['images'] = images
+
+        context['archive'] = archive
+
+    logger.info('archive get: %s' % request.GET)
     # return render(request, 'miaas/archive.html', sctx.archive_context)
     return render(request, 'miaas/archive.html', context)
 
@@ -73,8 +116,8 @@ def medical_image_page(request, img_num):
 
 def interpretation_page(request):
     context = _get_session_context(request)
-    # return render(request, 'miaas/interpretation.html', sctx.interpret_context)
-    return render(request, 'miaas/interpretation.html', context)
+    return render(request, 'miaas/interpretation.html', sctx.interpret_context)
+    # return render(request, 'miaas/interpretation.html', context)
 
 def interpretation_detail_page(request, interpret_num):
     context = _get_session_context(request)

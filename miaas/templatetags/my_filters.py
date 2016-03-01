@@ -1,6 +1,6 @@
 from django import template
 from django.utils.html import escapejs
-import json
+import json, datetime, pytz
 
 register = template.Library()
 
@@ -13,6 +13,14 @@ def get_range(number):
 @register.filter(name='get_range2')
 def get_range2(number):
     return range(1, number+1)
+
+@register.filter(name='get_range_from_to')
+def get_range_from_to(fr, to):
+    return range(fr, to)
+
+@register.filter(name='get_range_from_to2')
+def get_range_from_to2(fr, to):
+    return range(fr, to+1)
 
 @register.filter(name='get_page_num')
 def get_page_num(item_count, items_per_page):
@@ -36,3 +44,10 @@ def get_interpretation_status(status):
 @register.filter(name='jsonstr')
 def to_jsonstr(dict):
     return escapejs(json.dumps(dict))
+
+timezone_kr = pytz.timezone('Asia/Seoul')
+@register.filter(name='datetime_string')
+def timestamp_to_datetime_string(timestamp):
+    return datetime.datetime.fromtimestamp(int(timestamp)//1000)\
+        .replace(tzinfo=pytz.utc).astimezone(timezone_kr)\
+        .strftime('%Y-%m-%d %H:%M')
