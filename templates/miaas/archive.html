@@ -23,7 +23,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             </div>
 
             <div class="col-xs-12 col-table">
-            {% if archive.image_list %}
+            {% if archive and archive.image_cnt > 0 %}
                 <div class="table-container row">
                     <div class="table-title col-xs-12">Medical Image List</div>
                     <table class="table table-striped table-hover col-xs-12">
@@ -34,24 +34,31 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             <td>Interpretations</td>
                         </thead>
                         <tbody>
-                        {% for image_info in archive.image_list %}
-                            <tr onclick="javascript: location.href='{% url 'miaas:archive_detail' image_info.id %}';">
-                                <td>{{ image_info.date }}</td>
-                                <td>{{ image_info.subject }}</td>
-                                <td>{{ image_info.type }}</td>
-                                <td>{{ image_info.interpretations }}</td>
+                        {% for image in archive.images %}
+                            <tr onclick="javascript: location.href='{% url 'miaas:archive_detail' image.image_id %}';">
+                                <td>{{ image.timestamp|datetime_string }}</td>
+                                <td>{{ image.subject }}</td>
+                                <td>{{ image.image_type }}</td>
+                                <td>0{# { image_info.interpretations }#}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
                     <div class="col-xs-12 text-center table-page-container">
-                    {% for page_num in archive.image_count|get_page_num:10|get_range2 %}
-                        <a class="table-page-number" href="?page_num={{ page_num }}">{{ page_num }}</a>
+{#                    {% for page_num in archive.image_count|get_page_num:10|get_range2 %}#}
+                    {% for page_num in archive.start_page|get_range_from_to2:archive.end_page %}
+                        {% if page_num == archive.now_page %}
+                            <b>
+                        {% endif %}
+                            <a class="table-page-number" href="?page={{ page_num }}">{{ page_num }}</a>
+                        {% if page_num == archive.now_page %}
+                            </b>
+                        {% endif %}
                     {% endfor %}
                     </div>
                 </div>
             {% else %}
-                <div class="table-nodata">
+                <div class="table-nodata" >
                     <h4 class="text-danger">There is no data</h4>
                     <p>You can upload your FIRST medical image</p>
                     <a class="btn btn-default" href="{% url 'miaas:archive_upload' %}" type="button">Upload</a>

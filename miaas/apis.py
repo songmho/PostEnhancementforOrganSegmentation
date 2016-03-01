@@ -71,7 +71,8 @@ def handle_session_mgt(request):
         elif request.method == 'DELETE':
             ### Logout ###
             if request.session.get('user'):
-                del request.session['user']
+                # del request.session['user']
+                request.session.clear()
                 return JsonResponse(constants.CODE_SUCCESS)
             else:
                 raise Exception(MSG_NO_USER_LOGGEDIN)

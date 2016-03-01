@@ -93,6 +93,10 @@ body {
 .vcenter {
     vertical-align: middle !important;
 }
+b a.table-page-number {
+    font-size: 20px;
+    text-decoration: underline;
+}
 
 /* Form */
 .form-container.form-boxed {
