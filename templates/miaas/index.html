@@ -14,8 +14,18 @@ location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
 
 {% if user_session.user_type == 'patient' %}
     {% include 'miaas/template_nav_patient.html' %}
+    {#  relocate to archive  #}
+    <script type="text/javascript">
+        //logout?
+        location.replace({{ "'" }}{% url 'miaas:archive' %}{{ "'" }});
+    </script>
 {% elif user_session.user_type == 'physician' %}
     {% include 'miaas/template_nav_physician.html' %}
+    {#  relocate to interpretation  #}
+    <script type="text/javascript">
+        //logout?
+        location.replace({{ "'" }}{% url 'miaas:physician_interpretation' %}{{ "'" }});
+    </script>
 {% else %}
     <script type="text/javascript">
         //logout?
