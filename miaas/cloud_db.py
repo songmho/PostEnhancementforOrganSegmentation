@@ -393,6 +393,18 @@ class DbManager():
                 print("Retrieve_Medical_Image: ", e)
         return images
 
+    def retrieve_medical_image_amount(self, patient_id):
+        amount = -1
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT * FROM medical_image WHERE user_id=%s"
+                cursor.execute(db_query, (patient_id))
+                self.connector.commit()
+                amount = cursor.rowcount
+            except Exception as e:
+                print("Retrieve_Medical_Image_Amount: ", e)
+        return amount
+
     def retrieve_medical_image_by_id(self, image_id):
         db_query = "SELECT * FROM medical_image WHERE image_id=%s"
         with self.connector.cursor() as cursor:
@@ -515,6 +527,18 @@ class DbManager():
                 print("Retrieve_Physician_Interpretation: ", e)
         return intprs
 
+    def retrieve_physician_intpr_amount(self, physician_id):
+        amount = -1
+        db_query = "SELECT * FROM interpretation WHERE physician_id=%s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, (physician_id))
+                self.connector.commit()
+                amount = cursor.rowcount
+            except Exception as e:
+                print("Retrieve_Physician_Interpretation_Amount: ", e)
+        return amount
+
     def retrieve_patient_intpr(self, patient_id, time_from=None):
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
@@ -538,3 +562,21 @@ class DbManager():
             except Exception as e:
                 print("Retrieve_Physician_Interpretation: ", e)
         return intprs
+
+    def retrieve_patient_intpr_amount(self, patient_id):
+        amount = -1
+        db_query = "SELECT * FROM interpretation WHERE patient_id=%s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, (patient_id))
+                self.connector.commit()
+                amount = cursor.rowcount
+            except Exception as e:
+                print("Retrieve_Patient_Interpretation_Amount: ", e)
+        return amount
+
+    def find_id(self, email, name):
+        pass
+
+    def find_passwd(self, user_id, email, ):
+        pass
