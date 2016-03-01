@@ -414,6 +414,7 @@ class DbManager():
                     image['image_dir'] = row[8]
                     image['size'] = row[9]
                     image['timestamp'] = row[10]
+                    image['intpr_num'] = row[11]
                     images.append(image)
             except Exception as e:
                 print("Retrieve_Medical_Image: ", e)
@@ -450,6 +451,7 @@ class DbManager():
                 image['image_dir'] = row[8]
                 image['size'] = row[9]
                 image['timestamp'] = row[10]
+                image['intpr_num'] = row[11]
             except Exception as e:
                 print("Retrieve_Medical_Image_By_Id: ", e)
         return image
