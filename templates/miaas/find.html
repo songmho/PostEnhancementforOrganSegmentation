@@ -1,0 +1,100 @@
+{% load staticfiles %}
+{% load my_filters %}
+
+{% include 'miaas/template_header.html' %}
+
+<!-- custom css -->
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/signup.css' %}">
+
+<body>
+
+<div class="container">
+    <section class="section section-signup">
+        <div class="form-signup">
+            <div class="row row-signup-title">
+                <div class="col-xs-12">
+                    <h2 id="find-header" class="text-primary">Find ID</h2>
+                </div>
+            </div>
+            <div class="row row-signup-content">
+
+                <form class="col-xs-12" id="find-form">
+                    <h4><a id="find-change" href="#">Click here to find Password</a></h4>
+                    <h4>Enter Your Account Information.</h4>
+
+                    <div class="form-group" id="inputId-group" style="display: none;">
+                        <label for="inputId" >User ID</label>
+                        <input type="text" id="inputId" name="id" class="form-control valid"
+                               placeholder="ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputName" >User Name</label>
+                        <input type="text" id="inputName" name="name" class="form-control valid"
+                               placeholder="Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail">Email Address</label>
+                        <input type="email" id="inputEmail" name="email" class="form-control"
+                               placeholder="Email" required>
+                    </div>
+                    <br/>
+                    <div class="row" class="row-form-btns">
+                        <div id="btn-basic-next" class="col-xs-6 col-md-4 col-md-offset-2">
+                            <button class="btn btn-lg btn-primary btn-block" type="submit">Find</button>
+                        </div>
+                        <div id="btn-basic-next" class="col-xs-6 col-md-4">
+                            <button class="btn btn-lg btn-primary btn-block" type="button"
+                               onclick="javascript: location.href = '{% url 'miaas:signin' %}';">OK</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="findFailedModal" tabindex="-1" role="dialog" aria-labelledby="findFailedTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="findFailedTitle">Find ID/PW Failed</h4>
+        </div>
+        <div class="modal-body">
+        Find ID or password failed
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="findModal" tabindex="-1" role="dialog" aria-labelledby="findModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="findModalTitle">Find ID/PW</h4>
+        </div>
+        <div class="modal-body">
+        your password
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+{% include 'miaas/template_footer.html' %}
+
+<!-- custom javascript -->
+<script type="text/javascript">
+    var indexPage = "{% url 'miaas:index' %}";
+</script>
+<script src="{% static 'miass/js/find.js' %}"></script>
+
+</body>
+</html>

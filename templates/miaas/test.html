@@ -19,6 +19,10 @@
     <button id="idcheck">idcheck</button>
 </div>
 <div>
+    <button id="findid">findid</button>
+    <button id="findpw">findpw</button>
+</div>
+<div>
     <button id="updatePatientInfo">updatePatientInfo</button>
     <button id="getPatientInfo">getPatientInfo</button>
     <button id="getPatientProfile">getPatientProfile</button>
@@ -168,6 +172,37 @@
                 }
             });
         });
+
+        $("#findid").click(function() {
+            $.ajax("api/user", {
+                method: 'POST',
+                data: JSON.stringify({
+                    action: 'findid',
+                    email: 'hanterkr@gmail.com',
+                    name: 'Hanter Jung'
+                }),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+        $("#findpw").click(function() {
+            $.ajax("api/user", {
+                method: 'POST',
+                data: JSON.stringify({
+                    action: 'findpw',
+                    email: 'hanterkr@gmail.com',
+                    name: 'Hanter Jung',
+                    user_id: 'hanter'
+                }),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            });
+        });
+
         $("#getPatientInfo").click(function() {
             $.ajax("api/user", {
                 method: 'GET',

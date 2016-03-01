@@ -119,13 +119,16 @@ def handle_user_mgt(request):
                 raise Exception(MSG_NODATA)
             data = json.loads(request.body.decode("utf-8"))
 
-            if not data.get('action') or not data.get('user'):
+            if not data.get('action'):
                 raise Exception(MSG_INVALID_PARAMS)
             action = data['action']
-            user = data['user']
-            user_type = user['user_type']
 
             if action == 'signup':
+                if not data.get('user'):
+                    raise Exception(MSG_INVALID_PARAMS)
+                user = data['user']
+                user_type = user['user_type']
+
                 if user_type == 'patient':
                     if db.add_patient(user):
                         request.session['user'] = user
@@ -142,7 +145,13 @@ def handle_user_mgt(request):
                         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
                 else:
                     raise Exception(MSG_INVALID_PARAMS)
+
             elif action == 'update':
+                if not data.get('user'):
+                    raise Exception(MSG_INVALID_PARAMS)
+                user = data['user']
+                user_type = user['user_type']
+
                 if not request.session.get('user'):
                     raise Exception(MSG_NO_USER_LOGGEDIN)
                 if request.session['user']['user_id'] != user['user_id']:
@@ -167,6 +176,25 @@ def handle_user_mgt(request):
                         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_CHANGE}))
                 else:
                     raise Exception(MSG_INVALID_PARAMS)
+
+            elif action == 'findid':
+                if not data.get('email') and not data.get('name'):
+                    raise Exception(MSG_INVALID_PARAMS)
+                user_id = db.find_id(data['email'], data['name'])
+                if user_id:
+                    return JsonResponse(dict(constants.CODE_SUCCESS, **{'user_id': user_id}))
+                else:
+                    raise Exception(MSG_NO_USER_FOUND)
+
+            elif action == 'findpw':
+                if not data.get('email') and not data.get('name') and not data.get('user_id'):
+                    raise Exception(MSG_INVALID_PARAMS)
+                password = db.find_passwd(data['user_id'], data['email'], data['name'])
+                if password:
+                    return JsonResponse(dict(constants.CODE_SUCCESS, **{'password': password}))
+                else:
+                    raise Exception(MSG_NO_USER_FOUND)
+
             return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
     except Exception as e:
