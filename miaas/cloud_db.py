@@ -54,6 +54,32 @@ class DbManager():
             finally:
                 return if_exist
 
+    def find_id(self, email, name):
+        user_id = None
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT user_id FROM user WHERE email=%s AND name=%s"
+                cursor.execute(db_query, (email, name))
+                self.connector.commit()
+                row = cursor.fetchone()
+                user_id = row[0]
+            except Exception as e:
+                print("Find_ID: ", e)
+        return user_id
+
+    def find_passwd(self, user_id, email, name):
+        passwd = None
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT password FROM user WHERE user_id=%s AND email=%s AND name=%s"
+                cursor.execute(db_query, (user_id, email, name))
+                self.connector.commit()
+                row = cursor.fetchone()
+                passwd = row[0]
+            except Exception as e:
+                print("Find_Passwd: ", e)
+        return passwd
+
     def add_patient(self, patient):
         if_inserted = False
         with self.connector.cursor() as cursor:
@@ -574,9 +600,3 @@ class DbManager():
             except Exception as e:
                 print("Retrieve_Patient_Interpretation_Amount: ", e)
         return amount
-
-    def find_id(self, email, name):
-        pass
-
-    def find_passwd(self, user_id, email, ):
-        pass
