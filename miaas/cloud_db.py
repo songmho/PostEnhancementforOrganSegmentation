@@ -461,13 +461,19 @@ class DbManager():
                 print("Retrieve_Interpretation_By_Id: ", e)
         return intpr
 
-    def retrieve_image_intpr(self, image_id, time_from = None):
+    def retrieve_image_intpr(self, image_id, time_from = None, offset=None, limit=None):
         intprs = []
-        date = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC LIMIT %s OFFSET %s"
+        time_from = int(time_from) if time_from is not None else 0
+        offset = int(offset) if offset is not None else 0
+        limit = int(limit) if limit is not None else 0
         with self.connector.cursor() as cursor:
+            if limit is 0:
+                db_query = "SELECT * FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC"
+                cursor.execute(db_query, (image_id, time_from))
+            else:
+                db_query = "SELECT * FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC LIMIT %s OFFSET %s"
+                cursor.execute(db_query, (image_id, time_from, limit, offset))
             try:
-                cursor.execute(db_query, (image_id, date))
                 self.connector.commit()
                 for row in cursor:
                     intpr = {}
