@@ -327,6 +327,9 @@ def handle_medical_image_mgt(request):
                 raise Exception(MSG_INVALID_PARAMS)
 
 
+        if(request.method) == "POST":
+            pass
+
     except Exception as e:
         logger.exception(e)
         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
@@ -337,11 +340,37 @@ def handle_medical_image_mgt(request):
 def handle_interpretation_mgt(request):
     db = cloud_db.DbManager()
     try:
-        if not request.session.get('user'):
-            raise Exception(MSG_NO_USER_LOGGEDIN)
-
+        # To retrieve interpretation result
         if(request.method) == 'GET':
-            pass
+            logger.info(request.GET)
+            user_id = request.GET.get('user_id')
+            time_from = request.GET.get('time_from')
+            image_id = request.GET.get('image_id')
+            offset = request.GET.get('offset')
+            limit = request.GET.get('limit')
+            if not user_id:
+                raise Exception(MSG_INVALID_PARAMS)
+            action = request.GET.get('action')
+            if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+            if action == 'getPatientIntpr':
+                intpr = db.retrieve_patient_intpr(user_id, time_from)
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'intpr': intpr}))
+            elif action == 'getPhysicianIntpr':
+                intpr = db.retrieve_physician_intpr(user_id, time_from)
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'intpr': intpr}))
+            elif action == 'getImageIntpr':
+                if not image_id:
+                    raise Exception(MSG_INVALID_PARAMS)
+                intpr = db.retrieve_image_intpr(image_id, time_from, offset, limit)
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'intpr': intpr}))
+            else:
+                return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
+        # To add interpretation result to 'interpretation' table
+        elif(request.method) == 'POST':
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+            data = json.loads(request.body.decode("utf-8"))
 
     except Exception as e:
         logger.exception(e)
@@ -353,10 +382,10 @@ def handle_interpretation_mgt(request):
 def handle_analytics_mgt(request):
     db = cloud_db.DbManager()
     try:
-        if not request.session.get('user'):
-            raise Exception(MSG_NO_USER_LOGGEDIN)
-
         if(request.method) == 'GET':
+            pass
+
+        if(request.method) == 'POST':
             pass
 
     except Exception as e:
@@ -369,9 +398,6 @@ def handle_analytics_mgt(request):
 def handle_payment_mgt(request):
     db = cloud_db.DbManager()
     try:
-        if not request.session.get('user'):
-            raise Exception(MSG_NO_USER_LOGGEDIN)
-
         if(request.method) == 'GET':
             pass
 
