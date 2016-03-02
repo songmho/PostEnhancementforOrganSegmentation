@@ -37,11 +37,11 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         </thead>
                         <tbody>
                         {% for itprt in interpret.interpret_list %}
-                            <tr onclick="javascript: location.href='{% url 'miaas:interpretation_detail' itprt.id %}';">
-                                <td>{{ itprt.upload_date }}</td>
-                                <td>{{ itprt.interpret_date }}</td>
+                            <tr onclick="javascript: location.href='{% url 'miaas:interpretation_detail' itprt.intpr_id %}';">
+                                <td>{{ itprt.timestamp|datetime_string }}</td>
+                                <td>{{ itprt.taken_from|datetime_string }}</td>
                                 <td class="bold">{{ itprt.subject }}</td>
-                                <td>{{ itprt.type }}</td>
+                                <td>{{ itprt.image_type }}</td>
                                 <td>{{ itprt.level }}</td>
                                 <td>{{ itprt.summary }}</td>
                                 <td class="bold interpretation-status-{{ itprt.status }}">{{ itprt.status|get_interpretation_status }}</td>
@@ -50,7 +50,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         </tbody>
                     </table>
                     <div class="col-xs-12 text-center table-page-container">
-                    {% for page_num in interpret.interpret_count|get_page_num:10|get_range2 %}
+                    {% for page_num in interpret.intpr_cnt|get_page_num:10|get_range2 %}
                         <a class="table-page-number" href="?page_num={{ page_num }}">{{ page_num }}</a>
                     {% endfor %}
                     </div>

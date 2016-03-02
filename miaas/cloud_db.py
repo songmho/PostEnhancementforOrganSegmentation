@@ -1,6 +1,5 @@
 __author__ = 'Jincheul'
 
-
 import pymysql
 import logging
 
@@ -10,6 +9,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+
 
 class DbManager():
     def __init__(self):
@@ -151,7 +151,7 @@ class DbManager():
                 db_query = "UPDATE user as u INNER JOIN patient as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.gender=%s, p.birthday=%s WHERE u.user_id=%s"
                 cursor.execute(db_query, (password, name, phone_number, email, gender, birthday, user_id))
                 self.connector.commit()
-                row_count=cursor.rowcount
+                row_count = cursor.rowcount
                 print(row_count)
                 if row_count > 0:
                     if_updated = True
@@ -296,9 +296,10 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 db_query = "UPDATE user as u INNER JOIN physician as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.license_number=%s, p.medicine_field=%s, p.certificate_dir=%s WHERE u.user_id=%s"
-                cursor.execute(db_query, (password, name, phone_number, email, license_number, medicine_field, certificate_dir, user_id))
+                cursor.execute(db_query, (
+                password, name, phone_number, email, license_number, medicine_field, certificate_dir, user_id))
                 self.connector.commit()
-                row_count=cursor.rowcount
+                row_count = cursor.rowcount
                 print(row_count)
                 if row_count > 0:
                     if_updated = True
@@ -377,7 +378,8 @@ class DbManager():
                 # size = medical_image['size']
                 timestamp = medical_image['timestamp']
                 db_query = "INSERT INTO medical_image (user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query, (user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp))
+                cursor.execute(db_query, (
+                user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
@@ -470,7 +472,8 @@ class DbManager():
                 summary = intpr['summary']
                 interpretation = intpr['interpretation']
                 db_query = "INSERT INTO interpretation (patient_id, physician_id, image_id, level, fee, timestamp, summary, interpretation) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query, (patient_id, physician_id, image_id, level, fee, timestamp, summary, interpretation))
+                cursor.execute(db_query,
+                               (patient_id, physician_id, image_id, level, fee, timestamp, summary, interpretation))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
@@ -501,7 +504,7 @@ class DbManager():
                 print("Retrieve_Interpretation_By_Id: ", e)
         return intpr
 
-    def retrieve_image_intpr(self, image_id, time_from = None, offset=None, limit=None):
+    def retrieve_image_intpr(self, image_id, time_from=None, offset=None, limit=None):
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
         offset = int(offset) if offset is not None else 0
@@ -566,6 +569,37 @@ class DbManager():
             except Exception as e:
                 print("Retrieve_Physician_Interpretation_Amount: ", e)
         return amount
+
+    # KH
+    def retrieve_patient_intpr_list(self, patient_id, time_from=None):
+        intprs = []
+        time_from = int(time_from) if time_from is not None else 0
+        db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, subject, image_type, taken_from " \
+                   "FROM miaas.interpretation join miaas.medical_image " \
+                   "WHERE interpretation.image_id = medical_image.image_id and interpretation.patient_id=%s and interpretation.timestamp>%s " \
+                   "ORDER BY interpretation.timestamp DESC"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, (patient_id, time_from))
+                self.connector.commit()
+                for row in cursor:
+                    intpr = {}
+                    intpr['intpr_id'] = row[0]
+                    intpr['physician_id'] = row[1]
+                    intpr['patient_id'] = row[2]
+                    intpr['image_id'] = row[3]
+                    intpr['level'] = row[4]
+                    intpr['fee'] = row[5]
+                    intpr['timestamp'] = row[6]
+                    intpr['summary'] = row[7]
+                    intpr['status'] = row[8]
+                    intpr['subject'] = row[9]
+                    intpr['image_type'] = row[10]
+                    intpr['taken_from'] = row[11]
+                    intprs.append(intpr)
+            except Exception as e:
+                print("Retrieve_Physician_Interpretation: ", e)
+        return intprs
 
     def retrieve_patient_intpr(self, patient_id, time_from=None):
         intprs = []
