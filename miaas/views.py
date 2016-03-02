@@ -156,7 +156,7 @@ def interpretation_page(request):
         intpr['interpret_list'] = intpr_list
         context['interpret'] = intpr
 
-    logger.info('archive get: %s' % request.GET)
+    logger.info('interpret get: %s' % request.GET)
 
     # return render(request, 'miaas/interpretation.html', sctx.interpret_context)
     return render(request, 'miaas/interpretation.html', context)
@@ -195,7 +195,16 @@ def interpretation_detail_page(request, interpret_num):
 
 def interpretation_request_page(request):
     context = _get_session_context(request)
-    return render(request, 'miaas/interpretation_request.html', sctx.default_context)
+    image_id = request.GET.get('image_id')
+
+    db = cloud_db.DbManager()
+    image_detail = db.retrieve_medical_image_by_id(image_id)
+    context['image_detail'] = image_detail
+
+    logger.info('interpret_request get: %s' % request.GET)
+
+    return render(request, 'miaas/interpretation_request.html', context)
+    # return render(request, 'miaas/interpretation_request.html', sctx.default_context)
 
 def physician_info_page(request):
     context = _get_session_context(request)
