@@ -63,7 +63,7 @@ def profile_page(request):
 def archive_page(request):
     context = _get_session_context(request)
 
-    if request.session.get('user') and request.session['user']['user_type']:
+    if request.session.get('user'):
         image_cnt = request.session.get('image_cnt')
         if not image_cnt:
             logger.info('no image cnt session. call db')
@@ -119,8 +119,52 @@ def medical_image_page(request, img_num):
 
 def interpretation_page(request):
     context = _get_session_context(request)
-    return render(request, 'miaas/interpretation.html', sctx.interpret_context)
-    # return render(request, 'miaas/interpretation.html', context)
+
+    if request.session.get('user'):
+        intpr_cnt = request.session.get('intpr_cnt')
+        if not intpr_cnt:
+            logger.info('no image cnt session. call db')
+            db = cloud_db.DbManager()
+            intpr_cnt = db.retrieve_patient_intpr_amount(request.session['user']['user_id'])
+        logger.info(request.session['user']['user_id'])
+        logger.info('intpr_cnt=%s', intpr_cnt)
+        if intpr_cnt <= 0:
+            return render(request, 'miaas/interpretation.html', context)
+        intpr = {}
+        request.session['intpr_cnt'] = intpr_cnt
+        intpr['intpr_cnt'] = intpr_cnt
+
+        now_page = request.GET.get('page')
+        if now_page: now_page = int(now_page)
+        max_page = intpr_cnt // constants.CNT_CONTENTS_IN_PAGE
+        if intpr_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
+            max_page += 1
+        if not now_page or now_page > max_page:
+            now_page = 1
+        intpr['now_page'] = now_page
+        intpr['max_page'] = max_page
+
+        logger.info('now_page=%s, max_page=%s' % (now_page, max_page))
+
+        start_page = now_page - 4
+        if start_page < 1: start_page = 1
+        end_page = start_page + 9
+        if end_page > max_page: end_page = max_page
+        intpr['start_page'] = start_page
+        intpr['end_page'] = end_page
+        logger.info('start_page=%s, end_page=%s' % (start_page, max_page))
+
+        db = cloud_db.DbManager()
+        intpr_list = db.retrieve_patient_intpr_list(patient_id=request.session['user']['user_id'])
+        intpr['interpret_list'] = intpr_list
+        context['interpret'] = intpr
+
+    logger.info('interpret get: %s' % request.GET)
+
+    # return render(request, 'miaas/interpretation.html', sctx.interpret_context)
+    return render(request, 'miaas/interpretation.html', context)
+
+
 
 def interpretation_detail_page(request, interpret_num):
     context = _get_session_context(request)
@@ -154,7 +198,16 @@ def interpretation_detail_page(request, interpret_num):
 
 def interpretation_request_page(request):
     context = _get_session_context(request)
-    return render(request, 'miaas/interpretation_request.html', sctx.default_context)
+    image_id = request.GET.get('image_id')
+
+    db = cloud_db.DbManager()
+    image_detail = db.retrieve_medical_image_by_id(image_id)
+    context['image_detail'] = image_detail
+
+    logger.info('interpret_request get: %s' % request.GET)
+
+    return render(request, 'miaas/interpretation_request.html', context)
+    # return render(request, 'miaas/interpretation_request.html', sctx.default_context)
 
 def physician_info_page(request):
     context = _get_session_context(request)
