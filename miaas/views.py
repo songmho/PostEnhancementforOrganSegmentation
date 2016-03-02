@@ -63,7 +63,7 @@ def profile_page(request):
 def archive_page(request):
     context = _get_session_context(request)
 
-    if request.session.get('user') and request.session['user']['user_type']:
+    if request.session.get('user'):
         image_cnt = request.session.get('image_cnt')
         if not image_cnt:
             logger.info('no image cnt session. call db')
