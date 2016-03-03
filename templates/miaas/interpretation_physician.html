@@ -34,7 +34,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             <td>Status</td>
                         </thead>
                         <tbody>
-                        {# 상태순, 날짜순으로 정렬. write > wait > done 순으로 #}
+                        {# 상태순, 날짜순으로 정렬. write > wait > interpreted 순으로 #}
                         {% for request_info in interpret_request.request_list %}
                             <tr onclick="javascript: location.href='{% url 'miaas:interpretation_detail' request_info.id %}';">
                                 <td>{{ request_info.date }}</td>
