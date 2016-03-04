@@ -6,7 +6,7 @@ var profiles = {};
 
 $(document).ready(function() {
     $.LoadingOverlay('show');
-    $.ajax("api/physician_profile", {
+    $.ajax("/api/physician_profile", {
         method: 'GET',
         data: {
             user_id: user.user_id
@@ -60,7 +60,7 @@ function updateProfile() {
     });
 
     $.LoadingOverlay('show');
-    $.ajax("api/physician_profile", {
+    $.ajax("/api/physician_profile", {
         method: 'POST',
         data: JSON.stringify({
             user_id: user.user_id,

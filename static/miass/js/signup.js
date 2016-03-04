@@ -123,7 +123,7 @@ function signup(usertype) {
     console.log(user);
 
     $.LoadingOverlay('show');
-    $.ajax("api/user", {
+    $.ajax("/api/user", {
         method: 'POST',
         data: JSON.stringify({
             action: 'signup',

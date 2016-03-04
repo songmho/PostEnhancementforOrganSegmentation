@@ -27,7 +27,7 @@ $(document).ready(function() {
         var email = $('#inputEmail').val();
 
         if(bFindId) {
-            $.ajax("api/user", {
+            $.ajax("/api/user", {
                 method: 'POST',
                 data: JSON.stringify({
                     action: 'findid',
@@ -48,7 +48,7 @@ $(document).ready(function() {
         } else {
             var user_id = $('#inputId').val();
 
-            $.ajax("api/user", {
+            $.ajax("/api/user", {
                 method: 'POST',
                 data: JSON.stringify({
                     action: 'findpw',

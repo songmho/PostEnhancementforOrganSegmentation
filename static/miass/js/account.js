@@ -49,7 +49,7 @@ function updateUser() {
     }
 
     $.LoadingOverlay('show');
-    $.ajax("api/user", {
+    $.ajax("/api/user", {
         method: 'POST',
         data: JSON.stringify({
             action: 'update',

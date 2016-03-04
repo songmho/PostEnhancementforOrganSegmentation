@@ -13,7 +13,7 @@
 <script type="text/javascript">
 function signout() {
     $.LoadingOverlay('show');
-    $.ajax("api/sessions", {
+    $.ajax("/api/sessions", {
         method: 'DELETE',
         dataType: 'json',
         success: function(res) {
