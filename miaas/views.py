@@ -269,6 +269,10 @@ def physician_interpretation_search(request):
     return render(request, 'miaas/interpretation.html', context)
     # return render(request, 'miaas/interpretation_search.html', sctx.interpret_search_context)
 
+def physician_interpretation_write(request):
+    context = _get_session_context(request)
+    return render(request, 'miaas/interpretation_write.html', context)
+
 def _get_session_context(request):
     context = {}
     if 'user' in request.session.keys():

@@ -1,0 +1,155 @@
+{% if not user_session or user_session.user_type != 'physician' %}
+<script type="text/javascript">
+location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
+</script>
+{% endif %}
+
+{% load staticfiles %}
+{% load my_filters %}
+
+{% include 'miaas/template_header.html' %}
+
+<!-- custom css -->
+{#<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/plugin/bootstrap-wyshiwyg/libs/css/bootstrap-responsive.min.css' %}">#}
+{#<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/plugin/bootstrap-wyshiwyg/libs/css/wysiwyg-color.css' %}">#}
+{#<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/plugin/bootstrap-wyshiwyg/libs/css/prettify.css' %}">#}
+{#<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/plugin/bootstrap-wyshiwyg/bootstrap-wysihtml5-0.0.2.css' %}">#}
+
+{% include 'miaas/template_nav_physician.html' %}
+
+<div class="container">
+    <section class="section section-default">
+        <div class="row">
+            <div class="col-xs-12 col-title">
+{#                <h2 class="text-primary" id="titleSubject">Analytics Result for "{{ subject }}"</h2>#}
+                <h2 class="text-primary" id="titleSubject">Interpreting for "Chest X-ray taken 01/24"</h2>
+            </div>
+
+            <form class="col-xs-12 col-form">
+
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="imgSubject" >Nullam ultrices felis a blandit</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Image Type</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="type" >ECG</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
+                                col-md-overlay-2 form-group medimage-preview-container">
+                        <div class="medimage-preview-wrapper">
+                            <div class="medimage-preview">
+                                <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Date</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="date" >2015/02/11</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Taken From</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="taken" >Medical Clinic</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="physician" >Dr.Peter</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Clinic Name</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="clinicName" >Dr.Peter's Hospital</span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Description</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <div id="description" >
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sagittis lacus eget tincidunt vehicula. Nulla ullamcorper porttitor quam ut porta. Mauris posuere mauris non tortor laoreet commodo. Fusce lacinia euismod diam, vel viverra velit ornare non. Interdum et malesuada fames ac ante ipsum primis in faucibus. Curabitur felis nulla, ultrices et fringilla eu, scelerisque ac urna. Donec vitae pretium sem. Donec id arcu tempor, hendrerit justo nec, dapibus lorem. Nam nunc purus, sollicitudin nec dui vitae, convallis auctor quam. Donec sit amet condimentum lacus.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <span id="itp1-level" >Level 2 - Only with available images, Fee-based</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <textarea type="textarea" id="summary" name="summary" class="form-control"
+                                      placeholder="Input your interpretation summary" rows="3"></textarea>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <textarea type="textarea" id="interpretation" name="interpretation" class="form-control"
+                                      placeholder="Input your interpretation detail" rows="12"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="form-btns-container row">
+                    <div id="btnFormWrite" class="col-xs-12 col-md-4 col-md-offset-4 form-button">
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">Write</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </section>
+</div>
+
+{% include 'miaas/template_footer.html' %}
+
+<!-- custom javascript -->
+{#<script src="{% static 'lib/bootstrap/plugin/bootstrap-wyshiwyg/libs/js/prettify.js' %}"></script>#}
+{#<script src="{% static 'lib/bootstrap/plugin/bootstrap-wyshiwyg/libs/js/wysihtml5-0.3.0_rc2.js' %}"></script>#}
+{#<script src="{% static 'lib/bootstrap/plugin/bootstrap-wyshiwyg/bootstrap-wysihtml5-0.0.2.js' %}"></script>#}
+{##}
+{#<script type="text/javascript">#}
+{#    var customWysiTemplates = {#}
+{#        html: function(locale) {#}
+{#            #}
+{#        }#}
+{#    };#}
+{##}
+{#    $('#interpretation').wysihtml5({#}
+{#        "font-styles": true, //Font styling, e.g. h1, h2, etc. Default true#}
+{#        "emphasis": true, //Italics, bold, etc. Default true#}
+{#        "lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true#}
+{#        "html": false, //Button which allows you to edit the generated HTML. Default false#}
+{#        "link": true, //Button to insert a link. Default true#}
+{#        "image": true, //Button to insert an image. Default true,#}
+{#        "color": true //Button to change color of font#}
+{#    });#}
+{#</script>#}
+
+</body>
+</html>
