@@ -480,6 +480,21 @@ class DbManager():
             finally:
                 return if_inserted
 
+    def update_intpr(self, intpr_id, physician_id, level, timestamp, summary, interpretation, patient_status, physician_status):
+        if_updated = False
+        with self.connector.cursor() as cursor:
+            # To update 'interpretation' and 'interpretation_data' two tables
+            try:
+                db_query = "UPDATE interpretation as i INNER JOIN interpretation_data as ind ON i.intpr_id=ind.intpr_id SET i.level=%s, i.timestamp=%s, i.summary=%s, i.interpretation=%s, i.status=%s, ind.status=%s, WHERE i.intpr_id=%s AND ind.physician_id=%s"
+                cursor.execute(db_query, (level, timestamp, summary, interpretation, patient_status, physician_status, intpr_id, physician_id))
+                self.connector.commit()
+                row_count=cursor.rowcount
+                if row_count > 0:
+                    if_updated = True
+            except Exception as e:
+                print('Update_Accept_Intpr: ', e)
+        return if_updated
+
     def retrieve_intpr_by_id(self, intpr_id):
         db_query = "SELECT * FROM interpretation WHERE intpr_id=%s"
         with self.connector.cursor() as cursor:
@@ -606,19 +621,32 @@ class DbManager():
     def retrieve_inptr(self):
         pass
 
-    def update_intpr(self, intpr_id, physician_id, patient_status, physician_status, fee, timestamp=None, level=None, summary=None, interpretation=None):
-        if_updated = False
+    def add_accept_intpr(self, intpr_id, physician_id, fee, physician_status):
+        if_inserted = False
         with self.connector.cursor() as cursor:
             try:
-                # To add interpretation accepted physician information
-
-                db_query = "UPDATE interpretation as i INNER JOIN interpretation_data as ind ON i.intpr_id=ind.intpr_id SET  WHERE i.intpr_id=%s AND ind.physician_id=%s"
-                cursor.execute(db_query, (password, name, phone_number, email, gender, birthday, user_id))
+                # To add accepted information to 'interpretation_data' table
+                db_query = 'INSERT INTO interpretation_data (intpr_id, physician_id, fee, status) VALUES (%s, %s, %s, %s)'
+                cursor.execute(db_query, (intpr_id, physician_id, fee, physician_status))
                 self.connector.commit()
                 row_count=cursor.rowcount
-                print(row_count)
+                if row_count > 0:
+                    if_inserted = True
+            except Exception as e:
+                print('Add_Accept_Intpr: ', e)
+        return if_inserted
+
+    def update_accept_intpr(self, intpr_id, physician_id, patient_status, physician_status):
+        if_updated = False
+        with self.connector.cursor() as cursor:
+            # To update 'interpretation' and 'interpretation_data' two tables
+            try:
+                db_query = "UPDATE interpretation as i INNER JOIN interpretation_data as ind ON i.intpr_id=ind.intpr_id SET i.status=%s, ind.status=%s WHERE i.intpr_id=%s AND ind.physician_id=%s"
+                cursor.execute(db_query, (patient_status, physician_status, intpr_id, physician_id))
+                self.connector.commit()
+                row_count=cursor.rowcount
                 if row_count > 0:
                     if_updated = True
             except Exception as e:
-                print('Update_Patient: ', e)
+                print('Update_Accept_Intpr: ', e)
         return if_updated
