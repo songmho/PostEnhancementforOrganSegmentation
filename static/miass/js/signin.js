@@ -18,7 +18,7 @@ $(document).ready(function() {
 
 function signin() {
     $.LoadingOverlay('show');
-    $.ajax("api/sessions", {
+    $.ajax("/api/sessions", {
         method: 'POST',
         data: JSON.stringify({
             user_id: $('#inputId').val(),
