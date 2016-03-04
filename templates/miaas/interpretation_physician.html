@@ -22,7 +22,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             </div>
 
             <div class="col-xs-12 col-table">
-            {% if interpret_request.request_list %}
+            {% if physician_intpr.physician_intpr_list %}
                 <div class="table-container row">
                     <div class="table-title col-xs-12 col-md-4">My Interpretation List</div>
                     <table class="table table-striped table-hover col-xs-12">
@@ -35,12 +35,13 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         </thead>
                         <tbody>
                         {# 상태순, 날짜순으로 정렬. write > wait > interpreted 순으로 #}
-                        {% for request_info in interpret_request.request_list %}
-                            <tr onclick="javascript: location.href='{% url 'miaas:interpretation_detail' request_info.id %}';">
-                                <td>{{ request_info.date }}</td>
-                                <td>Name or ID</td>
-                                <td>{{ request_info.type }}</td>
-                                <td>{{ request_info.subject }}</td>
+                        {% for itprt in physician_intpr.physician_intpr_list %}
+                            <tr onclick="javascript: location.href='{% url 'miaas:interpretation_detail' itprt.intpr_id %}';">
+                                <td>{{ itprt.timestamp|datetime_string }}</td>
+                                <td>{{ itprt.patient_id }}</td>
+                                <td>{{ itprt.image_type }}</td>
+                                <td>{{ itprt.subject }}</td>
+                                <td class="bold interpretation-status-{{ itprt.status }}">{{ itprt.status|get_interpretation_status }}</td>
                                 <td></td>
                             </tr>
                         {% endfor %}
