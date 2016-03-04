@@ -224,31 +224,30 @@ def physician_interpretation_page(request):
 def physician_interpretation_search(request):
     context = _get_session_context(request)
     if request.session.get('user'):
-        search_intpr_cnt = request.session.get('search_intpr_cnt')
-        if not search_intpr_cnt:
+        request_cnt = request.session.get('request_cnt')
+        if not request_cnt:
             logger.info('no image cnt session. call db')
             db = cloud_db.DbManager()
-            intpr_cnt = db.retrieve_physician_intpr_amount(request.session['user']['user_id'])
-
-
+            request_cnt = db.retrieve_requested_intpr_amount()
 
         logger.info(request.session['user']['user_id'])
-        logger.info('intpr_cnt=%s', intpr_cnt)
-        if intpr_cnt <= 0:
-            return render(request, 'miaas/interpretation.html', context)
-        intpr = {}
-        request.session['intpr_cnt'] = intpr_cnt
-        intpr['intpr_cnt'] = intpr_cnt
+        logger.info('request_cnt=%s', request_cnt)
+        if request_cnt <= 0:
+            return render(request, 'miaas/interpretation_search.html', context)
+
+        interpret_request = {}
+        request.session['request_cnt'] = request_cnt
+        interpret_request['request_cnt'] = request_cnt
 
         now_page = request.GET.get('page')
         if now_page: now_page = int(now_page)
-        max_page = intpr_cnt // constants.CNT_CONTENTS_IN_PAGE
-        if intpr_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
+        max_page = request_cnt // constants.CNT_CONTENTS_IN_PAGE
+        if request_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
             max_page += 1
         if not now_page or now_page > max_page:
             now_page = 1
-        intpr['now_page'] = now_page
-        intpr['max_page'] = max_page
+        interpret_request['now_page'] = now_page
+        interpret_request['max_page'] = max_page
 
         logger.info('now_page=%s, max_page=%s' % (now_page, max_page))
 
@@ -256,17 +255,18 @@ def physician_interpretation_search(request):
         if start_page < 1: start_page = 1
         end_page = start_page + 9
         if end_page > max_page: end_page = max_page
-        intpr['start_page'] = start_page
-        intpr['end_page'] = end_page
+        interpret_request['start_page'] = start_page
+        interpret_request['end_page'] = end_page
         logger.info('start_page=%s, end_page=%s' % (start_page, max_page))
 
         db = cloud_db.DbManager()
-        intpr_list = db.retrieve_patient_intpr_list(patient_id=request.session['user']['user_id'])
-        intpr['interpret_list'] = intpr_list
-        context['interpret'] = intpr
+        request_list = db.retrieve_requested_intpr_list()
+        print(len(request_list))
+        interpret_request['request_list'] = request_list
+        context['interpret_request'] = interpret_request
 
     logger.info('interpret get: %s' % request.GET)
-    return render(request, 'miaas/interpretation.html', context)
+    return render(request, 'miaas/interpretation_search.html', context)
     # return render(request, 'miaas/interpretation_search.html', sctx.interpret_search_context)
 
 def physician_interpretation_write(request):

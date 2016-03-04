@@ -22,12 +22,13 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             </div>
 
             <div class="col-xs-12 col-table">
+            {% if interpret_request.request_list %}
                 <div class="table-container row">
                     <div class="table-title col-xs-12 col-md-4">Medical Image List</div>
-                    <form class="table-search col-xs-12 col-md-8 form-group form-inline ">
-                        <a class="btn btn-default pull-right" type="button">Search</a>
-                        <input id="inputSearch" type="text" class="form-control pull-right" placeholder="Search">
-                        <select id="selectImageType" class="form-control pull-right" style="display: none;">
+                    <form class="table-search col-xs-12 col-md-8 form-group form-inline" method="get">
+                        <button class="btn btn-default pull-right" type="submit">Search</button>
+                        <input name="search_keyword" id="inputSearch" type="text" class="form-control pull-right" placeholder="Search">
+                        <select name="image_type" id="selectImageType" class="form-control pull-right" style="display: none;">
                             <option>EEG</option>
                             <option>ECG</option>
                             <option>EMG</option>
@@ -36,7 +37,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             <option>Ultrasonography</option>
                             <option>Radiography (X-ray)</option>
                         </select>
-                        <select id="selectSearch" class="form-control pull-right">
+                        <select name="image_subject" id="selectSearch" class="form-control pull-right">
                             <option>Request Subject</option>
                             <option>Image Type</option>
                         </select>
@@ -50,10 +51,10 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         </thead>
                         <tbody>
                         {% for request_info in interpret_request.request_list %}
-                            <tr onclick="javascript: location.href='{% url 'miaas:interpretation_detail' request_info.id %}';">
-                                <td>{{ request_info.date }}</td>
-                                <td>Name or ID</td>
-                                <td>{{ request_info.type }}</td>
+                            <tr onclick="javascript: location.href='{% url 'miaas:interpretation_detail' request_info.intpr_id %}';">
+                                <td>{{ request_info.timestamp|datetime_string }}</td>
+                                <td>{{ request_info.patient_id }}</td>
+                                <td>{{ request_info.image_type }}</td>
                                 <td>{{ request_info.subject }}</td>
                             </tr>
                         {% endfor %}
@@ -65,6 +66,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {#                    {% endfor %}#}
                     </div>
                 </div>
+            {% endif %}
             </div>
 
         </div>

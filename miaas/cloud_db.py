@@ -601,6 +601,55 @@ class DbManager():
                 print("Retrieve_Physician_Interpretation: ", e)
         return intprs
 
+    # KH
+    def retrieve_requested_intpr_list(self, time_from=None):
+        intprs = []
+        time_from = int(time_from) if time_from is not None else 0
+        db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, subject, image_type, taken_from " \
+                   "FROM miaas.interpretation join miaas.medical_image " \
+                   "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and interpretation.timestamp>%s " \
+                   "ORDER BY status DESC"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, (time_from))
+                self.connector.commit()
+                for row in cursor:
+                    intpr = {}
+                    intpr['intpr_id'] = row[0]
+                    intpr['physician_id'] = row[1]
+                    intpr['patient_id'] = row[2]
+                    intpr['image_id'] = row[3]
+                    intpr['level'] = row[4]
+                    intpr['fee'] = row[5]
+                    intpr['timestamp'] = row[6]
+                    intpr['summary'] = row[7]
+                    intpr['status'] = row[8]
+                    intpr['subject'] = row[9]
+                    intpr['image_type'] = row[10]
+                    intpr['taken_from'] = row[11]
+                    intprs.append(intpr)
+            except Exception as e:
+                print("Retrieve_Physician_Interpretation: ", e)
+        return intprs
+
+    # KH
+    def retrieve_requested_intpr_amount(self, time_from=None):
+        amount = -1
+        time_from = int(time_from) if time_from is not None else 0
+        db_query = "SELECT * " \
+                   "FROM miaas.interpretation " \
+                   "WHERE status <= 1 and timestamp>%s " \
+                   "ORDER BY status DESC"
+
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, (time_from))
+                self.connector.commit()
+                amount = cursor.rowcount
+            except Exception as e:
+                print("Retrieve_Requested_Interpretation_Amount: ", e)
+        return amount
+
     def retrieve_patient_intpr(self, patient_id, time_from=None):
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
