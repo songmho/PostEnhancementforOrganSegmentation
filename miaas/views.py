@@ -224,14 +224,12 @@ def physician_interpretation_page(request):
 def physician_interpretation_search(request):
     context = _get_session_context(request)
     if request.session.get('user'):
-        request_cnt = request.session.get('request_cnt')
-        if not request_cnt:
-            logger.info('no image cnt session. call db')
-            db = cloud_db.DbManager()
-            request_cnt = db.retrieve_requested_intpr_amount()
+        query_type = request.GET.get('query_type')
+        image_subject = request.GET.get('image_subject')
+        image_type = request.GET.get('image_type')
 
-        logger.info(request.session['user']['user_id'])
-        logger.info('request_cnt=%s', request_cnt)
+        db = cloud_db.DbManager()
+        request_cnt = db.retrieve_requested_intpr_amount(query_type=query_type, image_subject=image_subject, image_type=image_type)
         if request_cnt <= 0:
             return render(request, 'miaas/interpretation_search.html', context)
 
@@ -259,9 +257,7 @@ def physician_interpretation_search(request):
         interpret_request['end_page'] = end_page
         logger.info('start_page=%s, end_page=%s' % (start_page, max_page))
 
-        db = cloud_db.DbManager()
         request_list = db.retrieve_requested_intpr_list()
-        print(len(request_list))
         interpret_request['request_list'] = request_list
         context['interpret_request'] = interpret_request
 

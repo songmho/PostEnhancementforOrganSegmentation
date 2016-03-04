@@ -602,16 +602,31 @@ class DbManager():
         return intprs
 
     # KH
-    def retrieve_requested_intpr_list(self, time_from=None):
+    def retrieve_requested_intpr_list(self, query_type=None, image_subject=None, image_type=None, time_from=None):
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, subject, image_type, taken_from " \
-                   "FROM miaas.interpretation join miaas.medical_image " \
-                   "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and interpretation.timestamp>%s " \
-                   "ORDER BY status DESC"
+        if query_type == "Image Type" and image_type is not None:
+            db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, subject, image_type, taken_from " \
+                       "FROM miaas.interpretation join miaas.medical_image " \
+                       "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and image_type='%s' and interpretation.timestamp>%s " \
+                       "ORDER BY status DESC"%(image_type, time_from)
+
+        elif query_type == "Request Subject" and image_subject is not None:
+            db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, subject, image_type, taken_from " \
+                       "FROM miaas.interpretation join miaas.medical_image " \
+                       "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and subject Like '%s' and  interpretation.timestamp>%s " \
+                       "ORDER BY status DESC"%("%" + image_subject + "%", time_from)
+
+        else:
+            db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, subject, image_type, taken_from " \
+                       "FROM miaas.interpretation join miaas.medical_image " \
+                       "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and interpretation.timestamp>%s " \
+                       "ORDER BY status DESC"%time_from
+
+        print(db_query)
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, (time_from))
+                cursor.execute(db_query)
                 self.connector.commit()
                 for row in cursor:
                     intpr = {}
@@ -633,20 +648,34 @@ class DbManager():
         return intprs
 
     # KH
-    def retrieve_requested_intpr_amount(self, time_from=None):
+    def retrieve_requested_intpr_amount(self, query_type=None, image_subject=None, image_type=None, time_from=None):
         amount = -1
         time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * " \
-                   "FROM miaas.interpretation " \
-                   "WHERE status <= 1 and timestamp>%s " \
-                   "ORDER BY status DESC"
+        if query_type == "Image Type" and image_type is not None:
+            db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, subject, image_type, taken_from " \
+                       "FROM miaas.interpretation join miaas.medical_image " \
+                       "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and image_type='%s' and interpretation.timestamp>%s " \
+                       "ORDER BY status DESC"%(image_type, time_from)
+
+        elif query_type == "Request Subject" and image_subject is not None:
+            db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, subject, image_type, taken_from " \
+                       "FROM miaas.interpretation join miaas.medical_image " \
+                       "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and subject Like '%s' and  interpretation.timestamp>%s " \
+                       "ORDER BY status DESC"%("%" + image_subject + "%", time_from)
+
+        else:
+            db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, subject, image_type, taken_from " \
+                       "FROM miaas.interpretation join miaas.medical_image " \
+                       "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and interpretation.timestamp>%s " \
+                       "ORDER BY status DESC"%time_from
 
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, (time_from))
+                cursor.execute(db_query)
                 self.connector.commit()
                 amount = cursor.rowcount
             except Exception as e:
+
                 print("Retrieve_Requested_Interpretation_Amount: ", e)
         return amount
 
