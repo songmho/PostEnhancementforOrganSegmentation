@@ -47,6 +47,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             <td>Patient</td>
                             <td>Image Type</td>
                             <td>Request Subject</td>
+                            <td>Status</td>
                         </thead>
                         <tbody>
                         {% for request_info in interpret_request.request_list %}
@@ -55,6 +56,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                                 <td>{{ request_info.patient_id }}</td>
                                 <td>{{ request_info.image_type }}</td>
                                 <td>{{ request_info.subject }}</td>
+                                <td class="bold interpretation-status-{{ request_info.status }}">{{ request_info.status|get_interpretation_status }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
