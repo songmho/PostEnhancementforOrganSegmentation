@@ -26,15 +26,25 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="table-title col-xs-12 col-md-4">Medical Image List</div>
                     <form class="table-search col-xs-12 col-md-8 form-group form-inline ">
                         <a class="btn btn-default pull-right" type="button">Search</a>
-                        <input type="text" class="form-control pull-right" placeholder="Search">
-                        <select class="form-control pull-right">
-                            <option>Image Type</option>
+                        <input id="inputSearch" type="text" class="form-control pull-right" placeholder="Search">
+                        <select id="selectImageType" class="form-control pull-right" style="display: none;">
+                            <option>EEG</option>
+                            <option>ECG</option>
+                            <option>EMG</option>
+                            <option>CT</option>
+                            <option>MRI</option>
+                            <option>Ultrasonography</option>
+                            <option>Radiography (X-ray)</option>
+                        </select>
+                        <select id="selectSearch" class="form-control pull-right">
                             <option>Request Subject</option>
+                            <option>Image Type</option>
                         </select>
                     </form>
                     <table class="table table-striped table-hover col-xs-12">
                         <thead>
-                            <td>Date</td>
+                            <td>Request Date</td>
+                            <td>Patient</td>
                             <td>Image Type</td>
                             <td>Request Subject</td>
                         </thead>
@@ -42,6 +52,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         {% for request_info in interpret_request.request_list %}
                             <tr onclick="javascript: location.href='{% url 'miaas:interpretation_detail' request_info.id %}';">
                                 <td>{{ request_info.date }}</td>
+                                <td>Name or ID</td>
                                 <td>{{ request_info.type }}</td>
                                 <td>{{ request_info.subject }}</td>
                             </tr>
@@ -56,11 +67,6 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                 </div>
             </div>
 
-            <div class="col-xs-12 col-md-4 col-md-offset-4">
-                <a class="btn btn-primary btn-lg btn-block"
-                   href="{% url 'miaas:archive_upload' %}" type="button">Upload Image</a>
-            </div>
-
         </div>
     </section>
 </div>
@@ -68,7 +74,17 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
-
+<script type="text/javascript">
+$('#selectSearch').change(function() {
+    if($(this).val() == 'Request Subject') {
+        $('#inputSearch').show();
+        $('#selectImageType').hide();
+    } else if ($(this).val() == 'Image Type') {
+        $('#inputSearch').hide();
+        $('#selectImageType').show();
+    }
+});
+</script>
 
 </body>
 </html>

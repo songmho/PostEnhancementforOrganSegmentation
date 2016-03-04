@@ -26,6 +26,7 @@ urlpatterns = [
 
     url(r'^interpretations$', views.physician_interpretation_page, name='physician_interpretation'),
     url(r'^interpretations/search$', views.physician_interpretation_search, name='interpretation_search'),
+    url(r'^interpretations/write', views.physician_interpretation_write, name='interpretation_write'),
 
     url(r'^opinion/(?P<opinion_id>[0-9]+)/$', views.opinion, name='opinion'),
     url(r'^user/(?P<user_name>[ a-zA-Z_-]+)/$', views.user, name='user'),

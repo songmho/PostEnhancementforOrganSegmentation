@@ -86,7 +86,7 @@ function updateProfile() {
 
     //console.log(newProfiles);
     $.LoadingOverlay('show');
-    $.ajax("api/patient_profile", {
+    $.ajax("/api/patient_profile", {
         method: 'POST',
         data: JSON.stringify({
             user_id: user.user_id,

@@ -30,10 +30,10 @@ def get_page_num(item_count, items_per_page):
     return page_num
 
 itprt_status = {
-    0: 'Interpreted',
-    1: 'Waiting Interpretation',
-    2: 'Candidate Waiting',
     3: 'Finding Physician',
+    2: 'Candidate Waiting',
+    1: 'Waiting Interpretation',
+    0: 'Interpreted',
 }
 
 @register.filter(name='get_interpretation_status')
