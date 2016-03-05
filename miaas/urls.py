@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^archive/detail/(?P<img_num>[0-9]+)$', views.medical_image_page, name='archive_detail'),
 
     url(r'^interpretation$', views.interpretation_page, name='interpretation'),
+    url(r'^interpretation/requests$', views.interpretation_request_list_page, name='interpretation_request_list_page'),
     url(r'^interpretation/(?P<interpret_num>[0-9]+)$', views.interpretation_detail_page, name='interpretation_detail'),
     url(r'^interpretation/request$', views.interpretation_request_page, name='interpretation_request'),
     url(r'^physicianinfo/(?P<physician_id>[a-zA-z0-9_-]+)$', views.physician_info_page, name='physician_info'),

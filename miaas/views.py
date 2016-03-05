@@ -126,6 +126,15 @@ def medical_image_page(request, img_num):
     # return render(request, 'miaas/medical_image.html', sctx.default_context)
     return render(request, 'miaas/medical_image.html', context)
 
+def interpretation_request_list_page(request):
+    context = _get_session_context(request)
+    if request.session.get('user'):
+        request_cnt = request.session.get('request_cnt')
+        if not request_cnt:
+            logger.info('no request_cnt session. call db')
+            db = cloud_db.DbManager()
+            request_cnt = db.retrieve_patient_intpr_amount(request.session['user']['user_id'])
+    return render(request, 'miaas/interpretation_request_list.html', context)
 
 def interpretation_page(request):
     context = _get_session_context(request)
@@ -208,13 +217,13 @@ def interpretation_detail_page(request, interpret_num):
 
 def interpretation_request_page(request):
     context = _get_session_context(request)
-    image_id = request.GET.get('image_id')
-
-    db = cloud_db.DbManager()
-    image_detail = db.retrieve_medical_image_by_id(image_id)
-    context['image_detail'] = image_detail
-
-    logger.info('interpret_request get: %s' % request.GET)
+    # image_id = request.GET.get('image_id')
+    #
+    # db = cloud_db.DbManager()
+    # image_detail = db.retrieve_medical_image_by_id(image_id)
+    # context['image_detail'] = image_detail
+    #
+    # logger.info('interpret_request get: %s' % request.GET)
 
     return render(request, 'miaas/interpretation_request.html', context)
     # return render(request, 'miaas/interpretation_request.html', sctx.default_context)
