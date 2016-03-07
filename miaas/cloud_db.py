@@ -297,7 +297,7 @@ class DbManager():
             try:
                 db_query = "UPDATE user as u INNER JOIN physician as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.license_number=%s, p.medicine_field=%s, p.certificate_dir=%s WHERE u.user_id=%s"
                 cursor.execute(db_query, (
-                password, name, phone_number, email, license_number, medicine_field, certificate_dir, user_id))
+                    password, name, phone_number, email, license_number, medicine_field, certificate_dir, user_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 print(row_count)
@@ -379,7 +379,7 @@ class DbManager():
                 timestamp = medical_image['timestamp']
                 db_query = "INSERT INTO medical_image (user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (
-                user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp))
+                    user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
@@ -403,7 +403,8 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 db_query = "UPDATE medical_image SET subject=%s, image_type=%s, taken_from=%s, physician=%s, place=%s, description=%s, timestamp=%s WHERE image_id=%s"
-                cursor.execute(db_query, (subject, image_type, taken_from, physician, place, description, timestamp, image_id))
+                cursor.execute(db_query,
+                               (subject, image_type, taken_from, physician, place, description, timestamp, image_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 print(row_count)
@@ -605,8 +606,6 @@ class DbManager():
                 print("Retrieve_Interpretation: ", e)
         return intprs
 
-
-
     def retrieve_physician_intpr(self, physician_id, time_from=None):
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
@@ -642,7 +641,6 @@ class DbManager():
             except Exception as e:
                 print("Retrieve_Physician_Interpretation_Amount: ", e)
         return amount
-
 
     def retrieve_patient_intpr(self, patient_id, time_from=None):
         intprs = []
@@ -689,7 +687,7 @@ class DbManager():
                    "WHERE interpretation.image_id = medical_image.image_id and interpretation.physician_id=%s and interpretation.timestamp>%s " \
                    "ORDER BY interpretation.timestamp DESC"
 
-        print(db_query%(physician_id, time_from))
+        print(db_query % (physician_id, time_from))
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (physician_id, time_from))
@@ -723,19 +721,19 @@ class DbManager():
             db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, interpretation.subject as request_subject, message, medical_image.subject as image_subject, image_type, taken_from " \
                        "FROM miaas.interpretation join miaas.medical_image " \
                        "WHERE interpretation.image_id = medical_image.image_id and status >= 2 and image_type='%s' and interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%(image_type, time_from)
+                       "ORDER BY status DESC" % (image_type, time_from)
 
         elif query_type == "Request Subject" and image_subject is not None:
             db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, interpretation.subject as request_subject, message, medical_image.subject as image_subject, image_type, taken_from " \
                        "FROM miaas.interpretation join miaas.medical_image " \
                        "WHERE interpretation.image_id = medical_image.image_id and status >= 2 and subject Like '%s' and  interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%("%" + image_subject + "%", time_from)
+                       "ORDER BY status DESC" % ("%" + image_subject + "%", time_from)
 
         else:
             db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, interpretation.subject as request_subject, message, medical_image.subject as image_subject, image_type, taken_from " \
                        "FROM miaas.interpretation join miaas.medical_image " \
                        "WHERE interpretation.image_id = medical_image.image_id and status >= 2 and interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%time_from
+                       "ORDER BY status DESC" % time_from
 
         print(db_query)
         with self.connector.cursor() as cursor:
@@ -771,19 +769,19 @@ class DbManager():
             db_query = "SELECT * " \
                        "FROM miaas.interpretation join miaas.medical_image " \
                        "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and image_type='%s' and interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%(image_type, time_from)
+                       "ORDER BY status DESC" % (image_type, time_from)
 
         elif query_type == "Request Subject" and image_subject is not None:
             db_query = "SELECT * " \
                        "FROM miaas.interpretation join miaas.medical_image " \
                        "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and subject Like '%s' and  interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%("%" + image_subject + "%", time_from)
+                       "ORDER BY status DESC" % ("%" + image_subject + "%", time_from)
 
         else:
             db_query = "SELECT * " \
                        "FROM miaas.interpretation join miaas.medical_image " \
                        "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%time_from
+                       "ORDER BY status DESC" % time_from
 
         with self.connector.cursor() as cursor:
             try:
@@ -829,7 +827,6 @@ class DbManager():
                 print("Retrieve_Physician_Interpretation: ", e)
         return intprs
 
-
     # KH
     def retrieve_patient_request_list(self, patient_id, time_from=None):
         requests = []
@@ -856,35 +853,51 @@ class DbManager():
                     request['status'] = row[7]
                     requests.append(request)
             except Exception as e:
-                print("Retrieve_Physician_Interpretation: ", e)
+                print("retrieve_patient_request_list: ", e)
         return requests
 
     # KH
     def retrieve_patient_request_detail(self, request_id):
         request_detail = {}
-        db_query = "SELECT req.request_id, req.subject, req.message, m.subject, m.image_type, " \
-                   "m.timestamp, m.taken_from, m.physician, m.place, m.description " \
-                   "FROM miaas.request req " \
-                   "JOIN miaas.medical_image m ON req.image_id = m.image_id " \
-                   "WHERE req.request_id=%s"
+        responses = []
+        db_query_request = "SELECT req.request_id, req.subject, req.message, m.subject, m.image_type, " \
+                           "m.timestamp, m.taken_from, m.physician, m.place, m.description, req.status, req.level  " \
+                           "FROM miaas.request req " \
+                           "JOIN miaas.medical_image m ON req.image_id = m.image_id " \
+                           "WHERE req.request_id=%s"
 
+        db_query_response = "SELECT p.user_id, u.name, p.medicine_field, res.message  " \
+                            "FROM response res " \
+                            "JOIN physician p ON res.physician_id = p.user_id " \
+                            "JOIN user u ON p.user_id = u.user_id " \
+                            "WHERE res.request_id=%s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query_request, request_id)
+                self.connector.commit()
+                request_detail['request_id'] = cursor[0]
+                request_detail['request_subject'] = cursor[1]
+                request_detail['request_message'] = cursor[2]
+                request_detail['image_subject'] = cursor[3]
+                request_detail['image_type'] = cursor[4]
+                request_detail['image_date'] = cursor[5]
+                request_detail['taken_from'] = cursor[6]
+                request_detail['physician_name'] = cursor[7]
+                request_detail['place'] = cursor[8]
+                request_detail['description'] = cursor[9]
+                request_detail['status'] = cursor[10]
+                request_detail['level'] = cursor[11]
 
+                cursor.execute(db_query_response, request_id)
+                self.connector.commit()
+                for row in cursor:
+                    response = {}
+                    response['physician_id'] = row[0]
+                    response['physician_name'] = row[1]
+                    response['medicine_filed'] = row[2]
+                    response['response_message'] = row[3]
+                    responses.append(response)
+            except Exception as e:
+                print("retrieve_patient_request_detail: ", e)
 
-        # with self.connector.cursor() as cursor:
-        #     try:
-        #         cursor.execute(db_query, (patient_id, time_from))
-        #         self.connector.commit()
-        #         for row in cursor:
-        #             request = {}
-        #             request['request_id'] = row[0]
-        #             request['request_date'] = row[1]
-        #             request['request_subject'] = row[2]
-        #             request['message'] = row[3]
-        #             request['image_subject'] = row[4]
-        #             request['image_type'] = row[5]
-        #             request['level'] = row[6]
-        #             request['status'] = row[7]
-        #             requests.append(request)
-        #     except Exception as e:
-        #         print("Retrieve_Physician_Interpretation: ", e)
-        # return requests
+        return request_detail, responses
