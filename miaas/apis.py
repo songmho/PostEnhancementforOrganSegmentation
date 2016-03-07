@@ -4,7 +4,7 @@ import logging
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from . import constants, model, cloud_db
+from . import constants, cloud_db
 
 MSG_DB_FAILED = "Failed to handle DB requests."
 MSG_NO_USER_LOGGEDIN = "No user logged in."
@@ -368,35 +368,104 @@ def handle_medical_image_mgt(request):
 def handle_interpretation_mgt(request):
     db = cloud_db.DbManager()
     try:
-        # To add interpretation
-
-        # To retrieve interpretation result
+        # To handle patient and physician interpretation request
+        if request.method == 'PUT':
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+            data = json.loads(request.body.decode("utf-8"))
+            action = data['action']
+            if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+            # To create a patient request
+            elif action == 'patientReq':
+                request = {
+                    'image_id': data['image_id'],
+                    'status': data['status'],
+                    'subject': data['subject'],
+                    'message': data['message'],
+                    'timestamp': data['timestamp']
+                }
+                if_inserted = db.add_patient_intpr_request(request)
+                if if_inserted:
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(constants.CODE_FAILURE)
+            # To create a response on a patient request
+            elif action == 'physicianResp':
+                response = {
+                    'request_id': data['request_id'],
+                    'physician_id': data['physician_id'],
+                    'message': data['message'],
+                    'timestamp': data['timestamp']
+                }
+                if_inserted = db.add_physician_intpr_resp(response)
+                if if_inserted:
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(constants.CODE_FAILURE)
+            # To create an interpretation and update request and response
+            elif action == 'finishIntpr':
+                intpr = {
+                    'patient_id': data['patient_id'],
+                    'physician_id': data['physician_id'],
+                    'image_id': data['image_id'],
+                    'level': data['level'],
+                    'fee': data['fee'],
+                    'timestamp': data['timestamp'],
+                    'summary': data['summary'],
+                    'interpretation': data
+                }
+                if_inserted = db.add_intpr(intpr)
+                if if_inserted:
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(constants.CODE_FAILURE)
+        # To handle 'GET' interpretation request
         if request.method == 'GET':
             logger.info(request.GET)
-            user_id = request.GET.get('user_id')
-            time_from = request.GET.get('time_from')
-            image_id = request.GET.get('image_id')
-            offset = request.GET.get('offset')
-            limit = request.GET.get('limit')
-            if not user_id:
-                raise Exception(MSG_INVALID_PARAMS)
+            # user_id = request.GET.get('user_id')
+            # time_from = request.GET.get('time_from')
+            # image_id = request.GET.get('image_id')
+            # offset = request.GET.get('offset')
+            # limit = request.GET.get('limit')
+            # if not user_id:
+            #     raise Exception(MSG_INVALID_PARAMS)
             action = request.GET.get('action')
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
-            if action == 'getPatientIntpr':
-                intpr = db.retrieve_patient_intpr(user_id, time_from)
+            # To get all interpretations of a patient
+            elif action == 'getPatientIntpr':
+                patient_id = request.GET.get('patient_id')
+                if not request.GET.get('time_from'):
+                    time_from = 0
+                intpr = db.retrieve_patient_intpr(patient_id, time_from)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'intpr': intpr}))
+            # To get all interpretations of a physician
             elif action == 'getPhysicianIntpr':
-                intpr = db.retrieve_physician_intpr(user_id, time_from)
+                physician_id = request.GET.get('physician_id')
+                if not physician_id:
+                    raise Exception(MSG_INVALID_PARAMS)
+                if not request.GET.get('time_from'):
+                    time_from = 0
+                intpr = db.retrieve_physician_intpr(physician_id, time_from)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'intpr': intpr}))
             elif action == 'getImageIntpr':
+                image_id = request.GET.get('image_id')
                 if not image_id:
                     raise Exception(MSG_INVALID_PARAMS)
+                time_from = request.GET.get('time_from')
+                if not time_from:
+                    time_from = 0
+                offset = request.GET.get('offset')
+                limit = request.GET.get('limit')
+                if (not offset) and (not limit):
+                    offset = None
+                    limit = None
                 intpr = db.retrieve_image_intpr(image_id, time_from, offset, limit)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'intpr': intpr}))
             else:
                 return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
-        # To add interpretation result to 'interpretation' table
+        # To handle 'POST' interpretation request
         elif request.method == 'POST':
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
@@ -404,39 +473,12 @@ def handle_interpretation_mgt(request):
             action = data['action']
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
-            if action == 'acceptIntpr':
+            elif action == 'patientSelReq':
+                request_id = data['request_id']
+                physician_id = data['physician_id']
                 status = data['status']
-                # Physician aceepted interpretation
-                if status == 'physician_accept':
-                    intpr_id = data['intpr_id']
-                    physician_id = data['user_id']
-                    fee = data['fee']
-                    physician_status = 'Submission'
-                    if_inserted = db.add_accept_intpr(intpr_id, physician_id, fee, physician_status)
-                    if if_inserted:
-                        return JsonResponse(constants.CODE_SUCCESS)
-                    else:
-                        return JsonResponse(constants.CODE_FAILURE)
-                elif status == 'patient_accept':
-                    intpr_id = data['intpr_id']
-                    physician_id = data['user_id']
-                    patient_status = 'Being Interpreted'
-                    physician_status = 'Start Interpreting'
-                    if_updated = db.update_accept_intpr(intpr_id, physician_id, patient_status, physician_status)
-                    if if_updated:
-                        return JsonResponse(constants.CODE_SUCCESS)
-                    else:
-                        return JsonResponse(constants.CODE_FAILURE)
-            elif action == 'finishIntpr':
-                intpr_id = data['intpr_id']
-                physician_id = data['user_id']
-                level = data['level']
                 timestamp = data['timestamp']
-                summary = data['summary']
-                interpretation = data['interpretation']
-                patient_status = 'Interpreted'
-                physician_status = 'Finish'
-                if_updated = db.update_intpr(intpr_id, physician_id, level, timestamp, summary, interpretation, patient_status, physician_status)
+                if_updated = db.update_patient_request_by_selection(request_id, physician_id, status, timestamp)
                 if if_updated:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
@@ -444,19 +486,62 @@ def handle_interpretation_mgt(request):
     except Exception as e:
         logger.exception(e)
         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
-
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
 def handle_analytics_mgt(request):
     db = cloud_db.DbManager()
     try:
-        if(request.method) == 'GET':
-            pass
-
+        # To handle patient and physician interpretation request
+        if request.method == 'PUT':
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+            data = json.loads(request.body.decode("utf-8"))
+            action = data['action']
+            if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+            elif action == 'addAnalytic':
+                analytic = {
+                    'image_id': data['image_id'],
+                    'level': data['status'],
+                    'fee': data['subject'],
+                    'timestamp': data['message'],
+                    'summary': data['summary'],
+                    'result': data['result']
+                }
+                if_inserted = db.add_analytic(analytic)
+                if if_inserted:
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(constants.CODE_FAILURE)
         if(request.method) == 'POST':
-            pass
-
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+            data = json.loads(request.body.decode("utf-8"))
+            action = data['action']
+            if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+            elif action == 'updateAnalytic':
+                level = data['level']
+                fee = data['fee']
+                timestamp = data['timestamp']
+                summary = data['summary']
+                result = data['result']
+                anal_id = data['anal_id']
+                if_updated = db.update_analytic(level, fee, timestamp, summary, result, anal_id)
+                if if_updated:
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(constants.CODE_FAILURE)
+        if request.method == 'GET':
+            logger.info(request.GET)
+            action = request.GET.get('action')
+            if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+            elif action == 'getPatientIntpr':
+                image_id = request.GET.get('image_id')
+                analytics = db.retrieve_analytic_by_image(image_id)
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'analytics': analytics}))
     except Exception as e:
         logger.exception(e)
         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
