@@ -416,33 +416,6 @@ def interpretation_request_detail_page(request, request_id):
         physician_response['responses'] = responses
         context['request_detail'] = request_detail
         context['physician_response'] = physician_response
+        logger.info("Status:%s"%request_detail['status'])
 
-
-
-
-    # interpret_list = sctx.interpret_context['interpret']['interpret_list']
-    # sel_num = len(interpret_list) - int(request_id) - 1
-    # context['status'] = interpret_list[sel_num]['status']
-    # context['subject'] = interpret_list[sel_num]['subject']
-    # context['level'] = interpret_list[sel_num]['level']
-    # logger.info("Status = " + interpret_list[sel_num]['status'])
-    # if (context['status'] == '2' or context['status'] == 2):
-    #     context['candidate_list'] = [
-    #         {
-    #             'id': 'hanterkr',
-    #             'name': 'Han Ter Jung',
-    #             'field': 'Heart Specialist',
-    #             'message': 'Nulla ut ipsum turpis. Quisque ac cursus velit. Morbi nisl odio, blandit eget dignissim eget, rutrum nec leo. Phasellus vitae ante metus. In tempor leo.'
-    #         }, {
-    #             'id': 'khan',
-    #             'name': 'Ku Hwan An',
-    #             'field': 'Heart Specialist',
-    #             'message': 'Aenean id tellus orci. Phasellus eu pulvinar turpis. Pellentesque hendrerit interdum aliquet. Ut dignissim in arcu quis tincidunt. Vestibulum quis enim eu nunc lobortis sodales.'
-    #         }, {
-    #             'id': 'mkdmkk',
-    #             'name': 'Moon Kwon Kim',
-    #             'field': 'Thoracic Specialist',
-    #             'message': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit rhoncus ultricies. Praesent viverra finibus tortor sed ultrices. Pellentesque habitant morbi tristique senectus et netus.'
-    #         }
-    #     ]
     return render(request, 'miaas/interpretation_request_detail.html', context)

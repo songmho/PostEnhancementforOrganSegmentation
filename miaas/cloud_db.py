@@ -875,18 +875,19 @@ class DbManager():
             try:
                 cursor.execute(db_query_request, request_id)
                 self.connector.commit()
-                request_detail['request_id'] = cursor[0]
-                request_detail['request_subject'] = cursor[1]
-                request_detail['request_message'] = cursor[2]
-                request_detail['image_subject'] = cursor[3]
-                request_detail['image_type'] = cursor[4]
-                request_detail['image_date'] = cursor[5]
-                request_detail['taken_from'] = cursor[6]
-                request_detail['physician_name'] = cursor[7]
-                request_detail['place'] = cursor[8]
-                request_detail['description'] = cursor[9]
-                request_detail['status'] = cursor[10]
-                request_detail['level'] = cursor[11]
+                for row in cursor:
+                    request_detail['request_id'] = row[0]
+                    request_detail['request_subject'] = row[1]
+                    request_detail['request_message'] = row[2]
+                    request_detail['image_subject'] = row[3]
+                    request_detail['image_type'] = row[4]
+                    request_detail['image_date'] = row[5]
+                    request_detail['taken_from'] = row[6]
+                    request_detail['physician_name'] = row[7]
+                    request_detail['place'] = row[8]
+                    request_detail['description'] = row[9]
+                    request_detail['status'] = row[10]
+                    request_detail['level'] = row[11]
 
                 cursor.execute(db_query_response, request_id)
                 self.connector.commit()
