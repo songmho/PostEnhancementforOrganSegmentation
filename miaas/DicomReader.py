@@ -47,7 +47,7 @@ def convert_folder(mri_folder, png_folder):
   """ Convert all MRI files in a folder to png files
      in a destinaiton folder
  """
-  os.makedirs(png_folder)
+  # os.makedirs(png_folder)
   for mri_file in os.listdir(mri_folder):
       mri_file_path = os.path.join(mri_folder, mri_file)
       png_file_path = os.path.join(png_folder, '%s.png' % mri_file)
@@ -61,4 +61,4 @@ def convert_folder(mri_folder, png_folder):
 
 
 convert_folder("/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2",
-               "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2/PNG")
+               "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2, PNG")
