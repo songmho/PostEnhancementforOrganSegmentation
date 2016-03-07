@@ -488,16 +488,18 @@ class DbManager():
             try:
                 # Add a interpretation result to 'interpretation' table
                 patient_id = intpr['patient_id']
-                physician_id = intpr['physician_id']
                 image_id = intpr['image_id']
                 level = intpr['level']
                 fee = intpr['fee']
                 timestamp = intpr['timestamp']
                 summary = intpr['summary']
                 interpretation = intpr['interpretation']
-                db_query = "INSERT INTO interpretation (patient_id, physician_id, image_id, level, fee, timestamp, summary, interpretation) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query,
-                               (patient_id, physician_id, image_id, level, fee, timestamp, summary, interpretation))
+                status = intpr['status']
+                subject = intpr['subject']
+                message = intpr['message']
+                request_id = intpr['request_id']
+                db_query = "INSERT INTO interpretation (patient_id, image_id, level, fee, timestamp, summary, interpretation, status, subject, message, request_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (patient_id, image_id, level, fee, timestamp, summary, interpretation, status, subject, message, request_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
@@ -675,6 +677,63 @@ class DbManager():
             except Exception as e:
                 print("Retrieve_Physician_Interpretation_Amount: ", e)
         return amount
+
+    def add_analytic(self, analytic):
+        if_inserted = False
+        with self.connector.cursor() as cursor:
+            try:
+                # Add a analytic result to 'analytic' table
+                image_id = analytic['image_id']
+                level = analytic['level']
+                fee = analytic['fee']
+                timestamp = analytic['timestamp']
+                summary = analytic['summary']
+                result = analytic['result']
+                db_query = "INSERT INTO analytic (image_id, level, fee, timestamp, summary, result) VALUES (%s, %s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (image_id, level, fee, timestamp, summary, result))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_inserted = True
+            except Exception as e:
+                print("Add_Analytics: ", e)
+        return if_inserted
+
+    def retrieve_analytic_by_image(self, image_id):
+        analtics = []
+        db_query = "SELECT * FROM analytic WHERE image_id=%s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, (image_id))
+                self.connector.commit()
+                for row in cursor:
+                    anal = {}
+                    anal['intpr_id'] = row[0]
+                    anal['image_id'] = row[1]
+                    anal['level'] = row[2]
+                    anal['fee'] = row[3]
+                    anal['timestamp'] = row[4]
+                    anal['summary'] = row[5]
+                    anal['result'] = row[6]
+                    analtics.append(anal)
+            except Exception as e:
+                print("Retrieve_Interpretation_By_Id: ", e)
+        return analtics
+
+    def update_analytic(self, level, fee, timestamp, summary, result, anal_id):
+        if_updated = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE analytic SET level=%s, fee=%s, timestamp=%s, summary=%s, result=%s WHERE anal_id=%s"
+                cursor.execute(db_query, (level, fee, timestamp, summary, result, anal_id))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                print(row_count)
+                if row_count > 0:
+                    if_updated = True
+            except Exception as e:
+                print("Update_Analytic:", e)
+        return if_updated
 
     # KH
     def retrieve_patient_request_list(self, patient_id, time_from=None):
@@ -888,3 +947,61 @@ class DbManager():
             except Exception as e:
                 print("Retrieve_Patient_Interpretation_Amount: ", e)
         return amount
+
+    def add_patient_intpr_request(self, request):
+        if_inserted = False
+        with self.connector.cursor() as cursor:
+            try:
+                # Add request information to 'request' table
+                image_id = request['image_id']
+                status = request['status']
+                subject = request['subject']
+                message = request['message']
+                timestamp = request['timestamp']
+                db_query = "INSERT INTO request (image_id, status, subject, message, timestamp) VALUES (%s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (image_id, status, subject, message, timestamp))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_inserted = True
+            except Exception as e:
+                print("Add_Patient_Intpr_Request: ", e)
+        return if_inserted
+
+    def update_patient_request_by_selection(self, request_id, physician_id, status, timestamp):
+        if_updated = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE request SET status=%s, timestamp=%s WHERE request_id=%s"
+                cursor.execute(db_query, (status, timestamp, request_id))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    db_query = "DELETE from response WHERE request_id=%s AND physician_id!=%s"
+                    cursor.execute(db_query, (request_id, physician_id))
+                    self.connector.commit()
+                    row_count = cursor.rowcount
+                    if row_count > 0:
+                        if_updated = True
+            except Exception as e:
+                print("Update_Patient_Request_by_Selection:", e)
+        return if_updated
+
+    def add_physician_intpr_resp(self, response):
+        if_inserted = False
+        with self.connector.cursor() as cursor:
+            try:
+                # Add response information to 'response' table
+                request_id = response['request_id']
+                physician_id = response['physician_id']
+                message = response['message']
+                timestamp = response['timestamp']
+                db_query = "INSERT INTO response (request_id, physician_id, message, timestamp) VALUES (%s, %s, %s, %s)"
+                cursor.execute(db_query, (request_id, physician_id, message, timestamp))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_inserted = True
+            except Exception as e:
+                print("Add_Physician_Intpr_Response: ", e)
+        return if_inserted
