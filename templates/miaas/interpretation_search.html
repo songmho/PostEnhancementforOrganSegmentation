@@ -20,14 +20,12 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             <div class="col-xs-12 col-title">
                 <h2 class="text-primary">Search Medical Image Interpretation Request</h2>
             </div>
-
             <div class="col-xs-12 col-table">
-            {% if interpret_request.request_list %}
                 <div class="table-container row">
                     <div class="table-title col-xs-12 col-md-4">Medical Image List</div>
                     <form class="table-search col-xs-12 col-md-8 form-group form-inline" method="get">
                         <button class="btn btn-default pull-right" type="submit">Search</button>
-                        <input name="search_keyword" id="inputSearch" type="text" class="form-control pull-right" placeholder="Search">
+                        <input name="image_subject" id="inputSearch" type="text" class="form-control pull-right" placeholder="Search">
                         <select name="image_type" id="selectImageType" class="form-control pull-right" style="display: none;">
                             <option>EEG</option>
                             <option>ECG</option>
@@ -35,19 +33,21 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             <option>CT</option>
                             <option>MRI</option>
                             <option>Ultrasonography</option>
-                            <option>Radiography (X-ray)</option>
+                            <option value="Radiography">Radiography (X-ray)</option>
                         </select>
-                        <select name="image_subject" id="selectSearch" class="form-control pull-right">
+                        <select name="query_type" id="selectSearch" class="form-control pull-right">
                             <option>Request Subject</option>
                             <option>Image Type</option>
                         </select>
                     </form>
+                    {% if interpret_request.request_list %}
                     <table class="table table-striped table-hover col-xs-12">
                         <thead>
                             <td>Request Date</td>
                             <td>Patient</td>
                             <td>Image Type</td>
                             <td>Request Subject</td>
+                            <td>Status</td>
                         </thead>
                         <tbody>
                         {% for request_info in interpret_request.request_list %}
@@ -56,17 +56,19 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                                 <td>{{ request_info.patient_id }}</td>
                                 <td>{{ request_info.image_type }}</td>
                                 <td>{{ request_info.subject }}</td>
+                                <td class="bold interpretation-status-{{ request_info.status }}">{{ request_info.status|get_interpretation_status }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
+                    {% endif %}
                     <div class="col-xs-12 text-center table-page-container">
 {#                    {% for page_num in archive.image_count|get_page_num:10|get_range2 %}#}
 {#                        <a class="table-page-number" href="?page_num={{ page_num }}">{{ page_num }}</a>#}
 {#                    {% endfor %}#}
                     </div>
                 </div>
-            {% endif %}
+
             </div>
 
         </div>
