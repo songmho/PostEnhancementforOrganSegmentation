@@ -132,6 +132,49 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
+<script>
+    $(document).ready(function() {
+        $('#btnFormConfirm').on('submit', function(e) {
+            e.preventDefault();
+            $.LoadingOverlay('show');
+
+            $.ajax("api/interpretation", {
+                method: 'POST',
+                data: {
+                    action: 'request_interpretation',
+                    patient_id: $('#inputId').val()
+
+                },
+                dataType: 'json',
+                success: function (res) {
+                    //console.log(res);
+
+                    $.LoadingOverlay('hide');
+                    if (res['code'] == 'SUCCESS') {
+                        if (res['existedId']==false) {
+                            //pw check
+                            if($('#inputPw').val() != $('#inputPwConfirm').val()) {
+                                openSignupFailModal("Password Confirm is not same.");
+                                return;
+                            }
+
+                            $('#col-signup-basic').hide();
+                            if (usertype == 'patient') {
+                                $('#col-signup-detail-patient').show();
+                            } else if (usertype == 'physician') {
+                                $('#col-signup-detail-physician').show();
+                            }
+                        } else {
+                            openSignupFailModal("ID is already existed. Please use another ID.")
+                        }
+                    } else {
+                        openSignupFailModal("Checking ID is failed. Please try again.")
+                    }
+                }
+            });
+        });
+    });
+</script>
 
 
 </body>
