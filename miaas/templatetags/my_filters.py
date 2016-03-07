@@ -1,6 +1,7 @@
 from django import template
 from django.utils.html import escapejs
 import json, datetime, pytz
+from miaas import constants
 
 register = template.Library()
 
@@ -51,3 +52,7 @@ def timestamp_to_datetime_string(timestamp):
     return datetime.datetime.fromtimestamp(int(timestamp)//1000)\
         .replace(tzinfo=pytz.utc).astimezone(timezone_kr)\
         .strftime('%Y-%m-%d %H:%M')
+
+@register.filter(name='is_list')
+def is_list(arr):
+    return isinstance(arr, list)
