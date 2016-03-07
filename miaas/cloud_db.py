@@ -389,6 +389,34 @@ class DbManager():
             finally:
                 return if_inserted
 
+    # To update a medical image information by 'image_id'
+    def update_medical_image_by_id(self, medical_image):
+        if_updated = False
+        image_id = medical_image['image_id']
+        user_id = medical_image['user_id']
+        subject = medical_image['subject']
+        image_type = medical_image['image_type']
+        taken_from = medical_image['taken_from']
+        physician = medical_image['physician']
+        place = medical_image['place']
+        description = medical_image['description']
+        image_dir = medical_image['image_dir']
+        size = medical_image['size']
+        timestamp = medical_image['timestamp']
+        intpr_num = medical_image['intpr_num']
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE medical_image SET user_id=%s, subject=%s, image_type=%s, taken_from=%s, physician=%s, place=%s, description=%s, image_dir=%s, size=%s, timestamp=%s, intpr_num=%s WHERE image_id=%s"
+                cursor.execute(db_query, (user_id, subject, image_type, taken_from, physician, place, description, image_dir, size, timestamp, intpr_num, image_id))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                print(row_count)
+                if row_count > 0:
+                    if_updated = True
+            except Exception as e:
+                print("Update_Medical_Image:", e)
+        return if_updated
+
     def retrieve_medical_image(self, user_id, time_from=None, offset=None, limit=None):
         images = []
         time_from = int(time_from) if time_from is not None else 0
@@ -503,6 +531,53 @@ class DbManager():
             except Exception as e:
                 print("Retrieve_Interpretation_By_Id: ", e)
         return intpr
+
+    # To retrieve all interpretation information from 'interpretation' table on 'image_id' arguments with medical image information from 'medical_image'
+    def retrieve_intpr_by_image(self, image_id):
+        intpr_by_image = {}
+        intpr_list = []
+        with self.connector.cursor() as cursor:
+            try:
+                # To retrieve data from 'medical_image' table
+                db_query = "SELECT * FROM medical_image WHERE image_id=%s"
+                cursor.execute(db_query, (image_id))
+                self.connector.commit()
+                row = cursor.fetchone()
+                image = {}
+                image['image_id'] = image_id
+                image['user_id'] = row[1]
+                image['subject'] = row[2]
+                image['image_type'] = row[3]
+                image['taken_from'] = row[4]
+                image['physician'] = row[5]
+                image['place'] = row[6]
+                image['description'] = row[7]
+                image['image_dir'] = row[8]
+                image['size'] = row[9]
+                image['timestamp'] = row[10]
+                image['intpr_num'] = row[11]
+                intpr_by_image['image'] = image
+                # To retrieve data from 'interpretation' table
+                db_query = "SELECT * FROM interpretation WHERE image_id=%s"
+                cursor.execute(db_query, (image_id))
+                self.connector.commit()
+                for row in cursor:
+                    intpr = {}
+                    intpr['intpr_id'] = row[0]
+                    intpr['patient_id'] = row[1]
+                    intpr['level'] = row[3]
+                    intpr['fee'] = row[4]
+                    intpr['timestamp'] = row[5]
+                    intpr['summary'] = row[6]
+                    intpr['interpretation'] = row[7]
+                    intpr['status'] = row[8]
+                    intpr['subject'] = row[9]
+                    intpr['message'] = row[10]
+                    intpr_list.append(intpr)
+                intpr_by_image['intpr'] = intpr_list
+            except Exception as e:
+                print("Retrieve_Interpretation_by_Image: ", e)
+        return intpr_by_image
 
     def retrieve_image_intpr(self, image_id, time_from=None, offset=None, limit=None):
         intprs = []
@@ -667,7 +742,6 @@ class DbManager():
 
                 print("Retrieve_Requested_Interpretation_Amount: ", e)
         return amount
-
 
     # KH
     def retrieve_patient_intpr_list(self, patient_id, time_from=None):
