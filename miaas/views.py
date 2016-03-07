@@ -121,20 +121,22 @@ def archive_upload_page(request):
     return render(request, 'miaas/medical_image_upload.html', context)
 
 
-def medical_image_page(request, img_num):
+def medical_image_page(request, image_id):
     context = _get_session_context(request)
     # return render(request, 'miaas/medical_image.html', sctx.default_context)
+
+    if not image_id or int(image_id) < 0:
+        return render(request, 'miaas/archive.html', context)
+
+    db = cloud_db.DbManager()
+    image = db.retrieve_medical_image_by_id(image_id)
+    intprs = []
+
+    context['image'] = image
+    context['intprs']
+
     return render(request, 'miaas/medical_image.html', context)
 
-def interpretation_request_list_page(request):
-    context = _get_session_context(request)
-    if request.session.get('user'):
-        request_cnt = request.session.get('request_cnt')
-        if not request_cnt:
-            logger.info('no request_cnt session. call db')
-            db = cloud_db.DbManager()
-            request_cnt = db.retrieve_patient_intpr_amount(request.session['user']['user_id'])
-    return render(request, 'miaas/interpretation_request_list.html', context)
 
 def interpretation_page(request):
     context = _get_session_context(request)
@@ -193,6 +195,7 @@ def interpretation_detail_page(request, interpret_num):
     context['status'] = interpret_list[sel_num]['status']
     context['subject'] = interpret_list[sel_num]['subject']
     context['level'] = interpret_list[sel_num]['level']
+    logger.info("Status = " + interpret_list[sel_num]['status'])
     if (context['status'] == '2' or context['status'] == 2):
         context['candidate_list'] = [
             {
@@ -239,6 +242,189 @@ def physician_profile_page(request):
     return render(request, 'miaas/physician_profile.html', context)
 
 
+def physician_interpretation_write(request, request_id):
+    context = _get_session_context(request)
+    if request.session.get('user'):
+        logger.info('physician_interpretation_write call db')
+        # Retrieve details.
+        db = cloud_db.DbManager()
+        physician_response = {}
+        request_detail = db.retrieve_request_info(request_id)
+        context['request_detail'] = request_detail
+        logger.info("status:%s" % request_detail['status'])
+    logger.info('interpretation_request_detail_page get: %s' % request.GET)
+    return render(request, 'miaas/interpretation_write.html', context)
+
+
+def _get_session_context(request):
+    context = {}
+    if 'user' in request.session.keys():
+        context['user_session'] = request.session['user']
+        if context.get('user_session'):
+            context['user_session'].pop('password', None)
+    return context
+
+
+def opinion(request, opinion_id):
+    return HttpResponse("Hello, opinion %s." % opinion_id)
+
+
+def user(request, user_name):
+    return HttpResponse("Hello, user %s." % user_name)
+
+
+def template(request):
+    return render(request, 'miaas/template.html', None)
+
+
+def test_page(request):
+    return render(request, 'miaas/test.html', None)
+
+
+# KH
+def interpretation_request_list_page(request):
+    context = _get_session_context(request)
+    if request.session.get('user'):
+        logger.info('interpretation_request_list_page call db')
+        # Retrieve lists.
+        db = cloud_db.DbManager()
+        intpr_request_list = db.retrieve_patient_request_list(request.session['user']['user_id'])
+        intpr_request_cnt = len(intpr_request_list)
+        if intpr_request_cnt <= 0:
+            render(request, 'miaas/interpretation_request_list.html', context)
+        intpr_request = {}
+        request.session['request_cnt'] = intpr_request_cnt
+        intpr_request['request_cnt'] = intpr_request_cnt
+        # Configure number of pages
+        now_page = request.GET.get('page')
+        if now_page: now_page = int(now_page)
+        max_page = intpr_request_cnt // constants.CNT_CONTENTS_IN_PAGE
+        if intpr_request_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
+            max_page += 1
+        if not now_page or now_page > max_page:
+            now_page = 1
+        intpr_request['now_page'] = now_page
+        intpr_request['max_page'] = max_page
+        logger.info('now_page=%s, max_page=%s' % (now_page, max_page))
+        start_page = now_page - 4
+        if start_page < 1: start_page = 1
+        end_page = start_page + 9
+        if end_page > max_page: end_page = max_page
+        intpr_request['start_page'] = start_page
+        intpr_request['end_page'] = end_page
+        logger.info('start_page=%s, end_page=%s' % (start_page, max_page))
+        # Render page
+        intpr_request['intpr_request_list'] = intpr_request_list
+        context['intpr_request'] = intpr_request
+    logger.info('interpretation_request_list_page get: %s' % request.GET)
+    return render(request, 'miaas/interpretation_request_list.html', context)
+
+
+# KH
+def interpretation_request_detail_page(request, request_id):
+    context = _get_session_context(request)
+    if request.session.get('user'):
+        logger.info('interpretation_request_detail_page call db')
+        # Retrieve details.
+        db = cloud_db.DbManager()
+        physician_response = {}
+        request_detail, responses = db.retrieve_patient_request_detail(request_id)
+        physician_response['responses'] = responses
+        context['request_detail'] = request_detail
+        context['physician_response'] = physician_response
+        logger.info("Status:%s" % request_detail['status'])
+    logger.info('interpretation_request_detail_page get: %s' % request.GET)
+    return render(request, 'miaas/interpretation_request_detail.html', context)
+
+
+# KH
+def physician_interpretation_search(request):
+    context = _get_session_context(request)
+    if request.session.get('user'):
+        # Get variables to configure db query
+        query_type = request.GET.get('query_type')
+        request_subject = request.GET.get('request_subject')
+        image_type = request.GET.get('image_type')
+        # Retrieve requested list
+        db = cloud_db.DbManager()
+        requested_intpr_list = db.retrieve_requested_intpr_list(query_type, request_subject, image_type)
+        requested_intpr_cnt = len(requested_intpr_list)
+        # Configure page number
+        if requested_intpr_cnt <= 0:
+            return render(request, 'miaas/interpretation_search.html', context)
+
+        requested_intpr = {}
+        request.session['requested_intpr_cnt'] = requested_intpr_cnt
+        requested_intpr['requested_intpr_cnt'] = requested_intpr_cnt
+
+        now_page = request.GET.get('page')
+        if now_page: now_page = int(now_page)
+        max_page = requested_intpr_cnt // constants.CNT_CONTENTS_IN_PAGE
+        if requested_intpr_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
+            max_page += 1
+        if not now_page or now_page > max_page:
+            now_page = 1
+        requested_intpr['now_page'] = now_page
+        requested_intpr['max_page'] = max_page
+
+        logger.info('now_page=%s, max_page=%s' % (now_page, max_page))
+
+        start_page = now_page - 4
+        if start_page < 1: start_page = 1
+        end_page = start_page + 9
+        if end_page > max_page: end_page = max_page
+        requested_intpr['start_page'] = start_page
+        requested_intpr['end_page'] = end_page
+        logger.info('start_page=%s, end_page=%s' % (start_page, max_page))
+        # Render the page
+        requested_intpr['requested_intpr_list'] = requested_intpr_list
+        context['requested_intpr'] = requested_intpr
+
+    logger.info('physician_interpretation_search get: %s' % request.GET)
+    return render(request, 'miaas/interpretation_search.html', context)
+
+
+# KH
+def physician_interpretation_response_page(request):
+    context = _get_session_context(request)
+    if request.session.get('user'):
+        logger.info('physician_interpretation_response_page call db')
+        # Retrieve lists.
+        db = cloud_db.DbManager()
+        intpr_response_list = db.retrieve_physician_response_list(request.session['user']['user_id'])
+        intpr_response_cnt = len(intpr_response_list)
+        if intpr_response_cnt <= 0:
+            render(request, 'miaas/interpretation_response_list.html', context)
+        intpr_response = {}
+        request.session['intpr_response_cnt'] = intpr_response_cnt
+        intpr_response['intpr_response_cnt'] = intpr_response_cnt
+        # Configure number of pages
+        now_page = request.GET.get('page')
+        if now_page: now_page = int(now_page)
+        max_page = intpr_response_cnt // constants.CNT_CONTENTS_IN_PAGE
+        if intpr_response_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
+            max_page += 1
+        if not now_page or now_page > max_page:
+            now_page = 1
+        intpr_response['now_page'] = now_page
+        intpr_response['max_page'] = max_page
+        logger.info('now_page=%s, max_page=%s' % (now_page, max_page))
+        start_page = now_page - 4
+        if start_page < 1: start_page = 1
+        end_page = start_page + 9
+        if end_page > max_page: end_page = max_page
+        intpr_response['start_page'] = start_page
+        intpr_response['end_page'] = end_page
+        logger.info('start_page=%s, end_page=%s' % (start_page, max_page))
+        # Render page
+        intpr_response['intpr_response_list'] = intpr_response_list
+        context['intpr_response'] = intpr_response
+
+    logger.info('interpretation_request_list_page get: %s' % request.GET)
+    return render(request, 'miaas/interpretation_response_list.html', context)
+
+
+# KH
 def physician_interpretation_page(request):
     context = _get_session_context(request)
     if request.session.get('user'):
@@ -286,79 +472,3 @@ def physician_interpretation_page(request):
 
     return render(request, 'miaas/interpretation_physician.html', context)
     # return render(request, 'miaas/interpretation_physician.html', sctx.interpret_physician_context)
-
-
-def physician_interpretation_search(request):
-    context = _get_session_context(request)
-    if request.session.get('user'):
-        query_type = request.GET.get('query_type')
-        image_subject = request.GET.get('image_subject')
-        image_type = request.GET.get('image_type')
-
-        db = cloud_db.DbManager()
-        request_cnt = db.retrieve_requested_intpr_amount(query_type=query_type, image_subject=image_subject,
-                                                         image_type=image_type)
-        if request_cnt <= 0:
-            return render(request, 'miaas/interpretation_search.html', context)
-
-        interpret_request = {}
-        request.session['request_cnt'] = request_cnt
-        interpret_request['request_cnt'] = request_cnt
-
-        now_page = request.GET.get('page')
-        if now_page: now_page = int(now_page)
-        max_page = request_cnt // constants.CNT_CONTENTS_IN_PAGE
-        if request_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
-            max_page += 1
-        if not now_page or now_page > max_page:
-            now_page = 1
-        interpret_request['now_page'] = now_page
-        interpret_request['max_page'] = max_page
-
-        logger.info('now_page=%s, max_page=%s' % (now_page, max_page))
-
-        start_page = now_page - 4
-        if start_page < 1: start_page = 1
-        end_page = start_page + 9
-        if end_page > max_page: end_page = max_page
-        interpret_request['start_page'] = start_page
-        interpret_request['end_page'] = end_page
-        logger.info('start_page=%s, end_page=%s' % (start_page, max_page))
-
-        request_list = db.retrieve_requested_intpr_list()
-        interpret_request['request_list'] = request_list
-        context['interpret_request'] = interpret_request
-
-    logger.info('physician_interpretation_search get: %s' % request.GET)
-    return render(request, 'miaas/interpretation_search.html', context)
-    # return render(request, 'miaas/interpretation_search.html', sctx.interpret_search_context)
-
-
-def physician_interpretation_write(request):
-    context = _get_session_context(request)
-    return render(request, 'miaas/interpretation_write.html', context)
-
-
-def _get_session_context(request):
-    context = {}
-    if 'user' in request.session.keys():
-        context['user_session'] = request.session['user']
-        if context.get('user_session'):
-            context['user_session'].pop('password', None)
-    return context
-
-
-def opinion(request, opinion_id):
-    return HttpResponse("Hello, opinion %s." % opinion_id)
-
-
-def user(request, user_name):
-    return HttpResponse("Hello, user %s." % user_name)
-
-
-def template(request):
-    return render(request, 'miaas/template.html', None)
-
-
-def test_page(request):
-    return render(request, 'miaas/test.html', None)

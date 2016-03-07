@@ -25,7 +25,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="table-title col-xs-12 col-md-4">Medical Image List</div>
                     <form class="table-search col-xs-12 col-md-8 form-group form-inline" method="get">
                         <button class="btn btn-default pull-right" type="submit">Search</button>
-                        <input name="image_subject" id="inputSearch" type="text" class="form-control pull-right" placeholder="Search">
+                        <input name="request_subject" id="inputSearch" type="text" class="form-control pull-right" placeholder="Search">
                         <select name="image_type" id="selectImageType" class="form-control pull-right" style="display: none;">
                             <option>EEG</option>
                             <option>ECG</option>
@@ -40,22 +40,24 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             <option>Image Type</option>
                         </select>
                     </form>
-                    {% if interpret_request.request_list %}
+                    {% if requested_intpr.requested_intpr_list %}
                     <table class="table table-striped table-hover col-xs-12">
                         <thead>
                             <td>Request Date</td>
                             <td>Patient</td>
                             <td>Image Type</td>
                             <td>Request Subject</td>
+                            <td>Interpretation Level</td>
                             <td>Status</td>
                         </thead>
                         <tbody>
-                        {% for request_info in interpret_request.request_list %}
-                            <tr onclick="javascript: location.href='{% url 'miaas:interpretation_detail' request_info.intpr_id %}';">
-                                <td>{{ request_info.timestamp|datetime_string }}</td>
+                        {% for request_info in requested_intpr.requested_intpr_list %}
+                            <tr onclick="javascript: location.href='{% url 'miaas:interpretation_detail' request_info.request_id %}';">
+                                <td>{{ request_info.requested_date|datetime_string }}</td>
                                 <td>{{ request_info.patient_id }}</td>
                                 <td>{{ request_info.image_type }}</td>
-                                <td>{{ request_info.subject }}</td>
+                                <td>{{ request_info.request_subject }}</td>
+                                <td>{{ request_info.level }}</td>
                                 <td class="bold interpretation-status-{{ request_info.status }}">{{ request_info.status|get_interpretation_status }}</td>
                             </tr>
                         {% endfor %}
@@ -68,9 +70,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {#                    {% endfor %}#}
                     </div>
                 </div>
-
             </div>
-
         </div>
     </section>
 </div>
