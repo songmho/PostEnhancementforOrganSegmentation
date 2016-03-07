@@ -242,8 +242,17 @@ def physician_profile_page(request):
     return render(request, 'miaas/physician_profile.html', context)
 
 
-def physician_interpretation_write(request):
+def physician_interpretation_write(request, request_id):
     context = _get_session_context(request)
+    if request.session.get('user'):
+        logger.info('physician_interpretation_write call db')
+        # Retrieve details.
+        db = cloud_db.DbManager()
+        physician_response = {}
+        request_detail = db.retrieve_request_info(request_id)
+        context['request_detail'] = request_detail
+        logger.info("status:%s" % request_detail['status'])
+    logger.info('interpretation_request_detail_page get: %s' % request.GET)
     return render(request, 'miaas/interpretation_write.html', context)
 
 

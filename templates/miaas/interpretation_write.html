@@ -31,14 +31,14 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="col-xs-12 form-group">
                         <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="imgSubject" >Nullam ultrices felis a blandit</span>
+                            <span id="imgSubject" >{{ request_detail.image_subject }}</span>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Image Type</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="type" >ECG</span>
+                            <span id="type" >{{ request_detail.image_type }}</span>
                         </div>
                     </div>
 
@@ -54,28 +54,28 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="col-xs-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Date</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="date" >2015/02/11</span>
+                            <span id="date" >{{ request_detail.image_date|datetime_string }}</span>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Taken From</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="taken" >Medical Clinic</span>
+                            <span id="taken" >{{ request_detail.taken_from }}</span>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="physician" >Dr.Peter</span>
+                            <span id="physician" >{{ request_detail.physician_name }}</span>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Clinic Name</label>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Place</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="clinicName" >Dr.Peter's Hospital</span>
+                            <span id="clinicName" >{{ request_detail.place }}</span>
                         </div>
                     </div>
 
@@ -83,7 +83,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Description</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
                             <div id="description" >
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sagittis lacus eget tincidunt vehicula. Nulla ullamcorper porttitor quam ut porta. Mauris posuere mauris non tortor laoreet commodo. Fusce lacinia euismod diam, vel viverra velit ornare non. Interdum et malesuada fames ac ante ipsum primis in faucibus. Curabitur felis nulla, ultrices et fringilla eu, scelerisque ac urna. Donec vitae pretium sem. Donec id arcu tempor, hendrerit justo nec, dapibus lorem. Nam nunc purus, sollicitudin nec dui vitae, convallis auctor quam. Donec sit amet condimentum lacus.</p>
+                                <p>{{ request_detail.description }}</p>
                             </div>
                         </div>
                     </div>
@@ -93,7 +93,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp1-level" >Level 2 - Only with available images, Fee-based</span>
+                            <span id="itp1-level" >Level {{ request_detail.level }} </span>
                         </div>
                     </div>
                     <div class="col-sm-12 form-group">

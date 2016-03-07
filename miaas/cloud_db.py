@@ -867,3 +867,34 @@ class DbManager():
             except Exception as e:
                 print("Retrieve_Physician_Interpretation: ", e)
         return intprs
+
+    # KH
+    def retrieve_request_info(self, request_id):
+        request_detail = {}
+        db_query_request = "SELECT req.request_id, req.subject, req.message, m.subject, m.image_type, " \
+                           "m.timestamp, m.taken_from, m.physician, m.place, m.description, req.status, req.level  " \
+                           "FROM miaas.request req " \
+                           "JOIN miaas.medical_image m ON req.image_id = m.image_id " \
+                           "WHERE req.request_id=%s"
+
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query_request, request_id)
+                self.connector.commit()
+                for row in cursor:
+                    request_detail['request_id'] = row[0]
+                    request_detail['request_subject'] = row[1]
+                    request_detail['request_message'] = row[2]
+                    request_detail['image_subject'] = row[3]
+                    request_detail['image_type'] = row[4]
+                    request_detail['image_date'] = row[5]
+                    request_detail['taken_from'] = row[6]
+                    request_detail['physician_name'] = row[7]
+                    request_detail['place'] = row[8]
+                    request_detail['description'] = row[9]
+                    request_detail['status'] = row[10]
+                    request_detail['level'] = row[11]
+            except Exception as e:
+                print("retrieve_patient_request_detail: ", e)
+
+        return request_detail
