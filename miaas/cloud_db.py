@@ -393,21 +393,17 @@ class DbManager():
     def update_medical_image_by_id(self, medical_image):
         if_updated = False
         image_id = medical_image['image_id']
-        user_id = medical_image['user_id']
         subject = medical_image['subject']
         image_type = medical_image['image_type']
         taken_from = medical_image['taken_from']
         physician = medical_image['physician']
         place = medical_image['place']
         description = medical_image['description']
-        image_dir = medical_image['image_dir']
-        size = medical_image['size']
         timestamp = medical_image['timestamp']
-        intpr_num = medical_image['intpr_num']
         with self.connector.cursor() as cursor:
             try:
-                db_query = "UPDATE medical_image SET user_id=%s, subject=%s, image_type=%s, taken_from=%s, physician=%s, place=%s, description=%s, image_dir=%s, size=%s, timestamp=%s, intpr_num=%s WHERE image_id=%s"
-                cursor.execute(db_query, (user_id, subject, image_type, taken_from, physician, place, description, image_dir, size, timestamp, intpr_num, image_id))
+                db_query = "UPDATE medical_image SET subject=%s, image_type=%s, taken_from=%s, physician=%s, place=%s, description=%s, timestamp=%s WHERE image_id=%s"
+                cursor.execute(db_query, (subject, image_type, taken_from, physician, place, description, timestamp, image_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 print(row_count)
@@ -533,7 +529,7 @@ class DbManager():
         return intpr
 
     # To retrieve all interpretation information from 'interpretation' table on 'image_id' arguments with medical image information from 'medical_image'
-    def retrieve_intpr_by_image(self, image_id):
+    def retrieve_image_and_intpr(self, image_id):
         intpr_by_image = {}
         intpr_list = []
         with self.connector.cursor() as cursor:
