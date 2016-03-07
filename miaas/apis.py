@@ -378,12 +378,15 @@ def handle_interpretation_mgt(request):
                 raise Exception(MSG_INVALID_PARAMS)
             # To create a patient request
             elif action == 'patientReq':
+                status = 3
+                timestamp = 1235165184814
                 request = {
                     'image_id': data['image_id'],
-                    'status': data['status'],
+                    'status': status,
                     'subject': data['subject'],
                     'message': data['message'],
-                    'timestamp': data['timestamp']
+                    'timestamp': timestamp,
+                    'level': data['level']
                 }
                 if_inserted = db.add_patient_intpr_request(request)
                 if if_inserted:
@@ -392,11 +395,12 @@ def handle_interpretation_mgt(request):
                     return JsonResponse(constants.CODE_FAILURE)
             # To create a response on a patient request
             elif action == 'physicianResp':
+                timestamp = 1051685110
                 response = {
                     'request_id': data['request_id'],
                     'physician_id': data['physician_id'],
                     'message': data['message'],
-                    'timestamp': data['timestamp']
+                    'timestamp': timestamp
                 }
                 if_inserted = db.add_physician_intpr_resp(response)
                 if if_inserted:
@@ -405,31 +409,33 @@ def handle_interpretation_mgt(request):
                     return JsonResponse(constants.CODE_FAILURE)
             # To create an interpretation and update request and response
             elif action == 'finishIntpr':
+                fee = 20
+                timestamp = 304029310928309
+                request_id = data['request_id']
                 intpr = {
                     'patient_id': data['patient_id'],
                     'physician_id': data['physician_id'],
                     'image_id': data['image_id'],
                     'level': data['level'],
-                    'fee': data['fee'],
-                    'timestamp': data['timestamp'],
+                    'fee': fee,
+                    'timestamp': timestamp,
                     'summary': data['summary'],
-                    'interpretation': data
+                    'interpretation': data['interpretation'],
+                    'request_id': request_id
                 }
                 if_inserted = db.add_intpr(intpr)
                 if if_inserted:
-                    return JsonResponse(constants.CODE_SUCCESS)
+                    status = 0
+                    if_updated = db.update_req_and_resp(request_id, status, timestamp)
+                    if if_updated:
+                        return JsonResponse(constants.CODE_SUCCESS)
+                    else:
+                        return JsonResponse(constants.CODE_FAILURE)
                 else:
                     return JsonResponse(constants.CODE_FAILURE)
         # To handle 'GET' interpretation request
         if request.method == 'GET':
             logger.info(request.GET)
-            # user_id = request.GET.get('user_id')
-            # time_from = request.GET.get('time_from')
-            # image_id = request.GET.get('image_id')
-            # offset = request.GET.get('offset')
-            # limit = request.GET.get('limit')
-            # if not user_id:
-            #     raise Exception(MSG_INVALID_PARAMS)
             action = request.GET.get('action')
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
@@ -476,8 +482,8 @@ def handle_interpretation_mgt(request):
             elif action == 'patientSelReq':
                 request_id = data['request_id']
                 physician_id = data['physician_id']
-                status = data['status']
-                timestamp = data['timestamp']
+                status = 1
+                timestamp = 165186151156840
                 if_updated = db.update_patient_request_by_selection(request_id, physician_id, status, timestamp)
                 if if_updated:
                     return JsonResponse(constants.CODE_SUCCESS)
