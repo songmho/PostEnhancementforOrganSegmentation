@@ -121,9 +121,20 @@ def archive_upload_page(request):
     return render(request, 'miaas/medical_image_upload.html', context)
 
 
-def medical_image_page(request, img_num):
+def medical_image_page(request, image_id):
     context = _get_session_context(request)
     # return render(request, 'miaas/medical_image.html', sctx.default_context)
+
+    if not image_id or int(image_id) < 0:
+        return render(request, 'miaas/archive.html', context)
+
+    db = cloud_db.DbManager()
+    image = db.retrieve_medical_image_by_id(image_id)
+    intprs = []
+
+    context['image'] = image
+    context['intprs']
+
     return render(request, 'miaas/medical_image.html', context)
 
 

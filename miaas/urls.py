@@ -17,7 +17,7 @@ urlpatterns = [
 
     url(r'^archive$', views.archive_page, name='archive'),
     url(r'^archive/upload$', views.archive_upload_page, name='archive_upload'),
-    url(r'^archive/detail/(?P<img_num>[0-9]+)$', views.medical_image_page, name='archive_detail'),
+    url(r'^archive/detail/(?P<image_id>[0-9]+)$', views.medical_image_page, name='archive_detail'),
 
     url(r'^interpretation$', views.interpretation_page, name='interpretation'),
     url(r'^interpretation/(?P<interpret_num>[0-9]+)$', views.interpretation_detail_page, name='interpretation_detail'),
