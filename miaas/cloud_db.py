@@ -760,21 +760,21 @@ class DbManager():
         requests = []
         time_from = int(time_from) if time_from is not None else 0
         if query_type == "Image Type" and image_type is not None:
-            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status " \
+            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level " \
                        "FROM request req " \
                        "JOIN medical_image m on req.image_id = m.image_id " \
                        "WHERE status >= 2 and image_type='%s' and req.timestamp>%s " \
                        "ORDER BY status DESC" % (image_type, time_from)
 
         elif query_type == "Request Subject" and request_subject is not None:
-            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status " \
+            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level " \
                        "FROM request req " \
                        "JOIN medical_image m on req.image_id = m.image_id " \
                        "WHERE status >= 2 and req.subject Like '%s' and  req.timestamp>%s " \
                        "ORDER BY status DESC" % ("%" + request_subject + "%", time_from)
 
         else:
-            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status " \
+            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level " \
                        "FROM request req " \
                        "JOIN medical_image m on req.image_id = m.image_id " \
                        "WHERE status >= 2 and req.timestamp>%s " \
@@ -792,10 +792,46 @@ class DbManager():
                     request['image_type'] = row[3]
                     request['request_subject'] = row[4]
                     request['status'] = row[5]
+                    request['level'] = row[6]
                     requests.append(request)
             except Exception as e:
                 print("Retrieve_Physician_Interpretation: ", e)
         return requests
+
+
+    # KH
+    def retrieve_physician_response_list(self, physician_id):
+        responses = []
+        db_query = "SELECT req.request_id, req.timestamp, res.timestamp, m.user_id, req.subject, req.message, m.subject, " \
+                   "m.image_type, req.level, req.status " \
+                   "FROM response res " \
+                   "JOIN request req on res.request_id = req.request_id " \
+                   "JOIN medical_image m on req.image_id = m.image_id " \
+                   "WHERE res.physician_id = '%s'" \
+                   "ORDER BY req.status ASC"%physician_id
+
+        print(db_query)
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query)
+                self.connector.commit()
+                for row in cursor:
+                    response = {}
+                    response['request_id'] = row[0]
+                    response['request_date'] = row[1]
+                    response['response_date'] = row[2]
+                    response['patient_id'] = row[3]
+                    response['request_subject'] = row[4]
+                    response['request_message'] = row[5]
+                    response['image_subject'] = row[6]
+                    response['image_type'] = row[7]
+                    response['level'] = row[8]
+                    response['status'] = row[9]
+                    responses.append(response)
+            except Exception as e:
+                print("retrieve_patient_request_list: ", e)
+        return responses
+
 
     # KH
     def retrieve_physician_intpr_list(self, physician_id, time_from=None):

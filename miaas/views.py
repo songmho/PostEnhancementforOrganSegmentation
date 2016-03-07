@@ -305,8 +305,8 @@ def interpretation_request_list_page(request):
         intpr_request['end_page'] = end_page
         logger.info('start_page=%s, end_page=%s' % (start_page, max_page))
         # Render page
-        context['intpr_request'] = intpr_request
         intpr_request['intpr_request_list'] = intpr_request_list
+        context['intpr_request'] = intpr_request
     logger.info('interpretation_request_list_page get: %s' % request.GET)
     return render(request, 'miaas/interpretation_request_list.html', context)
 
@@ -379,39 +379,40 @@ def physician_interpretation_search(request):
 def physician_interpretation_response_page(request):
     context = _get_session_context(request)
     if request.session.get('user'):
-        logger.info('interpretation_request_list_page call db')
+        logger.info('physician_interpretation_response_page call db')
         # Retrieve lists.
         db = cloud_db.DbManager()
-        intpr_request_list = db.retrieve_patient_request_list(request.session['user']['user_id'])
-        intpr_request_cnt = len(intpr_request_list)
-        if intpr_request_cnt <= 0:
-            render(request, 'miaas/interpretation_request_list.html', context)
-        intpr_request = {}
-        request.session['request_cnt'] = intpr_request_cnt
-        intpr_request['request_cnt'] = intpr_request_cnt
+        intpr_response_list = db.retrieve_physician_response_list(request.session['user']['user_id'])
+        intpr_response_cnt = len(intpr_response_list)
+        if intpr_response_cnt <= 0:
+            render(request, 'miaas/interpretation_response_list.html', context)
+        intpr_response = {}
+        request.session['intpr_response_cnt'] = intpr_response_cnt
+        intpr_response['intpr_response_cnt'] = intpr_response_cnt
         # Configure number of pages
         now_page = request.GET.get('page')
         if now_page: now_page = int(now_page)
-        max_page = intpr_request_cnt // constants.CNT_CONTENTS_IN_PAGE
-        if intpr_request_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
+        max_page = intpr_response_cnt // constants.CNT_CONTENTS_IN_PAGE
+        if intpr_response_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
             max_page += 1
         if not now_page or now_page > max_page:
             now_page = 1
-        intpr_request['now_page'] = now_page
-        intpr_request['max_page'] = max_page
+        intpr_response['now_page'] = now_page
+        intpr_response['max_page'] = max_page
         logger.info('now_page=%s, max_page=%s' % (now_page, max_page))
         start_page = now_page - 4
         if start_page < 1: start_page = 1
         end_page = start_page + 9
         if end_page > max_page: end_page = max_page
-        intpr_request['start_page'] = start_page
-        intpr_request['end_page'] = end_page
+        intpr_response['start_page'] = start_page
+        intpr_response['end_page'] = end_page
         logger.info('start_page=%s, end_page=%s' % (start_page, max_page))
         # Render page
-        context['intpr_request'] = intpr_request
-        intpr_request['intpr_request_list'] = intpr_request_list
+        intpr_response['intpr_response_list'] = intpr_response_list
+        context['intpr_response'] = intpr_response
+
     logger.info('interpretation_request_list_page get: %s' % request.GET)
-    return render(request, 'miaas/interpretation_request_list.html', context)
+    return render(request, 'miaas/interpretation_response_list.html', context)
 
 
 # KH
