@@ -505,6 +505,20 @@ def handle_interpretation_mgt(request):
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
                     return JsonResponse(constants.CODE_FAILURE)
+        # To handle 'DELETE' interpretation request
+        if request.method == 'DELETE':
+            logger.info(request.GET)
+            action = request.GET.get('action')
+            if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+            # To delete a patient request and relevant physician responses
+            elif action == 'delPatientReq':
+                request_id = request.GET.get('request_id')
+                if_deleted = db.delete_patient_request(request_id)
+                if if_deleted:
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(constants.CODE_FAILURE)
     except Exception as e:
         logger.exception(e)
         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))

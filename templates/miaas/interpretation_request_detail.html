@@ -329,17 +329,17 @@
                     </div>
                 </div>
 
-                <div class="form-btns-container row">
+                <form id="requestEditForm"  class="form-btns-container row">
                     <div id="btnFormCancel" class="col-xs-6 col-md-3 col-md-offset-3 form-button">
                         <a class="btn btn-lg btn-danger btn-block btn-cancel_interpretation">Cancel Interpretation</a>
                     </div>
                     <div id="btnFormCancel" class="col-xs-6 col-md-3 form-button">
-                        <a class="btn btn-lg btn-primary btn-block btn-edit-request" href="#">Edit</a>
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">Edit</button>
                     </div>
                     <div id="btnFormCancel" class="col-xs-6 col-md-3 form-button">
                         <a class="btn btn-lg btn-success btn-block" onclick="javascript:history.back();">OK</a>
                     </div>
-                </div>
+                </form>
 
             {% endif %}
 
@@ -359,7 +359,7 @@
                 Signin failed
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <a type="button" class="btn btn-default" href="{% url 'miaas:interpretation_request_list' %}">Close</a>
             </div>
         </div>
     </div>
@@ -391,7 +391,8 @@
             });
         });
 
-        $('.btn-edit-request').click(function() {
+        $('#requestEditForm').on('submit', function(e) {
+            e.preventDefault();
             $.ajax("/api/interpretation", {
                 method: 'POST',
                 data: JSON.stringify({

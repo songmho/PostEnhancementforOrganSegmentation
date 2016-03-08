@@ -715,7 +715,7 @@ class DbManager():
                     cursor.execute(db_query, (request_id, physician_id))
                     self.connector.commit()
                     row_count = cursor.rowcount
-                    if row_count > 0:
+                    if row_count > -1:
                         if_updated = True
             except Exception as e:
                 print("Update_Patient_Request_by_Selection:", e)
@@ -734,6 +734,25 @@ class DbManager():
             except Exception as e:
                 print("Update_Patient_Request:", e)
         return if_updated
+
+    def delete_patient_request(self, request_id):
+        if_deleted = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "DELETE FROM request WHERE request_id=%s"
+                cursor.execute(db_query, (request_id))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    db_query = "DELETE FROM response WHERE request_id=%s"
+                    cursor.execute(db_query, (request_id))
+                    self.connector.commit()
+                    row_count = cursor.rowcount
+                    if row_count > 0:
+                        if_deleted = True
+            except Exception as e:
+                print("Delete_Patient_Request:", e)
+        return if_deleted
 
     def add_physician_intpr_resp(self, response):
         if_inserted = False
@@ -754,7 +773,7 @@ class DbManager():
                     cursor.execute(db_query, (status, request_id))
                     self.connector.commit()
                     row_count = cursor.rowcount
-                    if row_count > 0:
+                    if row_count > -1:
                         if_inserted = True
             except Exception as e:
                 print("Add_Physician_Intpr_Response: ", e)
