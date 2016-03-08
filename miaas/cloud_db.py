@@ -860,14 +860,14 @@ class DbManager():
             db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level " \
                        "FROM request req " \
                        "JOIN medical_image m on req.image_id = m.image_id " \
-                       "WHERE status >= 2 and image_type='%s' and req.timestamp>%s and %s NOT IN(SELECT physician_id FROM response res WHERE req.request_id=res.request_id) " \
+                       "WHERE status >= 2 and image_type='%s' and req.timestamp>%s and '%s' NOT IN(SELECT physician_id FROM response res WHERE req.request_id=res.request_id) " \
                        "ORDER BY status DESC" % (image_type, time_from, physician_id)
 
         elif query_type == "Request Subject" and request_subject is not None:
             db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level " \
                        "FROM request req " \
                        "JOIN medical_image m on req.image_id = m.image_id " \
-                       "WHERE status >= 2 and req.subject Like '%s' and  req.timestamp>%s and %s NOT IN(SELECT physician_id FROM response res WHERE req.request_id=res.request_id) " \
+                       "WHERE status >= 2 and req.subject Like '%s' and  req.timestamp>%s and '%s' NOT IN(SELECT physician_id FROM response res WHERE req.request_id=res.request_id) " \
                        "ORDER BY status DESC" % ("%" + request_subject + "%", time_from, physician_id)
 
         else:
