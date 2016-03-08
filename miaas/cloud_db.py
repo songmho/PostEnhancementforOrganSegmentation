@@ -715,7 +715,7 @@ class DbManager():
                     cursor.execute(db_query, (request_id, physician_id))
                     self.connector.commit()
                     row_count = cursor.rowcount
-                    if row_count > 0:
+                    if row_count > -1:
                         if_updated = True
             except Exception as e:
                 print("Update_Patient_Request_by_Selection:", e)
@@ -754,7 +754,7 @@ class DbManager():
                     cursor.execute(db_query, (status, request_id))
                     self.connector.commit()
                     row_count = cursor.rowcount
-                    if row_count > 0:
+                    if row_count > -1:
                         if_inserted = True
             except Exception as e:
                 print("Add_Physician_Intpr_Response: ", e)
