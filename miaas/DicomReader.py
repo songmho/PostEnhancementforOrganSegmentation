@@ -1,97 +1,85 @@
 import os, sys
 # import png
-# import dicom
+import dicom
+import mudicom
 # import logging
-# import pylab
 # import matplotlib.pyplot as pyplot
-# import matplotlib.pylab as pylab
+import matplotlib.pylab as pylab
 import gdcm
-
-try:
-    from PIL import Image
-except ImportError:
-    import Image
+import time
+# try:
+#     from PIL import Image
+# except ImportError:
+#     import Image
 
 _testCompressedfile = "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2/IM-0001-0001.dcm"
 _testDecompressedFile = "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2, DECOMP/IM-0001-0001.dcm"
+_testImagedFile = "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2, PNG/IM-0001-0001.jpg"
+_testIconFile = "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2, PNG/IM-0001-0001-icon.jpg"
 
-file1 = _testCompressedfile
-file2 = _testDecompressedFile
+def run():
+    decompress(_testCompressedfile, _testDecompressedFile)
 
-r = gdcm.ImageReader()
-r.SetFileName( file1 )
-if not r.Read():
-    sys.exit(1)
+def decompress(infile, outfile):
+    r = gdcm.ImageReader()
+    r.SetFileName(infile)
+    if not r.Read():
+        return False
 
-image = gdcm.Image()
-ir = r.GetImage()
+    image = gdcm.Image()
+    ir = r.GetImage()
 
-image.SetNumberOfDimensions( ir.GetNumberOfDimensions() )
-dims = ir.GetDimensions()
-# print ir.GetDimension(0)
-# print ir.GetDimension(1)
-print "Dimensions:", dims, "\n"
+    image.SetNumberOfDimensions(ir.GetNumberOfDimensions())
+    dims = ir.GetDimensions()
+    # print "Dimensions:", dims, "\n"
+    image.SetDimension(0, dims[0])
+    image.SetDimension(1, dims[1])
 
-#  Just for fun:
-dircos = ir.GetDirectionCosines()
-# t = gdcm.Orientation.GetType(dircos)
-# print "Type:", t
+    pixeltype = ir.GetPixelFormat()
+    image.SetPixelFormat(pixeltype)
+    # print "PixelFormat:\n", pixeltype
 
-# l = gdcm.Orientation.GetLabel(t)
-# print "Orientation label:", l
+    pi = ir.GetPhotometricInterpretation()
+    image.SetPhotometricInterpretation(pi)
+    # print "PhotometricInterpretation:", pi, "\n"
 
-# image.SetDimension(0, ir.GetDimension(0) )
-# image.SetDimension(1, ir.GetDimension(1) )
-image.SetDimension(0, dims[0])
-image.SetDimension(1, dims[1])
+    buffer = ir.GetBuffer()
+    # print "BufferLength:", len(buffer), "\n"
+    pixeldata = gdcm.DataElement(gdcm.Tag(0x7fe0,0x0010))
+    pixeldata.SetByteValue(buffer, gdcm.VL(len(buffer)))
+    image.SetDataElement(pixeldata)
 
-pixeltype = ir.GetPixelFormat()
-image.SetPixelFormat(pixeltype)
-print "PixelFormat:\n", pixeltype
+    w = gdcm.ImageWriter()
+    w.SetFileName(outfile)
+    w.SetFile(r.GetFile())
+    w.SetImage(image)
+    # w.SetPixmap(image)
+    if not w.Write():
+        print "Write Error!"
+        return False
+    return True
 
-pi = ir.GetPhotometricInterpretation()
-image.SetPhotometricInterpretation(pi)
-print "PhotometricInterpretation:", pi, "\n"
+def plot_image(decomp_image):
+    dfile = dicom.read_file(decomp_image)
+    print dfile.file_meta
 
-str1 = ir.GetBuffer()
-print len(str1)
-print ir.GetBufferLength()
-print "BufferLength:", len(str1), "\n"
+    pylab.imshow(dfile.pixel_array, cmap=pylab.cm.bone) # pylab readings and conversion
+    pylab.show()
 
-pixeldata = gdcm.DataElement( gdcm.Tag(0x7fe0,0x0010) )
-pixeldata.SetByteValue( str1, gdcm.VL( len(str1) ) )
-image.SetDataElement( pixeldata )
+def convert_to_jpg(dcmfile, jpgfile):
+    try:
+        mufile = mudicom.load(dcmfile)
+        mufile.read()
 
-w = gdcm.ImageWriter()
-w.SetFileName( file2 )
-w.SetFile( r.GetFile() )
-w.SetImage( image )
-if not w.Write():
-    print "Write Error!"
-    sys.exit(1)
+        img = mufile.image
+        img.save_as_plt(jpgfile)
+    except Exception:
+        return False
+    return True
 
-
-
-# dFile = dicom.read_file("/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2/IM-0001-0001.dcm")
-# pylab.imshow(dFile.pixel_array,cmap=pylab.cm.bone) # pylab readings and conversion
-# pylab.show() #Dispaly
-
-### show ###
-dFile = dicom.read_file(_testDecompressedFile)
-print dFile.file_meta
-
-pylab.imshow(dFile.pixel_array,cmap=pylab.cm.bone) # pylab readings and conversion
-pylab.show() #Dispaly
-
-
-### to jpg ###
-# mufile = mudicom.load(_testDecompressedFile)
-# mufile.read()
-#
-# valdiation = mufile.validate()
-# print valdiation
-#
-# img = mufile.image
-# img.numpy
-#
-# img.save_as_plt(_testImagedFile)
+if __name__ == "__main__":
+    print "decompress start"
+    # decompress(_testCompressedfile, _testDecompressedFile)
+    print "decompress done"
+    convert_to_jpg(_testDecompressedFile, _testImagedFile)
+    # convert_to_jpg(_testDecompressedFile, _testImagedFile)
