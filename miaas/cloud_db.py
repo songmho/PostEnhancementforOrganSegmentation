@@ -748,7 +748,7 @@ class DbManager():
                     cursor.execute(db_query, (request_id))
                     self.connector.commit()
                     row_count = cursor.rowcount
-                    if row_count > 0:
+                    if row_count > -1:
                         if_deleted = True
             except Exception as e:
                 print("Delete_Patient_Request:", e)

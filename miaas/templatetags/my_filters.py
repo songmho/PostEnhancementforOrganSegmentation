@@ -65,9 +65,17 @@ def is_list(arr):
 def list_size(arr):
     return len(arr)
 
+@register.filter(name='list_get')
+def list_get(arr, pos):
+    return arr[pos]
+
 @register.filter(name='is_empty')
 def is_empty(collection):
     if isinstance(collection, list):
         return len(collection) == 0
     return None
+
+@register.filter(name='plus')
+def plus(value, plus):
+    return value+plus
 

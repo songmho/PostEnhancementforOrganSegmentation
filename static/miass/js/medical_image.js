@@ -80,8 +80,11 @@ $(document).ready(function() {
         });
     });
 
+    $('#btnFormDelete').click(function() {
+        openDeleteConfirmModal();
+    });
     $('#btnDeleteCofirm').click(function() {
-
+        //$.LoadingOverlay('show');
     });
 });
 
