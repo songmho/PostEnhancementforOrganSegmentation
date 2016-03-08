@@ -331,7 +331,7 @@
 
                 <form id="requestEditForm"  class="form-btns-container row">
                     <div id="btnFormCancel" class="col-xs-6 col-md-3 col-md-offset-3 form-button">
-                        <a class="btn btn-lg btn-danger btn-block btn-cancel_interpretation">Cancel Interpretation</a>
+                        <a class="btn btn-lg btn-danger btn-block btn-request-cancel">Cancel Interpretation</a>
                     </div>
                     <div id="btnFormCancel" class="col-xs-6 col-md-3 form-button">
                         <button class="btn btn-lg btn-primary btn-block" type="submit">Edit</button>
@@ -370,6 +370,22 @@
 <!-- custom javascript -->
 <script>
     $(document).ready(function() {
+        $('.btn-request-cancel').click(function() {
+            $.ajax({
+                url:"/api/interpretation?action=delPatientReq&request_id={{ request_detail.request_id }}",
+                type: 'DELETE',
+                success: function (res) {
+                    $.LoadingOverlay('hide');
+                    if (res['code'] == 'SUCCESS') {
+                        openRequestDetailModal("Success", "Request Deletion Succeed")
+                    } else {
+                        openRequestDetailModal(res['msg'], "Request Deletion Failed")
+                    }
+                }
+            });
+            console.log("/api/interpretation?action=delPatientReq&request_id={{ request_detail.request_id }}")
+        });
+
         $('.btn-physician-select').click(function() {
             var physician_id = $(this).attr('physician_id');
             $.ajax("/api/interpretation", {
