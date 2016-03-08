@@ -165,7 +165,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="col-xs-12 form-btns-innerbox">
                         <div class="form-btns-container row">
                             <div id="btnFormReset" class="col-xs-6 col-sm-4 col-sm-offset-3 col-md-3 col-md-offset-6 form-button">
-                                <button class="btn btn-lg btn-primary btn-block" type="reset">Reset</button>
+                                <button class="btn btn-lg btn-warning btn-block" type="reset">Reset</button>
                             </div>
                             <div id="btnFormConfirm" class="col-xs-6 col-sm-5 col-md-3 form-button">
                                 <button class="btn btn-lg btn-primary btn-block" type="submit">Request</button>
@@ -176,11 +176,12 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             </form>
         </div><!-- End of Image information Row -->
 
-        {% for intpr in intpr_list %}
+        {% for intpr_num in intpr_list|list_size|get_range %}
+        {% with intpr_list|list_get:intpr_num as intpr %}
             <!-- to be loop -->
             <div class="row">
                 <div class="col-xs-12 col-title">
-                    <h3 class="text-success" id="itp1-title">Interpretation #1</h3>
+                    <h3 class="text-success">Interpretation #{{ intpr_num|plus:1 }}</h3>
                 </div>
                 <div class="col-xs-12 col-form">
                     <div class="form-container form-boxed form-horizontal row">
@@ -216,6 +217,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
                 </div>
             </div>
+        {% endwith %}
         {% endfor %}
 
     {% else %}
