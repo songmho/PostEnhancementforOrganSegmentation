@@ -1,7 +1,7 @@
-{% if not user_session or user_session.user_type != 'patient' %}
-    <script type="text/javascript">
-        location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
-    </script>
+{% if not user_session or user_session.user_type != 'physician' %}
+<script type="text/javascript">
+location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
+</script>
 {% endif %}
 
 {% load staticfiles %}
@@ -12,14 +12,14 @@
 <!-- custom css -->
 
 
-{% include 'miaas/template_nav_patient.html' %}
+{% include 'miaas/template_nav_physician.html' %}
 
 <div class="container">
     <section class="section section-default">
         <div class="row">
             <div class="col-xs-12 col-title">
                 {#                <h2 class="text-primary" id="titleSubject">Analytics Result for "{{ subject }}"</h2>#}
-                <h2 class="text-primary" id="titleSubject">Interpretation Result for "{{ intpr_detail.request_subject }}"</h2>
+                <h2 class="text-primary" id="titleSubject">Interpretation Result for "{{ physician_intpr_detail.request_subject }}"</h2>
             </div>
 
             <div class="col-xs-12 col-form">
@@ -30,31 +30,31 @@
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician ID</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="itp1-id"><a href="#">{{ intpr_detail.physician_id }}</a></span>
+                            <span id="itp1-id"><a href="#">{{ physician_intpr_detail.physician_id }}</a></span>
                         </div>
 
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="itp1-name" >{{ intpr_detail.physician_name }}</span>
+                            <span id="itp1-name" >{{ physician_intpr_detail.physician_name }}</span>
                         </div>
                     </div>
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp1-level" >{{ intpr_detail.level }}</span>
+                            <span id="itp1-level" >{{ physician_intpr_detail.level }}</span>
                         </div>
                     </div>
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp1-summary" >{{ intpr_detail.summary }}</span>
+                            <span id="itp1-summary" >{{ physician_intpr_detail.summary }}</span>
                         </div>
                     </div>
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
                             <div id="itp1-interpretation" >
-                                {{ intpr_detail.interpretation }}
+                                {{ physician_intpr_detail.interpretation }}
                             </div>
                         </div>
                     </div>
@@ -64,14 +64,14 @@
                     <div class="col-xs-12 form-group">
                         <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="imgSubject" >{{ intpr_detail.image_subject }}</span>
+                            <span id="imgSubject" >{{ physician_intpr_detail.image_subject }}</span>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Image Type</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="type" >{{ intpr_detail.image_type }}</span>
+                            <span id="type" >{{ physician_intpr_detail.image_type }}</span>
                         </div>
                     </div>
 
@@ -87,28 +87,28 @@
                     <div class="col-xs-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Date</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="date" >{{ intpr_detail.image_date|datetime_string }}</span>
+                            <span id="date" >{{ physician_intpr_detail.image_date|datetime_string }}</span>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Taken From</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="taken" >{{ intpr_detail.taken_from }}</span>
+                            <span id="taken" >{{ physician_intpr_detail.taken_from }}</span>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="physician" >{{ intpr_detail.physician }}</span>
+                            <span id="physician" >{{ physician_intpr_detail.physician }}</span>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Place</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="place" >{{ intpr_detail.place }}</span>
+                            <span id="place" >{{ physician_intpr_detail.place }}</span>
                         </div>
                     </div>
 
@@ -116,7 +116,7 @@
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Description</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
                             <div id="description" >
-                                <p>{{ intpr_detail.description }}</p>
+                                <p>{{ physician_intpr_detail.description }}</p>
                             </div>
                         </div>
                     </div>
@@ -126,7 +126,7 @@
                     <div class="col-xs-12 form-group">
                         <label class="col-sm-3 col-md-2 control-label no-pad-top" for="inputReqSubject" >Request Subject</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="reqSubject" >{{ intpr_detail.request_subject }}</span>
+                            <span id="reqSubject" >{{ physician_intpr_detail.request_subject }}</span>
                         </div>
                     </div>
 
@@ -134,7 +134,7 @@
                         <label class="col-sm-3 col-md-2 control-label" for="reqMessage" >Request Message</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
                             <div id="reqMessage" >
-                                <p>{{ intpr_detail.request_message }}</p>
+                                <p>{{ physician_intpr_detail.request_message }}</p>
                             </div>
                         </div>
                     </div>
@@ -149,6 +149,7 @@
         </div>
     </section>
 </div>
+
 
 {% include 'miaas/template_footer.html' %}
 

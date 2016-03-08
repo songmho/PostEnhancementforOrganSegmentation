@@ -109,7 +109,7 @@ interpret_context = {
                 'type': 'ECG',
                 'level': '1',
                 'summary': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam congue diam eget semper elementum. Nam non purus dictum, pharetra.',
-                'status': '0',
+                'status': '2',
             }, {
                 'id': 0,
                 'upload_date': '2014/08/29',

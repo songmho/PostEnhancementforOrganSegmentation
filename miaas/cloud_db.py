@@ -297,7 +297,7 @@ class DbManager():
             try:
                 db_query = "UPDATE user as u INNER JOIN physician as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.license_number=%s, p.medicine_field=%s, p.certificate_dir=%s WHERE u.user_id=%s"
                 cursor.execute(db_query, (
-                password, name, phone_number, email, license_number, medicine_field, certificate_dir, user_id))
+                    password, name, phone_number, email, license_number, medicine_field, certificate_dir, user_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 print(row_count)
@@ -379,7 +379,7 @@ class DbManager():
                 timestamp = medical_image['timestamp']
                 db_query = "INSERT INTO medical_image (user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (
-                user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp))
+                    user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
@@ -403,7 +403,8 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 db_query = "UPDATE medical_image SET subject=%s, image_type=%s, taken_from=%s, physician=%s, place=%s, description=%s, timestamp=%s WHERE image_id=%s"
-                cursor.execute(db_query, (subject, image_type, taken_from, physician, place, description, timestamp, image_id))
+                cursor.execute(db_query,
+                               (subject, image_type, taken_from, physician, place, description, timestamp, image_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 print(row_count)
@@ -605,41 +606,6 @@ class DbManager():
                 print("Retrieve_Interpretation: ", e)
         return intprs
 
-    # KH
-    def retrieve_physician_intpr_list(self, physician_id, time_from=None):
-        intprs = []
-        time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, interpretation.subject as request_subject, message, medical_image.subject as image_subject, image_type, taken_from " \
-                   "FROM miaas.interpretation join miaas.medical_image " \
-                   "WHERE interpretation.image_id = medical_image.image_id and interpretation.physician_id=%s and interpretation.timestamp>%s " \
-                   "ORDER BY interpretation.timestamp DESC"
-
-        print(db_query%(physician_id, time_from))
-        with self.connector.cursor() as cursor:
-            try:
-                cursor.execute(db_query, (physician_id, time_from))
-                self.connector.commit()
-                for row in cursor:
-                    intpr = {}
-                    intpr['intpr_id'] = row[0]
-                    intpr['physician_id'] = row[1]
-                    intpr['patient_id'] = row[2]
-                    intpr['image_id'] = row[3]
-                    intpr['level'] = row[4]
-                    intpr['fee'] = row[5]
-                    intpr['timestamp'] = row[6]
-                    intpr['summary'] = row[7]
-                    intpr['status'] = row[8]
-                    intpr['request_subject'] = row[8]
-                    intpr['message'] = row[9]
-                    intpr['image_subject'] = row[10]
-                    intpr['image_type'] = row[11]
-                    intpr['taken_from'] = row[12]
-                    intprs.append(intpr)
-            except Exception as e:
-                print("Retrieve_Physician_Interpretation: ", e)
-        return intprs
-
     def retrieve_physician_intpr(self, physician_id, time_from=None):
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
@@ -674,183 +640,6 @@ class DbManager():
                 amount = cursor.rowcount
             except Exception as e:
                 print("Retrieve_Physician_Interpretation_Amount: ", e)
-        return amount
-
-    # KH
-    def retrieve_patient_request_list(self, patient_id, time_from=None):
-        requests = []
-        time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * " \
-                   "FROM miaas.request join miaas.medical_image " \
-                   "WHERE request.image_id = medical_image.image_id and medical_image.user_id=%s and request.timestamp>%s " \
-                   "ORDER BY request.timestamp DESC"
-        with self.connector.cursor() as cursor:
-            try:
-                cursor.execute(db_query, (patient_id, time_from))
-                self.connector.commit()
-                for row in cursor:
-                    request = {}
-                    request['request_id'] = row[0]
-                    request['image_id'] = row[1]
-                    request['status'] = row[2]
-                    request['request_subject'] = row[3]
-                    request['message'] = row[4]
-                    request['request_date'] = row[5]
-                    request['level'] = row[6]
-                    request['patient_id'] = row[8]
-                    request['image_subject'] = row[8]
-                    request['image_type'] = row[9]
-                    request['taken_from'] = row[10]
-                    request['upload_date'] = row[17]
-                    requests.append(request)
-            except Exception as e:
-                print("Retrieve_Physician_Interpretation: ", e)
-        return requests
-
-    #
-    def retrieve_requested_intpr_amount(self, query_type=None, image_subject=None, image_type=None, time_from=None):
-        amount = -1
-        time_from = int(time_from) if time_from is not None else 0
-        if query_type == "Image Type" and image_type is not None:
-            db_query = "SELECT * " \
-                       "FROM miaas.interpretation join miaas.medical_image " \
-                       "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and image_type='%s' and interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%(image_type, time_from)
-
-        elif query_type == "Request Subject" and image_subject is not None:
-            db_query = "SELECT * " \
-                       "FROM miaas.interpretation join miaas.medical_image " \
-                       "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and subject Like '%s' and  interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%("%" + image_subject + "%", time_from)
-
-        else:
-            db_query = "SELECT * " \
-                       "FROM miaas.interpretation join miaas.medical_image " \
-                       "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%time_from
-
-        with self.connector.cursor() as cursor:
-            try:
-                cursor.execute(db_query)
-                self.connector.commit()
-                amount = cursor.rowcount
-            except Exception as e:
-
-                print("Retrieve_Requested_Interpretation_Amount: ", e)
-        return amount
-
-    # KH
-    def retrieve_patient_intpr_list(self, patient_id, time_from=None):
-        intprs = []
-        time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * " \
-                   "FROM miaas.request join miaas.medical_image " \
-                   "WHERE request.image_id = medical_image.image_id and medical_image.user_id=%s and request.timestamp>%s " \
-                   "ORDER BY request.timestamp DESC"
-
-        with self.connector.cursor() as cursor:
-            try:
-                cursor.execute(db_query, (patient_id, time_from))
-                self.connector.commit()
-                for row in cursor:
-                    intpr = {}
-                    intpr['intpr_id'] = row[0]
-                    intpr['physician_id'] = row[1]
-                    intpr['patient_id'] = row[2]
-                    intpr['image_id'] = row[3]
-                    intpr['level'] = row[4]
-                    intpr['fee'] = row[5]
-                    intpr['timestamp'] = row[6]
-                    intpr['summary'] = row[7]
-                    intpr['status'] = row[8]
-                    intpr['request_subject'] = row[8]
-                    intpr['message'] = row[9]
-                    intpr['image_subject'] = row[10]
-                    intpr['image_type'] = row[11]
-                    intpr['taken_from'] = row[12]
-                    intprs.append(intpr)
-            except Exception as e:
-                print("Retrieve_Physician_Interpretation: ", e)
-        return intprs
-
-    # KH
-    def retrieve_requested_intpr_list(self, query_type=None, image_subject=None, image_type=None, time_from=None):
-        intprs = []
-        time_from = int(time_from) if time_from is not None else 0
-        if query_type == "Image Type" and image_type is not None:
-            db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, interpretation.subject as request_subject, message, medical_image.subject as image_subject, image_type, taken_from " \
-                       "FROM miaas.interpretation join miaas.medical_image " \
-                       "WHERE interpretation.image_id = medical_image.image_id and status >= 2 and image_type='%s' and interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%(image_type, time_from)
-
-        elif query_type == "Request Subject" and image_subject is not None:
-            db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, interpretation.subject as request_subject, message, medical_image.subject as image_subject, image_type, taken_from " \
-                       "FROM miaas.interpretation join miaas.medical_image " \
-                       "WHERE interpretation.image_id = medical_image.image_id and status >= 2 and subject Like '%s' and  interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%("%" + image_subject + "%", time_from)
-
-        else:
-            db_query = "SELECT intpr_id, physician_id, patient_id, interpretation.image_id, level, fee, interpretation.timestamp, summary, status, interpretation.subject as request_subject, message, medical_image.subject as image_subject, image_type, taken_from " \
-                       "FROM miaas.interpretation join miaas.medical_image " \
-                       "WHERE interpretation.image_id = medical_image.image_id and status >= 2 and interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%time_from
-
-        print(db_query)
-        with self.connector.cursor() as cursor:
-            try:
-                cursor.execute(db_query)
-                self.connector.commit()
-                for row in cursor:
-                    intpr = {}
-                    intpr['intpr_id'] = row[0]
-                    intpr['physician_id'] = row[1]
-                    intpr['patient_id'] = row[2]
-                    intpr['image_id'] = row[3]
-                    intpr['level'] = row[4]
-                    intpr['fee'] = row[5]
-                    intpr['timestamp'] = row[6]
-                    intpr['summary'] = row[7]
-                    intpr['status'] = row[8]
-                    intpr['request_subject'] = row[8]
-                    intpr['message'] = row[9]
-                    intpr['image_subject'] = row[10]
-                    intpr['image_type'] = row[11]
-                    intpr['taken_from'] = row[12]
-                    intprs.append(intpr)
-            except Exception as e:
-                print("Retrieve_Physician_Interpretation: ", e)
-        return intprs
-
-    # KH
-    def retrieve_requested_intpr_amount(self, query_type=None, image_subject=None, image_type=None, time_from=None):
-        amount = -1
-        time_from = int(time_from) if time_from is not None else 0
-        if query_type == "Image Type" and image_type is not None:
-            db_query = "SELECT * " \
-                       "FROM miaas.interpretation join miaas.medical_image " \
-                       "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and image_type='%s' and interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%(image_type, time_from)
-
-        elif query_type == "Request Subject" and image_subject is not None:
-            db_query = "SELECT * " \
-                       "FROM miaas.interpretation join miaas.medical_image " \
-                       "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and subject Like '%s' and  interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%("%" + image_subject + "%", time_from)
-
-        else:
-            db_query = "SELECT * " \
-                       "FROM miaas.interpretation join miaas.medical_image " \
-                       "WHERE interpretation.image_id = medical_image.image_id and status <= 1 and interpretation.timestamp>%s " \
-                       "ORDER BY status DESC"%time_from
-
-        with self.connector.cursor() as cursor:
-            try:
-                cursor.execute(db_query)
-                self.connector.commit()
-                amount = cursor.rowcount
-            except Exception as e:
-
-                print("Retrieve_Requested_Interpretation_Amount: ", e)
         return amount
 
     def retrieve_patient_intpr(self, patient_id, time_from=None):
@@ -888,3 +677,324 @@ class DbManager():
             except Exception as e:
                 print("Retrieve_Patient_Interpretation_Amount: ", e)
         return amount
+
+
+    # KH
+    def retrieve_patient_request_list(self, patient_id, time_from=None):
+        requests = []
+        time_from = int(time_from) if time_from is not None else 0
+        db_query = "SELECT request_id, request.timestamp, request.subject, " \
+                   "message, medical_image.subject, image_type, level, status " \
+                   "FROM miaas.request " \
+                   "JOIN miaas.medical_image ON request.image_id = medical_image.image_id " \
+                   "WHERE medical_image.user_id=%s and request.timestamp>%s and request.status > 0 " \
+                   "ORDER BY request.timestamp DESC"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, (patient_id, time_from))
+                self.connector.commit()
+                for row in cursor:
+                    request = {}
+                    request['request_id'] = row[0]
+                    request['request_date'] = row[1]
+                    request['request_subject'] = row[2]
+                    request['message'] = row[3]
+                    request['image_subject'] = row[4]
+                    request['image_type'] = row[5]
+                    request['level'] = row[6]
+                    request['status'] = row[7]
+                    requests.append(request)
+            except Exception as e:
+                print("retrieve_patient_request_list: ", e)
+        return requests
+
+    # KH
+    def retrieve_patient_request_detail(self, request_id):
+        request_detail = {}
+        responses = []
+        db_query_request = "SELECT req.request_id, req.subject, req.message, m.subject, m.image_type, " \
+                           "m.timestamp, m.taken_from, m.physician, m.place, m.description, req.status, req.level  " \
+                           "FROM miaas.request req " \
+                           "JOIN miaas.medical_image m ON req.image_id = m.image_id " \
+                           "WHERE req.request_id=%s"
+
+        db_query_response = "SELECT p.user_id, u.name, p.medicine_field, res.message  " \
+                            "FROM response res " \
+                            "JOIN physician p ON res.physician_id = p.user_id " \
+                            "JOIN user u ON p.user_id = u.user_id " \
+                            "WHERE res.request_id=%s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query_request, request_id)
+                self.connector.commit()
+                for row in cursor:
+                    request_detail['request_id'] = row[0]
+                    request_detail['request_subject'] = row[1]
+                    request_detail['request_message'] = row[2]
+                    request_detail['image_subject'] = row[3]
+                    request_detail['image_type'] = row[4]
+                    request_detail['image_date'] = row[5]
+                    request_detail['taken_from'] = row[6]
+                    request_detail['physician_name'] = row[7]
+                    request_detail['place'] = row[8]
+                    request_detail['description'] = row[9]
+                    request_detail['status'] = row[10]
+                    request_detail['level'] = row[11]
+
+                cursor.execute(db_query_response, request_id)
+                self.connector.commit()
+                for row in cursor:
+                    response = {}
+                    response['physician_id'] = row[0]
+                    response['physician_name'] = row[1]
+                    response['medicine_filed'] = row[2]
+                    response['response_message'] = row[3]
+                    responses.append(response)
+            except Exception as e:
+                print("retrieve_patient_request_detail: ", e)
+
+        return request_detail, responses
+
+    # KH
+    def retrieve_requested_intpr_list(self, query_type=None, request_subject=None, image_type=None, time_from=None):
+        requests = []
+        time_from = int(time_from) if time_from is not None else 0
+        if query_type == "Image Type" and image_type is not None:
+            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level " \
+                       "FROM request req " \
+                       "JOIN medical_image m on req.image_id = m.image_id " \
+                       "WHERE status >= 2 and image_type='%s' and req.timestamp>%s " \
+                       "ORDER BY status DESC" % (image_type, time_from)
+
+        elif query_type == "Request Subject" and request_subject is not None:
+            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level " \
+                       "FROM request req " \
+                       "JOIN medical_image m on req.image_id = m.image_id " \
+                       "WHERE status >= 2 and req.subject Like '%s' and  req.timestamp>%s " \
+                       "ORDER BY status DESC" % ("%" + request_subject + "%", time_from)
+
+        else:
+            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level " \
+                       "FROM request req " \
+                       "JOIN medical_image m on req.image_id = m.image_id " \
+                       "WHERE status >= 2 and req.timestamp>%s " \
+                       "ORDER BY status DESC" % time_from
+
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query)
+                self.connector.commit()
+                for row in cursor:
+                    request = {}
+                    request['request_id'] = row[0]
+                    request['requested_date'] = row[1]
+                    request['patient_id'] = row[2]
+                    request['image_type'] = row[3]
+                    request['request_subject'] = row[4]
+                    request['status'] = row[5]
+                    request['level'] = row[6]
+                    requests.append(request)
+            except Exception as e:
+                print("Retrieve_Physician_Interpretation: ", e)
+        return requests
+
+
+    # KH
+    def retrieve_physician_response_list(self, physician_id):
+        responses = []
+        db_query = "SELECT req.request_id, req.timestamp, res.timestamp, m.user_id, req.subject, req.message, m.subject, " \
+                   "m.image_type, req.level, req.status " \
+                   "FROM response res " \
+                   "JOIN request req on res.request_id = req.request_id " \
+                   "JOIN medical_image m on req.image_id = m.image_id  " \
+                   "WHERE res.physician_id = '%s'" \
+                   "ORDER BY req.status ASC"%physician_id
+
+        print(db_query)
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query)
+                self.connector.commit()
+                for row in cursor:
+                    response = {}
+                    response['request_id'] = row[0]
+                    response['request_date'] = row[1]
+                    response['response_date'] = row[2]
+                    response['patient_id'] = row[3]
+                    response['request_subject'] = row[4]
+                    response['request_message'] = row[5]
+                    response['image_subject'] = row[6]
+                    response['image_type'] = row[7]
+                    response['level'] = row[8]
+                    response['status'] = row[9]
+                    responses.append(response)
+            except Exception as e:
+                print("retrieve_patient_request_list: ", e)
+        return responses
+
+
+        # KH
+    def retrieve_request_info(self, request_id):
+        request_detail = {}
+        db_query_request = "SELECT req.request_id, req.subject, req.message, m.subject, m.image_type, " \
+                           "m.timestamp, m.taken_from, m.physician, m.place, m.description, req.status, req.level  " \
+                           "FROM miaas.request req " \
+                           "JOIN miaas.medical_image m ON req.image_id = m.image_id " \
+                           "WHERE req.request_id=%s"
+
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query_request, request_id)
+                self.connector.commit()
+                for row in cursor:
+                    request_detail['request_id'] = row[0]
+                    request_detail['request_subject'] = row[1]
+                    request_detail['request_message'] = row[2]
+                    request_detail['image_subject'] = row[3]
+                    request_detail['image_type'] = row[4]
+                    request_detail['image_date'] = row[5]
+                    request_detail['taken_from'] = row[6]
+                    request_detail['physician_name'] = row[7]
+                    request_detail['place'] = row[8]
+                    request_detail['description'] = row[9]
+                    request_detail['status'] = row[10]
+                    request_detail['level'] = row[11]
+            except Exception as e:
+                print("retrieve_patient_request_detail: ", e)
+
+        return request_detail
+
+    # KH
+    def retrieve_interpretation_detail(self, intpr_id):
+        intpr_detail = {}
+        db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.name, req.level, intpr.summary, intpr.interpretation, " \
+                   "m.subject, m.image_type, m.timestamp, " \
+                   "m.taken_from, m.physician, m.place, m.description, req.subject, req.message " \
+                   "FROM interpretation intpr " \
+                   "JOIN physician ph ON intpr.physician_id = ph.user_id " \
+                   "JOIN user u ON ph.user_id = u.user_id " \
+                   "JOIN request req ON intpr.request_id = req.request_id " \
+                   "JOIN medical_image m ON intpr.image_id = m.image_id " \
+                   "WHERE intpr.intpr_id =%s"%intpr_id
+
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query)
+                self.connector.commit()
+                for row in cursor:
+                    intpr_detail['intpr_id'] = row[0]
+                    intpr_detail['physician_id'] = row[1]
+                    intpr_detail['physician_name'] = row[2]
+                    intpr_detail['level'] = row[3]
+                    intpr_detail['summary'] = row[4]
+                    intpr_detail['interpretation'] = row[5]
+                    intpr_detail['image_subject'] = row[6]
+                    intpr_detail['image_type'] = row[7]
+                    intpr_detail['image_date'] = row[8]
+                    intpr_detail['taken_from'] = row[9]
+                    intpr_detail['physician'] = row[10]
+                    intpr_detail['place'] = row[11]
+                    intpr_detail['description'] = row[12]
+                    intpr_detail['request_subject'] = row[13]
+                    intpr_detail['request_message'] = row[14]
+            except Exception as e:
+                print("retrieve_patient_request_detail: ", e)
+
+        return intpr_detail
+
+    # KH
+    def retrieve_physician_interpretation_detail(self, intpr_id):
+        intpr_detail = {}
+        db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.name, req.level, intpr.summary, intpr.interpretation, " \
+                   "m.subject, m.image_type, m.timestamp, " \
+                   "m.taken_from, m.physician, m.place, m.description, req.subject, req.message " \
+                   "FROM interpretation intpr " \
+                   "JOIN physician ph ON intpr.physician_id = ph.user_id " \
+                   "JOIN user u ON ph.user_id = u.user_id " \
+                   "JOIN request req ON intpr.request_id = req.request_id " \
+                   "JOIN medical_image m ON intpr.image_id = m.image_id " \
+                   "WHERE intpr.intpr_id =%s"%intpr_id
+
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query)
+                self.connector.commit()
+                for row in cursor:
+                    intpr_detail['intpr_id'] = row[0]
+                    intpr_detail['physician_id'] = row[1]
+                    intpr_detail['physician_name'] = row[2]
+                    intpr_detail['level'] = row[3]
+                    intpr_detail['summary'] = row[4]
+                    intpr_detail['interpretation'] = row[5]
+                    intpr_detail['image_subject'] = row[6]
+                    intpr_detail['image_type'] = row[7]
+                    intpr_detail['image_date'] = row[8]
+                    intpr_detail['taken_from'] = row[9]
+                    intpr_detail['physician'] = row[10]
+                    intpr_detail['place'] = row[11]
+                    intpr_detail['description'] = row[12]
+                    intpr_detail['request_subject'] = row[13]
+                    intpr_detail['request_message'] = row[14]
+            except Exception as e:
+                print("retrieve_patient_request_detail: ", e)
+
+        return intpr_detail
+
+    # KH
+    def retrieve_patient_intpr_list(self, patient_id, time_from=None):
+        intprs = []
+        time_from = int(time_from) if time_from is not None else 0
+        db_query = "SELECT intpr.intpr_id, req.timestamp, intpr.timestamp, req.subject, " \
+                   "m.image_type, req.level, intpr.summary " \
+                   "FROM interpretation intpr " \
+                   "JOIN request req ON intpr.request_id = req.request_id " \
+                   "JOIN medical_image m ON intpr.image_id = m.image_id " \
+                   "WHERE intpr.patient_id='%s' and intpr.timestamp>%s " \
+                   "ORDER BY intpr.timestamp DESC"%(patient_id, time_from)
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query)
+                self.connector.commit()
+                for row in cursor:
+                    intpr = {}
+                    intpr['intpr_id'] = row[0]
+                    intpr['request_date'] = row[1]
+                    intpr['interpret_date'] = row[2]
+                    intpr['request_subject'] = row[3]
+                    intpr['image_type'] = row[4]
+                    intpr['level'] = row[5]
+                    intpr['summary'] = row[6]
+                    intprs.append(intpr)
+            except Exception as e:
+                print("retrieve_patient_request_list: ", e)
+        return intprs
+
+    # KH
+    def retrieve_physician_intpr_list(self, physician_id, time_from=None):
+        intprs = []
+        time_from = int(time_from) if time_from is not None else 0
+        db_query = "SELECT intpr.intpr_id, req.timestamp, intpr.timestamp, req.subject, " \
+                   "m.image_type, req.level, intpr.summary " \
+                   "FROM interpretation intpr " \
+                   "JOIN request req ON intpr.request_id = req.request_id " \
+                   "JOIN medical_image m ON intpr.image_id = m.image_id " \
+                   "WHERE intpr.physician_id='%s' and intpr.timestamp>%s " \
+                   "ORDER BY intpr.timestamp DESC"%(physician_id, time_from)
+
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query)
+                self.connector.commit()
+                for row in cursor:
+                    intpr = {}
+                    intpr['intpr_id'] = row[0]
+                    intpr['request_date'] = row[1]
+                    intpr['interpret_date'] = row[2]
+                    intpr['request_subject'] = row[3]
+                    intpr['image_type'] = row[4]
+                    intpr['level'] = row[5]
+                    intpr['summary'] = row[6]
+                    intprs.append(intpr)
+            except Exception as e:
+                print("retrieve_patient_request_list: ", e)
+        return intprs
