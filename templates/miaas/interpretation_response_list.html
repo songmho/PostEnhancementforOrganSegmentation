@@ -39,7 +39,7 @@
                             </thead>
                             <tbody>
                             {% for response_info in intpr_response.intpr_response_list %}
-                                <tr onclick="javascript: location.href='{% url 'miaas:interpretation_write' response_info.request_id %}';">
+                                <tr {% if response_info.status == 1 %} onclick="javascript: location.href='{% url 'miaas:interpretation_write' response_info.request_id %}';" {% endif %}>
                                     <td>{{ response_info.request_date|datetime_string }}</td>
                                     <td>{{ response_info.response_date|datetime_string }}</td>
                                     <td>{{ response_info.patient_id }}</td>

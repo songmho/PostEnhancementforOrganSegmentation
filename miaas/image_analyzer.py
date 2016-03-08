@@ -60,7 +60,7 @@ class ECGInterpreter(ImageInterpreter):
                 return True
 
     def __init__(self):
-        super().__init__()
+        super(self).__init__()
 
     def delineate_ecg(self, data):
         # nested functions

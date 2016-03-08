@@ -23,10 +23,11 @@ urlpatterns = [
     url(r'^interpretation/request$', views.interpretation_request_page, name='interpretation_request'),
     url(r'^interpretation/requests$', views.interpretation_request_list_page, name='interpretation_request_list'),
     url(r'^interpretation/requests/detail/(?P<request_id>[0-9]+)$', views.interpretation_request_detail_page, name='interpretation_request_detail'),
-    url(r'^interpretation/(?P<interpret_num>[0-9]+)$', views.interpretation_detail_page, name='interpretation_detail'),
+    url(r'^interpretation/(?P<intpr_id>[0-9]+)$', views.interpretation_detail_page, name='interpretation_detail'),
     url(r'^physicianinfo/(?P<physician_id>[a-zA-Z0-9_-]+)$', views.physician_info_page, name='physician_info'),
 
     url(r'^interpretations$', views.physician_interpretation_page, name='physician_interpretation'),
+    url(r'^interpretations/detail/(?P<intpr_id>[0-9]+)$', views.physician_interpretation_detail_page, name='physician_interpretation_detail'),
     url(r'^interpretation_response$', views.physician_interpretation_response_page, name='interpretation_response'),
     url(r'^interpretations/search$', views.physician_interpretation_search, name='interpretation_search'),
     url(r'^interpretations/write(?P<request_id>[0-9]+)$', views.physician_interpretation_write, name='interpretation_write'),
