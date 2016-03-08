@@ -678,6 +678,80 @@ class DbManager():
                 print("Retrieve_Patient_Interpretation_Amount: ", e)
         return amount
 
+    def add_patient_intpr_request(self, request):
+        if_inserted = False
+        with self.connector.cursor() as cursor:
+            try:
+                # Add request information to 'request' table
+                image_id = request['image_id']
+                status = request['status']
+                subject = request['subject']
+                message = request['message']
+                timestamp = request['timestamp']
+                level = request['level']
+                db_query = "INSERT INTO request (image_id, status, subject, message, timestamp, level) VALUES (%s, %s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (image_id, status, subject, message, timestamp, level))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_inserted = True
+            except Exception as e:
+                print("Add_Patient_Intpr_Request: ", e)
+        return if_inserted
+
+    def update_patient_request_by_selection(self, request_id, physician_id, status, timestamp):
+        if_updated = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE request SET status=%s, timestamp=%s WHERE request_id=%s"
+                cursor.execute(db_query, (status, timestamp, request_id))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    db_query = "DELETE from response WHERE request_id=%s AND physician_id!=%s"
+                    cursor.execute(db_query, (request_id, physician_id))
+                    self.connector.commit()
+                    row_count = cursor.rowcount
+                    if row_count > 0:
+                        if_updated = True
+            except Exception as e:
+                print("Update_Patient_Request_by_Selection:", e)
+        return if_updated
+
+    def add_physician_intpr_resp(self, response):
+        if_inserted = False
+        with self.connector.cursor() as cursor:
+            try:
+                # Add response information to 'response' table
+                request_id = response['request_id']
+                physician_id = response['physician_id']
+                message = response['message']
+                timestamp = response['timestamp']
+                db_query = "INSERT INTO response (request_id, physician_id, message, timestamp) VALUES (%s, %s, %s, %s)"
+                cursor.execute(db_query, (request_id, physician_id, message, timestamp))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_inserted = True
+            except Exception as e:
+                print("Add_Physician_Intpr_Response: ", e)
+        return if_inserted
+
+    def update_req_and_resp(self, request_id, status, timestamp):
+        if_updated = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE request AS req LEFT JOIN response AS resp ON req.request_id=resp.request_id SET req.status=%s, req.timestamp=%s, resp.timestamp=%s WHERE req.request_id=%s"
+                cursor.execute(db_query, (status, timestamp, timestamp, request_id))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_updated = True
+            except Exception as e:
+                print("Update_Patient_Request_by_Selection:", e)
+        return if_updated
+
+
 
     # KH
     def retrieve_patient_request_list(self, patient_id, time_from=None):
