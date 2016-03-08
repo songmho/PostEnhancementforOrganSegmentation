@@ -330,7 +330,6 @@ def physician_interpretation_response_page(request):
     return render(request, 'miaas/interpretation_response_list.html', context)
 
 
-
 # KH
 def physician_interpretation_write(request, request_id):
     context = _get_session_context(request)
@@ -387,6 +386,7 @@ def interpretation_page(request):
     logger.info('interpret get: %s' % request.GET)
     return render(request, 'miaas/interpretation.html', context)
 
+
 # KH
 def physician_interpretation_page(request):
     context = _get_session_context(request)
@@ -442,6 +442,7 @@ def interpretation_detail_page(request, intpr_id):
     logger.info('interpretation_detail_page get: %s' % request.GET)
     return render(request, 'miaas/interpretation_detail.html', context)
 
+
 def physician_interpretation_detail_page(request, intpr_id):
     context = _get_session_context(request)
     if request.session.get('user'):
@@ -454,3 +455,16 @@ def physician_interpretation_detail_page(request, intpr_id):
 
     logger.info('physician_interpretation_detail_page get: %s' % request.GET)
     return render(request, 'miaas/interpretation_physician_detail.html', context)
+
+
+def physician_request_search_detail_page(request, request_id):
+    context = _get_session_context(request)
+    if request.session.get('user'):
+        logger.info('physician_request_search_detail_page call db')
+        # Retrieve details.
+        db = cloud_db.DbManager()
+        request_detail = db.retrieve_request_info(request_id)
+        context['request_detail'] = request_detail
+        logger.info("status:%s" % request_detail['status'])
+    logger.info('physician_request_search_detail_page get: %s' % request.GET)
+    return render(request, 'miaas/interpretation_search_detail.html', context)
