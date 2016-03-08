@@ -311,7 +311,7 @@ def handle_medical_image_mgt(request):
             raise Exception(MSG_NO_USER_LOGGEDIN)
 
         if request.method == 'GET':
-            #retrieve medical image
+            #retrieve medical images
             logger.info(request.GET)
             action = request.GET.get('action')
             if not action:
