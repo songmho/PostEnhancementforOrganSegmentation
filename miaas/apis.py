@@ -455,6 +455,7 @@ def handle_interpretation_mgt(request):
                     time_from = 0
                 intpr = db.retrieve_physician_intpr(physician_id, time_from)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'intpr': intpr}))
+            # To get all interpretations of a medical image
             elif action == 'getImageIntpr':
                 image_id = request.GET.get('image_id')
                 if not image_id:
@@ -479,12 +480,24 @@ def handle_interpretation_mgt(request):
             action = data['action']
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
+            # To update a patient request and delete patient responses
             elif action == 'patientSelReq':
                 request_id = data['request_id']
                 physician_id = data['physician_id']
                 status = 1
                 timestamp = 165186151156840
                 if_updated = db.update_patient_request_by_selection(request_id, physician_id, status, timestamp)
+                if if_updated:
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(constants.CODE_FAILURE)
+            # To update subject and message of a patient request
+            elif action == 'reqUpdate':
+                request_id = data['request_id']
+                subject = data['subject']
+                message = data['message']
+                timestamp = 165186151156840
+                if_updated = db.update_patient_request(request_id, subject, message, timestamp)
                 if if_updated:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
