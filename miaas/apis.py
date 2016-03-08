@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -379,7 +380,7 @@ def handle_interpretation_mgt(request):
             # To create a patient request
             elif action == 'patientReq':
                 status = 3
-                timestamp = 1450469913000
+                timestamp = int(round(time.time() * 1000))
                 request = {
                     'image_id': data['image_id'],
                     'status': status,
@@ -395,7 +396,7 @@ def handle_interpretation_mgt(request):
                     return JsonResponse(constants.CODE_FAILURE)
             # To create a response on a patient request
             elif action == 'physicianResp':
-                timestamp = 1450469913000
+                timestamp = int(round(time.time() * 1000))
                 response = {
                     'request_id': data['request_id'],
                     'physician_id': data['physician_id'],
@@ -410,7 +411,7 @@ def handle_interpretation_mgt(request):
             # To create an interpretation and update request and response
             elif action == 'finishIntpr':
                 fee = 20
-                timestamp = 1450469913000
+                timestamp = int(round(time.time() * 1000))
                 request_id = data['request_id']
                 intpr = {
                     'patient_id': data['patient_id'],
@@ -485,7 +486,7 @@ def handle_interpretation_mgt(request):
                 request_id = data['request_id']
                 physician_id = data['physician_id']
                 status = 1
-                timestamp = 1450469913000
+                timestamp = int(round(time.time() * 1000))
                 if_updated = db.update_patient_request_by_selection(request_id, physician_id, status, timestamp)
                 if if_updated:
                     return JsonResponse(constants.CODE_SUCCESS)
@@ -496,7 +497,7 @@ def handle_interpretation_mgt(request):
                 request_id = data['request_id']
                 subject = data['subject']
                 message = data['message']
-                timestamp = 1450469913000
+                timestamp = int(round(time.time() * 1000))
                 if_updated = db.update_patient_request(request_id, subject, message, timestamp)
                 if if_updated:
                     return JsonResponse(constants.CODE_SUCCESS)
@@ -520,7 +521,7 @@ def handle_analytics_mgt(request):
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
             elif action == 'addAnalytic':
-                timestamp = 1450469913000
+                timestamp = int(round(time.time() * 1000))
                 analytic = {
                     'image_id': data['image_id'],
                     'level': data['status'],
@@ -544,7 +545,7 @@ def handle_analytics_mgt(request):
             elif action == 'updateAnalytic':
                 level = data['level']
                 fee = data['fee']
-                timestamp = 1450469913000
+                timestamp = int(round(time.time() * 1000))
                 summary = data['summary']
                 result = data['result']
                 anal_id = data['anal_id']
