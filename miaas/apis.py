@@ -5,7 +5,7 @@ import time
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from . import constants, cloud_db
+from . import constants, cloud_db, image_manager
 
 MSG_DB_FAILED = "Failed to handle DB requests."
 MSG_NO_USER_LOGGEDIN = "No user logged in."
@@ -331,17 +331,21 @@ def handle_medical_image_mgt(request):
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'image_list': image_list}))
             else:
                 raise Exception(MSG_INVALID_PARAMS)
+
         elif request.method == 'POST':
             if 'image_file' in request.FILES and 'image_info' in request.POST:
                 action = request.POST['action'].decode("utf-8")
                 image_info = json.loads(request.POST['image_info'].decode("utf-8"))
                 image_file = request.FILES['image_file']
-                filename = image_file._name
 
+                # filename = image_file._name
                 # fp = open('%s/%s' % ('./medical_images/temp/upload/', filename), 'wb')
                 # for chunk in image_file.chunks():
                 #     fp.write(chunk)
                 # fp.close()
+
+                im = image_manager.ImageManager(image_file, image_info)
+                im.upload_as_temp()
 
                 # if request.session['user']['user_id'] != image_info['user_id']:
                 #     raise Exception(MSG_NOT_MATCHED_USER)
@@ -510,7 +514,8 @@ def handle_interpretation_mgt(request):
                 request_id = data['request_id']
                 physician_id = data['physician_id']
                 status = 1
-                if_updated = db.update_patient_request_by_selection(request_id, physician_id, status)
+                timestamp = int(round(time.time() * 1000))
+                if_updated = db.update_patient_request_by_selection(request_id, physician_id, status, timestamp)
                 if if_updated:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
@@ -520,7 +525,8 @@ def handle_interpretation_mgt(request):
                 request_id = data['request_id']
                 subject = data['subject']
                 message = data['message']
-                if_updated = db.update_patient_request(request_id, subject, message)
+                timestamp = int(round(time.time() * 1000))
+                if_updated = db.update_patient_request(request_id, subject, message, timestamp)
                 if if_updated:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:

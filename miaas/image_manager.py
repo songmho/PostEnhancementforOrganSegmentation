@@ -1,8 +1,35 @@
-__author__ = 'Jincheul'
-
 import os
 import datetime
 from miaas.cloud_db import DbManager
+import logging
+
+logging.basicConfig(
+    format="[%(name)s][%(asctime)s] %(message)s",
+    handlers=[logging.StreamHandler()],
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
+class ImageManager():
+    def __init__(self, image_file, image_info):
+        self.original_file = image_file
+        self.image_info = image_info
+
+    def upload_as_temp(self):
+        filename = self.original_file._name
+        tempdir = '%s/%s/' % ('./medical_images/temp/upload/', self.image_info['user_id'])
+        try:
+            if not os.path.exists(os.path.dirname(tempdir)):
+                os.makedirs(os.path.dirname(tempdir))
+            fp = open('%s/%s' % (tempdir, filename), 'wb')
+            for chunk in self.original_file.chunks():
+                fp.write(chunk)
+            fp.close()
+            return True
+
+        except Exception as e:
+            logger.exception(e)
+            return False
 
 class ImageUploader():
 

@@ -40,11 +40,58 @@
     <button id="retrieveMedicalImages">retrieveMedicalImages</button>
     <button id="deleteMedicalImage">deleteMedicalImage</button>
 </div>
+<br />
+<div>
+    <form action="api/medical_image" method="post" enctype="multipart/form-data">
+        File:
+        <input type="hidden" name="action" value="upload" />
+        <input type="file" name="image_file" id="imageFile" />
+        <input type="submit" value="UPLOAD" />
+    </form>
+</div>
+<br />
+<div>
+    <form action="api/medical_image" id="fileForm2" method="post" enctype="multipart/form-data">
+        File2:
+        <input type="file" name="image_file" id="imageFile2" />
+        <input type="submit" value="UPLOAD" />
+    </form>
+</div>
 </body>
 
 <script src="{% static "lib/jquery/jquery-2.2.0.min.js" %}"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        $("#fileForm2").on('submit', function(e) {
+            e.preventDefault();
+
+            var data = new FormData($('#fileForm2').get(0));
+            data.append('action', 'upload');
+            data.append('image_info', JSON.stringify({
+                user_id : 'min',
+                subject : "Medical Image Test",
+                image_type : "EEG",
+                taken_from : 'Medical Clinic',
+                physician : 'Max Hyper',
+                place : "Max Hyper's Hospital",
+                description : "This is test image information for upload testing"
+            }));
+            console.log(data);
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: data,
+                cache:false,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    console.log(res);
+                }
+            });
+
+        });
+
         $("#login").click(function() {
             $.ajax("api/sessions", {
                 method: 'POST',
