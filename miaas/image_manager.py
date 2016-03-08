@@ -10,7 +10,7 @@ class ImageUploader():
         self.cloud_instance_id = 'i-0aba2ecd'
 
     # i-0aba2ecd/min0532/ecg/20151127/min_ecg.dec
-    def save_file(self, patient_id, type, subject, image_file):
+    def save_file(self, patient_id, type, file_name, image_file):
         file_name = ''
         dir = None
         now = datetime.datetime.now()
@@ -21,7 +21,7 @@ class ImageUploader():
             if not os.path.isdir(file_path):
                 os.makedirs(file_path)
                 dir = file_path
-                file_name = dir + subject
+                file_name = dir + file_name
                 destination = open(file_name, 'wb')
                 for chunk in image_file.chunks():
                     print('Chunk')
