@@ -65,9 +65,15 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </table>
                     {% endif %}
                     <div class="col-xs-12 text-center table-page-container">
-{#                    {% for page_num in archive.image_count|get_page_num:10|get_range2 %}#}
-{#                        <a class="table-page-number" href="?page_num={{ page_num }}">{{ page_num }}</a>#}
-{#                    {% endfor %}#}
+                        {% for page_num in requested_intpr.start_page|get_range_from_to2:requested_intpr.end_page %}
+                            {% if page_num == requested_intpr.now_page %}
+                                <b>
+                            {% endif %}
+                        <a class="table-page-number" href="?page={{ page_num }}">{{ page_num }}</a>
+                            {% if page_num == requested_intpr.now_page %}
+                                </b>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
             </div>

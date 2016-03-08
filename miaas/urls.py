@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^interpretation_response$', views.physician_interpretation_response_page, name='interpretation_response'),
     url(r'^interpretations/search$', views.physician_interpretation_search, name='interpretation_search'),
     url(r'^interpretations/search/detail(?P<request_id>[0-9]+)$', views.physician_request_search_detail_page, name='interpretation_search_detail'),
-    url(r'^interpretations/write(?P<request_id>[0-9]+)$', views.physician_interpretation_write, name='interpretation_write'),
+    url(r'^interpretations/write/(?P<request_id>[0-9]+)$', views.physician_interpretation_write, name='interpretation_write'),
 
     url(r'^opinion/(?P<opinion_id>[0-9]+)/$', views.opinion, name='opinion'),
     url(r'^user/(?P<user_name>[ a-zA-Z_-]+)/$', views.user, name='user'),

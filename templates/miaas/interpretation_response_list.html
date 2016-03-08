@@ -54,8 +54,14 @@
                             </tbody>
                         </table>
                         <div class="col-xs-12 text-center table-page-container">
-                            {% for page_num in intpr_response.intpr_response_cnt|get_page_num:10|get_range2 %}
-                                <a class="table-page-number" href="?page_num={{ page_num }}">{{ page_num }}</a>
+                            {% for page_num in intpr_response.start_page|get_range_from_to2:intpr_response.end_page %}
+                                {% if page_num == intpr_response.now_page %}
+                                    <b>
+                                {% endif %}
+                            <a class="table-page-number" href="?page={{ page_num }}">{{ page_num }}</a>
+                                {% if page_num == intpr_response.now_page %}
+                                    </b>
+                                {% endif %}
                             {% endfor %}
                         </div>
                     </div>
