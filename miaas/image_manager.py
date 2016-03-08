@@ -3,16 +3,14 @@ __author__ = 'Jincheul'
 import os
 import datetime
 from miaas.cloud_db import DbManager
-from django import forms
 
-class ImageUploader(forms.Form):
-    image = forms.ImageField()
+class ImageUploader():
 
     def __init__(self):
         self.cloud_instance_id = 'i-0aba2ecd'
 
     # i-0aba2ecd/min0532/ecg/20151127/min_ecg.dec
-    def upload_file(self, patient_id, type, subject, image_file):
+    def save_file(self, patient_id, type, subject, image_file):
         file_name = ''
         dir = None
         now = datetime.datetime.now()
@@ -26,6 +24,7 @@ class ImageUploader(forms.Form):
                 file_name = dir + subject
                 destination = open(file_name, 'wb')
                 for chunk in image_file.chunks():
+                    print('Chunk')
                     destination.write(chunk)
                 destination.close()
         except Exception as e:
