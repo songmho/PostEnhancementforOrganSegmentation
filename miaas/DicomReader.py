@@ -1,24 +1,30 @@
 import os, sys
-# import png
-import dicom
-import mudicom
-# import logging
+import dicom, mudicom, gdcm
+import logging
 # import matplotlib.pyplot as pyplot
 import matplotlib.pylab as pylab
-import gdcm
 import time
-# try:
-#     from PIL import Image
-# except ImportError:
-#     import Image
+import zipfile
 
 _testCompressedfile = "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2/IM-0001-0001.dcm"
 _testDecompressedFile = "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2, DECOMP/IM-0001-0001.dcm"
 _testImagedFile = "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2, PNG/IM-0001-0001.jpg"
 _testIconFile = "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2, PNG/IM-0001-0001-icon.jpg"
 
-def run():
-    decompress(_testCompressedfile, _testDecompressedFile)
+def __init__():
+    print "init"
+
+def is_zipfile(archive_filename):
+    return zipfile.is_zipfile(archive_filename)
+
+def extract_dicom_archive(archive_filename):
+    if not is_zipfile(archive_filename): return False
+
+    # zfp = open(archive_filename, 'rb')
+    # zfile = zipfile.ZipFile(zfp)
+    with zipfile.ZipFile(archive_filename, "r") as zfile:
+        zfile.extractall()
+
 
 def decompress(infile, outfile):
     r = gdcm.ImageReader()
@@ -59,12 +65,12 @@ def decompress(infile, outfile):
         return False
     return True
 
-def plot_image(decomp_image):
-    dfile = dicom.read_file(decomp_image)
-    print dfile.file_meta
-
-    pylab.imshow(dfile.pixel_array, cmap=pylab.cm.bone) # pylab readings and conversion
-    pylab.show()
+# def plot_image(decomp_image):
+#     dfile = dicom.read_file(decomp_image)
+#     print dfile.file_meta
+#
+#     pylab.imshow(dfile.pixel_array, cmap=pylab.cm.bone) # pylab readings and conversion
+#     pylab.show()
 
 def convert_to_jpg(dcmfile, jpgfile):
     try:
@@ -81,5 +87,5 @@ if __name__ == "__main__":
     print "decompress start"
     # decompress(_testCompressedfile, _testDecompressedFile)
     print "decompress done"
-    convert_to_jpg(_testDecompressedFile, _testImagedFile)
+    # convert_to_jpg(_testCompressedfile, _testImagedFile)
     # convert_to_jpg(_testDecompressedFile, _testImagedFile)
