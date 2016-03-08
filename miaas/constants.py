@@ -10,6 +10,12 @@ INTPRT_STATUS = {
     0: 'Interpreted',
 }
 
+LEVEL_STRING = {
+    1: 'Level 1 - By Software, Free of Charge, No Legal Liability',
+    2: 'Level 2 - Detailed, Only with available images and profiles, Fee-based',
+    3: 'Level 3 - Detailed, With available images and patient interview/symptom, Fee-based'
+}
+
 class PatientProfile:
     pass
 
