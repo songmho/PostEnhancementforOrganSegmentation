@@ -2,10 +2,16 @@ from django import template
 from django.utils.html import escapejs
 import json, datetime, pytz
 from miaas import constants
+import logging
 
 register = template.Library()
 
-#Filter usage: {{ var|foo:"bar" }}
+logging.basicConfig(
+    format="[%(name)s][%(asctime)s] %(message)s",
+    handlers=[logging.StreamHandler()],
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
 @register.filter(name='get_range')
 def get_range(number):
@@ -30,17 +36,15 @@ def get_page_num(item_count, items_per_page):
         page_num += 1
     return page_num
 
-itprt_status = {
-    3: 'Finding Physician',
-    2: 'Candidate Waiting',
-    1: 'Waiting Interpretation',
-    0: 'Interpreted',
-}
-
 @register.filter(name='get_interpretation_status')
 def get_interpretation_status(status):
     status = int(status)
-    return itprt_status.get(status, '-')
+    return constants.INTPRT_STATUS.get(status, '-')
+
+@register.filter(name='intpr_level_string')
+def intpr_level_string(level):
+    level = int(level)
+    return constants.LEVEL_STRING[level]
 
 @register.filter(name='jsonstr')
 def to_jsonstr(dict):
@@ -56,3 +60,14 @@ def timestamp_to_datetime_string(timestamp):
 @register.filter(name='is_list')
 def is_list(arr):
     return isinstance(arr, list)
+
+@register.filter(name='list_size')
+def list_size(arr):
+    return len(arr)
+
+@register.filter(name='is_empty')
+def is_empty(collection):
+    if isinstance(collection, list):
+        return len(collection) == 0
+    return None
+

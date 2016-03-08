@@ -17,26 +17,25 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
 <div class="container">
     <section class="section section-default">
-        {% if image and intprs|is_list %}
-
+    {% if image and intpr_list|is_list %}
         <div class="row">
             <div class="col-xs-12 col-title">
                 <h2 class="text-primary" id="titleSubject">{{ image.subject }}</h2>
             </div>
-            <form class="col-xs-12 col-form">
+            <form id="imageInfoForm" class="col-xs-12 col-form">
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputSubject" >Subject</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="imageSubejct" >Subject</label>
                         <div class="col-sm-9 col-md-4">
-                            <input type="text" id="inputSubject" name="subject" class="form-control"
-                                   placeholder="Subject" required readonly value="My Chest CT on February 2, 2016">
+                            <input type="text" id="imageSubejct" name="imageSubejct" class="form-control"
+                                   placeholder="Subject" required readonly value="{{ image.subject }}">
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputType" >Image Type</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="imageType" >Image Type</label>
                         <div class="col-sm-9 col-md-4">
-                            <select class="form-control" id="selectType" name="type" required disabled>
+                            <select class="form-control" id="imageType" name="imageType" required disabled>
                                 <option>CT</option>
                                 <option>X-ray</option>
                                 <option>MRI</option>
@@ -48,9 +47,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right form-group">
-                        <label class="col-sm-3 col-md-4 control-label" for="fileImage">Medical Image</label>
+                        <label class="col-sm-3 col-md-4 control-label" for="medicalImage">Medical Image</label>
                         <div class="col-sm-9 col-md-8">
-                            <input type="file" id="fileImage" name="medicalImage" class="form-control"
+                            <input type="file" id="medicalImage" name="medicalImage" class="form-control"
                                    placeholder="Medical Image" required readonly>
                         </div>
                     </div>
@@ -65,17 +64,17 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputDate" >Date</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="takenDate" >Date</label>
                         <div class="col-sm-9 col-md-4">
-                            <input type="date" id="inputDate" name="date" class="form-control"
+                            <input type="date" id="date" name="takenDate" class="form-control"
                                    placeholder="Date" required readonly value="2016-02-02">
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="selectTaken" >Taken From</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="takenFrom" >Taken From</label>
                         <div class="col-sm-9 col-md-4">
-                            <select class="form-control" id="selectTaken" name="taken" required disabled>
+                            <select class="form-control" id="takenFrom" name="takenFrom" required disabled>
                                 <option>Medical Clinic</option>
                                 <option>Home</option>
                             </select>
@@ -83,39 +82,93 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputPhysician" >Physician</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="takenPhysicianName" >Physician</label>
                         <div class="col-sm-9 col-md-4">
-                            <input type="text" id="inputPhysician" name="physician" class="form-control"
-                                   placeholder="Examining Physician" required readonly value="Yo Han Lee">
+                            <input type="text" id="takenPhysicianName" name="takenPhysicianName" class="form-control"
+                                   placeholder="Examining Physician" required readonly value="{{ image.physician }}">
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputClinic" >Clinic Name</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="clinic" >Clinic Name</label>
                         <div class="col-sm-9 col-md-4">
-                            <input type="text" id="inputClinic" name="clinic" class="form-control"
-                                   placeholder="Place" required readonly value="Top Hospital, Incheon">
+                            <input type="text" id="clinic" name="clinic" class="form-control"
+                                   placeholder="Place" required readonly value="{{ image.place }}">
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="taDescription" >Description</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="imageDescription" >Description</label>
                         <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="taDescription" name="description" class="form-control"
-                                      placeholder="Description" rows="5" readonly>The physician who examined me said I needed to get a more complete medical checkup. His opinion was that I've already had malignant pleural effusion. But I doubt because I'm healthy until examination in the year before last.</textarea>
+                            <textarea type="textarea" id="imageDescription" name="imageDescription" class="form-control"
+                                      placeholder="Description" rows="5" readonly>{{ image.description }}</textarea>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-btns-innerbox">
                         <div class="form-btns-container row">
-                            <div id="btnRequest" class="col-xs-12 col-sm-9 col-sm-offset-3 col-md-4 col-md-offset-0 form-button">
-                                <a class="btn btn-lg btn-warning btn-block" href="{% url 'miaas:interpretation_request' %}" type="button">Request Interpretation</a>
+                            <div class="col-xs-12 col-sm-9 col-sm-offset-3 col-md-4 col-md-offset-0 form-button">
+                                <a id="btnRequest" class="btn btn-lg btn-primary btn-block"
+                                   href="#" type="button">Request Interpretation</a>
                             </div>
-                            <div id="btnFormCancel" class="col-xs-6 col-sm-4 col-sm-offset-3 col-md-3 col-md-offset-2 form-button">
-                                <button class="btn btn-lg btn-danger btn-block" type="button">Delete</button>
+
+                            {% if intpr_list|is_empty %}
+                                <div id="btnFormDelete" class="col-xs-6 col-sm-4 col-sm-offset-3 col-md-3 col-md-offset-2 form-button">
+                                    <button class="btn btn-lg btn-danger btn-block" type="button">Delete</button>
+                                </div>
+                                <div id="btnFormEdit" class="col-xs-6 col-sm-5 col-md-3 form-button">
+                                    <button class="btn btn-lg btn-primary btn-block" type="button">Edit</button>
+                                </div>
+                                <div id="btnFormEditConfirm" class="col-xs-6 col-sm-5 col-md-3 form-button" style="display: none;">
+                                    <button class="btn btn-lg btn-primary btn-block" type="submit">Confirm</button>
+                                </div>
+                            {% else %}
+                                <div id="btnFormDelete" class="col-xs-12 col-sm-9 col-sm-offset-3 col-md-3 col-md-offset-5 form-button">
+                                    <button class="btn btn-lg btn-danger btn-block" type="button">Delete</button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form id="requestIntprForm" class="col-xs-12 col-form" style="display: none;">
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label no-pad-top" for="reqLevel"
+                               style="padding-top: 7px;">Request Level</label>
+                        <div class="col-xs-12 col-sm-6 col-md-10">
+                            <select class="form-control" id="reqLevel" name="reqLevel" required>
+                                <option value="1">{{ 1|intpr_level_string }}</option>
+                                <option value="2" selected>{{ 2|intpr_level_string }}</option>
+                                <option value="3">{{ 3|intpr_level_string }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="reqSubjectGroup" class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label no-pad-top" for="reqSubject" >Request Subject</label>
+                        <div class="col-xs-12 col-sm-6 col-md-10">
+                            <input type="text" id="reqSubject" name="reqSubject" class="form-control"
+                                   placeholder="Subject" required>
+                        </div>
+                    </div>
+
+                    <div id="reqMessageGroup" class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label no-pad-top" for="reqMessage" >Request Message</label>
+                        <div class="col-sm-9 col-md-10">
+                            <textarea type="textarea" id="reqMessage" name="reqMessage" class="form-control"
+                                      placeholder="Request Message" rows="5" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-btns-innerbox">
+                        <div class="form-btns-container row">
+                            <div id="btnFormReset" class="col-xs-6 col-sm-4 col-sm-offset-3 col-md-3 col-md-offset-6 form-button">
+                                <button class="btn btn-lg btn-primary btn-block" type="reset">Reset</button>
                             </div>
                             <div id="btnFormConfirm" class="col-xs-6 col-sm-5 col-md-3 form-button">
-                                <button class="btn btn-lg btn-primary btn-block" type="submit">Edit</button>
+                                <button class="btn btn-lg btn-primary btn-block" type="submit">Request</button>
                             </div>
                         </div>
                     </div>
@@ -123,121 +176,103 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             </form>
         </div><!-- End of Image information Row -->
 
-        <!-- to be loop -->
-        <div class="row">
-            <div class="col-xs-12 col-title">
-                <h3 class="text-success" id="itp1-title">Interpretation #1</h3>
-            </div>
-            <div class="col-xs-12 col-form">
-                <div class="form-container form-boxed form-horizontal row">
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician ID</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="itp1-id"><a href="#">mdjames</a></span>
-                        </div>
+        {% for intpr in intpr_list %}
+            <!-- to be loop -->
+            <div class="row">
+                <div class="col-xs-12 col-title">
+                    <h3 class="text-success" id="itp1-title">Interpretation #1</h3>
+                </div>
+                <div class="col-xs-12 col-form">
+                    <div class="form-container form-boxed form-horizontal row">
+                        <div class="col-sm-12 form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician ID</label>
+                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                                <span ><!--a href="#"-->{{ intpr.physician_id }}<!--/a--></span>
+                            </div>
 
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="itp1-name" >James Park, MD</span>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>
+                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                                <span >{{ intpr.intpr_id }}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp1-level" >Level 3 - With available images and patient interview/symptom</span>
+                        <div class="col-sm-12 form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>
+                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                                <span >{{ intpr.level|intpr_level_string }}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp1-summary" >I agree your first doctor's opinion. You may already have malignant pleural effusion. I recommend that you need to take the medical examination again to make sure.</span>
+                        <div class="col-sm-12 form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
+                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                                <span >{{ intpr.summary }}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <div id="itp1-interpretation" >
-                                <p>
-                                    Transudative pleural effusions are formed when normal hydrostatic and oncotic pressures are disrupted. Exudative pleural effusions occur when pleural membranes or vasculature are damaged or disrupted therefore leading to increased capillary permeability or decreased lymphatic drainage.
-                                    <br/>
-                                    <br/>
-                                    TREE-IN-BUD<br/>
-                                    &nbsp;&nbsp;- Infection: Tuberculosis, mycobacterium avium intracellulare complex (MAC), bacterial, fungal<br/>
-                                    &nbsp;&nbsp;- Airway disease (i.e. cystic fibrosis or bronchiectasis)<br/>
-                                    &nbsp;&nbsp;- Allergic bronchopulmonary aspergilosis (rare)<br/>
-                                    <br/>
-                                    GROUND GLASS OPACITY (CHRONIC)<br/>
-                                    &nbsp;&nbsp;- Desquamative interstitial pneumonitis<br/>
-                                    &nbsp;&nbsp;- Idiopathic pulmonary fibrosis<br/>
-                                    &nbsp;&nbsp;- Alveolar proteinosis<br/>
-                                    &nbsp;&nbsp;- Hypersensitivity pneumonitis - chronic<br/>
-                                    <br/>
-                                    PLEURAL EFFUSION<br/>
-                                    &nbsp;&nbsp;- Pulmonary edema<br/>
-                                    &nbsp;&nbsp;- Lymphangitic spread of carcinoma - often unilateral<br/>
-                                    &nbsp;&nbsp;- Tuberculosis<br/>
-                                    &nbsp;&nbsp;- Lymphangiomyomatosis<br/>
-                                    &nbsp;&nbsp;- Asbestosis<br/>
-                                    <!-- https://www.med-ed.virginia.edu/courses/rad/hrct/effusion.html -->
-                                </p>
+                        <div class="col-sm-12 form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>
+                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                                <div >{{ intpr.interpretation }}</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        {% endfor %}
 
-        <div class="row">
-            <div class="col-xs-12 col-title">
-                <h3 class="text-success" id="itp2-title">Interpretation #2</h3>
-            </div>
-            <div class="col-xs-12 col-form">
-                <div class="form-container form-boxed form-horizontal row">
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician ID</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="itp2-id"><a href="#">greatalex</a></span>
-                        </div>
-
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="itp2-name" >Alexander Halesis</span>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp2-level" >Level 2 - Only with available Images</span>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp2-summary" >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam congue diam eget semper elementum. Nam non purus dictum, pharetra.</span>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <div id="itp2-interpretation" >
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut quis purus dolor. Sed suscipit sagittis dignissim. Nam mi nisl, lobortis sit amet ornare ut, maximus sit amet purus. Proin sit amet libero eu sapien auctor euismod ac ac tortor. Curabitur vel pharetra purus, nec tristique tortor. Duis quis mauris cursus, ultricies magna non, tempor arcu. Nulla vel accumsan tellus. Pellentesque posuere mattis elit, vel aliquam justo pellentesque in. Nullam iaculis congue est. Donec dapibus urna quam, a cursus purus lacinia sit amet. Praesent imperdiet id lorem nec vehicula. Integer dolor orci, dignissim tincidunt dignissim ornare, sodales eu nunc. Morbi ac velit et justo pharetra aliquam id vel libero. Fusce a semper tortor.</p>
-                                <p>Nam quis risus non eros eleifend molestie. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec eu tellus sodales, convallis leo et, fringilla elit. Fusce ac nisi augue. Pellentesque malesuada convallis commodo. Integer et leo quis lectus euismod euismod. Donec gravida arcu enim, at posuere quam sollicitudin sed. Aenean risus sem, vulputate ut nulla ut, efficitur suscipit nunc. Curabitur in est molestie, venenatis nisl volutpat, laoreet nulla. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed arcu sem, bibendum sed suscipit nec, laoreet vel augue. Aenean vitae malesuada nulla. Donec dapibus orci at pulvinar commodo.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% else %}
-
-        {% endif %}
+    {% else %}
+        <script type="text/javascript">
+            location.replace("{% url 'miaas:archive' %}");
+        </script>
+    {% endif %}
     </section>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="alertModalTitle">Request Failed</h4>
+        </div>
+        <div class="modal-body">
+        Request failed
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteImageConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteImageConfirmTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="deleteImageConfirmTitle">Confirm Delete</h4>
+        </div>
+        <div class="modal-body">
+        Are you sure to delete this image?
+        </div>
+        <div class="modal-footer">
+            <button id="btnDeleteCofirm" type="button" class="btn btn-default">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+
 
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
+<script type="text/javascript">
+    $('#imageType').val("{{ image.image_type }}").attr("selected", "selected");
+    $('#takenFrom').val("{{ image.taken_from }}").attr("selected", "selected");
 
+    var imageInfo = JSON.parse("{{ image | jsonstr }}");
+</script>
+<script src="{% static 'miass/js/medical_image.js' %}"></script>
 
 </body>
 </html>

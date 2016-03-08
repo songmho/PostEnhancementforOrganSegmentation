@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from miaas import sample_contexts as sctx
 from miaas import cloud_db, constants
-import logging, json
+import logging, json, time
 
 # get db data -> 404 template, urls in tutorial #3: https://docs.djangoproject.com/en/1.9/intro/tutorial03/
 # form, db class -> tutorial #4
@@ -126,14 +126,15 @@ def medical_image_page(request, image_id):
     # return render(request, 'miaas/medical_image.html', sctx.default_context)
 
     if not image_id or int(image_id) < 0:
-        return render(request, 'miaas/archive.html', context)
+        return archive_page(request)
+    else:
+        db = cloud_db.DbManager()
+        result = db.retrieve_image_and_intpr(image_id)
 
-    db = cloud_db.DbManager()
-    image = db.retrieve_medical_image_by_id(image_id)
-    intprs = []
-
-    context['image'] = image
-    context['intprs']
+        if result.get('image') and isinstance(result.get('intpr'), list):
+            context['image'] = result['image']
+            context['intpr_list'] = result['intpr']
+            request.session['curr_image'] = result['image']
 
     return render(request, 'miaas/medical_image.html', context)
 
