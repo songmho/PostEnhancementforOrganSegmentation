@@ -940,7 +940,7 @@ class DbManager():
 
         return intpr_detail
 
-    # KH
+    # KH's
     def retrieve_patient_intpr_list(self, patient_id, time_from=None):
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
