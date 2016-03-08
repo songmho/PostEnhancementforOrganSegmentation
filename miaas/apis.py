@@ -397,11 +397,13 @@ def handle_interpretation_mgt(request):
             # To create a response on a patient request
             elif action == 'physicianResp':
                 timestamp = int(round(time.time() * 1000))
+                status = 2
                 response = {
                     'request_id': data['request_id'],
                     'physician_id': data['physician_id'],
                     'message': data['message'],
-                    'timestamp': timestamp
+                    'timestamp': timestamp,
+                    'status': status
                 }
                 if_inserted = db.add_physician_intpr_resp(response)
                 if if_inserted:

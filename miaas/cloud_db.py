@@ -741,7 +741,8 @@ class DbManager():
                 physician_id = response['physician_id']
                 message = response['message']
                 timestamp = response['timestamp']
-                db_query = "INSERT INTO response (request_id, physician_id, message, timestamp) VALUES (%s, %s, %s, %s)"
+                status = response['status']
+                db_query = "INSERT INTO response (request_id, physician_id, message, timestamp, status) VALUES (%s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (request_id, physician_id, message, timestamp))
                 self.connector.commit()
                 row_count = cursor.rowcount
