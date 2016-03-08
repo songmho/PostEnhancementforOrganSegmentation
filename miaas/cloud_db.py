@@ -772,7 +772,6 @@ class DbManager():
         return if_updated
 
 
-
     # KH
     def retrieve_patient_request_list(self, patient_id, time_from=None):
         requests = []
@@ -901,8 +900,8 @@ class DbManager():
                    "FROM response res " \
                    "JOIN request req on res.request_id = req.request_id " \
                    "JOIN medical_image m on req.image_id = m.image_id  " \
-                   "WHERE res.physician_id = '%s'" \
-                   "ORDER BY req.status ASC"%physician_id
+                   "WHERE res.physician_id = '%s' " \
+                   "ORDER BY req.status DESC"%physician_id
 
         with self.connector.cursor() as cursor:
             try:
@@ -925,16 +924,15 @@ class DbManager():
                 print("retrieve_patient_request_list: ", e)
         return responses
 
-
-        # KH
+    # KH
     def retrieve_request_info(self, request_id):
         request_detail = {}
         db_query_request = "SELECT req.request_id, req.subject, req.message, m.subject, m.image_type, " \
-                           "m.timestamp, m.taken_from, m.physician, m.place, m.description, req.status, req.level  " \
+                           "m.timestamp, m.taken_from, m.physician, m.place, m.description, req.status, req.level, m.user_id, m.image_id " \
                            "FROM miaas.request req " \
                            "JOIN miaas.medical_image m ON req.image_id = m.image_id " \
                            "WHERE req.request_id=%s"
-
+        print(db_query_request%request_id)
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query_request, request_id)
@@ -952,6 +950,8 @@ class DbManager():
                     request_detail['description'] = row[9]
                     request_detail['status'] = row[10]
                     request_detail['level'] = row[11]
+                    request_detail['patient_id'] = row[12]
+                    request_detail['image_id'] = row[13]
             except Exception as e:
                 print("retrieve_patient_request_detail: ", e)
 
