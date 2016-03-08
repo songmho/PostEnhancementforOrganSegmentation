@@ -253,7 +253,7 @@ def physician_interpretation_search(request):
         image_type = request.GET.get('image_type')
         # Retrieve requested list
         db = cloud_db.DbManager()
-        requested_intpr_list = db.retrieve_requested_intpr_list(query_type, request_subject, image_type)
+        requested_intpr_list = db.retrieve_requested_intpr_list(query_type, request_subject, image_type, request.session['user']['user_id'])
         requested_intpr_cnt = len(requested_intpr_list)
         # Configure page number
         if requested_intpr_cnt <= 0:
