@@ -24,7 +24,6 @@ class ImageUploader():
                 file_name = dir + file_name
                 destination = open(file_name, 'wb')
                 for chunk in image_file.chunks():
-                    print('Chunk')
                     destination.write(chunk)
                 destination.close()
         except Exception as e:
