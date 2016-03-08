@@ -379,7 +379,7 @@ def handle_interpretation_mgt(request):
             # To create a patient request
             elif action == 'patientReq':
                 status = 3
-                timestamp = 1235165184814
+                timestamp = 1450469913000
                 request = {
                     'image_id': data['image_id'],
                     'status': status,
@@ -395,7 +395,7 @@ def handle_interpretation_mgt(request):
                     return JsonResponse(constants.CODE_FAILURE)
             # To create a response on a patient request
             elif action == 'physicianResp':
-                timestamp = 1051685110
+                timestamp = 1450469913000
                 response = {
                     'request_id': data['request_id'],
                     'physician_id': data['physician_id'],
@@ -410,7 +410,7 @@ def handle_interpretation_mgt(request):
             # To create an interpretation and update request and response
             elif action == 'finishIntpr':
                 fee = 20
-                timestamp = 304029310928309
+                timestamp = 1450469913000
                 request_id = data['request_id']
                 intpr = {
                     'patient_id': data['patient_id'],
@@ -455,6 +455,7 @@ def handle_interpretation_mgt(request):
                     time_from = 0
                 intpr = db.retrieve_physician_intpr(physician_id, time_from)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'intpr': intpr}))
+            # To get all interpretations of a medical image
             elif action == 'getImageIntpr':
                 image_id = request.GET.get('image_id')
                 if not image_id:
@@ -479,12 +480,24 @@ def handle_interpretation_mgt(request):
             action = data['action']
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
+            # To update a patient request and delete patient responses
             elif action == 'patientSelReq':
                 request_id = data['request_id']
                 physician_id = data['physician_id']
                 status = 1
-                timestamp = 165186151156840
+                timestamp = 1450469913000
                 if_updated = db.update_patient_request_by_selection(request_id, physician_id, status, timestamp)
+                if if_updated:
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(constants.CODE_FAILURE)
+            # To update subject and message of a patient request
+            elif action == 'reqUpdate':
+                request_id = data['request_id']
+                subject = data['subject']
+                message = data['message']
+                timestamp = 1450469913000
+                if_updated = db.update_patient_request(request_id, subject, message, timestamp)
                 if if_updated:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
@@ -507,11 +520,12 @@ def handle_analytics_mgt(request):
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
             elif action == 'addAnalytic':
+                timestamp = 1450469913000
                 analytic = {
                     'image_id': data['image_id'],
                     'level': data['status'],
                     'fee': data['subject'],
-                    'timestamp': data['message'],
+                    'timestamp': timestamp,
                     'summary': data['summary'],
                     'result': data['result']
                 }
@@ -530,7 +544,7 @@ def handle_analytics_mgt(request):
             elif action == 'updateAnalytic':
                 level = data['level']
                 fee = data['fee']
-                timestamp = data['timestamp']
+                timestamp = 1450469913000
                 summary = data['summary']
                 result = data['result']
                 anal_id = data['anal_id']

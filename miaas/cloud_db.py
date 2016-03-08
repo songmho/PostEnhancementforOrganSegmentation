@@ -718,6 +718,20 @@ class DbManager():
                 print("Update_Patient_Request_by_Selection:", e)
         return if_updated
 
+    def update_patient_request(self, request_id, subject, message, timestamp):
+        if_updated = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE request SET subject=%s, message=%s, timestamp=%s WHERE request_id=%s"
+                cursor.execute(db_query, (subject, message, timestamp, request_id))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_updated = True
+            except Exception as e:
+                print("Update_Patient_Request:", e)
+        return if_updated
+
     def add_physician_intpr_resp(self, response):
         if_inserted = False
         with self.connector.cursor() as cursor:
