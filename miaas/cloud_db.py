@@ -702,12 +702,12 @@ class DbManager():
                 print("Add_Patient_Intpr_Request: ", e)
         return if_inserted
 
-    def update_patient_request_by_selection(self, request_id, physician_id, status, timestamp):
+    def update_patient_request_by_selection(self, request_id, physician_id, status):
         if_updated = False
         with self.connector.cursor() as cursor:
             try:
-                db_query = "UPDATE request SET status=%s, timestamp=%s WHERE request_id=%s"
-                cursor.execute(db_query, (status, timestamp, request_id))
+                db_query = "UPDATE request SET status=%s WHERE request_id=%s"
+                cursor.execute(db_query, (status, request_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
@@ -725,8 +725,8 @@ class DbManager():
         if_updated = False
         with self.connector.cursor() as cursor:
             try:
-                db_query = "UPDATE request SET subject=%s, message=%s, timestamp=%s WHERE request_id=%s"
-                cursor.execute(db_query, (subject, message, timestamp, request_id))
+                db_query = "UPDATE request SET subject=%s, message=%s WHERE request_id=%s"
+                cursor.execute(db_query, (subject, message, request_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
