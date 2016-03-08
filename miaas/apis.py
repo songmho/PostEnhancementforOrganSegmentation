@@ -218,9 +218,9 @@ def handle_patient_profile_mgt(request):
             if not user_id:
                 raise Exception(MSG_INVALID_PARAMS)
 
-            if request.session['user']['user_id'] != user_id:
-                raise Exception(MSG_NOT_MATCHED_USER)
-
+            if request.session['user']['user_type'] == 'patient':
+                if request.session['user']['user_id'] != user_id:
+                    raise Exception(MSG_NOT_MATCHED_USER)
             patient_profile = db.retrieve_patient_profile(user_id)
             return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': patient_profile}))
 
@@ -332,32 +332,54 @@ def handle_medical_image_mgt(request):
             else:
                 raise Exception(MSG_INVALID_PARAMS)
         elif request.method == 'POST':
-            #add medical image
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
-            data = json.loads(request.body.decode("utf-8"))
-            if not data.get('action') or not data.get('medical_image'):
-                raise Exception(MSG_INVALID_PARAMS)
-            action = data['action']
-            medical_image = data['medical_image']
+            if 'image_file' in request.FILES and 'image_info' in request.POST:
+                action = request.POST['action'].decode("utf-8")
+                image_info = json.loads(request.POST['image_info'].decode("utf-8"))
+                image_file = request.FILES['image_file']
+                filename = image_file._name
 
-            if request.session['user']['user_id'] != medical_image['user_id']:
-                raise Exception(MSG_NOT_MATCHED_USER)
+                # fp = open('%s/%s' % ('./medical_images/temp/upload/', filename), 'wb')
+                # for chunk in image_file.chunks():
+                #     fp.write(chunk)
+                # fp.close()
 
-            if action == 'upload':
-                if db.add_medical_image(medical_image):
-                    return JsonResponse(constants.CODE_SUCCESS)
+                # if request.session['user']['user_id'] != image_info['user_id']:
+                #     raise Exception(MSG_NOT_MATCHED_USER)
+
+                logger.info(action)
+                if action == 'upload':
+                    logger.info('upload')
+                elif action == 'update':
+                    logger.info('update')
                 else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_MEDICAL_IMAGE}))
-            elif action == 'update':
-                # update image
-                pass
+                     raise Exception(MSG_INVALID_PARAMS)
+                return JsonResponse(dict(constants.CODE_SUCCESS))
+
             else:
-                raise Exception(MSG_INVALID_PARAMS)
+                #Other
+                if len(request.body) == 0:
+                    raise Exception(MSG_NODATA)
+                data = json.loads(request.body.decode("utf-8"))
+                if not data.get('action') or not data.get('medical_image'):
+                    raise Exception(MSG_INVALID_PARAMS)
+                action = data['action']
+                medical_image = data['medical_image']
 
+                if request.session['user']['user_id'] != medical_image['user_id']:
+                    raise Exception(MSG_NOT_MATCHED_USER)
 
-        if(request.method) == "POST":
-            pass
+                if action == 'upload':
+                    logger.info(data)
+                    pass
+                    if db.add_medical_image(medical_image):
+                        return JsonResponse(constants.CODE_SUCCESS)
+                    else:
+                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_MEDICAL_IMAGE}))
+                elif action == 'update':
+                    # update image
+                    pass
+                else:
+                    raise Exception(MSG_INVALID_PARAMS)
 
     except Exception as e:
         logger.exception(e)
