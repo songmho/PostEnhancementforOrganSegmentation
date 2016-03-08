@@ -742,12 +742,17 @@ class DbManager():
                 message = response['message']
                 timestamp = response['timestamp']
                 status = response['status']
-                db_query = "INSERT INTO response (request_id, physician_id, message, timestamp, status) VALUES (%s, %s, %s, %s, %s)"
+                db_query = "INSERT INTO response (request_id, physician_id, message, timestamp) VALUES (%s, %s, %s, %s)"
                 cursor.execute(db_query, (request_id, physician_id, message, timestamp))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
-                    if_inserted = True
+                    db_query = "UPDATE request SET status=%s WHERE request_id=%s"
+                    cursor.execute(db_query, (status, request_id))
+                    self.connector.commit()
+                    row_count = cursor.rowcount
+                    if row_count > 0:
+                        if_inserted = True
             except Exception as e:
                 print("Add_Physician_Intpr_Response: ", e)
         return if_inserted
