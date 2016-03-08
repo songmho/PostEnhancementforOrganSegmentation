@@ -496,9 +496,9 @@ class DbManager():
                 timestamp = intpr['timestamp']
                 summary = intpr['summary']
                 interpretation = intpr['interpretation']
-                db_query = "INSERT INTO interpretation (patient_id, physician_id, image_id, level, fee, timestamp, summary, interpretation) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query,
-                               (patient_id, physician_id, image_id, level, fee, timestamp, summary, interpretation))
+                request_id = intpr['request_id']
+                db_query = "INSERT INTO interpretation (patient_id, physician_id, image_id, level, fee, timestamp, summary, interpretation, request_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (patient_id, physician_id, image_id, level, fee, timestamp, summary, interpretation, request_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
@@ -517,14 +517,15 @@ class DbManager():
                 row = cursor.fetchone()
                 intpr = {}
                 intpr['intpr_id'] = row[0]
-                intpr['physician_id'] = row[1]
-                intpr['patient_id'] = row[2]
+                intpr['patient_id'] = row[1]
+                intpr['physician_id'] = row[2]
                 intpr['image_id'] = row[3]
                 intpr['level'] = row[4]
                 intpr['fee'] = row[5]
                 intpr['timestamp'] = row[6]
                 intpr['summary'] = row[7]
                 intpr['interpretation'] = row[8]
+                intpr['request_id'] = row[9]
             except Exception as e:
                 print("Retrieve_Interpretation_By_Id: ", e)
         return intpr
@@ -562,14 +563,13 @@ class DbManager():
                     intpr = {}
                     intpr['intpr_id'] = row[0]
                     intpr['patient_id'] = row[1]
-                    intpr['level'] = row[3]
-                    intpr['fee'] = row[4]
-                    intpr['timestamp'] = row[5]
-                    intpr['summary'] = row[6]
-                    intpr['interpretation'] = row[7]
-                    intpr['status'] = row[8]
-                    intpr['subject'] = row[9]
-                    intpr['message'] = row[10]
+                    intpr['physician_id'] = row[2]
+                    intpr['level'] = row[4]
+                    intpr['fee'] = row[5]
+                    intpr['timestamp'] = row[6]
+                    intpr['summary'] = row[7]
+                    intpr['interpretation'] = row[8]
+                    intpr['request_id'] = row[9]
                     intpr_list.append(intpr)
                 intpr_by_image['intpr'] = intpr_list
             except Exception as e:
@@ -601,6 +601,7 @@ class DbManager():
                     intpr['timestamp'] = row[6]
                     intpr['summary'] = row[7]
                     intpr['interpretation'] = row[8]
+                    intpr['request_id'] = row[9]
                     intprs.append(intpr)
             except Exception as e:
                 print("Retrieve_Interpretation: ", e)
@@ -617,14 +618,15 @@ class DbManager():
                 for row in cursor:
                     intpr = {}
                     intpr['intpr_id'] = row[0]
-                    intpr['physician_id'] = row[1]
-                    intpr['patient_id'] = row[2]
+                    intpr['patient_id'] = row[1]
+                    intpr['physician_id'] = row[2]
                     intpr['image_id'] = row[3]
                     intpr['level'] = row[4]
                     intpr['fee'] = row[5]
                     intpr['timestamp'] = row[6]
                     intpr['summary'] = row[7]
                     intpr['interpretation'] = row[8]
+                    intpr['request_id'] = row[9]
                     intprs.append(intpr)
             except Exception as e:
                 print("Retrieve_Physician_Interpretation: ", e)
@@ -653,14 +655,15 @@ class DbManager():
                 for row in cursor:
                     intpr = {}
                     intpr['intpr_id'] = row[0]
-                    intpr['physician_id'] = row[1]
-                    intpr['patient_id'] = row[2]
+                    intpr['patient_id'] = row[1]
+                    intpr['physician_id'] = row[2]
                     intpr['image_id'] = row[3]
                     intpr['level'] = row[4]
                     intpr['fee'] = row[5]
                     intpr['timestamp'] = row[6]
                     intpr['summary'] = row[7]
                     intpr['interpretation'] = row[8]
+                    intpr['request_id'] = row[9]
                     intprs.append(intpr)
             except Exception as e:
                 print("Retrieve_Physician_Interpretation: ", e)
