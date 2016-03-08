@@ -22,10 +22,10 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
         <div class="row">
             <div class="col-xs-12 col-title">
 {#                <h2 class="text-primary" id="titleSubject">Analytics Result for "{{ subject }}"</h2>#}
-                <h2 class="text-primary" id="titleSubject">Interpreting for "Chest X-ray taken 01/24"</h2>
+                <h2 class="text-primary" id="titleSubject">Interpreting for "{{ request_detail.request_subject }}"</h2>
             </div>
 
-            <form class="col-xs-12 col-form">
+            <form id="writeForm" class="col-xs-12 col-form">
 
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-group">
@@ -112,9 +112,6 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         </div>
                     </div>
                 </div>
-
-
-
                 <div class="form-btns-container row">
                     <div id="btnFormWrite" class="col-xs-12 col-md-4 col-md-offset-4 form-button">
                         <button class="btn btn-lg btn-primary btn-block" type="submit">Write</button>
@@ -126,30 +123,66 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     </section>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="writeInterpretationModal" tabindex="-1" role="dialog" aria-labelledby="writeInterpretationModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="writeInterpretationModalTitle">Signin Failed</h4>
+            </div>
+            <div class="modal-body">
+                Signin failed
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
-{#<script src="{% static 'lib/bootstrap/plugin/bootstrap-wyshiwyg/libs/js/prettify.js' %}"></script>#}
-{#<script src="{% static 'lib/bootstrap/plugin/bootstrap-wyshiwyg/libs/js/wysihtml5-0.3.0_rc2.js' %}"></script>#}
-{#<script src="{% static 'lib/bootstrap/plugin/bootstrap-wyshiwyg/bootstrap-wysihtml5-0.0.2.js' %}"></script>#}
-{##}
-{#<script type="text/javascript">#}
-{#    var customWysiTemplates = {#}
-{#        html: function(locale) {#}
-{#            #}
-{#        }#}
-{#    };#}
-{##}
-{#    $('#interpretation').wysihtml5({#}
-{#        "font-styles": true, //Font styling, e.g. h1, h2, etc. Default true#}
-{#        "emphasis": true, //Italics, bold, etc. Default true#}
-{#        "lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true#}
-{#        "html": false, //Button which allows you to edit the generated HTML. Default false#}
-{#        "link": true, //Button to insert a link. Default true#}
-{#        "image": true, //Button to insert an image. Default true,#}
-{#        "color": true //Button to change color of font#}
-{#    });#}
-{#</script>#}
+<script>
+    $(document).ready(function() {
+        $('#writeForm').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax("/api/interpretation", {
+                method: 'PUT',
+                data: JSON.stringify({
+                    action: 'finishIntpr',
+                    request_id: '{{ request_detail.request_id }}',
+                    patient_id: '{{ request_detail.patient_id }}',
+                    physician_id: '{{ user_session.user_id }}',
+                    image_id: '{{ request_detail.image_id }}',
+                    level: '{{ request_detail.level }}',
+                    summary: $('#summary').val(),
+                    interpretation:$('#interpretation').val()
+                }),
+                dataType: 'json',
+                success: function (res) {
+                    $.LoadingOverlay('hide');
+                    if (res['code'] == 'SUCCESS') {
+                        openWriteInterpretationModal("Success", "Writing Interpretation Succeed")
+                    } else {
+                        openWriteInterpretationModal(res['msg'], "Writing Interpretation Failed")
+                    }
+                }
+            });
+        });
+    });
+
+    function openWriteInterpretationModal(msg, title) {
+        if (title!=undefined && title!=null && title!='') {
+            $('#writeInterpretationModalTitle').text(title)
+        }
+        if (msg==undefined || msg==null || msg=='') {
+            msg = 'Sign in failed. Please try again.'
+        }
+        $('#writeInterpretationModal .modal-body').text(msg);
+        $('#writeInterpretationModal').modal();
+    }
+</script>
 
 </body>
 </html>
