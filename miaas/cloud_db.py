@@ -240,7 +240,7 @@ class DbManager():
                 self.connector.commit()
                 # Add physician information to 'physician' table
                 license_number = physician['license_number']
-                medicine_field = physician['major']
+                medicine_field = physician['medicine_field']
                 certificate_dir = physician['certificate_dir']
                 db_query = "INSERT INTO physician (user_id, license_number, medicine_field, certificate_dir) values (%s, %s, %s, %s)"
                 cursor.execute(db_query, (user_id, license_number, medicine_field, certificate_dir))
