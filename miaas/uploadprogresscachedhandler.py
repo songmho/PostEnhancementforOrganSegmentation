@@ -1,5 +1,15 @@
 from django.core.files.uploadhandler import FileUploadHandler
 from django.core.cache import cache
+from django.http import HttpResponse, HttpResponseServerError
+import logging, json
+
+logging.basicConfig(
+    format="[%(name)s][%(asctime)s] %(message)s",
+    handlers=[logging.StreamHandler()],
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
 
 class UploadProgressCachedHandler(FileUploadHandler):
     """
@@ -25,6 +35,8 @@ class UploadProgressCachedHandler(FileUploadHandler):
                 'length': self.content_length,
                 'uploaded' : 0
             })
+        logger.info('handle file raw: progressid=%s, cache_key=%s' % (self.progress_id, self.cache_key))
+
 
     def new_file(self, field_name, file_name, content_type, content_length, charset=None, content_type_extra=None):
         pass
@@ -34,6 +46,7 @@ class UploadProgressCachedHandler(FileUploadHandler):
             data = cache.get(self.cache_key)
             data['uploaded'] += self.chunk_size
             cache.set(self.cache_key, data)
+            # logger.info('receive_chunk, size=%s' % (data['uploaded']))
         return raw_data
 
     def file_complete(self, file_size):
@@ -46,10 +59,6 @@ class UploadProgressCachedHandler(FileUploadHandler):
 
 
 # A view to report back on upload progress:
-
-from django.core.cache import cache
-from django.http import HttpResponse, HttpResponseServerError
-
 def upload_progress(request):
     """
     Return JSON object with information about the progress of an upload.
@@ -60,9 +69,8 @@ def upload_progress(request):
     elif 'X-Progress-ID' in request.META:
         progress_id = request.META['X-Progress-ID']
     if progress_id:
-        from django.utils import simplejson
         cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], progress_id)
         data = cache.get(cache_key)
-        return HttpResponse(simplejson.dumps(data))
+        return HttpResponse(json.dumps(data))
     else:
         return HttpResponseServerError('Server Error: You must provide X-Progress-ID header or query param.')
