@@ -42,7 +42,7 @@
 </div>
 <br />
 <div>
-    <form action="api/medical_image" method="post" enctype="multipart/form-data">
+    <form action="/api/medical_image" method="post" enctype="multipart/form-data">
         File:
         <input type="hidden" name="action" value="upload" />
         <input type="file" name="image_file" id="imageFile" />
@@ -51,10 +51,11 @@
 </div>
 <br />
 <div>
-    <form action="api/medical_image" id="fileForm2" method="post" enctype="multipart/form-data">
+    <form action="/api/medical_image" id="fileForm2" method="post" enctype="multipart/form-data">
         File2:
         <input type="file" name="image_file" id="imageFile2" />
         <input type="submit" value="UPLOAD" />
+        <span>progress: <span id="progress">0</span>%</span>
     </form>
 </div>
 </body>
@@ -62,6 +63,8 @@
 <script src="{% static "lib/jquery/jquery-2.2.0.min.js" %}"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        g_progress_intv = null;
+
         $("#fileForm2").on('submit', function(e) {
             e.preventDefault();
 
@@ -78,8 +81,10 @@
             }));
             console.log(data);
 
+            $('#progress').text(0);
+            var xprogressID = new Date().getTime();
             $.ajax({
-                url: $(this).attr('action'),
+                url: $(this).attr('action') + '?X-Progress-ID='+xprogressID,
                 type: $(this).attr('method'),
                 data: data,
                 cache:false,
@@ -90,7 +95,28 @@
                 }
             });
 
+            startFileProgressUpdate(xprogressID);
         });
+
+        function startFileProgressUpdate(upload_id) {
+            $('#progress').text(0);
+            if(g_progress_intv != null)
+                clearInterval(g_progress_intv);
+            g_progress_intv = setInterval(function() {
+                $.getJSON("/api/get_upload_progress?X-Progress-ID="+upload_id,
+                    function(data) {
+                        if (data == null) {
+                            $('#progress').text(100);
+                            clearInterval(g_progress_intv);
+                            g_progress_intv = null;
+                            return;
+                        }
+                        var percentage = Math.floor(100 * parseInt(data.uploaded) / parseInt(data.length));
+                        $('#progress').text(percentage);
+                    });
+            }, 500);
+        }
+
 
         $("#login").click(function() {
             $.ajax("api/sessions", {

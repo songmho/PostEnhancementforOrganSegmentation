@@ -16,6 +16,8 @@ LEVEL_STRING = {
     3: 'Level 3 - Detailed, With available images and patient interview/symptom, Fee-based'
 }
 
+ARCHIVE_BASE_PATH = '/Volumes/Data/archive/'
+
 class PatientProfile:
     pass
 

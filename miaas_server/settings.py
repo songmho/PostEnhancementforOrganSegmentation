@@ -14,6 +14,9 @@ __author__ = 'hanter'
 
 import os
 
+from django.conf import global_settings
+from miaas import uploadprogresscachedhandler
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -159,3 +162,8 @@ STATICFILES_DIRS = [
 if __name__ == '__main__':
     from django.conf import settings
     settings.configure()
+
+# File Upload Handler
+FILE_UPLOAD_HANDLERS = ['miaas.uploadprogresscachedhandler.UploadProgressCachedHandler', ] + global_settings.FILE_UPLOAD_HANDLERS
+
+CACHE_BACKEND = 'memcached://127.0.0.1:11211/'

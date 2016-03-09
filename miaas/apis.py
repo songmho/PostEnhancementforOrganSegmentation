@@ -2,8 +2,9 @@ import json
 import logging
 import time
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.cache import cache
 
 from . import constants, cloud_db, image_manager
 
@@ -304,6 +305,13 @@ def handle_physician_profile_mgt(request):
 
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
+
+@csrf_exempt
+def handle_image_uploading_progress(request):
+    cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], request.GET['X-Progress-ID'])
+    data = cache.get(cache_key)
+    return HttpResponse(json.dumps(data))
+
 @csrf_exempt
 def handle_medical_image_mgt(request):
     db = cloud_db.DbManager()
@@ -359,31 +367,31 @@ def handle_medical_image_mgt(request):
                      raise Exception(MSG_INVALID_PARAMS)
                 return JsonResponse(dict(constants.CODE_SUCCESS))
 
-            else:
+            # else:
                 #Other
-                if len(request.body) == 0:
-                    raise Exception(MSG_NODATA)
-                data = json.loads(request.body.decode("utf-8"))
-                if not data.get('action') or not data.get('medical_image'):
-                    raise Exception(MSG_INVALID_PARAMS)
-                action = data['action']
-                medical_image = data['medical_image']
-
-                if request.session['user']['user_id'] != medical_image['user_id']:
-                    raise Exception(MSG_NOT_MATCHED_USER)
-
-                if action == 'upload':
-                    logger.info(data)
-                    pass
-                    if db.add_medical_image(medical_image):
-                        return JsonResponse(constants.CODE_SUCCESS)
-                    else:
-                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_MEDICAL_IMAGE}))
-                elif action == 'update':
-                    # update image
-                    pass
-                else:
-                    raise Exception(MSG_INVALID_PARAMS)
+                # if len(request.body) == 0:
+                #     raise Exception(MSG_NODATA)
+                # data = json.loads(request.body.decode("utf-8"))
+                # if not data.get('action') or not data.get('medical_image'):
+                #     raise Exception(MSG_INVALID_PARAMS)
+                # action = data['action']
+                # medical_image = data['medical_image']
+                #
+                # if request.session['user']['user_id'] != medical_image['user_id']:
+                #     raise Exception(MSG_NOT_MATCHED_USER)
+                #
+                # if action == 'upload':
+                #     logger.info(data)
+                #     pass
+                #     if db.add_medical_image(medical_image):
+                #         return JsonResponse(constants.CODE_SUCCESS)
+                #     else:
+                #         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_MEDICAL_IMAGE}))
+                # elif action == 'update':
+                #     # update image
+                #     pass
+                # else:
+                #     raise Exception(MSG_INVALID_PARAMS)
 
     except Exception as e:
         logger.exception(e)

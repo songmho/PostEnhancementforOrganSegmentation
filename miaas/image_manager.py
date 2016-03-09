@@ -1,7 +1,7 @@
 import os
 import datetime
-from miaas.cloud_db import DbManager
 import logging
+from . import cloud_db, constants
 
 logging.basicConfig(
     format="[%(name)s][%(asctime)s] %(message)s",
@@ -11,9 +11,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 class ImageManager():
+    __base_file_path = 1
+
     def __init__(self, image_file, image_info):
         self.original_file = image_file
         self.image_info = image_info
+
+    def upload_file(self):
+        pass
 
     def upload_as_temp(self):
         filename = self.original_file._name
@@ -30,6 +35,11 @@ class ImageManager():
         except Exception as e:
             logger.exception(e)
             return False
+
+    def get_file_extension(self):
+        filename = self.original_file._name
+        return filename.split(".")[-1]
+
 
 class ImageUploader():
 
