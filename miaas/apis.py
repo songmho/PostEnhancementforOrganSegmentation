@@ -219,6 +219,7 @@ def handle_patient_profile_mgt(request):
             if not user_id:
                 raise Exception(MSG_INVALID_PARAMS)
 
+            print(request.session['user']['user_type'])
             if request.session['user']['user_type'] == 'patient':
                 if request.session['user']['user_id'] != user_id:
                     raise Exception(MSG_NOT_MATCHED_USER)
