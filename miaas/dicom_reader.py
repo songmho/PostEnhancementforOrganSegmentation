@@ -11,19 +11,19 @@ _testDecompressedFile = "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/
 _testImagedFile = "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2, PNG/IM-0001-0001.jpg"
 _testIconFile = "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-PLANE RT. - 2, PNG/IM-0001-0001-icon.jpg"
 
-def __init__():
-    print "init"
-
-def is_zipfile(archive_filename):
-    return zipfile.is_zipfile(archive_filename)
-
-def extract_dicom_archive(archive_filename):
-    if not is_zipfile(archive_filename): return False
-
-    # zfp = open(archive_filename, 'rb')
-    # zfile = zipfile.ZipFile(zfp)
-    with zipfile.ZipFile(archive_filename, "r") as zfile:
-        zfile.extractall()
+# def __init__():
+#     print "init"
+#
+# def is_zipfile(archive_filename):
+#     return zipfile.is_zipfile(archive_filename)
+#
+# def extract_dicom_archive(archive_filename):
+#     if not is_zipfile(archive_filename): return False
+#
+#     # zfp = open(archive_filename, 'rb')
+#     # zfile = zipfile.ZipFile(zfp)
+#     with zipfile.ZipFile(archive_filename, "r") as zfile:
+#         zfile.extractall()
 
 
 def decompress(infile, outfile):
@@ -79,13 +79,12 @@ def convert_to_jpg(dcmfile, jpgfile):
 
         img = mufile.image
         img.save_as_plt(jpgfile)
-    except Exception:
+    except Exception as e:
+        logging.exception(e)
         return False
     return True
 
 if __name__ == "__main__":
-    print "decompress start"
+    pass
     # decompress(_testCompressedfile, _testDecompressedFile)
-    print "decompress done"
     # convert_to_jpg(_testCompressedfile, _testImagedFile)
-    # convert_to_jpg(_testDecompressedFile, _testImagedFile)

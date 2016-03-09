@@ -357,25 +357,20 @@ def handle_medical_image_mgt(request):
             if 'image_file' in request.FILES and 'image_info' in request.POST:
                 action = request.POST['action'].decode("utf-8")
                 image_info = json.loads(request.POST['image_info'].decode("utf-8"))
+                image_info['timestamp'] = int(round(time.time() * 1000))
                 image_file = request.FILES['image_file']
 
-                # filename = image_file._name
-                # fp = open('%s/%s' % ('./medical_images/temp/upload/', filename), 'wb')
-                # for chunk in image_file.chunks():
-                #     fp.write(chunk)
-                # fp.close()
-
                 im = image_manager.ImageManager(image_file, image_info)
-                im.upload_as_temp()
+                im.upload_file()
+
 
                 # if request.session['user']['user_id'] != image_info['user_id']:
                 #     raise Exception(MSG_NOT_MATCHED_USER)
 
-                logger.info(action)
                 if action == 'upload':
-                    logger.info('upload')
+                    pass
                 elif action == 'update':
-                    logger.info('update')
+                    pass
                 else:
                      raise Exception(MSG_INVALID_PARAMS)
                 return JsonResponse(dict(constants.CODE_SUCCESS))
