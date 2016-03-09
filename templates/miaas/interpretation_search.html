@@ -27,13 +27,13 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <button class="btn btn-default pull-right" type="submit">Search</button>
                         <input name="request_subject" id="inputSearch" type="text" class="form-control pull-right" placeholder="Search">
                         <select name="image_type" id="selectImageType" class="form-control pull-right" style="display: none;">
-                            <option>EEG</option>
-                            <option>ECG</option>
-                            <option>EMG</option>
-                            <option>CT</option>
-                            <option>MRI</option>
-                            <option>Ultrasonography</option>
-                            <option value="Radiography">Radiography (X-ray)</option>
+                            <option value="EEG">EEG (Electroencephalography)</option>
+                            <option value="ECG">ECG (Electrocardiography)</option>
+                            <option value="EMG">EMG (Electromyography)</option>
+                            <option value="CT">CT (Computed Tomography)</option>
+                            <option value="X-ray">X-ray (Radiography)</option>
+                            <option value="MRI">MRI (Magnetic Resonance Imaging)</option>
+                            <option value="U/S">Ultrasonography (Ultrasound)</option>
                         </select>
                         <select name="query_type" id="selectSearch" class="form-control pull-right">
                             <option>Request Subject</option>

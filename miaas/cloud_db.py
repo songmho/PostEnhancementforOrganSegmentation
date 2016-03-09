@@ -1066,6 +1066,7 @@ class DbManager():
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
                    "WHERE intpr.patient_id='%s' and intpr.timestamp>%s " \
                    "ORDER BY intpr.timestamp DESC"%(patient_id, time_from)
+        print(db_query)
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query)

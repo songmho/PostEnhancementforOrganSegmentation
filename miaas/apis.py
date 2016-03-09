@@ -531,7 +531,7 @@ def handle_interpretation_mgt(request):
                 physician_id = data['physician_id']
                 status = 1
                 timestamp = int(round(time.time() * 1000))
-                if_updated = db.update_patient_request_by_selection(request_id, physician_id, status, timestamp)
+                if_updated = db.update_patient_request_by_selection(request_id, physician_id, status)
                 if if_updated:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
