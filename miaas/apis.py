@@ -309,9 +309,21 @@ def handle_physician_profile_mgt(request):
 
 @csrf_exempt
 def handle_image_uploading_progress(request):
-    cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], request.GET['X-Progress-ID'])
-    data = cache.get(cache_key)
-    return HttpResponse(json.dumps(data))
+    progress_id = ''
+    if 'X-Progress-ID' in request.GET:
+        progress_id = request.GET['X-Progress-ID']
+    elif 'X-Progress-ID' in request.META:
+        progress_id = request.META['X-Progress-ID']
+
+    if progress_id:
+        cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], progress_id)
+        data = cache.get(cache_key)
+        jsondata = json.dumps(data)
+        # logger.info("cache_key=%s / json data=%s" % (cache_key, jsondata))
+        return HttpResponse(jsondata)
+    else:
+        return JsonResponse(dict(constants.CODE_FAILURE,
+                                 **{'msg': 'Server Error: You must provide X-Progress-ID header or query param.'}))
 
 @csrf_exempt
 def handle_medical_image_mgt(request):
