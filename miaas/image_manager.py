@@ -1,7 +1,7 @@
 import os, shutil, glob
 import datetime, time
 import logging
-import zipfile
+import zipfile, codecs
 from . import cloud_db, constants, dicom_reader
 
 logging.basicConfig(
@@ -28,17 +28,23 @@ class ImageManager():
         temp_path = None
         if self._is_zipfile(self._temp_file_path):
             extract_dir = self._extract_zipfile(self._temp_file_path)
-            success = self._dcm_to_jpg_indir(extract_dir)
-            if not success:
-                raise Exception("Invalid Dicom Image.")
+            # success = self._dcm_to_jpg_indir(extract_dir)
+            # if not success:
+            #     raise Exception("Invalid Dicom Image Format.")
             temp_path = extract_dir
         else:
             temp_path = self._temp_file_path
         logger.info('uploaded temp file: %s' % temp_path)
 
         self._upload_to_archive(temp_path)
+        if os.path.exists(self._temp_file_path):
+            os.remove(self._temp_file_path)
+            self._temp_file_path = None
 
     def update_file(self):
+        pass
+
+    def delete_tempfile(self):
         pass
 
     def _upload_to_archive(self, temp_path):
@@ -46,10 +52,11 @@ class ImageManager():
                                     self._image_info['user_id'],
                                     self._image_info['image_type'],
                                     str(self._image_info['timestamp']))
+        if os.path.isfile(temp_path):
+            archive_path = '%s.%s' % (archive_path, self._get_file_extension(temp_path))
         logger.info('archive path: %s' % archive_path)
 
         shutil.move(temp_path, archive_path)
-        pass
 
     def _dcm_to_jpg_indir(self, dir):
         for root, dirs, files in os.walk(dir):
@@ -60,6 +67,7 @@ class ImageManager():
                 dcmpath = os.path.join(rootpath, file)
                 fileext = self._get_file_extension(dcmpath)
                 if fileext not in ImageManager._supported_image_extensions:
+                    logger.info('not supoorted image extension: %s' % file)
                     return False
                 if fileext=='dicom' or fileext=='dcm':
                     jpgpath = os.path.join(rootpath, '%s.jpg' % (os.path.splitext(file)[0]))
@@ -105,7 +113,10 @@ class ImageManager():
         if os.path.exists(zipfiledir):
             shutil.rmtree(zipfiledir)
         with zipfile.ZipFile(filename, "r") as zfile:
-            zfile.extractall(zipfiledir)
+            try:
+                zfile.extractall(zipfiledir)
+            except UnicodeDecodeError as e:
+                self._extractall_unicode(zfile, zipfiledir)
 
         sysfile_list = []
         for root, dirs, files in os.walk(zipfiledir):
@@ -129,6 +140,28 @@ class ImageManager():
 
         return zipfiledir
 
+    def _extractall_unicode(self, zf, extractdir):
+        for m in zf.infolist():
+            data = zf.read(m) # extract zipped data into memory
+            # convert unicode file path to utf8
+            disk_file_name = m.filename.encode('utf8')
+            dir_name = os.path.dirname(disk_file_name)
+            try:
+                os.makedirs(dir_name)
+            except OSError as e:
+                logger.exception(e)
+                if e.errno == os.errno.EEXIST:
+                    pass
+                else:
+                    raise
+            except Exception as e:
+                logger.exception(e)
+                raise
+
+            with open(disk_file_name, 'wb') as fd:
+                fd.write(data)
+        zf.close()
+
     def _is_supported_file(self, filepath):
         ext = self._get_file_extension(filepath)
         return ext in ImageManager._supported_image_extensions or \
@@ -141,32 +174,3 @@ class ImageManager():
     def _get_file_extension(self, filepath):
         filename = self._get_file_name(filepath)
         return filename.split(".")[-1].lower()
-
-
-class ImageUploader():
-
-    def __init__(self):
-        self.cloud_instance_id = 'i-0aba2ecd'
-
-    # i-0aba2ecd/min0532/ecg/20151127/min_ecg.dec
-    def save_file(self, patient_id, type, file_name, image_file):
-        file_name = ''
-        dir = None
-        now = datetime.datetime.now()
-        res_date = str(now.year-1) + str(now.month) + str(now.day)
-        file_path = 'G:\\' + self.cloud_instance_id + '\\' + patient_id + '\\' + type + '\\' + res_date
-        try:
-            # To check directory existence ,create relevant folders, and upload file to cloud EC2
-            if not os.path.isdir(file_path):
-                os.makedirs(file_path)
-                dir = file_path
-                file_name = dir + file_name
-                destination = open(file_name, 'wb')
-                for chunk in image_file.chunks():
-                    destination.write(chunk)
-                destination.close()
-        except Exception as e:
-            print("upload_file: ", e)
-
-    def get_image(self, patient_id, subject):
-        pass

@@ -59,18 +59,19 @@ def decompress(infile, outfile):
     w.SetFileName(outfile)
     w.SetFile(r.GetFile())
     w.SetImage(image)
+
     # w.SetPixmap(image)
     if not w.Write():
         print "Write Error!"
         return False
     return True
 
-# def plot_image(decomp_image):
-#     dfile = dicom.read_file(decomp_image)
-#     print dfile.file_meta
-#
-#     pylab.imshow(dfile.pixel_array, cmap=pylab.cm.bone) # pylab readings and conversion
-#     pylab.show()
+def plot_image(decomp_image):
+    dfile = dicom.read_file(decomp_image)
+    print dfile.file_meta
+
+    pylab.imshow(dfile.pixel_array, cmap=pylab.cm.bone) # pylab readings and conversion
+    pylab.show()
 
 def convert_to_jpg(dcmfile, jpgfile):
     try:
@@ -85,6 +86,11 @@ def convert_to_jpg(dcmfile, jpgfile):
     return True
 
 if __name__ == "__main__":
-    pass
+    # pass
     # decompress(_testCompressedfile, _testDecompressedFile)
     # convert_to_jpg(_testCompressedfile, _testImagedFile)
+
+    # convert_to_jpg('/Users/hanter/SEL/MIAAS/miaas_server/medical_images/temp/extract/min/ENTERIX/ENTERIX/PET PETCT_WB_apc (Adult)/mpr.fusion.axial - 803/IM-0001-0001d.dcm',
+    #                '/Users/hanter/SEL/MIAAS/miaas_server/medical_images/temp/extract/min/ENTERIX/ENTERIX/PET PETCT_WB_apc (Adult)/mpr.fusion.axial - 803/IM-0001-0001.jpg')
+
+    plot_image('/Users/hanter/SEL/MIAAS/miaas_server/medical_images/temp/extract/min/ENTERIX/ENTERIX/PET PETCT_WB_apc (Adult)/mpr.fusion.axial - 803/IM-0001-0001d.dcm')
