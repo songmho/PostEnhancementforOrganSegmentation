@@ -71,8 +71,12 @@ def archive_page(request):
     context = _get_session_context(request)
 
     if request.session.get('user'):
+        now_page = request.GET.get('page')
+        if now_page: now_page = int(now_page)
+        else: now_page = 1
+
         image_cnt = request.session.get('image_cnt')
-        if not image_cnt:
+        if not image_cnt or now_page == 1:
             logger.info('no image cnt session. call db')
             db = cloud_db.DbManager()
             image_cnt = db.retrieve_medical_image_amount(request.session['user']['user_id'])
@@ -83,13 +87,11 @@ def archive_page(request):
         request.session['image_cnt'] = image_cnt
         archive['image_cnt'] = image_cnt
 
-        now_page = request.GET.get('page')
-        if now_page: now_page = int(now_page)
         max_page = image_cnt // constants.CNT_CONTENTS_IN_PAGE
         if image_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
             max_page += 1
-        if not now_page or now_page > max_page:
-            now_page = 1
+        if now_page > max_page:
+            now_page = max_page
         archive['now_page'] = now_page
         archive['max_page'] = max_page
         logger.info('now_page=%s, max_page=%s' % (now_page, max_page))
