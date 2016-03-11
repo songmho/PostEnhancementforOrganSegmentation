@@ -423,10 +423,10 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 if limit is 0:
-                    db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY timestamp DESC"
+                    db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY taken_date DESC"
                     cursor.execute(db_query, (user_id, time_from))
                 else:
-                    db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY timestamp DESC LIMIT %s OFFSET %s"
+                    db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY taken_date DESC LIMIT %s OFFSET %s"
                     cursor.execute(db_query, (user_id, time_from, limit, offset))
                 self.connector.commit()
                 for row in cursor:
