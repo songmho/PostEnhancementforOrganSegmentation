@@ -6,6 +6,19 @@ var bRequestIntpr = false;
 var reqLevel = 2;
 
 $(document).ready(function() {
+    /*** for edit image info ***/
+    $('#takenFrom').change(function() {
+        resetTakenLayout();
+    });
+    resetTakenLayout();
+
+
+
+    $('#imageInfoForm').on('submit', function(e) {
+
+    });
+
+    /*** for interpretation request ***/
     $('#btnRequest').click(function() {
         if(bRequestIntpr) {
             bRequestIntpr = false;
@@ -34,10 +47,6 @@ $(document).ready(function() {
             $('#reqSubjectGroup').show();
             $('#reqMessageGroup').show();
         }
-    });
-
-    $('#imageInfoForm').on('submit', function(e) {
-
     });
 
     $('#requestIntprForm').on('submit', function(e) {
@@ -86,6 +95,22 @@ $(document).ready(function() {
         //$.LoadingOverlay('show');
     });
 });
+
+function resetTakenLayout() {
+    var tf = $('#takenFrom').val();
+    console.log(tf);
+    if(tf == 'Home') {
+        $('#physician').removeAttr('required').val('');
+        $('#clinicName').removeAttr('required').val('');
+        $('#physicianGroup').css('visibility', 'hidden');
+        $('#clinicNameGroup').css('visibility', 'hidden');
+    } else {
+        $('#physician').attr('required', '');
+        $('#clinicName').attr('required', '');
+        $('#physicianGroup').css('visibility', 'visible');
+        $('#clinicNameGroup').css('visibility', 'visible');
+    }
+}
 
 function openModal(msg, title) {
     if (title==undefined || title==null || title=='') {

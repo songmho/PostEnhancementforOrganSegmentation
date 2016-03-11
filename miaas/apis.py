@@ -383,10 +383,8 @@ def handle_medical_image_mgt(request):
 
                 except Exception as e:
                     if uploaded_path:
-                        try:
-                            image_manager.ImageManager.delete_uploaded_archive_file(uploaded_path)
-                        except Exception:
-                            pass
+                        image_manager.ImageManager.delete_uploaded_archive_file(uploaded_path)
+                        im.delete_temp_file()
                     raise e
             else:
                 raise Exception(MSG_INVALID_PARAMS)
