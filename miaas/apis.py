@@ -374,6 +374,17 @@ def handle_medical_image_mgt(request):
             else:
                 raise Exception(MSG_INVALID_PARAMS)
 
+        elif request.method == 'DELETE':
+            #delete medical image
+            user_id = request.GET.get('user_id')
+            image_id = request.GET.get('image_id')
+            if not user_id or not image_id:
+                raise Exception(MSG_INVALID_PARAMS)
+            if request.session['user']['user_id'] != user_id:
+                raise Exception(MSG_NOT_MATCHED_USER)
+            db.delte_medical_image_by_id(image_id);
+            return JsonResponse(dict(constants.CODE_SUCCESS))
+
         elif request.method == 'POST':
             #add medical iamge and upload medical image
             if 'image_file' in request.FILES and 'image_info' in request.POST:

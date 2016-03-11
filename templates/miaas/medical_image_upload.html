@@ -130,17 +130,17 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 <div class="modal fade" id="uploadingProgressModal" tabindex="-1" role="dialog" aria-labelledby="uploadFailTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        <div class="modal-header">
-            <h4 class="modal-title" id="uploadFailTitle">File Upload</h4>
-        </div>
-        <div class="modal-body modal-progress-body">
-            <div id="uploadStatus" class="progressStatus text-primary text-center">Uploading...</div><br/>
-            <div id="uploadProgress" class="progress-container">
+            <div class="modal-header">
+                <h4 class="modal-title" id="uploadFailTitle">File Upload</h4>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Cancel</button>
-        </div>
+            <div class="modal-body modal-progress-body">
+                <div id="uploadStatus" class="progressStatus text-primary text-center">Uploading...</div><br/>
+                <div id="uploadProgress" class="progress-container">
+                </div>
+            </div>
+{#            <div class="modal-footer">#}
+{#                <button type="button" class="btn btn-primary">Cancel</button>#}
+{#            </div>#}
         </div>
     </div>
 </div>

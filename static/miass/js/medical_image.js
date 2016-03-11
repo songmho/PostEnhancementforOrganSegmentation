@@ -103,7 +103,18 @@ $(document).ready(function() {
     });
 
     $('#btnDeleteCofirm').click(function() {
-
+        $.LoadingOverlay('show');
+        $.ajax("/api/medical_image?user_id="+user['user_id']+"&image_id="+imageInfo['image_id'], {
+            method: 'DELETE',
+            success: function (res) {
+                if(res['code'] == 'SUCCESS') {
+                    location.replace(archiveURL);
+                } else {
+                    $.LoadingOverlay('hide');
+                    openModal(res['msg'], "Delete Failed");
+                }
+            }
+        });
     });
 
     /*** for interpretation request ***/
@@ -140,40 +151,40 @@ $(document).ready(function() {
     $('#requestIntprForm').on('submit', function(e) {
         e.preventDefault();
 
-        //var reqData;
-        //reqLevel = $('#reqLevel').val();
-        //if (reqLevel == 1) {
-        //    reqData = JSON.stringify({
-        //        action: 'patientReq',
-        //        image_id: imageInfo.image_id,
-        //        subject: '',
-        //        message: '',
-        //        level: reqLevel
-        //    });
-        //} else {
-        //    reqData = JSON.stringify({
-        //        action: 'patientReq',
-        //        image_id: imageInfo.image_id,
-        //        subject: $('#reqSubject').val(),
-        //        message: $('#reqMessage').val(),
-        //        level: reqLevel
-        //    });
-        //}
-        //
-        //$.LoadingOverlay('show');
-        //$.ajax("/api/interpretation", {
-        //    method: 'PUT',
-        //    data: reqData,
-        //    dataType: 'json',
-        //    success: function (res) {
-        //        $.LoadingOverlay('hide');
-        //        if(res['code'] == 'SUCCESS') {
-        //            openModal('Request interpretation success.', "Request Success");
-        //        } else {
-        //            openModal(res['msg'], "Request Failed");
-        //        }
-        //    }
-        //});
+        var reqData;
+        reqLevel = $('#reqLevel').val();
+        if (reqLevel == 1) {
+            reqData = JSON.stringify({
+                action: 'patientReq',
+                image_id: imageInfo.image_id,
+                subject: '',
+                message: '',
+                level: reqLevel
+            });
+        } else {
+            reqData = JSON.stringify({
+                action: 'patientReq',
+                image_id: imageInfo.image_id,
+                subject: $('#reqSubject').val(),
+                message: $('#reqMessage').val(),
+                level: reqLevel
+            });
+        }
+
+        $.LoadingOverlay('show');
+        $.ajax("/api/interpretation", {
+            method: 'PUT',
+            data: reqData,
+            dataType: 'json',
+            success: function (res) {
+                $.LoadingOverlay('hide');
+                if(res['code'] == 'SUCCESS') {
+                    openModal('Request interpretation success.', "Request Success");
+                } else {
+                    openModal(res['msg'], "Request Failed");
+                }
+            }
+        });
     });
 
     $('#btnFormDelete').click(function() {

@@ -271,36 +271,42 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 </div>
 <div class="modal fade" id="imageUploadModal" tabindex="-1" role="dialog"
      aria-labelledby="imageUploadModalTitle">
-    <div class="modal-dialog" role="document">
+    <form class="modal-dialog" role="document"
+          action="/api/medical_image" id="fileForm2" method="post" enctype="multipart/form-data">
         <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title" id="imageUploadModalTitle">Image Upload</h4>
         </div>
         <div class="modal-body">
-        Are you sure to delete this image?
+            <div class="form-group col-xs-12">
+            <label class="col-sm-3 control-label" for="image_file">Medical Image</label>
+            <div class="col-sm-9">
+                <input type="file" id="image_file" name="image_file" class="form-control"
+                       placeholder="Medical Image" required>
+            </div>
         </div>
-        <div class="modal-footer">
-            <button id="btnDeleteCofirm" type="button" class="btn btn-default" data-dismiss="modal">Delete</button>
+        <div class="modal-footer" style="border-top: none;">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Upload</button>
         </div>
         </div>
-    </div>
+    </form>
 </div>
 <div class="modal fade" id="uploadingProgressModal" tabindex="-1" role="dialog" aria-labelledby="uploadFailTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        <div class="modal-header">
-            <h4 class="modal-title" id="uploadFailTitle">File Upload</h4>
-        </div>
-        <div class="modal-body modal-progress-body">
-            <div id="uploadStatus" class="progressStatus text-primary text-center">Uploading...</div><br/>
-            <div id="uploadProgress" class="progress-container">
+            <div class="modal-header">
+                <h4 class="modal-title" id="uploadFailTitle">File Upload</h4>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Cancel</button>
-        </div>
+            <div class="modal-body modal-progress-body">
+                <div id="uploadStatus" class="progressStatus text-primary text-center">Uploading...</div><br/>
+                <div id="uploadProgress" class="progress-container">
+                </div>
+            </div>
+{#            <div class="modal-footer">#}
+{#                <button type="button" class="btn btn-primary">Cancel</button>#}
+{#            </div>#}
         </div>
     </div>
 </div>
@@ -313,7 +319,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     $('#imageType').val("{{ image.image_type }}").attr("selected", "selected");
     $('#takenFrom').val("{{ image.taken_from }}").attr("selected", "selected");
 
-    var imageInfo = JSON.parse("{{ image | jsonstr }}");
+    imageInfo = JSON.parse("{{ image | jsonstr }}");
+    archiveURL = "{% url 'miaas:archive' %}";
 </script>
 <script src="{% static 'miass/js/medical_image.js' %}"></script>
 
