@@ -490,7 +490,7 @@ class DbManager():
         if_updated = False
         with self.connector.cursor() as cursor:
             try:
-                db_query = "UPDATE request SET image_dir=%s WHERE image_id=%s"
+                db_query = "UPDATE medical_image SET image_dir=%s WHERE image_id=%s"
                 cursor.execute(db_query, (image_dir, image_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
