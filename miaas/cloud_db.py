@@ -377,9 +377,10 @@ class DbManager():
                 # image_dir = 'DUMMY_DIR'
                 # size = medical_image['size']
                 timestamp = medical_image['timestamp']
-                db_query = "INSERT INTO medical_image (user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                taken_date = medical_image['taken_date']
+                db_query = "INSERT INTO medical_image (user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp, taken_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (
-                    user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp))
+                    user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp, taken_date))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
@@ -399,12 +400,12 @@ class DbManager():
         physician = medical_image['physician']
         place = medical_image['place']
         description = medical_image['description']
-        timestamp = medical_image['timestamp']
+        taken_date = medical_image['taken_date']
         with self.connector.cursor() as cursor:
             try:
-                db_query = "UPDATE medical_image SET subject=%s, image_type=%s, taken_from=%s, physician=%s, place=%s, description=%s, timestamp=%s WHERE image_id=%s"
+                db_query = "UPDATE medical_image SET subject=%s, image_type=%s, taken_from=%s, physician=%s, place=%s, description=%s, taken_date=%s WHERE image_id=%s"
                 cursor.execute(db_query,
-                               (subject, image_type, taken_from, physician, place, description, timestamp, image_id))
+                               (subject, image_type, taken_from, physician, place, description, taken_date, image_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 print(row_count)
@@ -422,10 +423,10 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 if limit is 0:
-                    db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY timestamp DESC"
+                    db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY taken_date DESC"
                     cursor.execute(db_query, (user_id, time_from))
                 else:
-                    db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY timestamp DESC LIMIT %s OFFSET %s"
+                    db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY taken_date DESC LIMIT %s OFFSET %s"
                     cursor.execute(db_query, (user_id, time_from, limit, offset))
                 self.connector.commit()
                 for row in cursor:
@@ -442,6 +443,7 @@ class DbManager():
                     image['size'] = row[9]
                     image['timestamp'] = row[10]
                     image['intpr_num'] = row[11]
+                    image['taken_date'] = row[12]
                     images.append(image)
             except Exception as e:
                 print("Retrieve_Medical_Image: ", e)
@@ -479,6 +481,7 @@ class DbManager():
                 image['size'] = row[9]
                 image['timestamp'] = row[10]
                 image['intpr_num'] = row[11]
+                image['taken_date'] = row[12]
             except Exception as e:
                 print("Retrieve_Medical_Image_By_Id: ", e)
         return image
@@ -554,6 +557,7 @@ class DbManager():
                 image['size'] = row[9]
                 image['timestamp'] = row[10]
                 image['intpr_num'] = row[11]
+                image['taken_date'] = row[12]
                 intpr_by_image['image'] = image
                 # To retrieve data from 'interpretation' table
                 db_query = "SELECT * FROM interpretation WHERE image_id=%s"

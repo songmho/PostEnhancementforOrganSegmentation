@@ -356,26 +356,38 @@ def handle_medical_image_mgt(request):
         elif request.method == 'POST':
             if 'image_file' in request.FILES and 'image_info' in request.POST:
                 action = request.POST['action'].decode("utf-8")
+
                 image_info = json.loads(request.POST['image_info'].decode("utf-8"))
                 image_info['timestamp'] = int(round(time.time() * 1000))
                 image_file = request.FILES['image_file']
 
+                if request.session['user']['user_id'] != image_info['user_id']:
+                    raise Exception(MSG_NOT_MATCHED_USER)
+                if action != 'upload' and action != 'update':
+                    raise Exception(MSG_INVALID_PARAMS)
+
+                uploaded_path = None
                 im = image_manager.ImageManager(image_file, image_info)
                 uploaded_path = im.upload_file()
                 image_info['image_dir'] = uploaded_path
 
                 logger.info(image_info)
-                if request.session['user']['user_id'] != image_info['user_id']:
-                    raise Exception(MSG_NOT_MATCHED_USER)
 
-                if action == 'upload':
-                    pass
-                elif action == 'update':
-                    pass
-                else:
-                     raise Exception(MSG_INVALID_PARAMS)
-                return JsonResponse(dict(constants.CODE_SUCCESS))
+                try:
+                    if action == 'upload':
+                        db.add_medical_image(image_info)
+                    elif action == 'update':
+                        pass
 
+                    return JsonResponse(dict(constants.CODE_SUCCESS))
+
+                except Exception as e:
+                    if uploaded_path:
+                        image_manager.ImageManager.delete_uploaded_archive_file(uploaded_path)
+                        im.delete_temp_file()
+                    raise e
+            else:
+                raise Exception(MSG_INVALID_PARAMS)
             # else:
                 #Other
                 # if len(request.body) == 0:

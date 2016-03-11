@@ -37,25 +37,42 @@ class ImageManager():
         logger.info('uploaded temp file: %s' % temp_path)
 
         archive_path = self._upload_to_archive(temp_path)
-        if os.path.exists(self._temp_file_path):
-            os.remove(self._temp_file_path)
-            self._temp_file_path = None
+        self.delete_temp_file()
         return archive_path
 
     def update_file(self):
         pass
 
-    def delete_tempfile(self):
-        pass
+    @classmethod
+    def delete_uploaded_archive_file(cls, archive_path):
+        try:
+            if os.path.exists(archive_path):
+                if os.path.isfile(archive_path):
+                    os.remove(archive_path)
+                elif os.path.isdir(archive_path):
+                    shutil.rmtree(archive_path)
+        except:
+            pass
+    def delete_temp_file(self):
+        try:
+            if os.path.exists(self._temp_file_path):
+                os.remove(self._temp_file_path)
+                self._temp_file_path = None
+        except:
+            pass
 
     def _upload_to_archive(self, temp_path):
-        archive_path = os.path.join(constants.ARCHIVE_BASE_PATH,
+        archive_root = os.path.join(constants.ARCHIVE_BASE_PATH,
                                     self._image_info['user_id'],
-                                    self._image_info['image_type'],
+                                    self._image_info['image_type'])
+        archive_path = os.path.join(archive_root,
                                     str(self._image_info['timestamp']))
         if os.path.isfile(temp_path):
             archive_path = '%s.%s' % (archive_path, self._get_file_extension(temp_path))
         logger.info('archive path: %s' % archive_path)
+
+        if not os.path.exists(archive_root):
+            os.makedirs(str(archive_root) + '/')
 
         shutil.move(temp_path, archive_path)
         return archive_path
