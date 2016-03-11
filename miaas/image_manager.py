@@ -45,8 +45,13 @@ class ImageManager():
     def update_file(self):
         pass
 
-    def delete_tempfile(self):
-        pass
+    @classmethod
+    def delete_uploaded_archive_file(cls, archive_path):
+        if os.path.exists(archive_path):
+            if os.path.isfile(archive_path):
+                os.remove(archive_path)
+            elif os.path.isdir(archive_path):
+                shutil.rmtree(archive_path)
 
     def _upload_to_archive(self, temp_path):
         archive_path = os.path.join(constants.ARCHIVE_BASE_PATH,

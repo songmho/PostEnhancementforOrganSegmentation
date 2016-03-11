@@ -99,6 +99,7 @@ $(document).ready(function() {
                 $('#uploadingProgressModal').modal('hide');
 
                 if (res['code'] == 'SUCCESS') {
+                    $.LoadingOverlay('show');
                     location.href = archiveURL;
                 } else {
                     openUploadFailedModal(res['msg']);
@@ -169,7 +170,6 @@ function rotatingProgress() {
                     //'transform': 'rotate(' + easeInOutCubic (now/360*1000, 0, 360, 1000) + 'deg)'
                     'transform': 'rotate(' + now + 'deg)'
                 });
-                console.log(now);
             }
         });
 
@@ -181,13 +181,13 @@ function rotatingProgress() {
 function startRotatingProgress() {
     runningRotating = true;
     showLoadingText(false);
-
+    setProgress(0.7);
     rotatingProgress();
 }
 function stopRotatingProgress() {
     runningRotating = false;
     showLoadingText(true);
-
+    setProgress(0);
     var $elm = $('#uploadProgress');
     $({deg: 0}).animate({deg: 0}, {
         duration: 0,
@@ -203,7 +203,7 @@ function easeInOutCubic (t, b, c, d) {
 	if (t < 1) return c/2*t*t*t + b;
 	t -= 2;
 	return c/2*(t*t*t + 2) + b;
-};
+}
 function openUploadFailedModal(msg) {
     if (msg==undefined || msg==null || msg=='') {
         msg = 'Uploading Medical Image Failed.';
