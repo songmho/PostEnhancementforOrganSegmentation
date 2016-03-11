@@ -486,6 +486,20 @@ class DbManager():
                 print("Retrieve_Medical_Image_By_Id: ", e)
         return image
 
+    def delte_medical_image_by_id(self, image_id):
+        if_deleted = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "DELETE FROM medical_image WHERE image_id=%s"
+                cursor.execute(db_query, (image_id))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_deleted = True
+            except Exception as e:
+                print("Delete_Medical_Image:", e)
+        return if_deleted
+
     def add_intpr(self, intpr):
         if_inserted = False
         with self.connector.cursor() as cursor:
