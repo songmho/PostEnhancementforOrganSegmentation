@@ -36,10 +36,11 @@ class ImageManager():
             temp_path = self._temp_file_path
         logger.info('uploaded temp file: %s' % temp_path)
 
-        self._upload_to_archive(temp_path)
+        archive_path = self._upload_to_archive(temp_path)
         if os.path.exists(self._temp_file_path):
             os.remove(self._temp_file_path)
             self._temp_file_path = None
+        return archive_path
 
     def update_file(self):
         pass
@@ -57,6 +58,7 @@ class ImageManager():
         logger.info('archive path: %s' % archive_path)
 
         shutil.move(temp_path, archive_path)
+        return archive_path
 
     def _dcm_to_jpg_indir(self, dir):
         for root, dirs, files in os.walk(dir):
