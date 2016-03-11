@@ -379,9 +379,8 @@ function rotatingProgress() {
             }
         });
 
-        console.log('rotating...');
     } else {
-        console.log('rotating stopped');
+
     }
 }
 function startRotatingProgress() {
