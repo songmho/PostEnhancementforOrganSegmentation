@@ -412,6 +412,8 @@ def handle_medical_image_mgt(request):
                 im = image_manager.ImageManager(image_file, image_info)
                 uploaded_path = im.upload_file()
 
+                logger.info('image is uploaded to: %s', uploaded_path)
+
                 if action == 'upload':
                     try:
                         image_info['image_dir'] = uploaded_path
@@ -435,6 +437,7 @@ def handle_medical_image_mgt(request):
                         image_manager.ImageManager.delete_uploaded_archive_file(uploaded_path)
                         raise e
                     #remove here!
+                    logger.info('remove old file: %s', prev_path)
                     image_manager.ImageManager.delete_uploaded_archive_file(prev_path)
                     return JsonResponse(dict(constants.CODE_SUCCESS, **{'new_dir': image_info['image_dir']}))
 
