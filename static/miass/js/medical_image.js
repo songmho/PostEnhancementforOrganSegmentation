@@ -5,7 +5,6 @@
 var bRequestIntpr = false;
 var reqLevel = 2;
 
-
 $(document).ready(function() {
     $('#btnRequest').click(function() {
         if(bRequestIntpr) {

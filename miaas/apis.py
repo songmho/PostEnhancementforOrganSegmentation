@@ -361,11 +361,12 @@ def handle_medical_image_mgt(request):
                 image_file = request.FILES['image_file']
 
                 im = image_manager.ImageManager(image_file, image_info)
-                im.upload_file()
+                uploaded_path = im.upload_file()
+                image_info['image_dir'] = uploaded_path
 
-
-                # if request.session['user']['user_id'] != image_info['user_id']:
-                #     raise Exception(MSG_NOT_MATCHED_USER)
+                logger.info(image_info)
+                if request.session['user']['user_id'] != image_info['user_id']:
+                    raise Exception(MSG_NOT_MATCHED_USER)
 
                 if action == 'upload':
                     pass

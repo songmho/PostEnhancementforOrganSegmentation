@@ -225,6 +225,17 @@ b a.table-page-number {
     color: #53B0A5;
 }
 
+
+/* Modal */
+.modal .modal-progress-body {
+
+}
+.modal .modal-progress-body .progress-container {
+    width: 30%;
+    margin: 0 auto;
+    font-size: 24px;
+}
+
 /* Common */
 .bold { font-weight: 500; }
 .extra-bold { font-weight: 700; }

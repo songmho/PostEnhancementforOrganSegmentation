@@ -58,6 +58,11 @@
         <span>progress: <span id="progress">0</span>%</span>
     </form>
 </div>
+<div>
+    <div id="dicomViewer">
+
+    </div>
+</div>
 </body>
 
 <script src="{% static "lib/jquery/jquery-2.2.0.min.js" %}"></script>
@@ -98,6 +103,7 @@
             data.append('image_info', JSON.stringify({
                 user_id : 'min',
                 subject : "Medical Image Test",
+                timestamp: new Date().getTime(),
                 image_type : "EEG",
                 taken_from : 'Medical Clinic',
                 physician : 'Max Hyper',

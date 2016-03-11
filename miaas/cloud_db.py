@@ -373,8 +373,8 @@ class DbManager():
                 physician = medical_image['physician']
                 place = medical_image['place']
                 description = medical_image['description']
-                # image_dir = medical_image['image_dir']
-                image_dir = 'DUMMY_DIR'
+                image_dir = medical_image['image_dir']
+                # image_dir = 'DUMMY_DIR'
                 # size = medical_image['size']
                 timestamp = medical_image['timestamp']
                 db_query = "INSERT INTO medical_image (user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"

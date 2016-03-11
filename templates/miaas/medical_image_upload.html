@@ -11,7 +11,6 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
 <!-- custom css -->
 
-
 {% include 'miaas/template_nav_patient.html' %}
 
 
@@ -21,20 +20,29 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             <div class="col-xs-12 col-title">
                 <h2 class="text-primary">Upload Medical Image</h2>
             </div>
-            <form id="uploadImageForm" class="col-xs-12 col-form">
+            <form id="uploadImageForm" class="col-xs-12 col-form" action="/api/medical_image"
+                  method="post" enctype="multipart/form-data">
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputSubject" >Subject</label>
-                        <div class="col-sm-9 col-md-4">
-                            <input type="text" id="inputSubject" name="subject" class="form-control"
+                        <label class="col-sm-3 col-md-2 control-label" for="subject" >Image Subject</label>
+                        <div class="col-sm-9 col-md-10">
+                            <input type="text" id="subject" name="subject" class="form-control"
                                    placeholder="Subject" required>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputType" >Image Type</label>
-                        <div class="col-sm-9 col-md-4">
-                            <select class="form-control" id="selectType" name="type" required>
+                        <label class="col-sm-3 col-md-2 control-label" for="imageFile">Image File</label>
+                        <div class="col-sm-9 col-md-10">
+                            <input type="file" id="imageFile" name="imageFile" class="form-control"
+                                   placeholder="Medical Image" required>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="imageType" >Image Type</label>
+                        <div class="col-sm-9 col-md-10">
+                            <select class="form-control" id="imageType" name="imageType" required>
                                 <option value="EEG">EEG (Electroencephalography)</option>
                                 <option value="ECG">ECG (Electrocardiography)</option>
                                 <option value="EMG">EMG (Electromyography)</option>
@@ -45,75 +53,54 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             </select>
                         </div>
                     </div>
-
-                    <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right form-group">
-                        <label class="col-sm-3 col-md-4 control-label" for="fileImage">Medical Image</label>
-                        <div class="col-sm-9 col-md-8">
-                            <input type="file" id="fileImage" name="medicalImage" class="form-control"
-                                   placeholder="Medical Image" required>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
-                                col-md-overlay-2 form-group medimage-preview-container">
-                        <div class="medimage-preview-wrapper">
-                            <div class="medimage-preview">
-                                <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputDate" >Date</label>
-                        <div class="col-sm-9 col-md-4">
-                            <input type="date" id="inputDate" name="date" class="form-control"
+                        <label class="col-sm-3 col-md-2 control-label" for="date" >Date</label>
+                        <div class="col-sm-9 col-md-10">
+                            <input type="date" id="date" name="date" class="form-control"
                                    placeholder="Date" required>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="selectTaken" >Taken From</label>
-                        <div class="col-sm-9 col-md-4">
-                            <select class="form-control" id="selectTaken" name="taken" required>
+                        <label class="col-sm-3 col-md-2 control-label" for="takenFrom" >Taken From</label>
+                        <div class="col-sm-9 col-md-10">
+                            <select class="form-control" id="takenFrom" name="takenFrom" required>
                                 <option>Medical Clinic</option>
                                 <option>Home</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputPhysician" >Physician</label>
-                        <div class="col-sm-9 col-md-4">
-                            <input type="text" id="inputPhysician" name="physician" class="form-control"
+                    <div id="physicianGroup" class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="physician" >Physician</label>
+                        <div class="col-sm-9 col-md-10">
+                            <input type="text" id="physician" name="physician" class="form-control"
                                    placeholder="Examining Physician" required>
                         </div>
                     </div>
 
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="inputPlace" >Clinic Name</label>
-                        <div class="col-sm-9 col-md-4">
-                            <input type="text" id="inputPlace" name="place" class="form-control"
+                    <div id="clinicNameGroup" class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="clinicName" >Clinic Name</label>
+                        <div class="col-sm-9 col-md-10">
+                            <input type="text" id="clinicName" name="clinicName" class="form-control"
                                    placeholder="Place" required>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="taDescription" >Description</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="description" >Description</label>
                         <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="taDescription" name="description" class="form-control"
+                            <textarea type="textarea" id="description" name="description" class="form-control"
                                       placeholder="Description" rows="5"></textarea>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-btns-container row">
-                    <div id="btnFormCancel" class="col-xs-6 col-sm-4 col-md-2 col-md-offset-6 form-button">
+                    <div id="btnFormCancel" class="col-xs-6 col-sm-6 col-md-3 col-md-offset-3 form-button">
                         <a class="btn btn-lg btn-info btn-block" onclick="javascript:history.back();">Cancel</a>
                     </div>
-                    <div id="btnFormReset" class="col-xs-6 col-sm-4 col-md-2 form-button">
-                        <button class="btn btn-lg btn-info btn-block" type="reset">Reset</button>
-                    </div>
-                    <div id="btnFormConfirm" class="col-xs-12 col-sm-4 col-md-2 form-button">
+                    <div id="btnFormConfirm" class="col-xs-6 col-sm-6 col-md-3 form-button">
                         <button class="btn btn-lg btn-primary btn-block" type="submit">Upload</button>
                     </div>
                 </div>
@@ -122,16 +109,50 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     </section>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="uploadFailModal" tabindex="-1" role="dialog" aria-labelledby="uploadFailTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="uploadFailTitle">Upload Failed</h4>
+        </div>
+        <div class="modal-body">
+            Uploading Medical Image Failed.
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="uploadingProgressModal" tabindex="-1" role="dialog" aria-labelledby="uploadFailTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title" id="uploadFailTitle">File Upload</h4>
+        </div>
+        <div class="modal-body modal-progress-body">
+            <div id="uploadStatus" class="progressStatus text-primary text-center">Uploading...</div><br/>
+            <div id="uploadProgress" class="progress-container">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary">Cancel</button>
+        </div>
+        </div>
+    </div>
+</div>
+
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
+<script src="{% static 'lib/jquery/plugins/progressbar.min.js' %}"></script>
 <script type="text/javascript">
-    $('#uploadImageForm').on('submit', function(e) {
-        e.preventDefault();
-
-
-    });
+    archiveURL = "{% url 'miaas:archive' %}";
 </script>
+<script src="{% static 'miass/js/medical_image_upload.js' %}"></script>
 
 </body>
 </html>
