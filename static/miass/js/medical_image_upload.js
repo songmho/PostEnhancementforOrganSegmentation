@@ -65,11 +65,11 @@ $(document).ready(function() {
             user_id : user['user_id'],
             subject : $('#subject').val(),
             image_type : $('#imageType').val(),
-            taken_date: Date.parse($('#date').val()),
+            taken_date: Date.parse($('#takenDate').val()),
             taken_from : $('#takenFrom').val(),
-            physician : $('#physician').val(),
+            physician : $('#takenPhysicianName').val(),
             place : $('#clinicName').val(),
-            description : $('#description').val()
+            description : $('#imageDescription').val()
         }));
         console.log(data);
 
