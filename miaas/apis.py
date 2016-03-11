@@ -378,11 +378,17 @@ def handle_medical_image_mgt(request):
             #delete medical image
             user_id = request.GET.get('user_id')
             image_id = request.GET.get('image_id')
-            if not user_id or not image_id:
+            image_dir = request.GET.get('image_dir')
+            if not user_id or not image_id or not image_dir:
                 raise Exception(MSG_INVALID_PARAMS)
             if request.session['user']['user_id'] != user_id:
                 raise Exception(MSG_NOT_MATCHED_USER)
-            db.delte_medical_image_by_id(image_id);
+            db.delte_medical_image_by_id(image_id)
+            try:
+                image_manager.ImageManager.delete_uploaded_archive_file(image_dir)
+            except: pass
+            if request.session.get('image_cnt'):
+                request.session['image_cnt'] -= 1
             return JsonResponse(dict(constants.CODE_SUCCESS))
 
         elif request.method == 'POST':
@@ -391,6 +397,9 @@ def handle_medical_image_mgt(request):
                 action = request.POST['action'].decode("utf-8")
 
                 image_info = json.loads(request.POST['image_info'].decode("utf-8"))
+                prev_timestamp = 0
+                if image_info.get('timestamp'):
+                    prev_timestamp = image_info['timestamp']
                 image_info['timestamp'] = int(round(time.time() * 1000))
                 image_file = request.FILES['image_file']
 
@@ -402,23 +411,33 @@ def handle_medical_image_mgt(request):
                 uploaded_path = None
                 im = image_manager.ImageManager(image_file, image_info)
                 uploaded_path = im.upload_file()
-                image_info['image_dir'] = uploaded_path
 
-                logger.info(image_info)
-
-                try:
-                    if action == 'upload':
+                if action == 'upload':
+                    try:
+                        image_info['image_dir'] = uploaded_path
                         db.add_medical_image(image_info)
-                    elif action == 'update':
-                        pass
-
+                    except Exception as e:
+                        if uploaded_path:
+                            image_manager.ImageManager.delete_uploaded_archive_file(uploaded_path)
+                            im.delete_temp_file()
+                        raise e
+                    request.session['image_cnt'] += 1
                     return JsonResponse(dict(constants.CODE_SUCCESS))
-
-                except Exception as e:
-                    if uploaded_path:
+                elif action == 'update':
+                    prev_path = image_info['image_dir']
+                    try:
+                        image_info['image_dir'] = uploaded_path
+                        db.update_medical_image_dir(image_info)
+                    except Exception as e:
+                        image_info['timestamp'] = prev_timestamp
+                        image_info['image_dir'] = prev_path
+                        db.update_medical_image_dir(image_info)
                         image_manager.ImageManager.delete_uploaded_archive_file(uploaded_path)
-                        im.delete_temp_file()
-                    raise e
+                        raise e
+                    #remove here!
+                    image_manager.ImageManager.delete_uploaded_archive_file(prev_path)
+                    return JsonResponse(dict(constants.CODE_SUCCESS, **{'new_dir': image_info['image_dir']}))
+
             else:
                 raise Exception(MSG_INVALID_PARAMS)
             # else:

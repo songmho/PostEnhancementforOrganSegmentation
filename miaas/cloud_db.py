@@ -486,12 +486,12 @@ class DbManager():
                 print("Retrieve_Medical_Image_By_Id: ", e)
         return image
 
-    def update_medical_image_dir(self, image_id, image_dir):
+    def update_medical_image_dir(self, medical_image):
         if_updated = False
         with self.connector.cursor() as cursor:
             try:
-                db_query = "UPDATE request SET image_dir=%s WHERE image_id=%s"
-                cursor.execute(db_query, (image_dir, image_id))
+                db_query = "UPDATE request SET image_dir=%s, timestamp=%s WHERE image_id=%s"
+                cursor.execute(db_query, (medical_image['image_dir'], medical_image['timestamp']. medical_image['image_id']))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:

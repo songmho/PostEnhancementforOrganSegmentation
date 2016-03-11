@@ -42,7 +42,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                                 <option value="CT">CT (Computed Tomography)</option>
                                 <option value="X-ray">X-ray (Radiography)</option>
                                 <option value="MRI">MRI (Magnetic Resonance Imaging)</option>
-                                <option value="U/S">Ultrasonography (Ultrasound)</option>
+                                <option value="US">Ultrasonography (Ultrasound)</option>
                             </select>
                         </div>
                     </div>
@@ -271,8 +271,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 </div>
 <div class="modal fade" id="imageUploadModal" tabindex="-1" role="dialog"
      aria-labelledby="imageUploadModalTitle">
-    <form class="modal-dialog" role="document"
-          action="/api/medical_image" id="fileForm2" method="post" enctype="multipart/form-data">
+    <form id="formUpdateFile" class="modal-dialog" role="document"
+          action="/api/medical_image" method="post" enctype="multipart/form-data">
         <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -293,11 +293,11 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
         </div>
     </form>
 </div>
-<div class="modal fade" id="uploadingProgressModal" tabindex="-1" role="dialog" aria-labelledby="uploadFailTitle">
+<div class="modal fade" id="uploadingProgressModal" tabindex="-1" role="dialog" aria-labelledby="uploadingProgressTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="uploadFailTitle">File Upload</h4>
+                <h4 class="modal-title" id="uploadingProgressTitle">File Upload</h4>
             </div>
             <div class="modal-body modal-progress-body">
                 <div id="uploadStatus" class="progressStatus text-primary text-center">Uploading...</div><br/>
@@ -315,6 +315,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
+<script src="{% static 'lib/jquery/plugins/progressbar.min.js' %}"></script>
 <script type="text/javascript">
     $('#imageType').val("{{ image.image_type }}").attr("selected", "selected");
     $('#takenFrom').val("{{ image.taken_from }}").attr("selected", "selected");

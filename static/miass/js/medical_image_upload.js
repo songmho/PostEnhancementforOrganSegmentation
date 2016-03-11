@@ -71,7 +71,7 @@ $(document).ready(function() {
             place : $('#clinicName').val(),
             description : $('#imageDescription').val()
         }));
-        console.log(data);
+        //console.log(data);
 
         var xprogressID = new Date().getTime();
         setTimeout(function() {
@@ -123,10 +123,6 @@ $(document).ready(function() {
         }
     });
 
-    //$('#uploadingProgressModal').modal({
-    //    backdrop: 'static',
-    //    keyboard: false
-    //});
 });
 
 function setProgressText(text) {
