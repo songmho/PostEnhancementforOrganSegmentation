@@ -111,12 +111,12 @@ $(document).ready(function() {
     $('#takenFrom').change(function() {
         var tf = $(this).val();
         if(tf == 'Home') {
-            $('#physician').removeAttr('required').val('');
+            $('#takenPhysicianName').removeAttr('required').val('');
             $('#clinicName').removeAttr('required').val('');
             $('#physicianGroup').hide();
             $('#clinicNameGroup').hide();
         } else {
-            $('#physician').attr('required', '');
+            $('#takenPhysicianName').attr('required', '');
             $('#clinicName').attr('required', '');
             $('#physicianGroup').show();
             $('#clinicNameGroup').show();

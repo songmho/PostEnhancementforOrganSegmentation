@@ -38,7 +38,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             <tr onclick="javascript:
                                     $.LoadingOverlay('show');
                                     location.href='{% url 'miaas:archive_detail' image.image_id %}';">
-                                <td>{{ image.timestamp|datetime_string }}</td>
+                                <td>{{ image.taken_date|datetime_string }}</td>
                                 <td>{{ image.subject }}</td>
                                 <td>{{ image.image_type }}</td>
                                 <td>{{ image.intpr_num }}</td>

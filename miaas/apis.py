@@ -353,7 +353,29 @@ def handle_medical_image_mgt(request):
             else:
                 raise Exception(MSG_INVALID_PARAMS)
 
+        elif request.method == 'PUT':
+            #update medical image
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+            data = json.loads(request.body.decode("utf-8"))
+
+            action = data['action']
+            if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+            # To update image
+            elif action == 'update':
+                image_info = data['image_info']
+                if not image_info:
+                    raise Exception(MSG_INVALID_PARAMS)
+                if request.session['user']['user_id'] != image_info['user_id']:
+                    raise Exception(MSG_NOT_MATCHED_USER)
+                db.update_medical_image_by_id(image_info)
+                return JsonResponse(dict(constants.CODE_SUCCESS))
+            else:
+                raise Exception(MSG_INVALID_PARAMS)
+
         elif request.method == 'POST':
+            #add medical iamge and upload medical image
             if 'image_file' in request.FILES and 'image_info' in request.POST:
                 action = request.POST['action'].decode("utf-8")
 

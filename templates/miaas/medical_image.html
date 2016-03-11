@@ -70,7 +70,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="col-xs-12 form-group">
                         <label class="col-sm-3 col-md-2 control-label" for="takenDate" >Date</label>
                         <div class="col-sm-9 col-md-4">
-                            <input type="date" id="date" name="takenDate" class="form-control"
+                            <input type="date" id="takenDate" name="takenDate" class="form-control"
                                    placeholder="Date" required readonly value="2016-02-02">
                         </div>
                     </div>
@@ -118,7 +118,10 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
                             {% if intpr_list|is_empty %}
                                 <div id="btnFormDelete" class="col-xs-6 col-sm-4 col-sm-offset-3 col-md-3 col-md-offset-2 form-button">
-                                    <button class="btn btn-lg btn-danger btn-block" type="button">Delete</button>
+                                    <button class="btn btn-lg btn-info btn-block" type="button">Delete</button>
+                                </div>
+                                <div id="btnFormCancel" class="col-xs-6 col-sm-4 col-sm-offset-3 col-md-3 col-md-offset-2 form-button" style="display: none;">
+                                    <button class="btn btn-lg btn-info btn-block" type="button">Cancel</button>
                                 </div>
                                 <div id="btnFormEdit" class="col-xs-6 col-sm-5 col-md-3 form-button">
                                     <button class="btn btn-lg btn-primary btn-block" type="button">Edit</button>
@@ -169,7 +172,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="col-xs-12 form-btns-innerbox">
                         <div class="form-btns-container row">
                             <div id="btnFormReset" class="col-xs-6 col-sm-4 col-sm-offset-3 col-md-3 col-md-offset-6 form-button">
-                                <button class="btn btn-lg btn-warning btn-block" type="reset">Reset</button>
+                                <button class="btn btn-lg btn-info btn-block" type="reset">Reset</button>
                             </div>
                             <div id="btnFormConfirm" class="col-xs-6 col-sm-5 col-md-3 form-button">
                                 <button class="btn btn-lg btn-primary btn-block" type="submit">Request</button>
@@ -266,7 +269,41 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
         </div>
     </div>
 </div>
-
+<div class="modal fade" id="imageUploadModal" tabindex="-1" role="dialog"
+     aria-labelledby="imageUploadModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="imageUploadModalTitle">Image Upload</h4>
+        </div>
+        <div class="modal-body">
+        Are you sure to delete this image?
+        </div>
+        <div class="modal-footer">
+            <button id="btnDeleteCofirm" type="button" class="btn btn-default" data-dismiss="modal">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="uploadingProgressModal" tabindex="-1" role="dialog" aria-labelledby="uploadFailTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title" id="uploadFailTitle">File Upload</h4>
+        </div>
+        <div class="modal-body modal-progress-body">
+            <div id="uploadStatus" class="progressStatus text-primary text-center">Uploading...</div><br/>
+            <div id="uploadProgress" class="progress-container">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary">Cancel</button>
+        </div>
+        </div>
+    </div>
+</div>
 
 
 {% include 'miaas/template_footer.html' %}
