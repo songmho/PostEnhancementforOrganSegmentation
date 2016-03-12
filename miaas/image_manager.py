@@ -193,3 +193,41 @@ class ImageManager():
     def _get_file_extension(self, filepath):
         filename = self._get_file_name(filepath)
         return filename.split(".")[-1].lower()
+
+
+class ImageRetriever():
+    @classmethod
+    def get_image_list(cls, image_dir):
+        image_list = {}
+        file_name = cls._get_file_name(image_dir);
+        image_list[file_name] = cls._make_image_info_dict(image_dir)
+        return image_list
+
+    @classmethod
+    def _make_image_info_dict(cls, filepath):
+        image_info = {}
+        if os.path.isfile(filepath):
+            image_info['type'] = cls._get_file_extension()
+        else:
+            image_info['type'] = 'folder'
+            file_list = os.listdir(filepath)
+            image_info['file_list'] = {}
+            for filename in file_list:
+                image_info['file_list'][filename] = \
+                    cls._make_image_info_dict(os.path.join(filepath, filename))
+        image_info['dir'] = filepath
+        return image_info
+
+    @classmethod
+    def _is_file(cls, filepath):
+        return os.path.isfile(filepath)
+
+    @classmethod
+    def _get_file_name(self, filepath):
+        head, tail = os.path.split(filepath)
+        return tail
+
+    @classmethod
+    def _get_file_extension(cls, filepath):
+        filename = cls._get_file_name(filepath)
+        return filename.split(".")[-1].lower()
