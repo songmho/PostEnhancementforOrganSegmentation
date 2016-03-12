@@ -10,6 +10,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {% include 'miaas/template_header.html' %}
 
 <!-- custom css -->
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/dicomview.css' %}">
 
 
 {% include 'miaas/template_nav_patient.html' %}
@@ -312,6 +313,69 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     </div>
 </div>
 
+<div class="modal fade" id="dicomViewModal" tabindex="-1" role="dialog" aria-labelledby="dicomViewModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="dicomViewModalTitle">Medical Image View</h4>
+            </div>
+            <div class="modal-body">
+                <div id="dicomView" class="dicom-view">
+                    <div class="dicom-view-explorer col-sm-4 col-md-3">
+                        <h4>Image Explorer</h4>
+                        <ul>
+                            <li>
+                                <span>ENTERIX</span>3
+                                <ul>
+                                    <li>
+                                        <span>Adbo art.</span>
+                                        <ul>
+                                            <li><a>IM-0001-0001</a></li>
+                                            <li><a>IM-0001-0002</a></li>
+                                            <li><a>IM-0001-0003</a></li>
+                                            <li><a>IM-0001-0004</a></li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <span>PET WB - 102</span>
+                                        <ul>
+                                            <li><a>IM-0002-0001</a></li>
+                                            <li><a>IM-0002-0002</a></li>
+                                            <li><a>IM-0002-0003</a></li>
+                                            <li><a>IM-0002-0004</a></li>
+                                            <li><a>IM-0002-0005</a></li>
+                                            <li><a>IM-0002-0006</a></li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <span>CT WB_Native_2mm</span>
+                                        <ul>
+                                            <li><a>IM-0003-0001</a></li>
+                                            <li><a>IM-0003-0002</a></li>
+                                            <li><a>IM-0003-0003</a></li>
+                                            <li><a>IM-0003-0004</a></li>
+                                            <li><a>IM-0003-0005</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="dicom-view-image col-sm-8 col-md-7">
+                        <h4>Image View</h4>
+                        <div class="dicom-view-viewer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% include 'miaas/template_footer.html' %}
 
@@ -323,7 +387,10 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");
     archiveURL = "{% url 'miaas:archive' %}";
+
+    $('#dicomViewModal').modal({backdrop: 'static'});
 </script>
+<script src="{% static 'miass/js/dicomview.js' %}"></script>
 <script src="{% static 'miass/js/medical_image.js' %}"></script>
 
 </body>
