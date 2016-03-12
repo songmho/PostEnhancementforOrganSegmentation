@@ -707,15 +707,16 @@ def handle_archive(request):
         logger.info("Image DIR:", image_dir)
 
         import base64
+        import StringIO
+        buffer = StringIO.StringIO()
         with open(image_dir, "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read())
+            # encoded_string = base64.b64encode(image_file.read())
+            binary = image_file.read(buffer)
 
-        # return HttpResponse(encoded_string)
-
-        response = HttpResponse(encoded_string, content_type='application/dicom')
-        response['Content-Disopsition'] = 'attachment;filename="test.dcm"'
+        response = HttpResponse(buffer, content_type='application/dicom')
+        response['Content-Disopsition'] = 'attachment; filename="test.dcm"'
         return response
-
+        # return HttpResponse('');
     return HttpResponseNotFound()
 
 @csrf_exempt
