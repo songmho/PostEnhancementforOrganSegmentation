@@ -711,7 +711,7 @@ def handle_archive(request):
         buffer = StringIO.StringIO()
         with open(image_dir, "rb") as image_file:
             # encoded_string = base64.b64encode(image_file.read())
-            binary = image_file.read(buffer)
+            binary = image_file.read()
 
         response = HttpResponse(buffer, content_type='application/dicom')
         response['Content-Disopsition'] = 'attachment; filename="test.dcm"'
