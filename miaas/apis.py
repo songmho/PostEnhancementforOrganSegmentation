@@ -696,6 +696,24 @@ def handle_analytics_mgt(request):
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
+def handle_archive(request):
+    db = cloud_db.DbManager()
+
+    user_id = request.GET.get('user_id')
+    image_id = request.GET.get('image_id')
+    if user_id and image_id:
+        image = db.retrieve_medical_image_by_id(image_id)
+        image_dir = image['image_dir']
+        logger.info("Image DIR:", image_dir)
+
+        import base64
+        with open(image_dir, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read())
+
+        return HttpResponse(encoded_string)
+    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
+
+@csrf_exempt
 def handle_payment_mgt(request):
     db = cloud_db.DbManager()
     try:
@@ -713,3 +731,4 @@ def update_session(old_user, updated_user):
         if key in old_user:
             old_user[key] = value
     return old_user
+
