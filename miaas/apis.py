@@ -2,7 +2,7 @@ import json
 import logging
 import time
 
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
 
@@ -710,8 +710,13 @@ def handle_archive(request):
         with open(image_dir, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read())
 
-        return HttpResponse(encoded_string)
-    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
+        # return HttpResponse(encoded_string)
+
+        response = HttpResponse(encoded_string, content_type='application/dicom')
+        response['Content-Disopsition'] = 'attachment;filename="test.dcm"'
+        return response
+
+    return HttpResponseNotFound()
 
 @csrf_exempt
 def handle_payment_mgt(request):
