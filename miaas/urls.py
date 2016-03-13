@@ -49,6 +49,7 @@ urlpatterns = [
     url(r'^api/interpretation', apis.handle_interpretation_mgt),
     url(r'^api/analytics', apis.handle_analytics_mgt),
     url(r'^api/payment', apis.handle_payment_mgt),
-
     url(r'^api/get_upload_progress', apis.handle_image_uploading_progress),
+
+    url(r'^api/archive$', apis.handle_archive)
 ]

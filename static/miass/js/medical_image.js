@@ -1,6 +1,12 @@
 /**
  * Created by hanter on 2016. 3. 8..
  */
+var INTERVAL_TIME = 250;
+var circleProgress = null;
+var g_progress_intv = null;
+var uploadStatus = 0; //0=None, 1=waiting, 2=uploading, 3=configuring
+var runningRotating = false;
+
 
 var bRequestIntpr = false;
 var reqLevel = 2;
@@ -12,10 +18,166 @@ $(document).ready(function() {
     });
     resetTakenLayout();
 
+    $('#btnImageFile').click(function() {
+        $('#imageUploadModal').modal();
+    });
 
+    $('#btnFormEdit').click(function() {
+        $('#btnFormEdit').hide();
+        $('#btnFormDelete').hide();
+        $('#btnFormEditConfirm').show();
+        $('#btnFormCancel').show();
+        $('#subject').removeAttr('readonly');
+        $('#imageType').removeAttr('disabled');
+        $('#btnImageFile').removeAttr('disabled');
+        $('#takenDate').removeAttr('readonly');
+        $('#takenFrom').removeAttr('disabled');
+        $('#takenPhysicianName').removeAttr('readonly');
+        $('#clinicName').removeAttr('readonly');
+        $('#imageDescription').removeAttr('readonly');
+    });
 
     $('#imageInfoForm').on('submit', function(e) {
+        e.preventDefault();
 
+        $('#btnFormEditConfirm').hide();
+        $('#btnFormCancel').hide();
+        $('#btnFormEdit').show();
+        $('#btnFormDelete').show();
+        $('#subject').attr('readonly', '');
+        $('#imageType').attr('disabled', '');
+        $('#btnImageFile').attr('disabled', '');
+        $('#takenDate').attr('readonly', '');
+        $('#takenFrom').attr('disabled', '');
+        $('#takenPhysicianName').attr('readonly', '');
+        $('#clinicName').attr('readonly', '');
+        $('#imageDescription').attr('readonly', '');
+
+        var nowImageInfo = {
+            user_id : user['user_id'],
+            image_id: imageInfo.image_id,
+            subject : $('#subject').val(),
+            image_type : $('#imageType').val(),
+            taken_date: Date.parse($('#takenDate').val()),
+            taken_from : $('#takenFrom').val(),
+            physician : $('#takenPhysicianName').val(),
+            place : $('#clinicName').val(),
+            description : $('#imageDescription').val()
+        };
+        $.LoadingOverlay('show');
+        $.ajax("/api/medical_image", {
+            method: 'PUT',
+            data: JSON.stringify({
+                action: 'update',
+                image_info: nowImageInfo,
+                dataType: 'json'
+            }), success: function (res) {
+                $.LoadingOverlay('hide');
+                if(res['code'] == 'SUCCESS') {
+                    openModal('Updating image information is succeed.', "Update Image");
+                    imageInfo.subject = nowImageInfo.subject;
+                    imageInfo.image_type = nowImageInfo.image_type;
+                    imageInfo.taken_date = nowImageInfo.taken_date;
+                    imageInfo.taken_from = nowImageInfo.taken_from;
+                    imageInfo.physician = nowImageInfo.physician;
+                    imageInfo.place = nowImageInfo.place;
+                    imageInfo.description = nowImageInfo.description;
+                    resetImageInfo();
+                } else {
+                    openModal(res['msg'], "Request Failed");
+                    resetImageInfo();
+                }
+            }
+        });
+    });
+
+    circleProgress = new ProgressBar.Circle('#uploadProgress', {
+        color: '#D76474',
+        strokeWidth: 3,
+        trailWidth: 1,
+        text: {
+            value: '0'
+        },
+        step: function(state, bar) {
+            bar.setText((bar.value() * 100).toFixed(0));
+        }
+    });
+
+    $('#formUpdateFile').on('submit', function(e) {
+        e.preventDefault();
+
+        var data = new FormData($('#formUpdateFile').get(0));
+        data.append('action', 'update');
+        data.append('image_info', JSON.stringify(imageInfo));
+
+        var xprogressID = new Date().getTime();
+        setTimeout(function() {
+            startFileProgressUpdate(xprogressID);
+        }, 500);
+
+        $('#imageUploadModal').modal('hide');
+
+        setProgressText('Uploading...');
+        $('#uploadingProgressModal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+
+        uploadStatus=1;
+        $.ajax({
+            url: $(this).attr('action') + '?X-Progress-ID='+xprogressID,
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                console.log(res);
+                uploadStatus=0;
+                stopRotatingProgress();
+                $('#uploadingProgressModal').modal('hide');
+
+                if (res['code'] == 'SUCCESS') {
+                    imageInfo['image_dir'] = res['new_dir'];
+                    openModal('The new file is successfully uploaded', 'Update Success');
+                } else {
+                    openModal(res['msg'], 'Update Failed');
+                }
+            }
+        });
+    });
+
+    $('#btnFormCancel').click(function() {
+        $('#btnFormEditConfirm').hide();
+        $('#btnFormCancel').hide();
+        $('#btnFormEdit').show();
+        $('#btnFormDelete').show();
+        $('#subject').attr('readonly', '');
+        $('#imageType').attr('disabled', '');
+        $('#btnImageFile').attr('disabled', '');
+        $('#takenDate').attr('readonly', '');
+        $('#takenFrom').attr('disabled', '');
+        $('#takenPhysicianName').attr('readonly', '');
+        $('#clinicName').attr('readonly', '');
+        $('#imageDescription').attr('readonly', '');
+        resetImageInfo();
+        resetTakenLayout();
+    });
+
+    $('#btnDeleteCofirm').click(function() {
+        $.LoadingOverlay('show');
+        $.ajax("/api/medical_image?user_id="+user['user_id']+"&image_id="+imageInfo['image_id']
+                +"&image_dir="+imageInfo['image_dir'], {
+            method: 'DELETE',
+            success: function (res) {
+                if(res['code'] == 'SUCCESS') {
+                    location.replace(archiveURL);
+                } else {
+                    $.LoadingOverlay('hide');
+                    openModal(res['msg'], "Delete Failed");
+                }
+            }
+        });
     });
 
     /*** for interpretation request ***/
@@ -96,16 +258,25 @@ $(document).ready(function() {
     });
 });
 
+function resetImageInfo() {
+    $('#subject').val(imageInfo.subject);
+    $('#imageType').val(imageInfo.image_type);
+    $('#takenDate').val(new Date(imageInfo.taken_date).format("yyyy-MM-dd"));
+    $('#takenFrom').val(imageInfo.taken_from);
+    $('#takenPhysicianName').val(imageInfo.physician);
+    $('#clinicName').val(imageInfo.place);
+    $('#imageDescription').val(imageInfo.description);
+}
+
 function resetTakenLayout() {
     var tf = $('#takenFrom').val();
-    console.log(tf);
     if(tf == 'Home') {
-        $('#physician').removeAttr('required').val('');
+        $('#takenPhysicianName').removeAttr('required').val('');
         $('#clinicName').removeAttr('required').val('');
         $('#physicianGroup').css('visibility', 'hidden');
         $('#clinicNameGroup').css('visibility', 'hidden');
     } else {
-        $('#physician').attr('required', '');
+        $('#takenPhysicianName').attr('required', '');
         $('#clinicName').attr('required', '');
         $('#physicianGroup').css('visibility', 'visible');
         $('#clinicNameGroup').css('visibility', 'visible');
@@ -126,4 +297,115 @@ function openModal(msg, title) {
 
 function openDeleteConfirmModal() {
     $('#deleteImageConfirmModal').modal();
+}
+
+
+//same as upload
+function startFileProgressUpdate(upload_id) {
+    console.log('start file upload');
+
+    setProgress(0);
+    g_progress_intv = setInterval(function() {
+        $.getJSON("/api/get_upload_progress?X-Progress-ID="+upload_id,
+            function(data) {
+                if(data == null) {
+                    if(uploadStatus == 2) {
+                        console.log('end data, stop.');
+                        setProgress(100);
+                        clearInterval(g_progress_intv);
+                        g_progress_intv = null;
+
+                        uploadStatus = 3;
+                        setProgressText('Configuring...');
+                        startRotatingProgress();
+
+                    } else if (uploadStatus == 1) {
+                        setProgress(0);
+                    } else {
+                        clearInterval(g_progress_intv);
+                        g_progress_intv = null;
+                    }
+                    return;
+                }
+
+                uploadStatus = 2;
+                var percentage = data.uploaded / data.length;
+                animateProgress(percentage);
+            });
+    }, INTERVAL_TIME);
+}
+
+function setProgressText(text) {
+    $('#uploadingProgressModal #uploadStatus').text(text);
+}
+function setProgress(percent) {
+    if(percent<0) percent=0;
+    else if(percent>1.0) percent=1.0;
+    circleProgress.set(percent, {
+        duration: INTERVAL_TIME
+    });
+}
+function animateProgress(percent) {
+    if(percent<0) percent=0;
+    else if(percent>1.0) percent=1.0;
+    circleProgress.animate(percent, {
+        duration: INTERVAL_TIME
+    });
+}
+function showLoadingText(bShow) {
+    if(bShow) {
+        $('#uploadProgress .progressbar-text').show();
+    } else {
+        $('#uploadProgress .progressbar-text').hide();
+    }
+}
+function rotatingProgress() {
+    if(runningRotating) {
+        var duration = 1000;
+
+        setTimeout(function () {
+            rotatingProgress();
+        }, duration);
+
+        var $elm = $('#uploadProgress');
+
+        $({deg: 0}).animate({deg: 360}, {
+            duration: duration,
+            step: function (now) {
+                $elm.css({
+                    //'transform': 'rotate(' + easeInOutCubic (now/360*1000, 0, 360, 1000) + 'deg)'
+                    'transform': 'rotate(' + now + 'deg)'
+                });
+            }
+        });
+
+    } else {
+
+    }
+}
+function startRotatingProgress() {
+    runningRotating = true;
+    showLoadingText(false);
+    setProgress(0.7);
+    rotatingProgress();
+}
+function stopRotatingProgress() {
+    runningRotating = false;
+    showLoadingText(true);
+    setProgress(0);
+    var $elm = $('#uploadProgress');
+    $({deg: 0}).animate({deg: 0}, {
+        duration: 0,
+        step: function (now) {
+            $elm.css({
+                'transform': 'rotate(' + 0 + 'deg)'
+            });
+        }
+    });
+}
+function easeInOutCubic (t, b, c, d) {
+	t /= d/2;
+	if (t < 1) return c/2*t*t*t + b;
+	t -= 2;
+	return c/2*(t*t*t + 2) + b;
 }

@@ -180,35 +180,35 @@ class DbManager():
         profiles = []
         if type is None:
             # Retrieve all profile types
-            db_query = "SELECT type FROM patient_profile WHERE user_id=%s"
+            db_query = "SELECT pp.type, pp.value, pp.timestamp " \
+                       "From (" \
+                       "  SELECT @row_num := IF(@prev_value=p.type, @row_num+1, 1) as rnd, p.*, @prev_value := p.type " \
+                       "  From patient_profile p, (select @row_num := 1) x, (select @prev_value := '') y " \
+                       "  WHERE p.user_id = %s " \
+                       "  ORDER BY p.type, p.timestamp DESC" \
+                       ") pp " \
+                       "Where pp.rnd = 1"
             with self.connector.cursor() as cursor:
                 try:
                     cursor.execute(db_query, (patient_id))
                     self.connector.commit()
-                    profile_types = []
                     for row in cursor:
-                        profile_type = row[0]
-                        if profile_type not in profile_types:
-                            profile_types.append(profile_type)
-                except Exception as e:
-                    print("Retrieve_Patient_Profile on type list: ", e)
-            # Retrieve patient profiles on 'type is not None'
-            with self.connector.cursor() as cursor:
-                db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and type=%s ORDER BY timestamp DESC LIMIT 1"
-                try:
-                    for item in profile_types:
-                        cursor.execute(db_query, (patient_id, item))
-                        self.connector.commit()
-                        row = cursor.fetchone()
                         profile = {}
                         profile['type'] = row[0]
                         profile['value'] = row[1]
                         profile['timestamp'] = row[2]
                         profiles.append(profile)
                 except Exception as e:
-                    print("Retrieve_Patient_Profile with type is None:", e)
+                    print("Retrieve_Patient_Profile on type list: ", e)
         else:
-            db_query = "SELECT type, value, timestamp FROM patient_profile WHERE user_id=%s and type=%s ORDER BY timestamp DESC"
+            db_query = "SELECT pp.type, pp.value, pp.timestamp " \
+                       "From (" \
+                       "  SELECT @row_num := IF(@prev_value=p.type, @row_num+1, 1) as rnd, p.*, @prev_value := p.type " \
+                       "  From patient_profile p, (select @row_num := 1) x, (select @prev_value := '') y " \
+                       "  WHERE p.user_id = %s " \
+                       "  ORDER BY p.type, p.timestamp DESC" \
+                       ") pp " \
+                       "Where pp.rnd = 1 and pp.type=%s"
             with self.connector.cursor() as cursor:
                 try:
                     cursor.execute(db_query, (patient_id, type))
@@ -485,6 +485,20 @@ class DbManager():
             except Exception as e:
                 print("Retrieve_Medical_Image_By_Id: ", e)
         return image
+
+    def update_medical_image_dir(self, medical_image):
+        if_updated = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE meidcal_image SET image_dir=%s, timestamp=%s WHERE image_id=%s"
+                cursor.execute(db_query, (medical_image['image_dir'], medical_image['timestamp']. medical_image['image_id']))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_updated = True
+            except Exception as e:
+                print("Update_Medical_Image_Dir:", e)
+        return if_updated
 
     def delte_medical_image_by_id(self, image_id):
         if_deleted = False

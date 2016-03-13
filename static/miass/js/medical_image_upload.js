@@ -71,7 +71,7 @@ $(document).ready(function() {
             place : $('#clinicName').val(),
             description : $('#imageDescription').val()
         }));
-        console.log(data);
+        //console.log(data);
 
         var xprogressID = new Date().getTime();
         setTimeout(function() {
@@ -111,22 +111,18 @@ $(document).ready(function() {
     $('#takenFrom').change(function() {
         var tf = $(this).val();
         if(tf == 'Home') {
-            $('#physician').removeAttr('required').val('');
+            $('#takenPhysicianName').removeAttr('required').val('');
             $('#clinicName').removeAttr('required').val('');
             $('#physicianGroup').hide();
             $('#clinicNameGroup').hide();
         } else {
-            $('#physician').attr('required', '');
+            $('#takenPhysicianName').attr('required', '');
             $('#clinicName').attr('required', '');
             $('#physicianGroup').show();
             $('#clinicNameGroup').show();
         }
     });
 
-    //$('#uploadingProgressModal').modal({
-    //    backdrop: 'static',
-    //    keyboard: false
-    //});
 });
 
 function setProgressText(text) {
@@ -173,9 +169,8 @@ function rotatingProgress() {
             }
         });
 
-        console.log('rotating...');
     } else {
-        console.log('rotating stopped');
+
     }
 }
 function startRotatingProgress() {

@@ -2,15 +2,17 @@ import json
 import logging
 import time
 
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
 
-from . import constants, cloud_db, image_manager
+import constants, cloud_db
+from image_manager import ImageManager, ImageRetriever
 
 MSG_DB_FAILED = "Failed to handle DB requests."
 MSG_NO_USER_LOGGEDIN = "No user logged in."
 MSG_NOT_MATCHED_USER = "logged in user is not match with request user"
+MSG_NOT_MATCHED_IMAGE = "Access with wrong path"
 MSG_ALREADY_LOGGEDIN = "Already logged in."
 MSG_SIGNUP_FAILED = "Sign up failed."
 MSG_INVALID_IDPW = "Invalid ID and/or PW."
@@ -224,6 +226,7 @@ def handle_patient_profile_mgt(request):
                 if request.session['user']['user_id'] != user_id:
                     raise Exception(MSG_NOT_MATCHED_USER)
             patient_profile = db.retrieve_patient_profile(user_id)
+            print patient_profile[3]
             return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': patient_profile}))
 
         elif (request.method) == 'POST':
@@ -343,6 +346,7 @@ def handle_medical_image_mgt(request):
                 image = db.retrieve_medical_image_by_id(image_id)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'medical_image': image}))
                 pass
+
             elif action == 'getImages':
                 user_id = request.GET.get('user_id')
                 if request.session['user']['user_id'] != user_id:
@@ -350,14 +354,69 @@ def handle_medical_image_mgt(request):
 
                 image_list = db.retrieve_medical_image(user_id)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'image_list': image_list}))
+
+            elif action =='getImageDirs':
+                user_id = request.GET.get('user_id')
+                if request.session['user']['user_type'] == 'patient' and request.session['user']['user_id'] != user_id:
+                    raise Exception(MSG_NOT_MATCHED_USER)
+                image_id = request.GET.get('image_id')
+                if request.session.get('archive') and request.session['archive'].get('now_image_id') and\
+                        request.session['archive']['now_image_id'] != image_id:
+                    raise Exception(MSG_NOT_MATCHED_IMAGE)
+                image_dir = request.session['archive']['now_image_dir']
+                image_dirs_dict = ImageRetriever.get_image_list(image_dir)
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'image_list': image_dirs_dict}))
+
             else:
                 raise Exception(MSG_INVALID_PARAMS)
 
+        elif request.method == 'PUT':
+            #update medical image
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+            data = json.loads(request.body.decode("utf-8"))
+
+            action = data['action']
+            if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+            # To update image
+            elif action == 'update':
+                image_info = data['image_info']
+                if not image_info:
+                    raise Exception(MSG_INVALID_PARAMS)
+                if request.session['user']['user_id'] != image_info['user_id']:
+                    raise Exception(MSG_NOT_MATCHED_USER)
+                db.update_medical_image_by_id(image_info)
+                return JsonResponse(dict(constants.CODE_SUCCESS))
+            else:
+                raise Exception(MSG_INVALID_PARAMS)
+
+        elif request.method == 'DELETE':
+            #delete medical image
+            user_id = request.GET.get('user_id')
+            image_id = request.GET.get('image_id')
+            image_dir = request.GET.get('image_dir')
+            if not user_id or not image_id or not image_dir:
+                raise Exception(MSG_INVALID_PARAMS)
+            if request.session['user']['user_id'] != user_id:
+                raise Exception(MSG_NOT_MATCHED_USER)
+            db.delte_medical_image_by_id(image_id)
+            try:
+                ImageManager.delete_uploaded_archive_file(image_dir)
+            except: pass
+            if request.session.get('image_cnt'):
+                request.session['image_cnt'] -= 1
+            return JsonResponse(dict(constants.CODE_SUCCESS))
+
         elif request.method == 'POST':
+            #add medical iamge and upload medical image
             if 'image_file' in request.FILES and 'image_info' in request.POST:
                 action = request.POST['action'].decode("utf-8")
 
                 image_info = json.loads(request.POST['image_info'].decode("utf-8"))
+                prev_timestamp = 0
+                if image_info.get('timestamp'):
+                    prev_timestamp = image_info['timestamp']
                 image_info['timestamp'] = int(round(time.time() * 1000))
                 image_file = request.FILES['image_file']
 
@@ -367,52 +426,40 @@ def handle_medical_image_mgt(request):
                     raise Exception(MSG_INVALID_PARAMS)
 
                 uploaded_path = None
-                im = image_manager.ImageManager(image_file, image_info)
+                im = ImageManager(image_file, image_info)
                 uploaded_path = im.upload_file()
-                image_info['image_dir'] = uploaded_path
 
-                logger.info(image_info)
+                logger.info('image is uploaded to: %s', uploaded_path)
 
-                try:
-                    if action == 'upload':
+                if action == 'upload':
+                    try:
+                        image_info['image_dir'] = uploaded_path
                         db.add_medical_image(image_info)
-                    elif action == 'update':
-                        pass
-
+                    except Exception as e:
+                        if uploaded_path:
+                            ImageManager.delete_uploaded_archive_file(uploaded_path)
+                            im.delete_temp_file()
+                        raise e
+                    request.session['image_cnt'] += 1
                     return JsonResponse(dict(constants.CODE_SUCCESS))
+                elif action == 'update':
+                    prev_path = image_info['image_dir']
+                    try:
+                        image_info['image_dir'] = uploaded_path
+                        db.update_medical_image_dir(image_info)
+                    except Exception as e:
+                        image_info['timestamp'] = prev_timestamp
+                        image_info['image_dir'] = prev_path
+                        db.update_medical_image_dir(image_info)
+                        ImageManager.delete_uploaded_archive_file(uploaded_path)
+                        raise e
+                    #remove here!
+                    logger.info('remove old file: %s', prev_path)
+                    ImageManager.delete_uploaded_archive_file(prev_path)
+                    return JsonResponse(dict(constants.CODE_SUCCESS, **{'new_dir': image_info['image_dir']}))
 
-                except Exception as e:
-                    if uploaded_path:
-                        image_manager.ImageManager.delete_uploaded_archive_file(uploaded_path)
-                        im.delete_temp_file()
-                    raise e
             else:
                 raise Exception(MSG_INVALID_PARAMS)
-            # else:
-                #Other
-                # if len(request.body) == 0:
-                #     raise Exception(MSG_NODATA)
-                # data = json.loads(request.body.decode("utf-8"))
-                # if not data.get('action') or not data.get('medical_image'):
-                #     raise Exception(MSG_INVALID_PARAMS)
-                # action = data['action']
-                # medical_image = data['medical_image']
-                #
-                # if request.session['user']['user_id'] != medical_image['user_id']:
-                #     raise Exception(MSG_NOT_MATCHED_USER)
-                #
-                # if action == 'upload':
-                #     logger.info(data)
-                #     pass
-                #     if db.add_medical_image(medical_image):
-                #         return JsonResponse(constants.CODE_SUCCESS)
-                #     else:
-                #         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_MEDICAL_IMAGE}))
-                # elif action == 'update':
-                #     # update image
-                #     pass
-                # else:
-                #     raise Exception(MSG_INVALID_PARAMS)
 
     except Exception as e:
         logger.exception(e)
@@ -641,6 +688,23 @@ def handle_analytics_mgt(request):
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 @csrf_exempt
+def handle_archive(request):
+
+    user_id = request.GET.get('user_id')
+    image_id = request.GET.get('image_id')
+    if user_id and image_id:
+        image = db.retrieve_medical_image_by_id(image_id)
+        image_dir = image['image_dir']
+        logger.info("Image DIR: %s" % image_dir)
+
+        with open(image_dir, "rb") as image_file:
+            response = HttpResponse(image_file, content_type='application/dicom',)
+            response['Content-Disposition'] = 'attachment; filename=test.dcm'
+        return response
+        # return HttpResponse('');
+    return HttpResponseNotFound()
+
+@csrf_exempt
 def handle_payment_mgt(request):
     db = cloud_db.DbManager()
     try:
@@ -658,3 +722,4 @@ def update_session(old_user, updated_user):
         if key in old_user:
             old_user[key] = value
     return old_user
+

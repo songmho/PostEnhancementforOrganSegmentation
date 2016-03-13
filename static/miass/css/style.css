@@ -227,6 +227,9 @@ b a.table-page-number {
 
 
 /* Modal */
+.modal {
+    padding-top: 15%;
+}
 .modal .modal-progress-body {
 
 }

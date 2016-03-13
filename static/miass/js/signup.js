@@ -112,7 +112,17 @@ function signup(usertype) {
 
     if(usertype == 'patient') {
         user['gender'] = $('#selectGender').val();
-        user['birthday'] = Date.parse($('#inputBirthday').val());
+        var currentTime = new Date().getTime();
+        var minBirthday = -2211786000;
+        var inputBirthday = Date.parse($('#inputBirthday').val());
+
+        if(inputBirthday < currentTime && inputBirthday > minBirthday) {
+            user['birthday'] = inputBirthday
+        }
+        else{
+            openSignupFailModal("Invalid Birthday");
+            return;
+        }
     } else if(usertype == 'physician') {
         user['medicine_field'] = $('#selectField').val();
         user['license_number'] = $('#inputLicence').val();
