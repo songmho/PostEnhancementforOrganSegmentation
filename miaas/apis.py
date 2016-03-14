@@ -226,6 +226,7 @@ def handle_patient_profile_mgt(request):
                 if request.session['user']['user_id'] != user_id:
                     raise Exception(MSG_NOT_MATCHED_USER)
             patient_profile = db.retrieve_patient_profile(user_id)
+            print patient_profile[3]
             return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': patient_profile}))
 
         elif (request.method) == 'POST':
@@ -531,6 +532,7 @@ def handle_interpretation_mgt(request):
                     'request_id': request_id
                 }
                 if_inserted = db.add_intpr(intpr)
+                db.update_medical_image_intprnum(data['image_id'])
                 if if_inserted:
                     status = 0
                     if_updated = db.update_req_and_resp(request_id, status, timestamp)

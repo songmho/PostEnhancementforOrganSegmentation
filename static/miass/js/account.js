@@ -40,7 +40,16 @@ function updateUser() {
 
     if(user.user_type == 'patient') {
         updatingUser['gender'] = $('#selectGender').val();
-        updatingUser['birthday'] = Date.parse($('#inputBirthday').val());
+        var currentTime = new Date().getTime();
+        var minBirthday = -2211786000;
+        var inputBirthday = Date.parse($('#inputBirthday').val());
+
+        if(inputBirthday < currentTime && inputBirthday > minBirthday) {
+            updatingUser['birthday'] = inputBirthday
+        } else{
+            openUpdateFailModal("Invalid Birthday");
+        }
+
     } else if(user.user_type == 'physician') {
         updatingUser['medicine_field'] = $('#selectField').val();
         updatingUser['license_number'] = $('#inputLicence').val();
