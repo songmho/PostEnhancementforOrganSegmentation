@@ -2,13 +2,13 @@
  * Created by hanter on 2016. 1. 27..
  */
 
+
 var usertype = null;
 
 $(document).ready(function() {
     $('#col-signup-basic').hide();
     $('#col-signup-detail-patient').hide();
     $('#col-signup-detail-physician').hide();
-
 
     $('#btn-patient').click(function() {
         usertype = 'patient';
@@ -42,6 +42,25 @@ $(document).ready(function() {
     //$('#btn-basic-next').click(function() {
     $('#col-signup-basic').on('submit', function(e) {
         e.preventDefault();
+        var inputId = $('#inputId');
+        if(inputId.val().length > 20) {
+            openSignupFailModal("Invalid User ID");
+            inputId.focus();
+            return;
+        }
+        var inputPw = $('#inputPw');
+        if(inputPw.val().length > 20) {
+            openSignupFailModal("Invalid Password");
+            inputPw.focus();
+            return;
+        }
+        var phoneRe = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g;
+        var inputMobile = $('#inputMobile');
+        if(!inputMobile.val().match(phoneRe)){
+            openSignupFailModal("Invalid Phone Number");
+            inputMobile.focus();
+            return;
+        }
 
         //id check
         $.LoadingOverlay('show');
@@ -49,7 +68,7 @@ $(document).ready(function() {
             method: 'GET',
             data: {
                 action: 'checkId',
-                user_id: $('#inputId').val()
+                user_id: inputId.val()
             },
             dataType: 'json',
             success: function (res) {
@@ -113,7 +132,7 @@ function signup(usertype) {
     if(usertype == 'patient') {
         user['gender'] = $('#selectGender').val();
         var currentTime = new Date().getTime();
-        var minBirthday = -2211786000;
+        var minBirthday = 0;
         var inputBirthday = Date.parse($('#inputBirthday').val());
 
         if(inputBirthday < currentTime && inputBirthday > minBirthday) {
