@@ -1,0 +1,83 @@
+.modal#imageViewModal {
+    padding-top: 0 !important;
+}
+@media (min-width: 768px) {
+    .modal#imageViewModal .modal-dialog {
+        width: 750px;
+    }
+}
+@media (min-width: 992px) {
+    .modal#imageViewModal .modal-dialog {
+        width: 970px;
+    }
+}
+@media (min-width: 1200px) {
+    .modal#imageViewModal .modal-dialog {
+        width: 1170px;
+    }
+}
+
+.modal#imageViewModal .modal-content {
+
+}
+@media (min-width: 768px) {
+    .modal#imageViewModal .modal-body .image-view {
+        min-height: 400px;
+    }
+}
+@media (min-width: 992px) {
+    .modal#imageViewModal .modal-body .image-view {
+        min-height: 600px;
+    }
+}
+
+.image-view .image-view-viewer {
+    background: cornflowerblue;
+}
+
+.image-view .image-view-viewer {
+    width: 100%;
+    height: 320px;
+}
+@media (min-width: 768px) {
+    .image-view .image-view-viewer {
+        width: 320px;
+        height: 320px;
+    }
+}
+@media (min-width: 992px) {
+    .image-view .image-view-viewer {
+        width: 512px;
+        height: 512px;
+    }
+}
+@media (min-width: 768px) {
+    .image-view #image-view-list {
+        height: 360px;
+        overflow-y: scroll;
+    }
+}
+@media (min-width: 992px) {
+    .image-view #image-view-list {
+        height: 560px;
+    }
+}
+
+
+.modal#imageViewModal .image-view .image-view-explorer {
+
+}
+
+.image-view-explorer ul {
+    padding-left: 0;
+    list-style-type: none;
+}
+.image-view-explorer li > ul {
+    padding-left: 20px;
+}
+
+
+
+.medimage-preview {
+    z-index: 1
+}
