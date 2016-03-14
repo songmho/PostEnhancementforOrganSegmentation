@@ -488,12 +488,16 @@ class DbManager():
 
     def update_medical_image_dir(self, medical_image):
         if_updated = False
+        image_dir= medical_image['image_dir']
+        timestamp = medical_image['timestamp']
+        image_id = medical_image['image_id']
         with self.connector.cursor() as cursor:
             try:
-                db_query = "UPDATE meidcal_image SET image_dir=%s, timestamp=%s WHERE image_id=%s"
-                cursor.execute(db_query, (medical_image['image_dir'], medical_image['timestamp']. medical_image['image_id']))
+                db_query = "UPDATE medical_image SET image_dir=%s, timestamp=%s WHERE image_id=%s"
+                cursor.execute(db_query, (image_dir, timestamp, image_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
+                print(row_count)
                 if row_count > 0:
                     if_updated = True
             except Exception as e:
@@ -504,7 +508,7 @@ class DbManager():
         if_updated = False
         with self.connector.cursor() as cursor:
             try:
-                db_query = "UPDATE meidcal_image SET intpr_num=intpr_num+1 WHERE image_id=%s"
+                db_query = "UPDATE medical_image SET intpr_num=intpr_num+1 WHERE image_id=%s"
                 cursor.execute(db_query, (image_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
@@ -1160,3 +1164,12 @@ class DbManager():
             except Exception as e:
                 print("retrieve_patient_request_list: ", e)
         return intprs
+
+if __name__ == '__main__':
+    db = DbManager()
+    medical_image = {
+        'image_dir':'./medical_images/archive/khan/EEG/1457658792947.dcm',
+        'timestamp': 1457916825970,
+        'image_id': 45
+    }
+    db.update_medical_image_dir(medical_image)
