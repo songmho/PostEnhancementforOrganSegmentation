@@ -500,6 +500,20 @@ class DbManager():
                 print("Update_Medical_Image_Dir:", e)
         return if_updated
 
+    def update_medical_image_intprnum(self, image_id):
+        if_updated = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE meidcal_image SET intpr_num=intpr_num+1 WHERE image_id=%s"
+                cursor.execute(db_query, (image_id))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_updated = True
+            except Exception as e:
+                print("Update_Medical_Image_Intprnum:", e)
+        return if_updated
+
     def delte_medical_image_by_id(self, image_id):
         if_deleted = False
         with self.connector.cursor() as cursor:
