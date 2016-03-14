@@ -1164,12 +1164,3 @@ class DbManager():
             except Exception as e:
                 print("retrieve_patient_request_list: ", e)
         return intprs
-
-if __name__ == '__main__':
-    db = DbManager()
-    medical_image = {
-        'image_dir':'./medical_images/archive/khan/EEG/1457658792947.dcm',
-        'timestamp': 1457916825970,
-        'image_id': 45
-    }
-    db.update_medical_image_dir(medical_image)
