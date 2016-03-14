@@ -529,6 +529,7 @@ def handle_interpretation_mgt(request):
                     'request_id': request_id
                 }
                 if_inserted = db.add_intpr(intpr)
+                db.update_medical_image_intprnum(data['image_id'])
                 if if_inserted:
                     status = 0
                     if_updated = db.update_req_and_resp(request_id, status, timestamp)
