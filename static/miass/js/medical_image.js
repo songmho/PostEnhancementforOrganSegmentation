@@ -22,6 +22,8 @@ $(document).ready(function() {
         $('#imageUploadModal').modal();
     });
 
+    setOpenImageViewerListener('image-previewer');
+
     $('#btnFormEdit').click(function() {
         $('#btnFormEdit').hide();
         $('#btnFormDelete').hide();
@@ -69,9 +71,9 @@ $(document).ready(function() {
             method: 'PUT',
             data: JSON.stringify({
                 action: 'update',
-                image_info: nowImageInfo,
-                dataType: 'json'
-            }), success: function (res) {
+                image_info: nowImageInfo
+            }), dataType: 'json'
+            , success: function (res) {
                 $.LoadingOverlay('hide');
                 if(res['code'] == 'SUCCESS') {
                     openModal('Updating image information is succeed.', "Update Image");
@@ -83,6 +85,7 @@ $(document).ready(function() {
                     imageInfo.place = nowImageInfo.place;
                     imageInfo.description = nowImageInfo.description;
                     resetImageInfo();
+                    resetViewer();
                 } else {
                     openModal(res['msg'], "Request Failed");
                     resetImageInfo();
@@ -167,7 +170,7 @@ $(document).ready(function() {
     $('#btnDeleteCofirm').click(function() {
         $.LoadingOverlay('show');
         $.ajax("/api/medical_image?user_id="+user['user_id']+"&image_id="+imageInfo['image_id']
-                +"&image_dir="+imageInfo['image_dir'], {
+                +"&resetViewer()="+imageInfo['image_dir'], {
             method: 'DELETE',
             success: function (res) {
                 if(res['code'] == 'SUCCESS') {

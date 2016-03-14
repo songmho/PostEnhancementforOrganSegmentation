@@ -62,6 +62,49 @@ function resetProfile() {
 var newProfiles = [];
 function updateProfile() {
     newProfiles = [];
+    var height = $('#height');
+    if(height.val() <= 0){
+        openUpdateFailModal('Invalid Height', 'Update Failed');
+        height.focus();
+        return
+    }
+    var weight = $('#weight');
+    if(weight.val() <= 0){
+        openUpdateFailModal('Invalid Weight', 'Update Failed');
+        weight.focus();
+        return
+    }
+    var drinkingCapacity = $('#drinkingCapacity');
+    if(drinkingCapacity.val() <= 0){
+        openUpdateFailModal('Invalid Drinking Capacity', 'Update Failed');
+        drinkingCapacity.focus();
+        return
+    }
+    var drinkingFrequency = $('#drinkingFrequency');
+    if(drinkingFrequency.val() <= 0){
+        openUpdateFailModal('Invalid Drinking Frequency', 'Update Failed');
+        drinkingFrequency.focus();
+        return
+    }
+    var sleeping = $('#sleeping');
+    if(sleeping.val() <= 0 || sleeping.val() >= 24){
+        openUpdateFailModal('Invalid Sleeping Hours', 'Update Failed');
+        sleeping.focus();
+        return
+    }
+    var exercise = $('#exercise');
+    if(exercise.val() <= 0 || exercise.val() >= 1440){
+        openUpdateFailModal('Invalid Exercise Hours', 'Update Failed');
+        exercise.focus();
+        return
+    }
+    var water = $('#water');
+    if(water.val() <= 0){
+        openUpdateFailModal('Invalid Water Intake', 'Update Failed');
+        water.focus();
+        return
+    }
+
 
     $('#patientProfileForm input, #patientProfileForm textarea').each(function() {
         var id = $(this).attr('id');

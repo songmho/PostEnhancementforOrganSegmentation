@@ -69,30 +69,31 @@ def profile_page(request):
 
 def archive_page(request):
     context = _get_session_context(request)
-
     if request.session.get('user'):
-        now_page = request.GET.get('page')
-        if now_page: now_page = int(now_page)
-        else: now_page = 1
-        logger.info('archive page %s' % now_page)
+        logger.info('archive_page call db')
 
-        image_cnt = request.session.get('image_cnt')
-        if not image_cnt or now_page == 1:
-            logger.info('no image cnt session. call db')
+        now_page = request.GET.get('page')
+        if not now_page or not request.session.get('images'):
+            # Retrieve lists.
             db = cloud_db.DbManager()
-            image_cnt = db.retrieve_medical_image_amount(request.session['user']['user_id'])
-        logger.info('image_cnt=%s', image_cnt)
+            images = db.retrieve_medical_image(request.session['user']['user_id'])
+            request.session['images'] = images
+        else:
+            images = request.session['images']
+
+        image_cnt = len(images)
         if image_cnt <= 0:
             return render(request, 'miaas/archive.html', context)
         archive = {}
         request.session['image_cnt'] = image_cnt
         archive['image_cnt'] = image_cnt
-
+        # Configure number of pages
+        if now_page: now_page = int(now_page)
         max_page = image_cnt // constants.CNT_CONTENTS_IN_PAGE
         if image_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
             max_page += 1
-        if now_page > max_page:
-            now_page = max_page
+        if not now_page or now_page > max_page:
+            now_page = 1
         archive['now_page'] = now_page
         archive['max_page'] = max_page
         logger.info('now_page=%s, max_page=%s' % (now_page, max_page))
@@ -105,12 +106,9 @@ def archive_page(request):
         archive['end_page'] = end_page
         logger.info('start_page=%s, end_page=%s' % (start_page, max_page))
 
-        db = cloud_db.DbManager()
-        images = db.retrieve_medical_image(user_id=request.session['user']['user_id'],
-                                           offset=(now_page - 1) * constants.CNT_CONTENTS_IN_PAGE,
-                                           limit=constants.CNT_CONTENTS_IN_PAGE)
-        archive['images'] = images
-
+        # Render page
+        offset = (now_page-1)*constants.CNT_CONTENTS_IN_PAGE
+        archive['images'] = images[offset:offset+constants.CNT_CONTENTS_IN_PAGE]
         context['archive'] = archive
 
     logger.info('archive get: %s' % request.GET)
@@ -205,6 +203,7 @@ def interpretation_request_list_page(request):
             request.session['intpr_request_list'] = intpr_request_list
         else:
             intpr_request_list = request.session['intpr_request_list']
+
         intpr_request_cnt = len(intpr_request_list)
         if intpr_request_cnt <= 0:
             render(request, 'miaas/interpretation_request_list.html', context)

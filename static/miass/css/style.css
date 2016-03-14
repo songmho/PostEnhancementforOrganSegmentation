@@ -247,3 +247,4 @@ b a.table-page-number {
 .no-pad-left { padding-left: 0 !important; }
 .no-pad-right { padding-right: 0 !important; }
 .text-black { color: black !important;}
+.loadingoverlay { z-index: 6; !important; }

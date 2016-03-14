@@ -199,7 +199,7 @@ class ImageRetriever():
     @classmethod
     def get_image_list(cls, image_dir):
         image_list = {}
-        file_name = cls._get_file_name(image_dir);
+        file_name = cls._get_file_name(image_dir)
         image_list[file_name] = cls._make_image_info_dict(image_dir)
         return image_list
 
@@ -207,15 +207,18 @@ class ImageRetriever():
     def _make_image_info_dict(cls, filepath):
         image_info = {}
         if os.path.isfile(filepath):
-            image_info['type'] = cls._get_file_extension()
+            image_info['type'] = cls._get_file_extension(filepath)
+            image_info['dir'] = filepath
         else:
             image_info['type'] = 'folder'
             file_list = os.listdir(filepath)
             image_info['file_list'] = {}
             for filename in file_list:
+                if filename.startswith('.') or filename.startswith('__'):
+                    continue
                 image_info['file_list'][filename] = \
                     cls._make_image_info_dict(os.path.join(filepath, filename))
-        image_info['dir'] = filepath
+        # image_info['dir'] = filepath
         return image_info
 
     @classmethod
