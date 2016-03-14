@@ -71,11 +71,12 @@ def archive_page(request):
     context = _get_session_context(request)
     if request.session.get('user'):
         logger.info('archive_page call db')
+
         now_page = request.GET.get('page')
         if not now_page or not request.session.get('images'):
             # Retrieve lists.
             db = cloud_db.DbManager()
-            images = db.retrieve_medical_image(user_id=request.session['user']['user_id'])
+            images = db.retrieve_medical_image(request.session['user']['user_id'])
             request.session['images'] = images
         else:
             images = request.session['images']
@@ -87,6 +88,7 @@ def archive_page(request):
         request.session['image_cnt'] = image_cnt
         archive['image_cnt'] = image_cnt
         # Configure number of pages
+        if now_page: now_page = int(now_page)
         max_page = image_cnt // constants.CNT_CONTENTS_IN_PAGE
         if image_cnt % constants.CNT_CONTENTS_IN_PAGE > 0:
             max_page += 1
@@ -201,6 +203,7 @@ def interpretation_request_list_page(request):
             request.session['intpr_request_list'] = intpr_request_list
         else:
             intpr_request_list = request.session['intpr_request_list']
+
         intpr_request_cnt = len(intpr_request_list)
         if intpr_request_cnt <= 0:
             render(request, 'miaas/interpretation_request_list.html', context)
