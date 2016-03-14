@@ -30,25 +30,39 @@ $(document).ready(function() {
 
 var updatingUser = {};
 function updateUser() {
+    var inputPw = $('#inputPw');
+    if(inputPw.val().length > 20) {
+        openUpdateFailModal("Invalid Password");
+        inputPw.focus();
+        return;
+    }
+    var phoneRe = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g;
+    var inputMobile = $('#inputMobile');
+    if(!inputMobile.val().match(phoneRe)){
+        openUpdateFailModal("Invalid Phone Number");
+        inputMobile.focus();
+        return;
+    }
     updatingUser = {};
     updatingUser['user_id'] = user.user_id;
-    updatingUser['password'] = $('#inputPw').val();
+    updatingUser['password'] = inputPw.val();
     updatingUser['name'] = $('#inputName').val();
-    updatingUser['phone_number'] = $('#inputMobile').val();
+    updatingUser['phone_number'] = inputMobile.val();
     updatingUser['email'] = $('#inputEmail').val();
     updatingUser['user_type'] = user.user_type;
 
     if(user.user_type == 'patient') {
         updatingUser['gender'] = $('#selectGender').val();
         var currentTime = new Date().getTime();
-        var minBirthday = -2211786000;
-        var inputBirthday = Date.parse($('#inputBirthday').val());
-
-        if(inputBirthday < currentTime && inputBirthday > minBirthday) {
-            updatingUser['birthday'] = inputBirthday
-        } else{
+        var minBirthday = 0;
+        var inputBirthday = $('#inputBirthday');
+        Date.parse($('#inputBirthday').val());
+        if(Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
             openUpdateFailModal("Invalid Birthday");
+            inputBirthday.focus();
+            return;
         }
+        updatingUser['birthday'] = inputBirthday.val()
 
     } else if(user.user_type == 'physician') {
         updatingUser['medicine_field'] = $('#selectField').val();
