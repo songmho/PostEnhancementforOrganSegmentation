@@ -10,7 +10,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {% include 'miaas/template_header.html' %}
 
 <!-- custom css -->
-<link rel="stylesheet" type="text/css" href="{% static 'miass/css/dicomview.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/imageViewer.css' %}">
 
 
 {% include 'miaas/template_nav_patient.html' %}
@@ -62,7 +62,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
                                 col-md-overlay-2 form-group medimage-preview-container">
                         <div class="medimage-preview-wrapper">
-                            <div class="medimage-preview">
+                            <div id="image-previewer" class="medimage-preview">
                                 <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>
                             </div>
                         </div>
@@ -313,20 +313,20 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     </div>
 </div>
 
-<div class="modal fade" id="dicomViewModal" tabindex="-1" role="dialog" aria-labelledby="dicomViewModalTitle">
+<div class="modal fade" id="imageViewModal" tabindex="-1" role="dialog" aria-labelledby="imageViewModalTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="dicomViewModalTitle">Medical Image View</h4>
+                <h4 class="modal-title" id="imageViewModalTitle">Medical Image View</h4>
             </div>
             <div class="modal-body">
-                <div id="dicomView" class="dicom-view">
-                    <div class="dicom-view-explorer col-sm-4 col-md-3">
+                <div id="imageView" class="image-view">
+                    <div class="image-view-explorer col-sm-5 col-md-4">
                         <h4>Image Explorer</h4>
-                        <ul>
+                        <ul id="image-view-list">
                             <li>
-                                <span>ENTERIX</span>3
+                                <span>ENTERIX</span>
                                 <ul>
                                     <li>
                                         <span>Adbo art.</span>
@@ -362,16 +362,16 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             </li>
                         </ul>
                     </div>
-                    <div class="dicom-view-image col-sm-8 col-md-7">
+                    <div class="image-view-image col-sm-7 col-md-8">
                         <h4>Image View</h4>
-                        <div class="dicom-view-viewer">
+                        <div class="image-view-viewer">
 
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -387,10 +387,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");
     archiveURL = "{% url 'miaas:archive' %}";
-
-    $('#dicomViewModal').modal({backdrop: 'static'});
 </script>
-<script src="{% static 'miass/js/dicomview.js' %}"></script>
+<script src="{% static 'miass/js/imageViewer.js' %}"></script>
 <script src="{% static 'miass/js/medical_image.js' %}"></script>
 
 </body>

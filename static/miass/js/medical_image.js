@@ -85,6 +85,7 @@ $(document).ready(function() {
                     imageInfo.place = nowImageInfo.place;
                     imageInfo.description = nowImageInfo.description;
                     resetImageInfo();
+                    resetViewer();
                 } else {
                     openModal(res['msg'], "Request Failed");
                     resetImageInfo();
@@ -169,7 +170,7 @@ $(document).ready(function() {
     $('#btnDeleteCofirm').click(function() {
         $.LoadingOverlay('show');
         $.ajax("/api/medical_image?user_id="+user['user_id']+"&image_id="+imageInfo['image_id']
-                +"&image_dir="+imageInfo['image_dir'], {
+                +"&resetViewer()="+imageInfo['image_dir'], {
             method: 'DELETE',
             success: function (res) {
                 if(res['code'] == 'SUCCESS') {

@@ -10,8 +10,47 @@ $(document).ready(function() {
 });
 
 function openImageViewer() {
-    $('#dicomViewModal').modal({backdrop: 'static'});
+    $.LoadingOverlay('show');
 
+    setTimeout(function() {
+        var listExplorer = $('#image-view-list');
+        listExplorer.empty();
+
+        for (var rootName in imageDirs) {
+            var rootImgInfo = imageDirs[rootName];
+
+            if (rootImgInfo['type'] == 'folder') {
+                for (var dirName in rootImgInfo['file_list']) {
+                    var dirs = rootImgInfo['file_list'][dirName];
+                    listExplorer.append('<li>').append(
+                        generateExplorer(dirs, dirName)
+                    ).append('</li>');
+                }
+            } else {
+                listExplorer.append('<span><a data-dir="' + rootImgInfo['dir']
+                    + '" data-type="' + rootImgInfo['type'] + '">'
+                    + imageInfo['subject'] + '<a/></span>');
+            }
+            break;
+        }
+
+        $.LoadingOverlay('hide');
+        $('#imageViewModal').modal({backdrop: 'static'});
+    }, 0);
+}
+
+function generateExplorer(dirs, name) {
+    if (dirs['type'] == 'folder') {
+        var htmlString = '<span>'+name+'</span><ul>';
+        for (var dirName in dirs['file_list']) {
+            var childDirs = dirs['file_list'][dirName];
+            htmlString += '<li>'+generateExplorer(childDirs, dirName)+'</li>'
+        }
+        htmlString += '</ul>';
+        return htmlString;
+    } else {
+        return '<a data-dir="'+dirs['dir']+'" data-type="'+dirs['type']+'">'+name+'</a>';
+    }
 }
 
 function setOpenImageViewerListener(id) {
@@ -29,7 +68,7 @@ function setOpenImageViewerListener(id) {
                     success: function (res) {
                     $.LoadingOverlay('hide');
                     if(res['code'] == 'SUCCESS') {
-                        $('#dicomViewModal').modal({backdrop: 'static'});
+                        openImageViewer();
                         imageDirs = res['image_list'];
                         console.log(imageDirs);
                     } else {
