@@ -356,13 +356,14 @@ def handle_medical_image_mgt(request):
 
             elif action =='getImageDirs':
                 user_id = request.GET.get('user_id')
-                if request.session['user']['user_type'] == 'patient' and request.session['user']['user_id'] != user_id:
+                if request.session['user']['user_type'] == 'patient' \
+                        and request.session['user']['user_id'] != user_id:
                     raise Exception(MSG_NOT_MATCHED_USER)
                 image_id = request.GET.get('image_id')
                 if request.session.get('archive') and request.session['archive'].get('now_image_id') and\
                         request.session['archive']['now_image_id'] != image_id:
                     raise Exception(MSG_NOT_MATCHED_IMAGE)
-                image_dir = request.session['archive']['now_image_dir']
+                image_dir = request.session['curr_image']['image_dir']
                 image_dirs_dict = ImageRetriever.get_image_list(image_dir)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'image_list': image_dirs_dict}))
 
@@ -449,10 +450,12 @@ def handle_medical_image_mgt(request):
                     except Exception as e:
                         image_info['timestamp'] = prev_timestamp
                         image_info['image_dir'] = prev_path
-                        db.update_medical_image_dir(image_info)
+                        # db.update_medical_image_dir(image_info)
                         ImageManager.delete_uploaded_archive_file(uploaded_path)
                         raise e
                     #remove here!
+                    request.session['curr_image']['timestamp'] = image_info['timestamp']
+                    request.session['curr_image']['image_dir'] = image_info['image_dir']
                     logger.info('remove old file: %s', prev_path)
                     ImageManager.delete_uploaded_archive_file(prev_path)
                     return JsonResponse(dict(constants.CODE_SUCCESS, **{'new_dir': image_info['image_dir']}))

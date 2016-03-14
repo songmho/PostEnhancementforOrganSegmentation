@@ -22,6 +22,8 @@ $(document).ready(function() {
         $('#imageUploadModal').modal();
     });
 
+    setOpenImageViewerListener('image-previewer');
+
     $('#btnFormEdit').click(function() {
         $('#btnFormEdit').hide();
         $('#btnFormDelete').hide();
@@ -69,9 +71,9 @@ $(document).ready(function() {
             method: 'PUT',
             data: JSON.stringify({
                 action: 'update',
-                image_info: nowImageInfo,
-                dataType: 'json'
-            }), success: function (res) {
+                image_info: nowImageInfo
+            }), dataType: 'json'
+            , success: function (res) {
                 $.LoadingOverlay('hide');
                 if(res['code'] == 'SUCCESS') {
                     openModal('Updating image information is succeed.', "Update Image");

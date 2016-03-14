@@ -74,7 +74,7 @@ def archive_page(request):
         now_page = request.GET.get('page')
         if now_page: now_page = int(now_page)
         else: now_page = 1
-        logger.info('archive page %s' % now_page)
+        lo
 
         image_cnt = request.session.get('image_cnt')
         if not image_cnt or now_page == 1:

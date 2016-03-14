@@ -64,3 +64,9 @@
 .dicom-view-explorer li > ul {
     padding-left: 20px;
 }
+
+
+
+.medimage-preview {
+    z-index: 6;
+}
