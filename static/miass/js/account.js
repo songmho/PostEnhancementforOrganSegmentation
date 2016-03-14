@@ -56,13 +56,12 @@ function updateUser() {
         var currentTime = new Date().getTime();
         var minBirthday = 0;
         var inputBirthday = $('#inputBirthday');
-        Date.parse($('#inputBirthday').val());
         if(Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
             openUpdateFailModal("Invalid Birthday");
             inputBirthday.focus();
             return;
         }
-        updatingUser['birthday'] = inputBirthday.val()
+        updatingUser['birthday'] = Date.parse(inputBirthday.val())
 
     } else if(user.user_type == 'physician') {
         updatingUser['medicine_field'] = $('#selectField').val();

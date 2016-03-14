@@ -42,8 +42,9 @@ $(document).ready(function() {
     //$('#btn-basic-next').click(function() {
     $('#col-signup-basic').on('submit', function(e) {
         e.preventDefault();
+        var idRe = /^[a-z]+[a-z0-9]{5,19}$/g;
         var inputId = $('#inputId');
-        if(inputId.val().length > 20) {
+        if(inputId.val().length > 20 || !inputId.val().match(idRe)) {
             openSignupFailModal("Invalid User ID");
             inputId.focus();
             return;
@@ -133,15 +134,13 @@ function signup(usertype) {
         user['gender'] = $('#selectGender').val();
         var currentTime = new Date().getTime();
         var minBirthday = 0;
-        var inputBirthday = Date.parse($('#inputBirthday').val());
-
-        if(inputBirthday < currentTime && inputBirthday > minBirthday) {
-            user['birthday'] = inputBirthday
-        }
-        else{
+        var inputBirthday = $('#inputBirthday');
+        if(Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
             openSignupFailModal("Invalid Birthday");
+            inputBirthday.focus();
             return;
         }
+        user['birthday'] = Date.parse(inputBirthday.val());
     } else if(usertype == 'physician') {
         user['medicine_field'] = $('#selectField').val();
         user['license_number'] = $('#inputLicence').val();

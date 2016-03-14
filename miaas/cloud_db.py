@@ -926,7 +926,6 @@ class DbManager():
                        "JOIN medical_image m on req.image_id = m.image_id " \
                        "WHERE status >= 2 and req.timestamp>%s and '%s' NOT IN(SELECT physician_id FROM response res WHERE req.request_id=res.request_id) " \
                        "ORDER BY status DESC" % (time_from, physician_id)
-        print(db_query)
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query)
@@ -955,8 +954,13 @@ class DbManager():
                    "JOIN request req on res.request_id = req.request_id " \
                    "JOIN medical_image m on req.image_id = m.image_id  " \
                    "WHERE res.physician_id = '%s' " \
-                   "ORDER BY req.status DESC"%physician_id
-
+                   "ORDER BY " \
+                   "CASE " \
+                   "WHEN req.status = 1 Then 3 " \
+                   "WHEN req.status = 2 Then 2 " \
+                   "WHEN req.status = 0 Then 0 " \
+                   "END DESC"%physician_id
+        print db_query
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query)
