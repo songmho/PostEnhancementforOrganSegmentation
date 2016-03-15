@@ -32,7 +32,7 @@
 }
 
 .image-view .image-view-viewer {
-    background: cornflowerblue;
+    /*background: cornflowerblue;*/
 }
 
 .image-view .image-view-viewer {
@@ -77,7 +77,7 @@
     list-style-type: none;
 }
 .image-view-explorer li > ul {
-    padding-left: 20px;
+    padding-left: 12px;
 }
 
 

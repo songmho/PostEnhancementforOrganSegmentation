@@ -78,6 +78,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'miaas_server.wsgi.application'
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases

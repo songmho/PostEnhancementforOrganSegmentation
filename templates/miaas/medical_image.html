@@ -237,22 +237,6 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="alertModalTitle">Request Failed</h4>
-        </div>
-        <div class="modal-body">
-        Request failed
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-        </div>
-    </div>
-</div>
 <div class="modal fade" id="deleteImageConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteImageConfirmTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -363,9 +347,16 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         </ul>
                     </div>
                     <div class="image-view-image col-sm-7 col-md-8">
-                        <h4>Image View</h4>
-                        <div id="imageViewer" class="image-view-viewer">
-
+                        <h4>Image View&nbsp;&nbsp;&nbsp;<span id="imageViewModalTitleName" class="text-primary"></span></h4>
+                        <div id="imageViewerWrapper" style="width:512px;height:512px;position:relative;color:white;"
+                             oncontextmenu="return false"
+                             class='disable-selection noIbar'
+                             unselectable='on'
+                             onselectstart='return false;'
+                             onmousedown='return false;'>
+                            <div id="imageViewer" class="image-view-viewer"
+                                 style="width:512px;height:512px;top:0px;left:0px; position:absolute">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -373,6 +364,23 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="alertModalTitle">Request Failed</h4>
+        </div>
+        <div class="modal-body">
+        Request failed
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
         </div>
     </div>
 </div>

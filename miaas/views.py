@@ -135,7 +135,9 @@ def medical_image_page(request, image_id):
         if result.get('image') and isinstance(result.get('intpr'), list):
             context['image'] = result['image']
             context['intpr_list'] = result['intpr']
-            request.session['curr_image'] = result['image']
+            # request.session['medical_image'][str(result['image']['image_id'])] = result['image']
+            # logger.info('image page(%s): %s' % (result['image']['image_id'], request.session['medical_image']))
+            # request.session['curr_image'] = result['image']
 
     return render(request, 'miaas/medical_image.html', context)
 

@@ -69,6 +69,9 @@ def handle_session_mgt(request):
             if not user.get('user_id'):
                 raise Exception(MSG_INVALID_IDPW)
             request.session['user'] = user
+            # request.session['medical_image'] = {}
+            # request.session.create('medical_image')
+            logger.info('user %s logged in.' % user['user_id'])
 
             return JsonResponse(constants.CODE_SUCCESS)
 
@@ -226,7 +229,6 @@ def handle_patient_profile_mgt(request):
                 if request.session['user']['user_id'] != user_id:
                     raise Exception(MSG_NOT_MATCHED_USER)
             patient_profile = db.retrieve_patient_profile(user_id)
-            print patient_profile[3]
             return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': patient_profile}))
 
         elif (request.method) == 'POST':
@@ -242,15 +244,20 @@ def handle_patient_profile_mgt(request):
             if request.session['user']['user_id'] != user_id:
                 raise Exception(MSG_NOT_MATCHED_USER)
 
+            if not db.add_patient_profile(user_id, timestamp, data['profiles']):
+                raise Exception(MSG_PROFILE_FAILED)
+
+            return JsonResponse(constants.CODE_SUCCESS)
+
             # for key, value in data['profiles'].items():
             # logger.info(data)
-            for prof in data['profiles']:
-                # logger.info(prof)
-                key = prof['type']
-                value = prof['value']
-                if not db.add_patient_profile(user_id, key, value, timestamp):
-                    raise Exception(MSG_PROFILE_FAILED)
-                logger.info('userid=%s key=%s value=%s' % (user_id, key, value))
+            # for prof in data['profiles']:
+            #     # logger.info(prof)
+            #     key = prof['type']
+            #     value = prof['value']
+            #     if not db.add_patient_profile(user_id, key, value, timestamp):
+            #         raise Exception(MSG_PROFILE_FAILED)
+            #     logger.info('userid=%s key=%s value=%s' % (user_id, key, value))
             return JsonResponse(constants.CODE_SUCCESS)
 
     except Exception as e:
@@ -361,10 +368,17 @@ def handle_medical_image_mgt(request):
                         and request.session['user']['user_id'] != user_id:
                     raise Exception(MSG_NOT_MATCHED_USER)
                 image_id = request.GET.get('image_id')
-                if request.session.get('archive') and request.session['archive'].get('now_image_id') and\
-                        request.session['archive']['now_image_id'] != image_id:
-                    raise Exception(MSG_NOT_MATCHED_IMAGE)
-                image_dir = request.session['curr_image']['image_dir']
+                image_dir = request.GET.get('image_dir')
+                # if request.session.get('archive') and request.session['archive'].get('now_image_id') and\
+                #         request.session['archive']['now_image_id'] != image_id:
+                #     raise Exception(MSG_NOT_MATCHED_IMAGE)
+
+                if not image_id or not image_dir:
+                    return Exception(MSG_INVALID_PARAMS)
+
+                # logger.info('from session image page: %s' % (request.session['medical_image']))
+                # image_dir = request.session['medical_image'][str(image_id)]['image_dir']
+                # image_dir = request.session['curr_image']['image_dir']
                 image_dirs_dict = ImageRetriever.get_image_list(image_dir)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'image_list': image_dirs_dict}))
 
@@ -455,8 +469,15 @@ def handle_medical_image_mgt(request):
                         ImageManager.delete_uploaded_archive_file(uploaded_path)
                         raise e
                     #remove here!
-                    request.session['curr_image']['timestamp'] = image_info['timestamp']
-                    request.session['curr_image']['image_dir'] = image_info['image_dir']
+                    image_id = int(image_info['image_id'])
+                    # request.session['image'][image_id] = dict()
+                    # request.session['medical_image'][image_id]['timestamp'] = image_info['timestamp']
+                    # request.session['medical_image'][image_id]['image_dir'] = image_info['image_dir']
+                    # request.session['curr_image'] = dict()
+                    # request.session['curr_image']['timestamp'] = image_info['timestamp']
+                    # request.session['curr_image']['image_dir'] = image_info['image_dir']
+                    # logger.info('curr_image session is updated: %s' % request.session['medical_image'][image_info['image_id']])
+
                     logger.info('remove old file: %s', prev_path)
                     ImageManager.delete_uploaded_archive_file(prev_path)
                     return JsonResponse(dict(constants.CODE_SUCCESS, **{'new_dir': image_info['image_dir']}))
@@ -693,20 +714,23 @@ def handle_analytics_mgt(request):
 
 @csrf_exempt
 def handle_archive(request):
+    logger.info(request.GET)
 
-    user_id = request.GET.get('user_id')
+    image_user_id = request.GET.get('image_user_id')
     image_id = request.GET.get('image_id')
-    if user_id and image_id:
-        image = db.retrieve_medical_image_by_id(image_id)
-        image_dir = image['image_dir']
+    image_dir = request.GET.get('image_dir')
+    image_name = ImageRetriever._get_file_name(image_dir)
+    if image_user_id and image_id and image_dir:
         logger.info("Image DIR: %s" % image_dir)
 
         with open(image_dir, "rb") as image_file:
             response = HttpResponse(image_file, content_type='application/dicom',)
-            response['Content-Disposition'] = 'attachment; filename=test.dcm'
+            response['Content-Disposition'] = 'attachment; filename=' + image_name
         return response
         # return HttpResponse('');
-    return HttpResponseNotFound()
+    else:
+
+        return HttpResponseNotFound()
 
 @csrf_exempt
 def handle_payment_mgt(request):
