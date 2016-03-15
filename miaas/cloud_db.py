@@ -195,7 +195,7 @@ class DbManager():
                     for row in cursor:
                         profile = {}
                         profile['type'] = row[0]
-                        profile['value'] = row[1]
+                        profile['value'] = unicode(row[1], errors='ignore')
                         profile['timestamp'] = row[2]
                         profiles.append(profile)
                 except Exception as e:
@@ -216,7 +216,7 @@ class DbManager():
                     for row in cursor:
                         profile = {}
                         profile['type'] = row[0]
-                        profile['value'] = row[1]
+                        profile['value'] = unicode(row[1], errors='ignore')
                         profile['timestamp'] = row[2]
                         profiles.append(profile)
                 except Exception as e:
