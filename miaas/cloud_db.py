@@ -1004,9 +1004,11 @@ class DbManager():
     def retrieve_request_info(self, request_id):
         request_detail = {}
         db_query_request = "SELECT req.request_id, req.subject, req.message, m.subject, m.image_type, " \
-                           "m.timestamp, m.taken_from, m.physician, m.place, m.description, req.status, req.level, m.user_id, m.image_id " \
+                           "m.timestamp, m.taken_from, m.physician, m.place, m.description, req.status, req.level, m.user_id, m.image_id, " \
+                           "u.name, u.phone_number, u.email " \
                            "FROM miaas.request req " \
                            "JOIN miaas.medical_image m ON req.image_id = m.image_id " \
+                           "JOIN miaas.user u ON m.user_id = u.user_id " \
                            "WHERE req.request_id=%s"
         print(db_query_request%request_id)
         with self.connector.cursor() as cursor:
@@ -1028,6 +1030,10 @@ class DbManager():
                     request_detail['level'] = row[11]
                     request_detail['patient_id'] = row[12]
                     request_detail['image_id'] = row[13]
+                    request_detail['name'] = row[14]
+                    request_detail['phone_number'] = row[15]
+                    request_detail['email'] = row[16]
+
             except Exception as e:
                 print("retrieve_patient_request_detail: ", e)
 
