@@ -348,6 +348,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
                     <div class="image-view-image col-sm-7 col-md-8">
                         <h4>Image View&nbsp;&nbsp;&nbsp;<span id="imageViewModalTitleName" class="text-primary"></span></h4>
+
                         <div id="imageViewerWrapper" style="width:512px;height:512px;position:relative;color:white;"
                              oncontextmenu="return false"
                              class='disable-selection noIbar'
@@ -355,8 +356,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                              onselectstart='return false;'
                              onmousedown='return false;'>
                             <div id="imageViewer" class="image-view-viewer"
-                                 style="width:512px;height:512px;top:0px;left:0px; position:absolute">
+                                 style="width:512px;height:512px;top:0px;left:0px; position:absolute;">
                             </div>
+                            <div id="imageViewerLoader" style="background-image: url('{% static 'lib/jquery/plugins/loading.gif' %}');"></div>
                         </div>
                     </div>
                 </div>

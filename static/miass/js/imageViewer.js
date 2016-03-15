@@ -11,6 +11,7 @@ cornerstoneWADOImageLoader.configure({
         console.log('beforesend');
         // Add custom headers here (e.g. auth tokens)
         //xhr.setRequestHeader('x-auth-token', 'my auth token');
+        showImageViewerLoader(true);
     }
 });
 
@@ -41,21 +42,46 @@ function dicomloadAndViewImage(imageId) {
         console.log(err);
         openModal(err, "DICOM Loading Failed");
     }
+    showImageViewerLoader(false);
 }
 
 function downloadAndView(tagData)
 {
     lastImageData = tagData;
+    var url = makeURL(tagData);
     if(tagData['type'] == 'dcm') {
-        var url = makeURL(tagData);
-
         // prefix the url with wadouri: so cornerstone can find the image loader
         url = "wadouri:" + url;
 
         // image enable the dicomImage element and activate a few tools
         dicomloadAndViewImage(url);
         $('#imageViewModalTitleName').text(tagData['name']);
+        showImageViewerLoader(false);
+    } else {
+        var canvas = $('#imageViewer canvas')[0];
+        var ctx = canvas.getContext('2d');
+
+        var image = new Image();
+
+        showImageViewerLoader(true);
+        image.addEventListener("load", function () {
+            var canvasSize = canvas.width;
+            var drawingWidth = image.width;
+            var drawingHeight = image.height;
+            var magni = 1;
+            if (canvasSize >= image.height) {
+                var magni = canvasSize/image.width;
+            } else {
+                var magni = canvasSize/image.height;
+            }
+            drawingWidth *= magni;
+            drawingHeight *= magni;
+            ctx.drawImage(image, 0, 0, drawingWidth, drawingHeight);
+            showImageViewerLoader(false);
+        });
+        image.src = url;
     }
+
 }
 
 function makeURL(tagData) {
@@ -74,6 +100,7 @@ $(document).ready(function() {
     resizeViewer();
     window.addEventListener("resize", resizeViewer);
 
+    showImageViewerLoader(false);
     $('#imageViewModal').on('show.bs.modal', function(e) {
         resizeViewer();
         console.log('image view modal opened');
@@ -134,7 +161,15 @@ function openImageViewer() {
 function generateExplorer(dirs, name) {
     if (dirs['type'] == 'folder') {
         var htmlString = '<span>'+name+'</span><ul>';
-        for (var dirName in dirs['file_list']) {
+        //for (var dirName in dirs['file_list']) {
+        //var childDirs = dirs['file_list'][dirName];
+        var dirKeys = [];
+        for (var dirkey in dirs['file_list']) {
+            dirKeys.push(dirkey);
+        }
+        dirKeys.sort();
+        for (var i=0; i<dirKeys.length; i++) {
+            var dirName = dirKeys[i];
             var childDirs = dirs['file_list'][dirName];
             htmlString += '<li>'+generateExplorer(childDirs, dirName)+'</li>'
         }
@@ -189,7 +224,13 @@ function resizeViewer() {
     }
     var sizeStyle = {width: size+'px', height: size+'px'};
     $('#imageViewer').css(sizeStyle);
+    $('#imageViewerLoader').attr('width',size).attr('height',size).css(sizeStyle);
     $('#imageViewer canvas').attr('width',size).attr('height',size).css(sizeStyle);
+}
+
+function showImageViewerLoader(bShow) {
+    if(bShow) $('#imageViewerLoader').show();
+    else $('#imageViewerLoader').hide();
 }
 
 function resetViewer() {
@@ -199,6 +240,7 @@ function resetViewer() {
     $imageViewer.off('click');
     imageDirs = null;
     lastImageData = null;
+    showImageViewerLoader(false);
     $('#imageViewModalTitleName').text('');
     //console.log('reset view');
     setOpenImageViewerListener($imageViewer);
