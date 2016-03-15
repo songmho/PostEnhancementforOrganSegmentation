@@ -26,16 +26,14 @@
                             <td>Physician Name</td>
                             <td>Medical Field</td>
                             <td>Acceptance Message</td>
-                            <td>Physician Profile</td>
                             </thead>
                             <tbody>
                             {% for res in physician_response.responses %}
                                 <tr>
-                                    <td><a class="text-primary" href="#">{{ res.physician_id }}</a></td>
+                                    <td><a class="text-primary view-profile" href="#" physician_id="{{ res.physician_id }}">{{ res.physician_id }}</a></td>
                                     <td>{{ res.physician_name }}</td>
                                     <td>{{ res.medicine_filed }}</td>
                                     <td>{{ res.response_message }}</td>
-                                    <td><a class="btn btn-success btn-block btn-physician-profile" physician_id="{{ res.physician_id }}" >PROFILE</a></td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -141,23 +139,17 @@
                         <td>Physician Name</td>
                         <td>Medical Field</td>
                         <td>Acceptance Message</td>
-                        <td>Physician Profile/Select</td>
+                        <td>Select</td>
                         </thead>
                         <tbody>
                         {% for res in physician_response.responses %}
                             <tr>
-                                <td><a class="text-primary" href="#">{{ res.physician_id }}</a></td>
+                                <td><a class="text-primary view-profile" href="#" physician_id="{{ res.physician_id }}">{{ res.physician_id }}</a></td>
                                 <td>{{ res.physician_name }}</td>
                                 <td>{{ res.medicine_filed }}</td>
                                 <td>{{ res.response_message }}</td>
                                 <td class="valign vcenter">
-                                    <div class="row btns-2-container">
-                                        <div class="col-xs-12 col-sm-6">
-                                            <a class="btn btn-success btn-block btn-physician-profile " physician_id="{{ res.physician_id }}" >PROFILE</a>
-                                        </div><div class="col-xs-12 col-sm-6">
-                                            <a class="btn btn-success btn-block btn-physician-select3" physician_id="{{ res.physician_id }}" >SELECT</a>
-                                        </div>
-                                    </div>
+                                    <a class="btn btn-success btn-block btn-physician-select" physician_id="{{ res.physician_id }}" >SELECT</a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -647,7 +639,7 @@
             console.log("/api/interpretation?action=delPatientReq&request_id={{ request_detail.request_id }}")
         });
 
-        $('.btn-physician-profile').click(function(){
+        $('.view-profile').click(function(){
             var physician_id = $(this).attr('physician_id');
             $.LoadingOverlay('show');
             $.ajax("/api/physician_profile", {

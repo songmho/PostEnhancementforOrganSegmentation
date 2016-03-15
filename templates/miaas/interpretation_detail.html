@@ -30,7 +30,8 @@
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician ID</label>
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="itp1-id"><a href="#">{{ intpr_detail.physician_id }}</a></span>
+                            <span id="itp1-id">
+                                <a class="text-primary view-profile" href="#" physician_id="{{ intpr_detail.physician_id }}">{{ intpr_detail.physician_id }}</a>
                         </div>
 
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>
@@ -150,10 +151,306 @@
     </section>
 </div>
 
+<!-- Modal -->
+<div class="modal fade modal-profile" id="physicianProfileModal" tabindex="-1" role="dialog" aria-labelledby="physicianProfileModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="patientProfileModalTitle">Physician Profile</h4>
+            </div>
+            <div class="modal-body">
+                <section class="section section-default">
+                    <div class="row">
+                        <div class="col-xs-12 col-title">
+                            <h2 class="text-primary">Physician Profile</h2>
+                        </div>
+
+                        <form id="physicianProfileForm" class="col-xs-12 col-form">
+                            <div class="form-container form-boxed form-horizontal row">
+                                <div class="col-xs-12 form-small-title">
+                                    <h4 class="text-primary">Introduction</h4>
+                                </div>
+                                <div class="col-xs-12 form-group">
+                                    <label class="col-sm-3 col-md-2 control-label" for="aboutMe" >About me</label>
+                                    <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                        <output id="aboutMe" name="aboutMe"></output>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 form-group">
+                                    <label class="col-sm-3 col-md-2 control-label" for="specialism" >About Specialism</label>
+                                    <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                        <output id="specialism" name="specialism"></output>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-container form-boxed form-horizontal row" style="display: none;">
+                                <div class="col-xs-12 form-small-title">
+                                    <h4 class="text-primary">Activity Summary</h4>
+                                </div>
+                                <div class="col-sm-12 form-group">
+                                    <label class="col-xs-12 col-sm-3 col-md-3 control-label">Joined At</label>
+                                    <div class="col-xs-12 col-sm-9 col-md-3 control-text">
+                                        <span id="joinedAt">2014-12-27</span>
+                                    </div>
+
+                                    <label class="col-xs-12 col-sm-3 col-md-3 control-label">Recent Connection</label>
+                                    <div class="col-xs-12 col-sm-9 col-md-3 control-text">
+                                        <span id="recentConnection">2015-02-02</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 form-group">
+                                    <label class="col-xs-12 col-sm-3 col-md-3 control-label">Interpretation Count</label>
+                                    <div class="col-xs-12 col-sm-9 col-md-3 control-text">
+                                        <span id="response">24</span>
+                                    </div>
+
+                                    <label class="col-xs-12 col-sm-3 col-md-3 control-label"><span data-toggle="tooltip" data-placement="left" title="Perfect score is 10.0">Score</span></label>
+                                    <div class="col-xs-12 col-sm-9 col-md-3 control-text">
+                                        <span id="score" data-toggle="tooltip" data-placement="right" title="Perfect score is 10.0">8.6</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- tab reference : http://www.nydoctorprofile.com/ -->
+                            <div class="nav-tabs-group">
+                                <ul id="detailTabs" class="nav nav-tabs nav-tabs-for-boxed" role="tablist">
+                                    <li role="presentation" class="active"><a href="#formEducation" aria-controls="formPractice" role="tab" data-toggle="tab">Education</a></li>
+                                    <li role="presentation"><a href="#formPractice" aria-controls="formPractice" role="tab" data-toggle="tab">Practice info</a></li>
+                                    <li role="presentation"><a href="#formLegal" aria-controls="formPractice" role="tab" data-toggle="tab">Legal Actions</a></li>
+                                    <li role="presentation"><a href="#formProfessional" aria-controls="formPractice" role="tab" data-toggle="tab">Professional Activities</a></li>
+                                    <li role="presentation"><a href="#formStatement" aria-controls="formPractice" role="tab" data-toggle="tab">Statement</a></li>
+                                </ul>
+
+                                <div class="tab-content">
+                                    <div id="formEducation" role="tabpanel" class="tab-pane active form-container form-boxed form-horizontal nav-tabs-content row">
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="medicalSchool" >Medical School</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="medicalSchool" name="medicalSchool"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="graduate" >Graduate Medical Education</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="graduate" name="graduate"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="certifications" >Board Certifications</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="certifications" name="certifications"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="memberships" >Professional Memberships</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="memberships" name="memberships"></output>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="formPractice" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="fieldsOfMedicine" >Fields of Medicine</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="fieldsOfMedicine" name="fieldsOfMedicine"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="hiv" >HIV Services</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="hiv" name="hiv"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="offices" >Offices</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="offices" name="offices"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="languages" >Languages Available</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="languages" name="languages"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="insuranceProgram" >Medicaid & Government Insurance Programs</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="insuranceProgram" name="insuranceProgram"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="healthPlans" >Health Plans</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="healthPlans" name="healthPlans"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="hospitalPrivileges" >Hospital Privileges</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="hospitalPrivileges" name="hospitalPrivileges"></output>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="formLegal" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="malpractice" >Malpractice</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="malpractice" name="malpractice"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="licenseeActions" >Licensee Actions</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="licenseeActions" name="licenseeActions" ></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="outOfStateActions" >Out-of-State Actions</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="outOfStateActions" name="outOfStateActions"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="currentLimits" >Current Limitations</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="currentLimits" name="currentLimits"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="hspPrivRestrictions" >Hospital Privilege Restrictions</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="hspPrivRestrictions" name="hspPrivRestrictions"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="hspFRPriv" >Hospital Failure to Renew Privileges</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="hspFRPriv" name="hspFRPriv"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="criminalConvictions" >Criminal Convictions </label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="criminalConvictions" name="criminalConvictions"></output>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="formProfessional" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="teaching" >Teaching Responsibilities </label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="teaching" name="teaching"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="serviceActivity" >Professional & Community Service Activities</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="serviceActivity" name="serviceActivity"></output>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="publications" >Publications</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="publications" name="publications"></output>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="formStatement" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
+                                        <div class="col-xs-12 form-group">
+                                            <label class="col-sm-3 col-md-2 control-label" for="statement" >Doctor's Statement</label>
+                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
+                                                <output id="statement" name="statement"></output>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="profileFailedModal" tabindex="-1" role="dialog" aria-labelledby="profileFailedTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="updateFailedTitle">Getting Profile Failed</h4>
+            </div>
+            <div class="modal-body">
+                Signup failed
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
+<script>
+    $(document).ready(function() {
+        $('.view-profile').click(function(){
+            var physician_id = $(this).attr('physician_id');
+            $.LoadingOverlay('show');
+            $.ajax("/api/physician_profile", {
+                method: 'GET',
+                data: {
+                    user_id: physician_id
+                },
+                dataType: 'json',
+                success: function(res) {
+                    $.LoadingOverlay('hide');
+                    if(res['code'] == 'SUCCESS') {
+                        profiles = res['profiles'];
+                        resetProfile();
+                        $('#physicianProfileModal').modal()
+                    } else {
+                        openProfileFailModal(res['msg'], 'Getting Profile Failed');
+                    }
+                }
+            });
+        });
+    });
 
+    function resetProfile() {
+        $('#physicianProfileForm input, #physicianProfileForm textarea').each(function() {
+            $(this).val('');
+        });
+
+        for (var i in profiles) {
+            var profile = profiles[i];
+            $('#'+profile.type).val(profile.value);
+        }
+    }
+    function openProfileFailModal(msg, title) {
+        if (title!=undefined && title!=null && title!='') {
+            $('#updateFailedTitle').text(title)
+        }
+        if (msg==undefined || msg==null || msg=='') {
+            msg = 'Updating failed. Please try again.'
+        }
+        $('#profileFailedModal .modal-body').text(msg);
+        $('#profileFailedModal').modal();
+    }
+</script>
 
 </body>
 </html>

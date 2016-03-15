@@ -27,7 +27,6 @@ $(document).ready(function() {
     $('#btnFormReset').click(resetProfile);
     $('#patientProfileForm').on('submit', function(e) {
         e.preventDefault();
-
         updateProfile();
     });
 });
@@ -61,6 +60,7 @@ function resetProfile() {
 
 var newProfiles = [];
 function updateProfile() {
+    console.log(profiles);
     newProfiles = [];
     var height = $('#height');
     if(height.val() <= 0){
@@ -123,10 +123,28 @@ function updateProfile() {
         } else {
             nowProf['value'] = value;
         }
-        newProfiles.push(nowProf);
-    });
-    newProfiles.push({type: 'smoking', value: $('#smoking').val()});
 
+        if(!profiles.length){
+            newProfiles.push(nowProf);
+        }
+        else{
+            var flag = 0;
+            for (var i in profiles) {
+                var profile = profiles[i];
+                if(nowProf.type == profile.type){
+                    flag = 1;
+                    if(nowProf.value != profile.value){
+                        newProfiles.push(nowProf);
+                        profile.value = nowProf.value;
+                    }
+                }
+            }
+            if (flag == 0){
+                newProfiles.push(nowProf);
+                profiles.push(nowProf);
+            }
+        }
+    });
     //console.log(newProfiles);
     $.LoadingOverlay('show');
     $.ajax("/api/patient_profile", {
@@ -141,7 +159,9 @@ function updateProfile() {
             $.LoadingOverlay('hide');
             //console.log(JSON.stringify(res));
             if(res['code'] = 'SUCCESS') {
-                profiles = newProfiles;
+                if(!profiles.length){
+                    profiles = newProfiles;
+                }
                 openUpdatedModal();
             } else {
                 openUpdateFailModal(res['msg'], 'Update Failed');
