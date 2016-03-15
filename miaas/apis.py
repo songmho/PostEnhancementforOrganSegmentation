@@ -272,8 +272,8 @@ def handle_physician_profile_mgt(request):
             user_id = request.GET.get('user_id')
             if not user_id:
                 raise Exception(MSG_INVALID_PARAMS)
-            if request.session['user']['user_id'] != user_id:
-                raise Exception(MSG_NOT_MATCHED_USER)
+            # if request.session['user']['user_id'] != user_id:
+            #     raise Exception(MSG_NOT_MATCHED_USER)
 
             physician_profile = db.retrieve_physician_profile(user_id)
             return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': physician_profile}))
