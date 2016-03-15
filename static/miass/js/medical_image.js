@@ -22,7 +22,7 @@ $(document).ready(function() {
         $('#imageUploadModal').modal();
     });
 
-    setOpenImageViewerListener('image-previewer');
+    setOpenImageViewerListener($('#image-previewer'));
 
     $('#btnFormEdit').click(function() {
         $('#btnFormEdit').hide();

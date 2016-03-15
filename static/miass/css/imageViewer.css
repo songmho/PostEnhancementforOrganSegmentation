@@ -63,6 +63,10 @@
     }
 }
 
+.image-view #image-view-list a {
+    cursor: pointer;
+}
+
 
 .modal#imageViewModal .image-view .image-view-explorer {
 
@@ -79,5 +83,6 @@
 
 
 .medimage-preview {
-    z-index: 1
+    z-index: 1;
+    cursor: pointer;
 }
