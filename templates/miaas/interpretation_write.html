@@ -21,12 +21,29 @@
     <section class="section section-default">
         <div class="row">
             <div class="col-xs-12 col-title">
-                {#                <h2 class="text-primary" id="titleSubject">Analytics Result for "{{ subject }}"</h2>#}
                 <h2 class="text-primary" id="titleSubject">Interpreting for "{{ request_detail.request_subject }}"</h2>
             </div>
-
             <form id="writeForm" class="col-xs-12 col-form">
+                {% if request_detail.level == 3 %}
+                    <div class="form-container form-boxed form-horizontal row">
+                        <div class="col-xs-12 form-group">
+                            <label class="col-sm-3 col-md-2 control-label" >Patient Name</label>
+                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                                <span id="name" >{{ request_detail.image_subject }}</span>
+                            </div>
 
+                            <label class="col-sm-3 col-md-2 control-label" >Phone Number</label>
+                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                                <span id="phoneNumber" >{{ request_detail.phone_number }}</span>
+                            </div>
+
+                            <label class="col-sm-3 col-md-2 control-label" >Email</label>
+                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                                <span id="email" >{{ request_detail. }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-group">
                         <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>
@@ -136,7 +153,7 @@
                 <h4 class="modal-title" id="patientProfileModalTitle">Patient Profile</h4>
             </div>
             <div class="modal-body">
-                <form id="patientProfileForm" class="col-xs-12 col-form">
+                <div id="patientProfileForm" class="col-xs-12 col-form">
                     <div class="form-container form-boxed form-horizontal row">
                         <div class="col-xs-12 col-md-6 form-group">
                             <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="height">Height</label>
@@ -198,44 +215,36 @@
                     <div class="form-container form-boxed form-horizontal row">
                         <div class="col-xs-12 form-group">
                             <label class="col-sm-3 col-md-2 control-label" for="diseaseHistory" >Disease History</label>
-                            <div class="col-sm-9 col-md-10">
+                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
                                 <output id="diseaseHistory" name="diseaseHistory"></output>
                             </div>
                         </div>
                         <div class="col-xs-12 form-group">
                             <label class="col-sm-3 col-md-2 control-label" for="medication" > Medication</label>
-                            <div class="col-sm-9 col-md-10">
+                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
                                 <output id="medication" name="medication"></output>
-{#                            <textarea type="textarea" id="medication" name="medication" class="form-control"#}
-{#                                      placeholder="Medications" rows="5" readonly></textarea>#}
                             </div>
                         </div>
                         <div class="col-xs-12 form-group">
                             <label class="col-sm-3 col-md-2 control-label" for="familyHistory" >Family History</label>
-                            <div class="col-sm-9 col-md-10">
+                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
                                 <output id="familyHistory" name="familyHistory"></output>
-{#                            <textarea type="textarea" id="familyHistory" name="familyHistory" class="form-control"#}
-{#                                      placeholder="Family History (Heritability)" rows="3" readonly></textarea>#}
                             </div>
                         </div>
                         <div class="col-xs-12 form-group">
                             <label class="col-sm-3 col-md-2 control-label" for="significant" >Significant</label>
-                            <div class="col-sm-9 col-md-10">
+                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
                                 <output id="significant" name="significant"></output>
-{#                            <textarea type="textarea" id="significant" name="significant" class="form-control"#}
-{#                                      placeholder="Significant Cases" rows="3" readonly></textarea>#}
                             </div>
                         </div>
                         <div class="col-xs-12 form-group">
                             <label class="col-sm-3 col-md-2 control-label" for="notice" >Notice</label>
-                            <div class="col-sm-9 col-md-10">
+                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
                                 <output id="notice" name="notice"></output>
-{#                            <textarea type="textarea" id="notice" name="notice" class="form-control"#}
-{#                                      placeholder="Notices" rows="3" readonly></textarea>#}
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -281,7 +290,7 @@
                     profiles = res['profiles'];
                     for (var i in profiles) {
                         var profile = profiles[i];
-                        console.info("type="+profile.type+" / value="+profile.value)
+                        console.info("type="+profile.type+" / value="+profile.value);
                         $('#'+profile.type).val(profile.value);
                     }
                 } else {
