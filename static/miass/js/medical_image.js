@@ -142,6 +142,7 @@ $(document).ready(function() {
 
                 if (res['code'] == 'SUCCESS') {
                     imageInfo['image_dir'] = res['new_dir'];
+                    resetViewer();
                     openModal('The new file is successfully uploaded', 'Update Success');
                 } else {
                     openModal(res['msg'], 'Update Failed');
@@ -170,7 +171,7 @@ $(document).ready(function() {
     $('#btnDeleteCofirm').click(function() {
         $.LoadingOverlay('show');
         $.ajax("/api/medical_image?user_id="+user['user_id']+"&image_id="+imageInfo['image_id']
-                +"&resetViewer()="+imageInfo['image_dir'], {
+                +"&image_dir="+imageInfo['image_dir'], {
             method: 'DELETE',
             success: function (res) {
                 if(res['code'] == 'SUCCESS') {

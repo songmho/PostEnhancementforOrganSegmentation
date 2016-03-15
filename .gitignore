@@ -114,3 +114,11 @@ target/
 # session db
 db.sqlite3
 *.sqlite3
+
+# Archive
+medical_images/
+archive/
+temp/
+/medical_images/
+/archive/
+/temp/
