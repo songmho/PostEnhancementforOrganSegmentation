@@ -10,8 +10,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {% include 'miaas/template_header.html' %}
 
 <!-- custom css -->
+<link rel="stylesheet" type="text/css" href="{% static 'lib/wado/conerstone/cornerstone.min.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'miass/css/imageViewer.css' %}">
-
 
 {% include 'miaas/template_nav_patient.html' %}
 
@@ -364,7 +364,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
                     <div class="image-view-image col-sm-7 col-md-8">
                         <h4>Image View</h4>
-                        <div class="image-view-viewer">
+                        <div id="imageViewer" class="image-view-viewer">
 
                         </div>
                     </div>
@@ -388,6 +388,21 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     imageInfo = JSON.parse("{{ image | jsonstr }}");
     archiveURL = "{% url 'miaas:archive' %}";
 </script>
+
+<!-- include the cornerstone library -->
+<script src="{% static 'lib/wado/conerstone/cornerstone.min.js' %}"></script>
+<script src="{% static 'lib/wado/cornerstoneMath.js' %}"></script>
+<script src="{% static 'lib/wado/cornerstoneTools.js' %}"></script>
+
+<!-- include the dicomParser library as the WADO image loader depends on it -->
+<script src="{% static 'lib/wado/dicomParser/dicomParser.min.js' %}"></script>
+
+<!-- jpeg 2000 codec -->
+<script src="{% static 'lib/wado/jpx.min.js' %}"></script>
+
+<!-- include the cornerstoneWADOImageLoader library -->
+<script src="{% static 'lib/wado/cornerstoneWADOImageLoader.min.js' %}"></script>
+
 <script src="{% static 'miass/js/imageViewer.js' %}"></script>
 <script src="{% static 'miass/js/medical_image.js' %}"></script>
 

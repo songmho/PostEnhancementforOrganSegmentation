@@ -151,8 +151,13 @@
                                 <td>{{ res.medicine_filed }}</td>
                                 <td>{{ res.response_message }}</td>
                                 <td class="valign vcenter">
-                                    <a class="btn btn-success btn-block btn-physician-profile" physician_id="{{ res.physician_id }}" >PROFILE</a>
-                                    <a class="btn btn-success btn-block btn-physician-select" physician_id="{{ res.physician_id }}" >SELECT</a>
+                                    <div class="row btns-2-container">
+                                        <div class="col-xs-12 col-sm-6">
+                                            <a class="btn btn-success btn-block btn-physician-profile " physician_id="{{ res.physician_id }}" >PROFILE</a>
+                                        </div><div class="col-xs-12 col-sm-6">
+                                            <a class="btn btn-success btn-block btn-physician-select3" physician_id="{{ res.physician_id }}" >SELECT</a>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -371,7 +376,7 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="physicianProfileModal" tabindex="-1" role="dialog" aria-labelledby="physicianProfileModalTitle">
+<div class="modal fade modal-profile" id="physicianProfileModal" tabindex="-1" role="dialog" aria-labelledby="physicianProfileModalTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
