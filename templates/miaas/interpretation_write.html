@@ -24,13 +24,17 @@
                 <h2 class="text-primary" id="titleSubject">Interpreting for "{{ request_detail.request_subject }}"</h2>
             </div>
             <form id="writeForm" class="col-xs-12 col-form">
-                {% if request_detail.level == 3 %}
-                    <div class="form-container form-boxed form-horizontal row">
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label" >Patient Name</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="name" >{{ request_detail.image_subject }}</span>
-                            </div>
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" >Patient ID</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="name" >{{ request_detail.patient_id }}</span>
+                        </div>
+                        <label class="col-sm-3 col-md-2 control-label" >Patient Name</label>
+                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+                            <span id="name" >{{ request_detail.name }}</span>
+                        </div>
+                        {% if request_detail.level == 3 %}
 
                             <label class="col-sm-3 col-md-2 control-label" >Phone Number</label>
                             <div class="col-xs-12 col-sm-9 col-md-4 control-text">
@@ -39,11 +43,12 @@
 
                             <label class="col-sm-3 col-md-2 control-label" >Email</label>
                             <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="email" >{{ request_detail. }}</span>
+                                <span id="email" >{{ request_detail.email }}</span>
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
-                {% endif %}
+                </div>
+
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-group">
                         <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>

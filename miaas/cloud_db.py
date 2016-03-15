@@ -159,14 +159,19 @@ class DbManager():
                 print('Update_Patient: ', e)
         return if_updated
 
-    def add_patient_profile(self, user_id, type, value, timestamp):
-        logger.info('user_id=%s type=%s value=%s' % (user_id, type, value))
+    def add_patient_profile(self, user_id, timestamp, profiles):
         if_inserted = False
+        # Build an insert query
+        db_query = "INSERT INTO patient_profile (user_id, type, value, timestamp) VALUES "
+        items = []
+        for prof in profiles:
+            items.append("('%s', '%s', '%s', %s)"%(user_id, prof['type'], prof['value'], timestamp))
+        separator = ","
+        db_query += separator.join(items)
+        print db_query
         with self.connector.cursor() as cursor:
             try:
-                # Add patient profile to 'patient_profile' table
-                db_query = "INSERT INTO patient_profile (user_id, type, value, timestamp) VALUES (%s, %s, %s, %s)"
-                cursor.execute(db_query, (user_id, type, value, timestamp))
+                cursor.execute(db_query)
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:

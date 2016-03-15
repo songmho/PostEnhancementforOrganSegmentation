@@ -226,7 +226,6 @@ def handle_patient_profile_mgt(request):
                 if request.session['user']['user_id'] != user_id:
                     raise Exception(MSG_NOT_MATCHED_USER)
             patient_profile = db.retrieve_patient_profile(user_id)
-            print patient_profile[3]
             return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': patient_profile}))
 
         elif (request.method) == 'POST':
@@ -242,15 +241,20 @@ def handle_patient_profile_mgt(request):
             if request.session['user']['user_id'] != user_id:
                 raise Exception(MSG_NOT_MATCHED_USER)
 
+            if not db.add_patient_profile(user_id, timestamp, data['profiles']):
+                raise Exception(MSG_PROFILE_FAILED)
+
+            return JsonResponse(constants.CODE_SUCCESS)
+
             # for key, value in data['profiles'].items():
             # logger.info(data)
-            for prof in data['profiles']:
-                # logger.info(prof)
-                key = prof['type']
-                value = prof['value']
-                if not db.add_patient_profile(user_id, key, value, timestamp):
-                    raise Exception(MSG_PROFILE_FAILED)
-                logger.info('userid=%s key=%s value=%s' % (user_id, key, value))
+            # for prof in data['profiles']:
+            #     # logger.info(prof)
+            #     key = prof['type']
+            #     value = prof['value']
+            #     if not db.add_patient_profile(user_id, key, value, timestamp):
+            #         raise Exception(MSG_PROFILE_FAILED)
+            #     logger.info('userid=%s key=%s value=%s' % (user_id, key, value))
             return JsonResponse(constants.CODE_SUCCESS)
 
     except Exception as e:
