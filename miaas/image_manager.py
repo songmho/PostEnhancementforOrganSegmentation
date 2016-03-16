@@ -149,7 +149,9 @@ class ImageManager():
                     sysfile_list.append(dirpath)
             for file in files:
                 filepath = os.path.join(rootpath, file)
-                self.decompose(filepath)
+                logger.info(filepath)
+                logger.info(type(filepath))
+                self.decompose(filepath.encode('ascii','ignore'))
                 if file.startswith('.') or file.startswith('__'):
                     sysfile_list.append(filepath)
 
@@ -194,6 +196,7 @@ class ImageManager():
                ext in ImageManager._supported_signal_extensions
 
     def decompose(self, filepath):
+        des_filepath = filepath+"_temp"
         r = gdcm.ImageReader()
         r.SetFileName(filepath)
         if not r.Read():
@@ -219,7 +222,7 @@ class ImageManager():
         image.SetDataElement(pixeldata)
 
         w = gdcm.ImageWriter()
-        w.SetFileName(filepath)
+        w.SetFileName(des_filepath)
         w.SetFile(r.GetFile())
         w.SetImage(image)
         if not w.Write():
