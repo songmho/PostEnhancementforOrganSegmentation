@@ -243,6 +243,10 @@ class DbManager():
                 db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, user_type) values (%s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, user_type))
                 self.connector.commit()
+                # Add physician_profile information
+                db_query = "INSERT INTO physician_profile (user_id) values (%s)"
+                cursor.execute(db_query, (user_id))
+                self.connector.commit()
                 # Add physician information to 'physician' table
                 license_number = physician['license_number']
                 medicine_field = physician['medicine_field']
@@ -312,59 +316,62 @@ class DbManager():
                 print("Update_Physician:", e)
         return if_updated
 
-    def add_physician_profile(self, user_id, type, value):
-        if_exist = False
-        # Check type existence
+    def add_physician_profile(self, user_id, keys, values):
+        if_updated = False
+        db_query = "UPDATE physician_profile SET "
+        for key in keys:
+            if key is keys[-1]:
+                db_query = db_query + key + '=%s '
+            else:
+                db_query = db_query + key + '=%s, '
+        db_query = db_query + "WHERE user_id='" + user_id + "'"
         with self.connector.cursor() as cursor:
             try:
-                db_query = "SELECT value FROM physician_profile WHERE user_id=%s AND type=%s"
-                cursor.execute(db_query, (user_id, type))
+                cursor.execute(db_query, tuple(values))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
-                    if_exist = True
-                if if_exist:
-                    # Update current physician profile
-                    if_updated = False
-                    db_query = "UPDATE physician_profile SET value=%s WHERE user_id=%s AND type=%s"
-                    cursor.execute(db_query, (value, user_id, type))
-                    self.connector.commit()
-                    row_count = cursor.rowcount
-                    if row_count > 0:
-                        if_updated = True
-                    return if_updated
-                else:
-                    # Add physician profile to 'physician_profile' table
-                    if_inserted = False
-                    db_query = "INSERT INTO physician_profile (user_id, type, value) VALUES (%s, %s, %s)"
-                    cursor.execute(db_query, (user_id, type, value))
-                    self.connector.commit()
-                    row_count = cursor.rowcount
-                    if row_count > 0:
-                        if_inserted = True
-                    return if_inserted
+                    if_updated = True
+                return if_updated
             except Exception as e:
                 print("Add_Physician_Profile: ", e)
 
     def retrieve_physician_profile(self, physician_id, type=None):
-        profiles = []
+        profile = {}
         with self.connector.cursor() as cursor:
             try:
-                if type is None:
-                    db_query = "SELECT type, value FROM physician_profile WHERE user_id=%s"
-                    cursor.execute(db_query, physician_id)
-                else:
-                    db_query = "SELECT type, value FROM physician_profile WHERE user_id=%s and type=%s"
-                    cursor.execute(db_query, physician_id, type)
+                db_query = "SELECT * FROM physician_profile WHERE user_id=%s"
+                cursor.execute(db_query, physician_id)
                 self.connector.commit()
                 for row in cursor:
-                    profile = {}
-                    profile['type'] = row[0]
-                    profile['value'] = row[1]
-                    profiles.append(profile)
+                    profile['user_id'] = row[1]
+                    profile['aboutMe'] = row[2]
+                    profile['specialism'] = row[3]
+                    profile['medicalSchool'] = row[4]
+                    profile['graduate'] = row[5]
+                    profile['certifications'] = row[6]
+                    profile['memberships'] = row[7]
+                    profile['fieldsOfMedicine'] = row[8]
+                    profile['hiv'] = row[9]
+                    profile['offices'] = row[10]
+                    profile['languages'] = row[11]
+                    profile['insuranceProgram'] = row[12]
+                    profile['healthPlans'] = row[13]
+                    profile['hospitalPrivileges'] = row[14]
+                    profile['malpractice'] = row[15]
+                    profile['licenseeActions'] = row[16]
+                    profile['outOfStateActions'] = row[17]
+                    profile['currentLimits'] = row[18]
+                    profile['hspPrivRestrictions'] = row[19]
+                    profile['hspFRPriv'] = row[20]
+                    profile['criminalConvictions'] = row[21]
+                    profile['teaching'] = row[22]
+                    profile['serviceActivity'] = row[23]
+                    profile['publications'] = row[24]
+                    profile['statement'] = row[25]
             except Exception as e:
                 print("Exception: ", e)
-        return profiles
+        return profile
 
     def add_medical_image(self, medical_image):
         if_inserted = False

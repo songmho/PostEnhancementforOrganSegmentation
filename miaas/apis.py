@@ -283,6 +283,7 @@ def handle_physician_profile_mgt(request):
             #     raise Exception(MSG_NOT_MATCHED_USER)
 
             physician_profile = db.retrieve_physician_profile(user_id)
+            print(physician_profile)
             return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': physician_profile}))
 
         elif (request.method) == 'POST':
@@ -297,12 +298,15 @@ def handle_physician_profile_mgt(request):
                 raise Exception(MSG_NOT_MATCHED_USER)
 
             is_updated = False
+            physician_profile = {}
+            keys = []
+            values = []
             for prof in data['profiles']:
-                key = prof['type']
-                value = prof['value']
-                prof_updated = db.add_physician_profile(user_id, key, value)
-                if prof_updated:
-                    is_updated = True
+                keys.append(prof['type'])
+                values.append(prof['value'])
+            prof_updated = db.add_physician_profile(user_id, keys, values)
+            if prof_updated:
+                is_updated = True
             if is_updated:
                 return JsonResponse(constants.CODE_SUCCESS)
             else:
