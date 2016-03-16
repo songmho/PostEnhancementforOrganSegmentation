@@ -2,6 +2,7 @@ import gdcm
 import os, shutil, glob
 import datetime, time
 import logging
+import subprocess
 import zipfile, codecs
 from . import cloud_db, constants, dicom_reader
 
@@ -34,7 +35,13 @@ class ImageManager():
             #     raise Exception("Invalid Dicom Image Format.")
             temp_path = extract_dir
         else:
-            self.decompose(self._temp_file_path)
+            p = subprocess.Popen(['sudo', 'python', './decompose.py', self._temp_file_path.encode("ascii","ignore")], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            p.stdin.write("'" + '\n')
+            p.stdin.close()
+            for line in p.stdout.readlines():
+                logger.info(line)
+            p.wait()
+
             temp_path = self._temp_file_path
         logger.info('uploaded temp file: %s' % temp_path)
 
@@ -149,9 +156,16 @@ class ImageManager():
                     sysfile_list.append(dirpath)
             for file in files:
                 filepath = os.path.join(rootpath, file)
-                logger.info(filepath)
-                logger.info(type(filepath))
-                self.decompose(filepath.encode('ascii','ignore'))
+                # logger.info("################################################3")
+                # logger.info('/home/sel/MIaaS/src/miaas/decompose.py'+ str(filepath))
+                # logger.info(os.getcwd())
+                p = subprocess.Popen(['sudo', 'python', './decompose.py', filepath.encode('ascii','ignore')], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                p.stdin.write("'" + '\n')
+                p.stdin.close()
+                for line in p.stdout.readlines():
+                    logger.info(line)
+                p.wait()
+
                 if file.startswith('.') or file.startswith('__'):
                     sysfile_list.append(filepath)
 
@@ -194,42 +208,6 @@ class ImageManager():
         ext = self._get_file_extension(filepath)
         return ext in ImageManager._supported_image_extensions or \
                ext in ImageManager._supported_signal_extensions
-
-    def decompose(self, filepath):
-        des_filepath = filepath+"_temp"
-        r = gdcm.ImageReader()
-        r.SetFileName(filepath)
-        if not r.Read():
-            raise Exception("No file.")
-
-        image = gdcm.Image()
-        ir = r.GetImage()
-
-        image.SetNumberOfDimensions( ir.GetNumberOfDimensions() )
-        dims = ir.GetDimensions()
-
-        image.SetDimension(0, ir.GetDimension(0))
-        image.SetDimension(1, ir.GetDimension(1))
-        pixeltype = ir.GetPixelFormat()
-        image.SetPixelFormat(pixeltype)
-
-        pi = ir.GetPhotometricInterpretation()
-        image.SetPhotometricInterpretation(pi)
-
-        pixeldata = gdcm.DataElement(gdcm.Tag(0x7fe0, 0x0010))
-        str1 = ir.GetBuffer()
-        pixeldata.SetByteValue(str1, gdcm.VL(len(str1)))
-        image.SetDataElement(pixeldata)
-
-        w = gdcm.ImageWriter()
-        w.SetFileName(des_filepath)
-        w.SetFile(r.GetFile())
-        w.SetImage(image)
-        if not w.Write():
-            raise Exception("Write failed.")
-
-        return True
-
 
     def _get_file_name(self, filepath):
         head, tail = os.path.split(filepath)
