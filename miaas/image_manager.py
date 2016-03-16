@@ -1,3 +1,4 @@
+import gdcm
 import os, shutil, glob
 import datetime, time
 import logging
@@ -33,6 +34,7 @@ class ImageManager():
             #     raise Exception("Invalid Dicom Image Format.")
             temp_path = extract_dir
         else:
+            self.decompose(self._temp_file_path)
             temp_path = self._temp_file_path
         logger.info('uploaded temp file: %s' % temp_path)
 
@@ -129,7 +131,6 @@ class ImageManager():
             logger.info("it's not zipfile")
             return None
         zipfiledir = '%s/%s/' % (constants.TEMP_EXTRACT_DIR, self._image_info['user_id'])
-
         if os.path.exists(zipfiledir):
             shutil.rmtree(zipfiledir)
         with zipfile.ZipFile(filename, "r") as zfile:
@@ -148,6 +149,7 @@ class ImageManager():
                     sysfile_list.append(dirpath)
             for file in files:
                 filepath = os.path.join(rootpath, file)
+                self.decompose(filepath)
                 if file.startswith('.') or file.startswith('__'):
                     sysfile_list.append(filepath)
 
@@ -191,8 +193,40 @@ class ImageManager():
         return ext in ImageManager._supported_image_extensions or \
                ext in ImageManager._supported_signal_extensions
 
-    def _is_valid_dicom(self, filepath):
-        pass
+    def decompose(self, filepath):
+        r = gdcm.ImageReader()
+        r.SetFileName(filepath)
+        if not r.Read():
+            raise Exception("No file.")
+
+        image = gdcm.Image()
+        ir = r.GetImage()
+
+        image.SetNumberOfDimensions( ir.GetNumberOfDimensions() )
+        dims = ir.GetDimensions()
+
+        image.SetDimension(0, ir.GetDimension(0))
+        image.SetDimension(1, ir.GetDimension(1))
+        pixeltype = ir.GetPixelFormat()
+        image.SetPixelFormat(pixeltype)
+
+        pi = ir.GetPhotometricInterpretation()
+        image.SetPhotometricInterpretation(pi)
+
+        pixeldata = gdcm.DataElement(gdcm.Tag(0x7fe0, 0x0010))
+        str1 = ir.GetBuffer()
+        pixeldata.SetByteValue(str1, gdcm.VL(len(str1)))
+        image.SetDataElement(pixeldata)
+
+        w = gdcm.ImageWriter()
+        w.SetFileName(filepath)
+        w.SetFile(r.GetFile())
+        w.SetImage(image)
+        if not w.Write():
+            raise Exception("Write failed.")
+
+        return True
+
 
     def _get_file_name(self, filepath):
         head, tail = os.path.split(filepath)
