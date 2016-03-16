@@ -123,6 +123,7 @@ class ImageManager():
     def _is_zipfile(self, filename):
         return zipfile.is_zipfile(filename)
 
+    #extract zipfiles
     def _extract_zipfile(self, filename):
         if not self._is_zipfile(filename):
             logger.info("it's not zipfile")
@@ -137,6 +138,7 @@ class ImageManager():
             except UnicodeDecodeError as e:
                 self._extractall_unicode(zfile, zipfiledir)
 
+        #find sysfiles
         sysfile_list = []
         for root, dirs, files in os.walk(zipfiledir):
             rootpath = os.path.abspath(root)
@@ -149,6 +151,7 @@ class ImageManager():
                 if file.startswith('.') or file.startswith('__'):
                     sysfile_list.append(filepath)
 
+        #remove sysfiles
         for sysfile in sysfile_list:
             if not os.path.exists(sysfile):
                 continue
@@ -156,6 +159,8 @@ class ImageManager():
                 os.remove(sysfile)
             else:
                 shutil.rmtree(sysfile)
+
+        #remove invalid dicom files
 
         return zipfiledir
 
@@ -185,6 +190,9 @@ class ImageManager():
         ext = self._get_file_extension(filepath)
         return ext in ImageManager._supported_image_extensions or \
                ext in ImageManager._supported_signal_extensions
+
+    def _is_valid_dicom(self, filepath):
+        pass
 
     def _get_file_name(self, filepath):
         head, tail = os.path.split(filepath)

@@ -57,6 +57,8 @@ function downloadAndView(tagData)
         dicomloadAndViewImage(url);
         $('#imageViewModalTitleName').text(tagData['name']);
         showImageViewerLoader(false);
+    } else if (tagData['type'] == 'csv') {
+
     } else {
         var canvas = $('#imageViewer canvas')[0];
         var ctx = canvas.getContext('2d');
