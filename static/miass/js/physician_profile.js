@@ -37,8 +37,8 @@ function resetProfile() {
     });
 
     for (var i in profiles) {
-        var profile = profiles[i];
-        $('#'+profile.type).val(profile.value);
+        //var profile = profiles[i];
+        $('#'+i).val(profiles[i]);
     }
 }
 
