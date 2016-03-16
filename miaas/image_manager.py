@@ -1,6 +1,8 @@
+import gdcm
 import os, shutil, glob
 import datetime, time
 import logging
+import subprocess
 import zipfile, codecs
 from . import cloud_db, constants, dicom_reader
 
@@ -33,6 +35,7 @@ class ImageManager():
             #     raise Exception("Invalid Dicom Image Format.")
             temp_path = extract_dir
         else:
+            self.decompose(self._temp_file_path)
             temp_path = self._temp_file_path
         logger.info('uploaded temp file: %s' % temp_path)
 
@@ -120,15 +123,24 @@ class ImageManager():
             logger.exception(e)
             return False
 
+    def decompose(self, filepath):
+        p = subprocess.Popen(['sudo', 'python', './decompose.py', filepath.encode('ascii','ignore')], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p.stdin.write("'" + '\n')
+        p.stdin.close()
+        for line in p.stdout.readlines():
+            logger.info(line)
+        p.wait()
+
+
     def _is_zipfile(self, filename):
         return zipfile.is_zipfile(filename)
 
+    #extract zipfiles
     def _extract_zipfile(self, filename):
         if not self._is_zipfile(filename):
             logger.info("it's not zipfile")
             return None
         zipfiledir = '%s/%s/' % (constants.TEMP_EXTRACT_DIR, self._image_info['user_id'])
-
         if os.path.exists(zipfiledir):
             shutil.rmtree(zipfiledir)
         with zipfile.ZipFile(filename, "r") as zfile:
@@ -137,6 +149,7 @@ class ImageManager():
             except UnicodeDecodeError as e:
                 self._extractall_unicode(zfile, zipfiledir)
 
+        #find sysfiles
         sysfile_list = []
         for root, dirs, files in os.walk(zipfiledir):
             rootpath = os.path.abspath(root)
@@ -146,9 +159,15 @@ class ImageManager():
                     sysfile_list.append(dirpath)
             for file in files:
                 filepath = os.path.join(rootpath, file)
+                # logger.info("################################################3")
+                # logger.info('/home/sel/MIaaS/src/miaas/decompose.py'+ str(filepath))
+                # logger.info(os.getcwd())
+                self.decompose(filepath)
+
                 if file.startswith('.') or file.startswith('__'):
                     sysfile_list.append(filepath)
 
+        #remove sysfiles
         for sysfile in sysfile_list:
             if not os.path.exists(sysfile):
                 continue
@@ -156,6 +175,8 @@ class ImageManager():
                 os.remove(sysfile)
             else:
                 shutil.rmtree(sysfile)
+
+        #remove invalid dicom files
 
         return zipfiledir
 
