@@ -35,13 +35,7 @@ class ImageManager():
             #     raise Exception("Invalid Dicom Image Format.")
             temp_path = extract_dir
         else:
-            p = subprocess.Popen(['sudo', 'python', './decompose.py', self._temp_file_path.encode("ascii","ignore")], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            p.stdin.write("'" + '\n')
-            p.stdin.close()
-            for line in p.stdout.readlines():
-                logger.info(line)
-            p.wait()
-
+            self.decompose(self._temp_file_path)
             temp_path = self._temp_file_path
         logger.info('uploaded temp file: %s' % temp_path)
 
@@ -129,6 +123,15 @@ class ImageManager():
             logger.exception(e)
             return False
 
+    def decompose(self, filepath):
+        p = subprocess.Popen(['sudo', 'python', './decompose.py', filepath.encode('ascii','ignore')], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p.stdin.write("'" + '\n')
+        p.stdin.close()
+        for line in p.stdout.readlines():
+            logger.info(line)
+        p.wait()
+
+
     def _is_zipfile(self, filename):
         return zipfile.is_zipfile(filename)
 
@@ -159,12 +162,7 @@ class ImageManager():
                 # logger.info("################################################3")
                 # logger.info('/home/sel/MIaaS/src/miaas/decompose.py'+ str(filepath))
                 # logger.info(os.getcwd())
-                p = subprocess.Popen(['sudo', 'python', './decompose.py', filepath.encode('ascii','ignore')], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                p.stdin.write("'" + '\n')
-                p.stdin.close()
-                for line in p.stdout.readlines():
-                    logger.info(line)
-                p.wait()
+                self.decompose(filepath)
 
                 if file.startswith('.') or file.startswith('__'):
                     sysfile_list.append(filepath)

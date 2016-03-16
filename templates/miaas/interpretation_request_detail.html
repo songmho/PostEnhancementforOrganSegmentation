@@ -361,7 +361,7 @@
                 Signin failed
             </div>
             <div class="modal-footer">
-                <a type="button" class="btn btn-default" href="{% url 'miaas:interpretation_request_list' %}">Close</a>
+                <a type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Close</a>
             </div>
         </div>
     </div>
@@ -618,12 +618,35 @@
     </div>
 </div>
 
+
+<!-- Modal -->
+<div class="modal fade" id="cancelRequest" tabindex="-1" role="dialog" aria-labelledby="cancelRequestTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="cancelRequestTitle">Confirm Delete</h4>
+        </div>
+        <div class="modal-body">
+        Are you sure to cancel the request?
+        </div>
+        <div class="modal-footer">
+            <button id="btnDeleteCofirm" type="button" class="btn btn-default" data-dismiss="modal">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+        </div>
+    </div>
+</div>
+
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
 <script>
     $(document).ready(function() {
         $('.btn-request-cancel').click(function() {
+            $('#cancelRequest').modal()
+        });
+        $('#btnDeleteCofirm').click(function() {
             $.ajax({
                 url:"/api/interpretation?action=delPatientReq&request_id={{ request_detail.request_id }}",
                 type: 'DELETE',
