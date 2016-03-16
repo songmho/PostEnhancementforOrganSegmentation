@@ -127,6 +127,23 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     </div>
 </div>
 
+<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="alertModalTitle">Request Failed</h4>
+        </div>
+        <div class="modal-body">
+        Request failed
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="uploadingProgressModal" tabindex="-1" role="dialog" aria-labelledby="uploadingProgressTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -152,6 +169,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 <script type="text/javascript">
     archiveURL = "{% url 'miaas:archive' %}";
 </script>
+<script src="{% static 'miass/js/imageUploader.js' %}"></script>
 <script src="{% static 'miass/js/medical_image_upload.js' %}"></script>
 
 </body>

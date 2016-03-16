@@ -1,0 +1,129 @@
+/**
+ * Created by hanter on 2016. 3. 15..
+ */
+var INTERVAL_TIME = 250;
+var circleProgress = null;
+var g_progress_intv = null;
+var uploadStatus = 0; //0=None, 1=waiting, 2=uploading, 3=configuring
+var runningRotating = false;
+
+function startFileProgressUpdate(upload_id) {
+    uploadStatus=1;
+    console.log('start file upload');
+
+    setProgress(0);
+    g_progress_intv = setInterval(function() {
+        $.getJSON("/api/get_upload_progress?X-Progress-ID="+upload_id,
+            function(data) {
+                if(data == null) {
+                    if(uploadStatus == 2) {
+                        stopFileProgressUpdate()
+
+                    } else if (uploadStatus == 1) {
+                        setProgress(0);
+                    } else {
+                        clearInterval(g_progress_intv);
+                        g_progress_intv = null;
+                    }
+                    return;
+                }
+
+                uploadStatus = 2;
+                var percentage = data.uploaded / data.length;
+                animateProgress(percentage);
+            });
+    }, INTERVAL_TIME);
+}
+
+function stopFileProgressUpdate(bStartValidating) {
+    console.log('end data, stop.');
+    clearInterval(g_progress_intv);
+    g_progress_intv = null;
+    setProgress(100);
+
+    if (bStartValidating==undefined || bStartValidating==null)
+        bStartValidating = true;
+    if(bStartValidating) {
+        uploadStatus = 3;
+        setTimeout(function () {
+            setProgressText('Validating...');
+            startRotatingProgress();
+        }, 200);
+    }
+}
+
+
+function setProgressText(text) {
+    $('#uploadingProgressModal #uploadStatus').text(text);
+}
+function setProgress(percent) {
+    if(percent<0) percent=0;
+    else if(percent>1.0) percent=1.0;
+    circleProgress.set(percent, {
+        duration: INTERVAL_TIME
+    });
+}
+function animateProgress(percent) {
+    if(percent<0) percent=0;
+    else if(percent>1.0) percent=1.0;
+    circleProgress.animate(percent, {
+        duration: INTERVAL_TIME
+    });
+}
+function showLoadingText(bShow) {
+    if(bShow) {
+        $('#uploadProgress .progressbar-text').show();
+    } else {
+        $('#uploadProgress .progressbar-text').hide();
+    }
+}
+function rotatingProgress() {
+    if(runningRotating) {
+        var duration = 1000;
+
+        setTimeout(function () {
+            rotatingProgress();
+        }, duration);
+
+        var $elm = $('#uploadProgress');
+
+        $({deg: 0}).animate({deg: 360}, {
+            duration: duration,
+            step: function (now) {
+                $elm.css({
+                    //'transform': 'rotate(' + easeInOutCubic (now/360*1000, 0, 360, 1000) + 'deg)'
+                    'transform': 'rotate(' + now + 'deg)'
+                });
+            }
+        });
+
+    } else {
+
+    }
+}
+function startRotatingProgress() {
+    runningRotating = true;
+    showLoadingText(false);
+    setProgress(0.7);
+    rotatingProgress();
+}
+function stopRotatingProgress() {
+    runningRotating = false;
+    showLoadingText(true);
+    setProgress(0);
+    var $elm = $('#uploadProgress');
+    $({deg: 0}).animate({deg: 0}, {
+        duration: 0,
+        step: function (now) {
+            $elm.css({
+                'transform': 'rotate(' + 0 + 'deg)'
+            });
+        }
+    });
+}
+function easeInOutCubic (t, b, c, d) {
+	t /= d/2;
+	if (t < 1) return c/2*t*t*t + b;
+	t -= 2;
+	return c/2*(t*t*t + 2) + b;
+}

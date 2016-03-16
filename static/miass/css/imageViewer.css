@@ -80,9 +80,17 @@
     padding-left: 12px;
 }
 
-
-
 .medimage-preview {
     z-index: 1;
     cursor: pointer;
+}
+
+#imageViewerLoader {
+    width: 100%;
+    height:100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    top:0px;
+    left:0px;
+    position:absolute
 }
