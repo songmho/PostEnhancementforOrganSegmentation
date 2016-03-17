@@ -648,6 +648,7 @@
             $('#cancelRequest').modal()
         });
         $('#btnDeleteCofirm').click(function() {
+            $.LoadingOverlay('show');
             $.ajax({
                 url:"/api/interpretation?action=delPatientReq&request_id={{ request_detail.request_id }}",
                 type: 'DELETE',
@@ -687,6 +688,7 @@
         });
 
         $('.btn-physician-select').click(function() {
+            $.LoadingOverlay('show');
             var physician_id = $(this).attr('physician_id');
             $.ajax("/api/interpretation", {
                 method: 'POST',
@@ -709,6 +711,7 @@
 
         $('#requestEditForm').on('submit', function(e) {
             e.preventDefault();
+            $.LoadingOverlay('show');
             $.ajax("/api/interpretation", {
                 method: 'POST',
                 data: JSON.stringify({
