@@ -10,6 +10,10 @@ $(document).ready(function() {
         $(this).tab('show');
     });
 
+    $('.onloading').click(function() {
+        $.LoadingOverlay('show');
+    });
+
     $('[data-toggle="tooltip"]').tooltip();
 });
 
