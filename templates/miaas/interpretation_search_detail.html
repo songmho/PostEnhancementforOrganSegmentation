@@ -147,6 +147,7 @@
     $(document).ready(function() {
         $('#searchDetailForm').on('submit', function(e) {
             e.preventDefault();
+            $.LoadingOverlay('show');
             $.ajax("/api/interpretation", {
                 method: 'PUT',
                 data: JSON.stringify({

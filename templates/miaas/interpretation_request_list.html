@@ -37,7 +37,7 @@
                             </thead>
                             <tbody>
                             {% for intpr_req in intpr_request.intpr_request_list %}
-                                <tr onclick="javascript: location.href='{% url 'miaas:interpretation_request_detail' intpr_req.request_id %}';">
+                                <tr onclick="javascript: $.LoadingOverlay('show'); location.href='{% url 'miaas:interpretation_request_detail' intpr_req.request_id %}';">
                                     <td>{{ intpr_req.request_date|datetime_string }}</td>
                                     <td>{{ intpr_req.request_subject }}</td>
                                     <td>{{ intpr_req.message }}</td>
