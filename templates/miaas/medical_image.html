@@ -72,7 +72,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-sm-3 col-md-2 control-label" for="takenDate" >Date</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="date" id="takenDate" name="takenDate" class="form-control"
-                                   placeholder="Date" required readonly value="2016-02-02">
+                                   placeholder="YYYY-MM-DD" required readonly value="2016-02-02">
                         </div>
                     </div>
 
@@ -331,6 +331,16 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <div id="graphViewer" class="image-view-viewer">
                         </div>
                     </div>
+                    <div class="image-view-image-settings col-xs-12 col-md-12">
+                        <div class="col-xs-4 form-group">
+                            <label class="control-label" for="takenDate" >Roll Period:</label>
+                            <div class="">
+                                <input type="number" id="takenDate" name="takenDate" class="form-control"
+                                       placeholder="Date" required readonly value="2016-02-02">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
                 </div>
             </div>
             <div class="modal-footer">
