@@ -2,7 +2,7 @@
  * Created by hanter on 2016. 1. 26..
  */
 
-var SERVER_ADDRESS = 'http://localhost:8000';
+var SERVER_ADDRESS = 'http://203.253.23.26:8000';
 
 $(document).ready(function() {
     $('.nav-tabs-group > .nav.navtabs a').click(function (e) {
