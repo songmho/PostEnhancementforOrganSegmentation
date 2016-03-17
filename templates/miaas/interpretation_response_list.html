@@ -44,7 +44,7 @@
                                     <td>{{ response_info.response_date|datetime_string }}</td>
                                     <td>{{ response_info.patient_id }}</td>
                                     <td>{{ response_info.request_subject }}</td>
-                                    <td>{{ response_info.request_message }}</td>
+                                    <td>{{ response_info.request_message|less_string }}</td>
                                     <td>{{ response_info.image_subject }}</td>
                                     <td>{{ response_info.image_type }}</td>
                                     <td>{{ response_info.level }}</td>

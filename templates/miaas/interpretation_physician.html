@@ -42,7 +42,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                                     <td>{{ intpr.request_subject }}</td>
                                     <td>{{ intpr.image_type }}</td>
                                     <td>{{ intpr.level }}</td>
-                                    <td>{{ intpr.summary }}</td>
+                                    <td>{{ intpr.summary|less_string }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>

@@ -40,7 +40,7 @@
                                 <tr onclick="javascript: $.LoadingOverlay('show'); location.href='{% url 'miaas:interpretation_request_detail' intpr_req.request_id %}';">
                                     <td>{{ intpr_req.request_date|datetime_string }}</td>
                                     <td>{{ intpr_req.request_subject }}</td>
-                                    <td>{{ intpr_req.message }}</td>
+                                    <td>{{ intpr_req.message|less_string }}</td>
                                     <td>{{ intpr_req.image_subject }}</td>
                                     <td>{{ intpr_req.image_type }}</td>
                                     <td>{{ intpr_req.level }}</td>
