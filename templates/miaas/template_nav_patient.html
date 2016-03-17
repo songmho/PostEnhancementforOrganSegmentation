@@ -13,14 +13,14 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{% url 'miaas:index' %}">MIAAS</a>
+            <a class="navbar-brand onloading" href="{% url 'miaas:index' %}">MIAAS</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li ><a href="{% url 'miaas:profile' %}">Profile</a></li>
-                <li ><a href="{% url 'miaas:archive' %}">Archive</a></li>
-                <li ><a href="{% url 'miaas:interpretation' %}">Interpretations</a></li>
-                <li ><a href="{% url 'miaas:interpretation_request_list' %}">Request</a></li>
+                <li ><a class="onloading" href="{% url 'miaas:profile' %}">Profile</a></li>
+                <li ><a class="onloading" href="{% url 'miaas:archive' %}">Archive</a></li>
+                <li ><a class="onloading" href="{% url 'miaas:interpretation' %}">Interpretations</a></li>
+                <li ><a class="onloading" href="{% url 'miaas:interpretation_request_list' %}">Request</a></li>
 
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -30,7 +30,7 @@
                         <span>Hi, {{ user_session.name }} </span></span><span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'miaas:account' %}">Account Setting</a></li>
+                        <li><a class="onloading" href="{% url 'miaas:account' %}">Account Setting</a></li>
                         <li><a href="#" onclick="signout()">Logout</a></li>
                     </ul>
                 </li>

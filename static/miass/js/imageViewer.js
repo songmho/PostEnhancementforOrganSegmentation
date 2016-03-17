@@ -50,27 +50,28 @@ function dicomloadAndView(wadoURI) {
 
 function generalImageLoadAndView(imageURL) {
     var canvas = $('#imageViewer canvas')[0];
-        var ctx = canvas.getContext('2d');
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        var image = new Image();
+    var image = new Image();
 
-        showImageViewerLoader(true);
-        image.addEventListener("load", function () {
-            //var canvasSize = canvas.width;
-            var drawingWidth = image.width;
-            var drawingHeight = image.height;
-            var magni = 1;
-            if (canvasSize >= image.height) {
-                var magni = canvasSize/image.width;
-            } else {
-                var magni = canvasSize/image.height;
-            }
-            drawingWidth *= magni;
-            drawingHeight *= magni;
-            ctx.drawImage(image, 0, 0, drawingWidth, drawingHeight);
-            showImageViewerLoader(false);
-        });
-        image.src = imageURL;
+    showImageViewerLoader(true);
+    image.addEventListener("load", function () {
+        //var canvasSize = canvas.width;
+        var drawingWidth = image.width;
+        var drawingHeight = image.height;
+        var magni = 1;
+        if (canvasSize >= image.height) {
+            var magni = canvasSize/image.width;
+        } else {
+            var magni = canvasSize/image.height;
+        }
+        drawingWidth *= magni;
+        drawingHeight *= magni;
+        ctx.drawImage(image, 0, 0, drawingWidth, drawingHeight);
+        showImageViewerLoader(false);
+    });
+    image.src = imageURL;
 }
 
 function csvGrpahLoadAndView(csvURL) {
