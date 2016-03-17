@@ -52,7 +52,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         </thead>
                         <tbody>
                         {% for request_info in requested_intpr.requested_intpr_list %}
-                            <tr onclick="javascript: location.href='{% url 'miaas:interpretation_search_detail' request_info.request_id %}';">
+                            <tr onclick="javascript: $.LoadingOverlay('show'); location.href='{% url 'miaas:interpretation_search_detail' request_info.request_id %}';">
                                 <td>{{ request_info.requested_date|datetime_string }}</td>
                                 <td>{{ request_info.patient_id }}</td>
                                 <td>{{ request_info.image_type }}</td>
