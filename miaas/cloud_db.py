@@ -244,9 +244,9 @@ class DbManager():
                 cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, user_type))
                 self.connector.commit()
                 # Add physician_profile information
-                db_query = "INSERT INTO physician_profile (user_id) values (%s)"
-                cursor.execute(db_query, (user_id))
-                self.connector.commit()
+                # db_query = "INSERT INTO physician_profile (user_id) values (%s)"
+                # cursor.execute(db_query, (user_id))
+                # self.connector.commit()
                 # Add physician information to 'physician' table
                 license_number = physician['license_number']
                 medicine_field = physician['medicine_field']
