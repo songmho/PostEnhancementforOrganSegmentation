@@ -243,10 +243,6 @@ class DbManager():
                 db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, user_type) values (%s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, user_type))
                 self.connector.commit()
-                # Add physician_profile information
-                db_query = "INSERT INTO physician_profile (user_id) values (%s)"
-                cursor.execute(db_query, (user_id))
-                self.connector.commit()
                 # Add physician information to 'physician' table
                 license_number = physician['license_number']
                 medicine_field = physician['medicine_field']
@@ -259,8 +255,18 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 print("Add_Physician: ", e)
-            finally:
-                return if_inserted
+        with self.connector.cursor() as cursor:
+            try:
+                # Add physician_profile information
+                db_query = "INSERT INTO physician_profile (user_id) values (%s)"
+                cursor.execute(db_query, (user_id))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_inserted = True
+            except Exception as e:
+                print("Add_Physician_Profile: ", e)
+        return if_inserted
 
     def retrieve_physician(self, physician_id, password=None):
         user = {}

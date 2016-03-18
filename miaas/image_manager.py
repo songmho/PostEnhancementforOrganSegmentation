@@ -1,4 +1,3 @@
-import gdcm
 import os, shutil, glob
 import datetime, time
 import logging

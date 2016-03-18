@@ -79,3 +79,6 @@ def is_empty(collection):
 def plus(value, plus):
     return value+plus
 
+@register.filter(name='less_string')
+def less_string(value):
+    return value[:80]+"..."
