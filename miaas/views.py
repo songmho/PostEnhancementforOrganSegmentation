@@ -251,6 +251,10 @@ def interpretation_request_detail_page(request, request_id):
         physician_response = {}
         request_detail, responses = db.retrieve_patient_request_detail(request_id)
         physician_response['responses'] = responses
+
+        result = db.retrieve_medical_image_by_id(request_detail['image_id'])
+        context['image'] = result['image']
+
         context['request_detail'] = request_detail
         context['physician_response'] = physician_response
         logger.info("Status:%s" % request_detail['status'])
@@ -368,6 +372,10 @@ def physician_interpretation_write(request, request_id):
         # Retrieve details.
         db = cloud_db.DbManager()
         request_detail = db.retrieve_request_info(request_id)
+
+        result = db.retrieve_medical_image_by_id(request_detail['image_id'])
+        context['image'] = result['image']
+
         context['request_detail'] = request_detail
         logger.info("status:%s" % request_detail['status'])
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
@@ -480,6 +488,9 @@ def interpretation_detail_page(request, intpr_id):
         db = cloud_db.DbManager()
         intpr_detail = db.retrieve_interpretation_detail(intpr_id)
 
+        result = db.retrieve_medical_image_by_id(intpr_detail['image_id'])
+        context['image'] = result['image']
+
         context['intpr_detail'] = intpr_detail
 
     logger.info('interpretation_detail_page get: %s' % request.GET)
@@ -494,6 +505,9 @@ def physician_interpretation_detail_page(request, intpr_id):
         db = cloud_db.DbManager()
         physician_intpr_detail = db.retrieve_physician_interpretation_detail(intpr_id)
 
+        result = db.retrieve_medical_image_by_id(physician_intpr_detail['image_id'])
+        context['image'] = result['image']
+
         context['physician_intpr_detail'] = physician_intpr_detail
 
     logger.info('physician_interpretation_detail_page get: %s' % request.GET)
@@ -507,6 +521,10 @@ def physician_request_search_detail_page(request, request_id):
         # Retrieve details.
         db = cloud_db.DbManager()
         request_detail = db.retrieve_request_info(request_id)
+
+        result = db.retrieve_medical_image_by_id(request_detail['image_id'])
+        context['image'] = result['image']
+
         context['request_detail'] = request_detail
         logger.info("status:%s" % request_detail['status'])
     logger.info('physician_request_search_detail_page get: %s' % request.GET)
