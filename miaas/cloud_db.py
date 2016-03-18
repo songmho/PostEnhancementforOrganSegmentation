@@ -87,7 +87,7 @@ class DbManager():
                 # Add patient information to 'user' table
                 user_id = patient['user_id']
                 password = patient['password']
-                name = patient['name']
+                name = patient['name'].encode('utf-8').decode('latin-1')
                 phone_number = patient['phone_number']
                 email = patient['email']
                 join_date = patient['join_date']
@@ -141,7 +141,7 @@ class DbManager():
         if_updated = False
         user_id = user['user_id']
         password = user['password']
-        name = user['name']
+        name = user['name'].encode('utf-8').decode('latin-1')
         phone_number = user['phone_number']
         email = user['email']
         gender = user['gender']
@@ -165,6 +165,7 @@ class DbManager():
         db_query = "INSERT INTO patient_profile (user_id, type, value, timestamp) VALUES "
         items = []
         for prof in profiles:
+            prof['value'] = prof['value'].encode('utf-8').decode('latin-1')
             items.append("('%s', '%s', '%s', %s)"%(user_id, prof['type'], prof['value'], timestamp))
         separator = ","
         db_query += separator.join(items)
@@ -235,7 +236,7 @@ class DbManager():
                 # Add physician information to 'user' table
                 user_id = physician['user_id']
                 password = physician['password']
-                name = physician['name']
+                name = physician['name'].encode('utf-8').decode('latin-1')
                 phone_number = physician['phone_number']
                 email = physician['email']
                 join_date = physician['join_date']
@@ -302,7 +303,7 @@ class DbManager():
         if_updated = False
         user_id = user['user_id']
         password = user['password']
-        name = user['name']
+        name = user['name'].encode('utf-8').decode('latin-1')
         phone_number = user['phone_number']
         email = user['email']
         license_number = user['license_number']
@@ -756,8 +757,8 @@ class DbManager():
                 # Add request information to 'request' table
                 image_id = request['image_id']
                 status = request['status']
-                subject = request['subject']
-                message = request['message']
+                subject = request['subject'].encode('utf-8').decode('latin-1')
+                message = request['message'].encode('utf-8').decode('latin-1')
                 timestamp = request['timestamp']
                 level = request['level']
                 db_query = "INSERT INTO request (image_id, status, subject, message, timestamp, level) VALUES (%s, %s, %s, %s, %s, %s)"
@@ -794,6 +795,8 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 db_query = "UPDATE request SET subject=%s, message=%s WHERE request_id=%s"
+                subject = subject.encode('utf-8').decode('latin-1')
+                message = message.encode('utf-8').decode('latin-1')
                 cursor.execute(db_query, (subject, message, request_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
