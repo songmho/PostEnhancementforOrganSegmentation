@@ -101,7 +101,8 @@ function csvGrpahLoadAndView(csvURL) {
                 },
                 animatedZooms: true,
                 strokeWidth: 2,
-                color: '#D76474',
+                //color: '#D76474',
+                colors: ['#D76474', '#ADD764', '#8E64D7', '#64D7C7', '#FF0023', '#FFF519', '#1493CC'],
                 plotter: smoothPlotter
             }
         );

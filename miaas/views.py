@@ -253,7 +253,7 @@ def interpretation_request_detail_page(request, request_id):
         physician_response['responses'] = responses
 
         result = db.retrieve_medical_image_by_id(request_detail['image_id'])
-        context['image'] = result['image']
+        context['image'] = result
 
         context['request_detail'] = request_detail
         context['physician_response'] = physician_response
@@ -374,7 +374,7 @@ def physician_interpretation_write(request, request_id):
         request_detail = db.retrieve_request_info(request_id)
 
         result = db.retrieve_medical_image_by_id(request_detail['image_id'])
-        context['image'] = result['image']
+        context['image'] = result
 
         context['request_detail'] = request_detail
         logger.info("status:%s" % request_detail['status'])
@@ -489,7 +489,7 @@ def interpretation_detail_page(request, intpr_id):
         intpr_detail = db.retrieve_interpretation_detail(intpr_id)
 
         result = db.retrieve_medical_image_by_id(intpr_detail['image_id'])
-        context['image'] = result['image']
+        context['image'] = result
 
         context['intpr_detail'] = intpr_detail
 
@@ -506,7 +506,7 @@ def physician_interpretation_detail_page(request, intpr_id):
         physician_intpr_detail = db.retrieve_physician_interpretation_detail(intpr_id)
 
         result = db.retrieve_medical_image_by_id(physician_intpr_detail['image_id'])
-        context['image'] = result['image']
+        context['image'] = result
 
         context['physician_intpr_detail'] = physician_intpr_detail
 
@@ -523,7 +523,7 @@ def physician_request_search_detail_page(request, request_id):
         request_detail = db.retrieve_request_info(request_id)
 
         result = db.retrieve_medical_image_by_id(request_detail['image_id'])
-        context['image'] = result['image']
+        context['image'] = result
 
         context['request_detail'] = request_detail
         logger.info("status:%s" % request_detail['status'])

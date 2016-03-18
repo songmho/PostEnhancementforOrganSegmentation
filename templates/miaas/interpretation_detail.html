@@ -10,7 +10,8 @@
 {% include 'miaas/template_header.html' %}
 
 <!-- custom css -->
-
+<link rel="stylesheet" type="text/css" href="{% static 'lib/wado/conerstone/cornerstone.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/imageViewer.css' %}">
 
 {% include 'miaas/template_nav_patient.html' %}
 
@@ -32,6 +33,7 @@
                         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
                             <span id="itp1-id">
                                 <a class="text-primary view-profile" href="#" physician_id="{{ intpr_detail.physician_id }}">{{ intpr_detail.physician_id }}</a>
+                            </span>
                         </div>
 
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>
@@ -497,7 +499,7 @@
             });
         });
 
-{#        setOpenImageViewerListener($('#image-previewer'));#}
+        setOpenImageViewerListener($('#image-previewer'));
     });
 
     function resetProfile() {
@@ -521,30 +523,30 @@
         $('#profileFailedModal').modal();
     }
 
-{#    imageInfo = JSON.parse("{{ image | jsonstr }}");#}
-{#    archiveURL = "{% url 'miaas:archive' %}";#}
+    imageInfo = JSON.parse("{{ image | jsonstr }}");
+    archiveURL = "{% url 'miaas:archive' %}";
 </script>
 
-{#<!-- include the cornerstone library -->#}
-{#<script src="{% static 'lib/wado/conerstone/cornerstone.min.js' %}"></script>#}
-{#<script src="{% static 'lib/wado/cornerstoneMath.js' %}"></script>#}
-{#<script src="{% static 'lib/wado/cornerstoneTools.js' %}"></script>#}
-{##}
-{#<!-- include the dicomParser library as the WADO image loader depends on it -->#}
-{#<script src="{% static 'lib/wado/dicomParser/dicomParser.min.js' %}"></script>#}
-{##}
-{#<!-- jpeg 2000 codec -->#}
-{#<script src="{% static 'lib/wado/jpx.min.js' %}"></script>#}
-{##}
-{#<!-- include the cornerstoneWADOImageLoader library -->#}
-{#<script src="{% static 'lib/wado/cornerstoneWADOImageLoader.min.js' %}"></script>#}
-{##}
-{#<!-- include the dygraph library -->#}
-{#<script src="{% static 'lib/dygraph/dygraph-combined.js' %}"></script>#}
-{#<script src="{% static 'lib/dygraph/smooth-plotter.js' %}"></script>#}
-{##}
-{#<script src="{% static 'miass/js/imageViewer.js' %}"></script>#}
-{#<script src="{% static 'miass/js/imagePreviewer.js' %}"></script>#}
+<!-- include the cornerstone library -->
+<script src="{% static 'lib/wado/conerstone/cornerstone.js' %}"></script>
+<script src="{% static 'lib/wado/cornerstoneMath.js' %}"></script>
+<script src="{% static 'lib/wado/cornerstoneTools.js' %}"></script>
+
+<!-- include the dicomParser library as the WADO image loader depends on it -->
+<script src="{% static 'lib/wado/dicomParser/dicomParser.min.js' %}"></script>
+
+<!-- jpeg 2000 codec -->
+<script src="{% static 'lib/wado/jpx.min.js' %}"></script>
+
+<!-- include the cornerstoneWADOImageLoader library -->
+<script src="{% static 'lib/wado/cornerstoneWADOImageLoader.min.js' %}"></script>
+
+<!-- include the dygraph library -->
+<script src="{% static 'lib/dygraph/dygraph-combined.js' %}"></script>
+<script src="{% static 'lib/dygraph/smooth-plotter.js' %}"></script>
+
+<script src="{% static 'miass/js/imageViewer.js' %}"></script>
+<script src="{% static 'miass/js/imagePreviewer.js' %}"></script>
 
 
 

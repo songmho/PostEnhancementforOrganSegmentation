@@ -10,7 +10,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {% include 'miaas/template_header.html' %}
 
 <!-- custom css -->
-
+<link rel="stylesheet" type="text/css" href="{% static 'lib/wado/conerstone/cornerstone.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/imageViewer.css' %}">
 
 {% include 'miaas/template_nav_patient.html' %}
 
@@ -43,7 +44,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
                                 col-md-overlay-2 form-group medimage-preview-container">
                         <div class="medimage-preview-wrapper">
-                            <div class="medimage-preview">
+                            <div id="image-previewer" class="medimage-preview">
                                 <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>
                             </div>
                         </div>
@@ -176,8 +177,34 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                 }
             });
         });
+
+        setOpenImageViewerListener($('#image-previewer'));
     });
+
+    imageInfo = JSON.parse("{{ image | jsonstr }}");
+    archiveURL = "{% url 'miaas:archive' %}";
 </script>
+
+<!-- include the cornerstone library -->
+<script src="{% static 'lib/wado/conerstone/cornerstone.js' %}"></script>
+<script src="{% static 'lib/wado/cornerstoneMath.js' %}"></script>
+<script src="{% static 'lib/wado/cornerstoneTools.js' %}"></script>
+
+<!-- include the dicomParser library as the WADO image loader depends on it -->
+<script src="{% static 'lib/wado/dicomParser/dicomParser.min.js' %}"></script>
+
+<!-- jpeg 2000 codec -->
+<script src="{% static 'lib/wado/jpx.min.js' %}"></script>
+
+<!-- include the cornerstoneWADOImageLoader library -->
+<script src="{% static 'lib/wado/cornerstoneWADOImageLoader.min.js' %}"></script>
+
+<!-- include the dygraph library -->
+<script src="{% static 'lib/dygraph/dygraph-combined.js' %}"></script>
+<script src="{% static 'lib/dygraph/smooth-plotter.js' %}"></script>
+
+<script src="{% static 'miass/js/imageViewer.js' %}"></script>
+<script src="{% static 'miass/js/imagePreviewer.js' %}"></script>
 
 
 </body>

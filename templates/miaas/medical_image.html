@@ -368,7 +368,6 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
-<script src="{% static 'lib/jquery/plugins/progressbar.min.js' %}"></script>
 <script type="text/javascript">
     $('#imageType').val("{{ image.image_type }}").attr("selected", "selected");
     $('#takenFrom').val("{{ image.taken_from }}").attr("selected", "selected");
@@ -378,8 +377,11 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     archiveURL = "{% url 'miaas:archive' %}";
 </script>
 
+<!-- include the progressbar library -->
+<script src="{% static 'lib/jquery/plugins/progressbar.min.js' %}"></script>
+
 <!-- include the cornerstone library -->
-<script src="{% static 'lib/wado/conerstone/cornerstone.min.js' %}"></script>
+<script src="{% static 'lib/wado/conerstone/cornerstone.js' %}"></script>
 <script src="{% static 'lib/wado/cornerstoneMath.js' %}"></script>
 <script src="{% static 'lib/wado/cornerstoneTools.js' %}"></script>
 
