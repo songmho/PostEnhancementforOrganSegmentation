@@ -109,18 +109,6 @@ function openUploadFailedModal(msg) {
     $('#uploadFailModal').modal();
 }
 
-function openModal(msg, title) {
-    if (title==undefined || title==null || title=='') {
-        $('#alertModalTitle').text('Alert');
-    }
-    if (msg==undefined || msg==null || msg=='') {
-        msg = 'Alert.';
-    }
-    $('#alertModalTitle').text(title);
-    $('#alertModal .modal-body').text(msg);
-    $('#alertModal').modal();
-}
-
 function openDeleteConfirmModal() {
     $('#deleteImageConfirmModal').modal();
 }

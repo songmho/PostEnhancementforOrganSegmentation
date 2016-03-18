@@ -13,7 +13,7 @@ function showThumbnail() {
         setTimeout(function() {
             if (thumbnail['type'] == 'dcm') {
                 var wadoUrl = "wadouri:" + url;
-                showDicomThumbnail(wadoUrl);
+                //showDicomThumbnail(wadoUrl);
             } else if (thumbnail['type'] == 'csv') {
                 showCsvThumbnail(url);
             } else {
@@ -51,7 +51,25 @@ function showImageThumbnail(url) {
 }
 
 function showDicomThumbnail(url) {
-
+    var element = $('#image-previewer').get(0);
+    try {
+        cornerstone.loadAndCacheImage(url).then(function(image) {
+            console.log(image);
+            console.log(element);
+            var viewport = cornerstone.getDefaultViewportForImage(element, image);
+            cornerstone.displayImage(element, image, viewport);
+            cornerstoneTools.mouseInput.disable(element);
+            cornerstoneTools.mouseWheelInput.disable(element);
+        }, function(err) {
+            console.log(err);
+            openModal(err, "DICOM thumbnail Loading Failed");
+        });
+    }
+    catch(err) {
+        console.log(err);
+        openModal(err, "DICOM thumbnail Loading Failed");
+    }
+    showImageViewerLoader(false);
 }
 
 function showCsvThumbnail(url) {

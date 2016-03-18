@@ -45,6 +45,7 @@ function dicomloadAndView(wadoURI) {
         console.log(err);
         openModal(err, "DICOM Loading Failed");
     }
+    console.log('dicom loaded');
     showImageViewerLoader(false);
 }
 

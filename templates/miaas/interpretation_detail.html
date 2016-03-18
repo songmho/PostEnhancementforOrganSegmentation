@@ -79,7 +79,7 @@
                     <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
                                 col-md-overlay-2 form-group medimage-preview-container">
                         <div class="medimage-preview-wrapper">
-                            <div class="medimage-preview">
+                            <div id="image-previewer" class="medimage-preview">
                                 <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>
                             </div>
                         </div>
@@ -402,6 +402,74 @@
     </div>
 </div>
 
+<div class="modal fade" id="imageViewModal" tabindex="-1" role="dialog" aria-labelledby="imageViewModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="imageViewModalTitle">Medical Image View</h4>
+            </div>
+            <div class="modal-body">
+                <div id="imageView" class="image-view">
+                    <div class="image-view-explorer col-sm-5 col-md-4">
+                        <h4>Image Explorer</h4>
+                        <ul id="image-view-list"></ul>
+                    </div>
+                    <div class="image-view-image col-sm-7 col-md-8">
+                        <h4>Image View&nbsp;&nbsp;&nbsp;<span id="imageViewModalTitleName" class="text-primary"></span></h4>
+
+                        <div id="imageViewerWrapper" style="width:512px;height:512px;position:relative;color:white;"
+                             oncontextmenu="return false"
+                             class='disable-selection noIbar'
+                             unselectable='on'
+                             onselectstart='return false;'
+                             onmousedown='return false;'>
+                            <div id="imageViewer" class="image-view-viewer"
+                                 style="width:512px;height:512px;top:0px;left:0px; position:absolute;">
+                            </div>
+                            <div id="imageViewerLoader" style="background-image: url('{% static 'lib/jquery/plugins/loading.gif' %}');"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="graphView" class="image-view">
+                    <div class="image-view-image col-xs-12 col-md-12">
+                        <div id="graphViewer" class="image-view-viewer">
+                        </div>
+                    </div>
+                    <div class="image-view-image-settings col-xs-12 col-md-12">
+                        <div class="form-group form-inline">
+                            <label class="control-label" for="rollPeriod" >Roll Period:</label>
+                            <input id="rollPeriod" type="number" name="rollPeriod" class="form-control"
+                                   placeholder="roll" size="1" maxlength="1">
+                            <button id="rollPeriodConfirm" class="btn btn-default">Change</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="alertModalTitle">Request Failed</h4>
+        </div>
+        <div class="modal-body">
+        Request failed
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>
+
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
@@ -428,6 +496,8 @@
                 }
             });
         });
+
+{#        setOpenImageViewerListener($('#image-previewer'));#}
     });
 
     function resetProfile() {
@@ -450,7 +520,33 @@
         $('#profileFailedModal .modal-body').text(msg);
         $('#profileFailedModal').modal();
     }
+
+{#    imageInfo = JSON.parse("{{ image | jsonstr }}");#}
+{#    archiveURL = "{% url 'miaas:archive' %}";#}
 </script>
+
+{#<!-- include the cornerstone library -->#}
+{#<script src="{% static 'lib/wado/conerstone/cornerstone.min.js' %}"></script>#}
+{#<script src="{% static 'lib/wado/cornerstoneMath.js' %}"></script>#}
+{#<script src="{% static 'lib/wado/cornerstoneTools.js' %}"></script>#}
+{##}
+{#<!-- include the dicomParser library as the WADO image loader depends on it -->#}
+{#<script src="{% static 'lib/wado/dicomParser/dicomParser.min.js' %}"></script>#}
+{##}
+{#<!-- jpeg 2000 codec -->#}
+{#<script src="{% static 'lib/wado/jpx.min.js' %}"></script>#}
+{##}
+{#<!-- include the cornerstoneWADOImageLoader library -->#}
+{#<script src="{% static 'lib/wado/cornerstoneWADOImageLoader.min.js' %}"></script>#}
+{##}
+{#<!-- include the dygraph library -->#}
+{#<script src="{% static 'lib/dygraph/dygraph-combined.js' %}"></script>#}
+{#<script src="{% static 'lib/dygraph/smooth-plotter.js' %}"></script>#}
+{##}
+{#<script src="{% static 'miass/js/imageViewer.js' %}"></script>#}
+{#<script src="{% static 'miass/js/imagePreviewer.js' %}"></script>#}
+
+
 
 </body>
 </html>

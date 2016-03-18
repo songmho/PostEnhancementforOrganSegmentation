@@ -2,7 +2,7 @@
  * Created by hanter on 2016. 1. 26..
  */
 
-var SERVER_ADDRESS = 'http://203.253.23.26:8000';
+var SERVER_ADDRESS = 'http://localhost:8000';
 
 $(document).ready(function() {
     $('.nav-tabs-group > .nav.navtabs a').click(function (e) {
@@ -16,6 +16,20 @@ $(document).ready(function() {
 
     $('[data-toggle="tooltip"]').tooltip();
 });
+
+function openModal(msg, title) {
+    if (title==undefined || title==null || title=='') {
+        $('#alertModalTitle').text('Alert');
+    }
+    if (msg==undefined || msg==null || msg=='') {
+        msg = 'Alert.';
+    }
+    $('#alertModalTitle').text(title);
+    $('#alertModal .modal-body').text(msg);
+    $('#alertModal').modal();
+    console.log('open modal');
+}
+
 
 //Timestamp -> Datetime Format
 String.prototype.string = function(len){var s = '', i = 0; while (i++ < len) { s += this; } return s;};
