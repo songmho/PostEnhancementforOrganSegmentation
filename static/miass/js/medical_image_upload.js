@@ -44,9 +44,9 @@ $(document).ready(function() {
         //console.log(data);
 
         var xprogressID = new Date().getTime();
-        setTimeout(function() {
+        //setTimeout(function() {
             startFileProgressUpdate(xprogressID);
-        }, 100);
+        //}, 100);
 
         setProgressText('Uploading...');
         $('#uploadingProgressModal').modal({

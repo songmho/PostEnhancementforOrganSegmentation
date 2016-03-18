@@ -78,7 +78,7 @@ $(document).ready(function() {
                     imageInfo.place = nowImageInfo.place;
                     imageInfo.description = nowImageInfo.description;
                     resetImageInfo();
-                    resetViewer();
+                    //resetViewer();
                 } else {
                     openModal(res['msg'], "Request Failed");
                     resetImageInfo();
@@ -87,17 +87,7 @@ $(document).ready(function() {
         });
     });
 
-    circleProgress = new ProgressBar.Circle('#uploadProgress', {
-        color: '#D76474',
-        strokeWidth: 3,
-        trailWidth: 1,
-        text: {
-            value: '0'
-        },
-        step: function(state, bar) {
-            bar.setText((bar.value() * 100).toFixed(0));
-        }
-    });
+
 
     $('#formUpdateFile').on('submit', function(e) {
         e.preventDefault();
@@ -107,9 +97,9 @@ $(document).ready(function() {
         data.append('image_info', JSON.stringify(imageInfo));
 
         var xprogressID = new Date().getTime();
-        setTimeout(function() {
+        //setTimeout(function() {
             startFileProgressUpdate(xprogressID);
-        }, 100);
+        //}, 100);
 
         $('#imageUploadModal').modal('hide');
 
@@ -298,6 +288,7 @@ function openModal(msg, title) {
     $('#alertModalTitle').text(title);
     $('#alertModal .modal-body').text(msg);
     $('#alertModal').modal();
+    console.log('open modal');
 }
 
 function openDeleteConfirmModal() {

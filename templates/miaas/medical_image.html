@@ -72,7 +72,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-sm-3 col-md-2 control-label" for="takenDate" >Date</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="date" id="takenDate" name="takenDate" class="form-control"
-                                   placeholder="Date" required readonly value="2016-02-02">
+                                   placeholder="YYYY-MM-DD" required readonly value="2016-02-02">
                         </div>
                     </div>
 
@@ -331,6 +331,14 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <div id="graphViewer" class="image-view-viewer">
                         </div>
                     </div>
+                    <div class="image-view-image-settings col-xs-12 col-md-12">
+                        <div class="form-group form-inline">
+                            <label class="control-label" for="rollPeriod" >Roll Period:</label>
+                            <input id="rollPeriod" type="number" name="rollPeriod" class="form-control"
+                                   placeholder="roll" size="1" maxlength="1">
+                            <button id="rollPeriodConfirm" class="btn btn-default">Change</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -390,6 +398,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
 <script src="{% static 'miass/js/imageUploader.js' %}"></script>
 <script src="{% static 'miass/js/imageViewer.js' %}"></script>
+<script src="{% static 'miass/js/imagePreviewer.js' %}"></script>
 <script src="{% static 'miass/js/medical_image.js' %}"></script>
 
 </body>
