@@ -10,13 +10,13 @@ file_suffixes = ["_data", "_signals"]
 
 def edf_to_ascii(filepath):
     # For linux server
-    # p = subprocess.Popen(['sudo', 'edf2ascii.exe', filepath.encode('ascii', 'ignore')],
-    #                      stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    # p.stdin.write("'" + '\n')
-    # p.stdin.close()
-    print filepath, os.getcwd()
-    p = subprocess.Popen(['edf2ascii.exe', filepath.encode('ascii', 'ignore')],
+    p = subprocess.Popen(['sudo', './edf2ascii.out', filepath.encode('ascii', 'ignore')],
                          stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p.stdin.write("'" + '\n')
+    p.stdin.close()
+    # print filepath, os.getcwd()
+    # p = subprocess.Popen(['edf2ascii.exe', filepath.encode('ascii', 'ignore')],
+    #                      stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in p.stdout.readlines():
         print line
     p.wait()
@@ -37,6 +37,7 @@ def rename_labels(path, name):
 
     _data = pd.read_csv(path + name + file_suffixes[0] + ".csv")
     _data.columns = labels
+    _data.index = _data['Time']
     _data.to_csv(path + name + file_suffixes[0] + ".csv")
 
 
@@ -49,19 +50,22 @@ def delete_other_files(path, name):
 def edf_to_csv(filepath):
     path, name = os.path.split(filepath)
     path += "/"
-    name = name.split(".")[0]
-    p1 = Process(target=edf_to_ascii, args=(filepath,))
-    p1.start()
-    p1.join(timeout=30)
-    p2 = Process(target=ascii_to_csv, args=(path, name))
-    p2.start()
-    p2.join(timeout=30)
-    p3 = Process(target=rename_labels, args=(path, name))
-    p3.start()
-    p3.join(timeout=30)
-    p4 = Process(target=delete_other_files, args=(path, name))
-    p4.start()
-    p4.join(timeout=30)
+    try:
+        name = name.split(".")[0]
+        p1 = Process(target=edf_to_ascii, args=(filepath,))
+        p1.start()
+        p1.join(timeout=30)
+        p2 = Process(target=ascii_to_csv, args=(path, name))
+        p2.start()
+        p2.join(timeout=30)
+        p3 = Process(target=rename_labels, args=(path, name))
+        p3.start()
+        p3.join(timeout=30)
+        p4 = Process(target=delete_other_files, args=(path, name))
+        p4.start()
+        p4.join(timeout=30)
+    except Exception as e:
+        return filepath
 
     return path + name + file_suffixes[0] + ".csv"
 
