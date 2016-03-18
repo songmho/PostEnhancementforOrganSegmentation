@@ -3,18 +3,6 @@
  */
 
 $(document).ready(function() {
-    circleProgress = new ProgressBar.Circle('#uploadProgress', {
-        color: '#D76474',
-        strokeWidth: 3,
-        trailWidth: 1,
-        text: {
-            value: '0'
-        },
-        step: function(state, bar) {
-            bar.setText((bar.value() * 100).toFixed(0));
-        }
-    });
-
     $('#uploadImageForm').on('submit', function(e) {
         e.preventDefault();
         var currentTime = new Date().getTime();
