@@ -4,7 +4,12 @@
 
 function showThumbnail() {
     console.log('thumbnail');
+
+    var imageContainer = $('#image-previewer').get(0);
+    cornerstone.disable(imageContainer);
+
     $('#image-previewer').empty();
+
     var thumbnail = getThumbnailImage();
     if(thumbnail != null) {
         var url = makeURL(thumbnail);
@@ -12,8 +17,10 @@ function showThumbnail() {
         console.log(thumbnail['type']);
         setTimeout(function() {
             if (thumbnail['type'] == 'dcm') {
+                cornerstone.enable(imageContainer);
+
                 var wadoUrl = "wadouri:" + url;
-                //showDicomThumbnail(wadoUrl);
+                showDicomThumbnail(wadoUrl);
             } else if (thumbnail['type'] == 'csv') {
                 showCsvThumbnail(url);
             } else {
@@ -36,16 +43,21 @@ function showImageThumbnail(url) {
 
     var image = new Image();
     image.addEventListener("load", function() {
-        //var drawingWidth = image.width;
-        //var drawingHeight = image.height;
-        //var magni = 1;
-        //
-        //magni = canvas.width / image.width;
-        //
-        //drawingWidth *= magni;
-        //drawingHeight *= magni;
-        //ctx.drawImage(image, 0, 0, drawingWidth, drawingHeight);
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        var drawingWidth = image.width;
+        var drawingHeight = image.height;
+        var magni = 1;
+        var widthMagni = 1, heightMagni = 1;
+
+        widthMagni = canvas.width / image.width;
+        heightMagni = canvas.height / image.height;
+
+        if (widthMagni > heightMagni) magni = heightMagni;
+        else magni = widthMagni;
+
+        drawingWidth *= magni;
+        drawingHeight *= magni;
+        ctx.drawImage(image, 0, 0, drawingWidth, drawingHeight);
+        //ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     });
     image.src = url;
 }

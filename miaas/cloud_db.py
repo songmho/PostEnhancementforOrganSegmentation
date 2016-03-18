@@ -901,7 +901,7 @@ class DbManager():
         request_detail = {}
         responses = []
         db_query_request = "SELECT req.request_id, req.subject, req.message, m.subject, m.image_type, " \
-                           "m.timestamp, m.taken_from, m.physician, m.place, m.description, req.status, req.level  " \
+                           "m.timestamp, m.taken_from, m.physician, m.place, m.description, req.status, req.level, m.image_id  " \
                            "FROM miaas.request req " \
                            "JOIN miaas.medical_image m ON req.image_id = m.image_id " \
                            "WHERE req.request_id=%s"
@@ -928,6 +928,7 @@ class DbManager():
                     request_detail['description'] = row[9]
                     request_detail['status'] = row[10]
                     request_detail['level'] = row[11]
+                    request_detail['image_id'] = row[12]
 
                 cursor.execute(db_query_response, request_id)
                 self.connector.commit()
@@ -1067,7 +1068,7 @@ class DbManager():
         intpr_detail = {}
         db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.name, req.level, intpr.summary, intpr.interpretation, " \
                    "m.subject, m.image_type, m.timestamp, " \
-                   "m.taken_from, m.physician, m.place, m.description, req.subject, req.message " \
+                   "m.taken_from, m.physician, m.place, m.description, req.subject, req.message, m.image_id " \
                    "FROM interpretation intpr " \
                    "JOIN physician ph ON intpr.physician_id = ph.user_id " \
                    "JOIN user u ON ph.user_id = u.user_id " \
@@ -1095,6 +1096,7 @@ class DbManager():
                     intpr_detail['description'] = row[12]
                     intpr_detail['request_subject'] = row[13]
                     intpr_detail['request_message'] = row[14]
+                    intpr_detail['image_id'] = row[15]
             except Exception as e:
                 print("retrieve_patient_request_detail: ", e)
 
@@ -1105,7 +1107,7 @@ class DbManager():
         intpr_detail = {}
         db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.name, req.level, intpr.summary, intpr.interpretation, " \
                    "m.subject, m.image_type, m.timestamp, " \
-                   "m.taken_from, m.physician, m.place, m.description, req.subject, req.message " \
+                   "m.taken_from, m.physician, m.place, m.description, req.subject, req.message, m.image_id " \
                    "FROM interpretation intpr " \
                    "JOIN physician ph ON intpr.physician_id = ph.user_id " \
                    "JOIN user u ON ph.user_id = u.user_id " \
@@ -1133,6 +1135,7 @@ class DbManager():
                     intpr_detail['description'] = row[12]
                     intpr_detail['request_subject'] = row[13]
                     intpr_detail['request_message'] = row[14]
+                    intpr_detail['image_id'] = row[15]
             except Exception as e:
                 print("retrieve_patient_request_detail: ", e)
 
