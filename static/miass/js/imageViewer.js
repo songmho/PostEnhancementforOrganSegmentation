@@ -89,7 +89,7 @@ function csvGrpahLoadAndView(csvURL) {
             data, {
                 width: chartWidth,
                 height: canvasSize,
-                valueRange: [-5, 5.1],
+                //valueRange: [-3, 5.1],
                 axes: {
                     y: {
                         drawAxis: true
@@ -98,6 +98,7 @@ function csvGrpahLoadAndView(csvURL) {
                         drawGrid: true
                     }
                 },
+                animatedZooms: true,
                 strokeWidth: 2,
                 color: '#D76474',
                 plotter: smoothPlotter
@@ -279,10 +280,10 @@ function generateExplorer(dirs, name) {
 }
 
 function setOpenImageViewerListener(elem) {
-    console.log('set listener');
+    //console.log('set listener');
     //$('#imageViewer').empty();
-    console.log(imageInfo);
-    console.log(imageInfo['image_dir'].endsWith('.csv'));
+    //console.log(imageInfo);
+    //console.log(imageInfo['image_dir'].endsWith('.csv'));
 
     if(imageInfo['image_dir'].endsWith('.csv')) {
         showGraphView();
@@ -297,32 +298,30 @@ function setOpenImageViewerListener(elem) {
     }
 
     $imageViewer = elem;
-    $imageViewer.click(function() {
-        if (imageDirs == null) {
-            $.LoadingOverlay('show');
-            $.ajax("/api/medical_image", {
-                method: 'GET',
-                data: {
-                    action: 'getImageDirs',
-                    user_id: user['user_id'],
-                    image_id: imageInfo['image_id'],
-                    image_dir: imageInfo['image_dir']
-                }, dataType: 'json',
-                    success: function (res) {
-                    $.LoadingOverlay('hide');
-                    if(res['code'] == 'SUCCESS') {
+    if (imageDirs == null) {
+        $.LoadingOverlay('show');
+        $.ajax("/api/medical_image", {
+            method: 'GET',
+            data: {
+                action: 'getImageDirs',
+                user_id: user['user_id'],
+                image_id: imageInfo['image_id'],
+                image_dir: imageInfo['image_dir']
+            }, dataType: 'json',
+                success: function (res) {
+                $.LoadingOverlay('hide');
+                if(res['code'] == 'SUCCESS') {
+                    imageDirs = res['image_list'];
+                    $imageViewer.click(function() {
                         openImageViewer();
-                        imageDirs = res['image_list'];
-                        //console.log(imageDirs);
-                    } else {
-                        openModal(res['msg'], "Image Loading Failed");
-                    }
+                    });
+                    showThumbnail();
+                } else {
+                    openModal(res['msg'], "Image Loading Failed");
                 }
-            });
-        } else {
-            openImageViewer();
-        }
-    });
+            }
+        });
+    }
 }
 
 function resizeViewer() {

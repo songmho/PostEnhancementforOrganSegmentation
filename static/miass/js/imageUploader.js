@@ -7,6 +7,20 @@ var g_progress_intv = null;
 var uploadStatus = 0; //0=None, 1=waiting, 2=uploading, 3=configuring
 var runningRotating = false;
 
+$(document).ready(function() {
+    circleProgress = new ProgressBar.Circle('#uploadProgress', {
+        color: '#D76474',
+        strokeWidth: 3,
+        trailWidth: 1,
+        text: {
+            value: '0'
+        },
+        step: function(state, bar) {
+            bar.setText((bar.value() * 100).toFixed(0));
+        }
+    });
+});
+
 function startFileProgressUpdate(upload_id) {
     uploadStatus=1;
     console.log('start file upload');
@@ -15,6 +29,7 @@ function startFileProgressUpdate(upload_id) {
     g_progress_intv = setInterval(function() {
         $.getJSON("/api/get_upload_progress?X-Progress-ID="+upload_id,
             function(data) {
+                console.log(uploadStatus);
                 if(data == null) {
                     if(uploadStatus == 2) {
                         stopFileProgressUpdate()
@@ -46,7 +61,7 @@ function stopFileProgressUpdate(bStartValidating) {
     if(bStartValidating) {
         uploadStatus = 3;
         setTimeout(function () {
-            setProgressText('Validating...');
+            setProgressText('Decomposing...');
             startRotatingProgress();
         }, 200);
     }

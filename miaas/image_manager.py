@@ -124,12 +124,16 @@ class ImageManager():
             return False
 
     def decompose(self, filepath):
-        p = subprocess.Popen(['sudo', 'python', './decompose.py', filepath.encode('ascii','ignore')], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        p.stdin.write("'" + '\n')
-        p.stdin.close()
-        for line in p.stdout.readlines():
-            logger.info(line)
-        p.wait()
+        try:
+            p = subprocess.Popen(['sudo', 'python', './decompose.py', filepath.encode('ascii','ignore')], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            p.stdin.write("'" + '\n')
+            p.stdin.close()
+            # for line in p.stdout.readlines():
+            #     logger.info(line)
+            p.wait()
+        except Exception as e:
+            logger.exception(e)
+            pass
 
 
     def _is_zipfile(self, filename):
