@@ -3,6 +3,8 @@ import datetime, time
 import logging
 import subprocess
 import zipfile, codecs
+
+from miaas.utils import edf_to_csv
 from . import cloud_db, constants, dicom_reader
 
 logging.basicConfig(
@@ -12,10 +14,11 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 class ImageManager():
     _temp_upload_dir = constants.TEMP_UPLOAD_DIR
     _supported_image_extensions = ['dicom', 'dcm', 'jpg', 'jpeg', 'png', 'zip']
-    _supported_signal_extensions = ['csv', 'txt']
+    _supported_signal_extensions = ['csv', 'edf']
 
     def __init__(self, image_file, image_info):
         self._original_file = image_file
@@ -34,8 +37,13 @@ class ImageManager():
             #     raise Exception("Invalid Dicom Image Format.")
             temp_path = extract_dir
         else:
-            self.decompose(self._temp_file_path)
             temp_path = self._temp_file_path
+            temp_path_ext = self._get_file_extension(temp_path)
+            if temp_path_ext == 'dcm' or temp_path_ext == 'dicom':
+                self.decompose(self._temp_file_path)
+            elif temp_path_ext == 'edf':
+                temp_path = edf_to_csv.edf_to_csv(temp_path)
+
         logger.info('uploaded temp file: %s' % temp_path)
 
         archive_path = self._upload_to_archive(temp_path)
@@ -55,6 +63,7 @@ class ImageManager():
                     shutil.rmtree(archive_path)
         except:
             pass
+
     def delete_temp_file(self):
         try:
             if os.path.exists(self._temp_file_path):
@@ -90,7 +99,7 @@ class ImageManager():
                 if fileext not in ImageManager._supported_image_extensions:
                     logger.info('not supoorted image extension: %s' % file)
                     return False
-                if fileext=='dicom' or fileext=='dcm':
+                if fileext == 'dicom' or fileext == 'dcm':
                     jpgpath = os.path.join(rootpath, '%s.jpg' % (os.path.splitext(file)[0]))
                     # logger.info('%s -> %s' % (dcmpath, jpgpath))
                     success = self._dcm_to_jpg(str(dcmpath), str(jpgpath))
@@ -134,11 +143,10 @@ class ImageManager():
             logger.exception(e)
             pass
 
-
     def _is_zipfile(self, filename):
         return zipfile.is_zipfile(filename)
 
-    #extract zipfiles
+    # extract zipfiles
     def _extract_zipfile(self, filename):
         if not self._is_zipfile(filename):
             logger.info("it's not zipfile")
@@ -152,7 +160,7 @@ class ImageManager():
             except UnicodeDecodeError as e:
                 self._extractall_unicode(zfile, zipfiledir)
 
-        #find sysfiles
+        # find sysfiles
         sysfile_list = []
         for root, dirs, files in os.walk(zipfiledir):
             rootpath = os.path.abspath(root)
@@ -170,7 +178,7 @@ class ImageManager():
                 if file.startswith('.') or file.startswith('__'):
                     sysfile_list.append(filepath)
 
-        #remove sysfiles
+        # remove sysfiles
         for sysfile in sysfile_list:
             if not os.path.exists(sysfile):
                 continue
@@ -179,13 +187,13 @@ class ImageManager():
             else:
                 shutil.rmtree(sysfile)
 
-        #remove invalid dicom files
+        # remove invalid dicom files
 
         return zipfiledir
 
     def _extractall_unicode(self, zf, extractdir):
         for m in zf.infolist():
-            data = zf.read(m) # extract zipped data into memory
+            data = zf.read(m)  # extract zipped data into memory
             # convert unicode file path to utf8
             disk_file_name = m.filename.encode('utf8')
             dir_name = os.path.dirname(disk_file_name)
