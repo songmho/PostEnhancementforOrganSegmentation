@@ -829,9 +829,11 @@ class DbManager():
                 # Add response information to 'response' table
                 request_id = response['request_id']
                 physician_id = response['physician_id']
-                message = response['message']
+                message = response['message'].encode('utf-8').decode('latin-1')
+                # message = response['message']
                 timestamp = response['timestamp']
                 status = response['status']
+                print(request_id, physician_id, message, timestamp, status)
                 db_query = "INSERT INTO response (request_id, physician_id, message, timestamp) VALUES (%s, %s, %s, %s)"
                 cursor.execute(db_query, (request_id, physician_id, message, timestamp))
                 self.connector.commit()
