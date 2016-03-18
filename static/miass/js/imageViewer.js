@@ -103,6 +103,17 @@ function csvGrpahLoadAndView(csvURL) {
                 plotter: smoothPlotter
             }
         );
+
+        $('#rollPeriodConfirm').off('click');
+        $('#rollPeriodConfirm').click(function() {
+            var roll = $('#rollPeriod').val();
+            if(roll < 0) {
+                roll = 0;
+                $('#rollPeriod').val(0);
+            }
+            g.adjustRoll(roll);
+        });
+
         showImageViewerLoader(false);
     }, 10);
 }

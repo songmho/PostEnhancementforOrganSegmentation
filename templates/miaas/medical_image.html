@@ -332,12 +332,11 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         </div>
                     </div>
                     <div class="image-view-image-settings col-xs-12 col-md-12">
-                        <div class="col-xs-4 form-group">
-                            <label class="control-label" for="takenDate" >Roll Period:</label>
-                            <div class="">
-                                <input type="number" id="takenDate" name="takenDate" class="form-control"
-                                       placeholder="Date" required readonly value="2016-02-02">
-                            </div>
+                        <div class="form-group form-inline">
+                            <label class="control-label" for="rollPeriod" >Roll Period:</label>
+                            <input id="rollPeriod" type="number" name="rollPeriod" class="form-control"
+                                   placeholder="roll" size="1" maxlength="1">
+                            <button id="rollPeriodConfirm" class="btn btn-default">Change</button>
                         </div>
                     </div>
                     <div>
