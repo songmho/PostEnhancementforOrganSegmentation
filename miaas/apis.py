@@ -459,7 +459,8 @@ def handle_medical_image_mgt(request):
                             ImageManager.delete_uploaded_archive_file(uploaded_path)
                             im.delete_temp_file()
                         raise e
-                    request.session['image_cnt'] += 1
+                    if not request.session.get('image_cnt'):
+                        request.session['image_cnt'] += 1
                     return JsonResponse(dict(constants.CODE_SUCCESS))
                 elif action == 'update':
                     prev_path = image_info['image_dir']

@@ -83,6 +83,7 @@ def archive_page(request):
 
         image_cnt = len(images)
         if image_cnt <= 0:
+            request.session['image_cnt'] = 0
             return render(request, 'miaas/patient_archive.html', context)
         archive = {}
         request.session['image_cnt'] = image_cnt
