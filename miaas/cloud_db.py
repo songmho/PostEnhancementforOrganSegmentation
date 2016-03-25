@@ -445,10 +445,16 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 if limit is 0:
-                    db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY taken_date DESC"
+                    db_query = "SELECT image_id, user_id, subject, image_type, taken_from, " \
+                               "physician, place, description, image_dir, size, timestamp, intpr_num, " \
+                               "taken_date, medical_department FROM medical_image " \
+                               "WHERE user_id=%s and timestamp>=%s ORDER BY taken_date DESC"
                     cursor.execute(db_query, (user_id, time_from))
                 else:
-                    db_query = "SELECT * FROM medical_image WHERE user_id=%s and timestamp>=%s ORDER BY taken_date DESC LIMIT %s OFFSET %s"
+                    db_query = "SELECT image_id, user_id, subject, image_type, taken_from, " \
+                               "physician, place, description, image_dir, size, timestamp, intpr_num, " \
+                               "taken_date, medical_department FROM medical_image " \
+                               "WHERE user_id=%s and timestamp>=%s ORDER BY taken_date DESC LIMIT %s OFFSET %s"
                     cursor.execute(db_query, (user_id, time_from, limit, offset))
                 self.connector.commit()
                 for row in cursor:
@@ -485,7 +491,9 @@ class DbManager():
         return amount
 
     def retrieve_medical_image_by_id(self, image_id):
-        db_query = "SELECT * FROM medical_image WHERE image_id=%s"
+        db_query = "SELECT image_id, user_id, subject, image_type, taken_from, " \
+                   "physician, place, description, image_dir, size, timestamp, intpr_num, " \
+                   "taken_date, medical_department FROM medical_image WHERE image_id=%s"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (image_id))
@@ -590,7 +598,10 @@ class DbManager():
                 return if_inserted
 
     def retrieve_intpr_by_id(self, intpr_id):
-        db_query = "SELECT * FROM interpretation WHERE intpr_id=%s"
+        db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \
+                   "level, fee, timestamp, summary, request_id, " \
+                   "suspected_disease, opinion, recommendation FROM interpretation " \
+                   "WHERE intpr_id=%s"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (intpr_id))
@@ -621,27 +632,11 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 # To retrieve data from 'medical_image' table
-                db_query = "SELECT * FROM medical_image WHERE image_id=%s"
-                cursor.execute(db_query, (image_id))
-                self.connector.commit()
-                row = cursor.fetchone()
-                image = {}
-                image['image_id'] = image_id
-                image['user_id'] = row[1]
-                image['subject'] = row[2]
-                image['image_type'] = row[3]
-                image['taken_from'] = row[4]
-                image['physician'] = row[5]
-                image['place'] = row[6]
-                image['description'] = row[7]
-                image['image_dir'] = row[8]
-                image['size'] = row[9]
-                image['timestamp'] = row[10]
-                image['intpr_num'] = row[11]
-                image['taken_date'] = row[12]
-                intpr_by_image['image'] = image
+                intpr_by_image['image'] = self.retrieve_medical_image_by_id(image_id)
                 # To retrieve data from 'interpretation' table
-                db_query = "SELECT * FROM interpretation WHERE image_id=%s"
+                db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \
+                   "level, fee, timestamp, summary, request_id, " \
+                   "suspected_disease, opinion, recommendation FROM interpretation WHERE image_id=%s"
                 cursor.execute(db_query, (image_id))
                 self.connector.commit()
                 for row in cursor:
@@ -670,10 +665,14 @@ class DbManager():
         limit = int(limit) if limit is not None else 0
         with self.connector.cursor() as cursor:
             if limit is 0:
-                db_query = "SELECT * FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC"
+                db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \
+                   "level, fee, timestamp, summary, request_id, " \
+                   "suspected_disease, opinion, recommendation FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC"
                 cursor.execute(db_query, (image_id, time_from))
             else:
-                db_query = "SELECT * FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC LIMIT %s OFFSET %s"
+                db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \
+                   "level, fee, timestamp, summary, request_id, " \
+                   "suspected_disease, opinion, recommendation FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC LIMIT %s OFFSET %s"
                 cursor.execute(db_query, (image_id, time_from, limit, offset))
             try:
                 self.connector.commit()
@@ -700,7 +699,9 @@ class DbManager():
     def retrieve_physician_intpr(self, physician_id, time_from=None):
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM interpretation WHERE physician_id=%s and timestamp>%s ORDER BY timestamp DESC"
+        db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \
+                   "level, fee, timestamp, summary, request_id, " \
+                   "suspected_disease, opinion, recommendation FROM interpretation WHERE physician_id=%s and timestamp>%s ORDER BY timestamp DESC"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (physician_id, time_from))
@@ -740,7 +741,9 @@ class DbManager():
     def retrieve_patient_intpr(self, patient_id, time_from=None):
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
-        db_query = "SELECT * FROM interpretation WHERE patient_id=%s and timestamp>%s ORDER BY timestamp DESC"
+        db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \
+                   "level, fee, timestamp, summary, request_id, " \
+                   "suspected_disease, opinion, recommendation FROM interpretation WHERE patient_id=%s and timestamp>%s ORDER BY timestamp DESC"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, (patient_id, time_from))
@@ -1093,8 +1096,9 @@ class DbManager():
     # KH
     def retrieve_interpretation_detail(self, intpr_id):
         intpr_detail = {}
-        db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.name, req.level, intpr.summary, intpr.interpretation, " \
-                   "m.subject, m.image_type, m.timestamp, " \
+        db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.name, req.level, intpr.summary, " \
+                   "intpr.suspected_disease, intpr.opinion, intpr.recommendation, " \
+                   "m.subject, m.image_type, m.timestamp, m.medical_department, " \
                    "m.taken_from, m.physician, m.place, m.description, req.subject, req.message, m.image_id " \
                    "FROM interpretation intpr " \
                    "JOIN physician ph ON intpr.physician_id = ph.user_id " \
@@ -1113,17 +1117,20 @@ class DbManager():
                     intpr_detail['physician_name'] = row[2]
                     intpr_detail['level'] = row[3]
                     intpr_detail['summary'] = row[4]
-                    intpr_detail['interpretation'] = row[5]
-                    intpr_detail['image_subject'] = row[6]
-                    intpr_detail['image_type'] = row[7]
-                    intpr_detail['image_date'] = row[8]
-                    intpr_detail['taken_from'] = row[9]
-                    intpr_detail['physician'] = row[10]
-                    intpr_detail['place'] = row[11]
-                    intpr_detail['description'] = row[12]
-                    intpr_detail['request_subject'] = row[13]
-                    intpr_detail['request_message'] = row[14]
-                    intpr_detail['image_id'] = row[15]
+                    intpr_detail['suspected_disease'] = row[5]
+                    intpr_detail['opinion'] = row[6]
+                    intpr_detail['recommendation'] = row[7]
+                    intpr_detail['image_subject'] = row[8]
+                    intpr_detail['image_type'] = row[9]
+                    intpr_detail['image_date'] = row[10]
+                    intpr_detail['medical_department'] = row[11]
+                    intpr_detail['taken_from'] = row[12]
+                    intpr_detail['physician'] = row[13]
+                    intpr_detail['place'] = row[14]
+                    intpr_detail['description'] = row[15]
+                    intpr_detail['request_subject'] = row[16]
+                    intpr_detail['request_message'] = row[17]
+                    intpr_detail['image_id'] = row[18]
             except Exception as e:
                 print("retrieve_patient_request_detail: ", e)
 
