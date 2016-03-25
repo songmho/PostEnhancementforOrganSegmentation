@@ -5,6 +5,8 @@
 var SERVER_ADDRESS = 'http://localhost:8000';
 
 $(document).ready(function() {
+    highlightCurrentMenu();
+
     $('.nav-tabs-group > .nav.navtabs a').click(function (e) {
         e.preventDefault();
         $(this).tab('show');
@@ -28,6 +30,42 @@ function openModal(msg, title) {
     $('#alertModal .modal-body').text(msg);
     $('#alertModal').modal();
     console.log('open modal');
+}
+
+function highlightCurrentMenu() {
+    var paths = jQuery(location).attr('pathname').split('/');
+    console.log(paths);
+    console.log(paths.length);
+
+    if(paths.length >= 2) {
+        var topMenuPath = paths[1];
+        console.log(topMenuPath);
+
+        switch(topMenuPath) {
+            case 'account':
+                $('#nav_account').addClass('selected');
+                break;
+            case 'profile':
+                $('#nav_profile').addClass('selected');
+                break;
+            case 'archive':
+                $('#nav_archive').addClass('selected');
+                break;
+            case 'interpretation':
+                if (paths.length >= 3 && paths[2]=='request') {
+                    $('#nav_request').addClass('selected');
+                } else {
+                    $('#nav_interpretation').addClass('selected');
+                }
+                break;
+            case 'physician':
+                $('#nav_physician_profile').addClass('selected');
+                break;
+            case 'interpretations':
+                $('#nav_interpretations').addClass('selected');
+                break;
+        }
+    }
 }
 
 

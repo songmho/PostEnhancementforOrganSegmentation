@@ -42,6 +42,14 @@ body {
     color: #BE3144;
 }
 
+.navbar-default .navbar-nav > li > a.selected {
+    background-color: rgba(0,0,0, 0.05);
+    color: #D76474;
+}
+.navbar-default .navbar-nav > li > a.selected:hover {
+    color: #BE3144;
+}
+
 /* Tabs */
 .nav.nav-tabs.nav-tabs-for-boxed > li > a {
     font-size: 16px;

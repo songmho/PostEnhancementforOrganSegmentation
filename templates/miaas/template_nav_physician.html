@@ -17,20 +17,20 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li ><a class="onloading" href="{% url 'miaas:physician_profile' %}">Physician Profile</a></li>
+                <li ><a id="nav_physician_profile" class="onloading" href="{% url 'miaas:physician_profile' %}">Physician Profile</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                    <a id="nav_interpretations" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">Interpretations</a>
                     <ul class="dropdown-menu">
                         <li><a class="onloading" href="{% url 'miaas:interpretation_response' %}">Request List for Writing</a></li>
-                        <li><a class="onloading" href="{% url 'miaas:interpretation_search' %}">Search Interpretation Request</a></li>
                         <li><a class="onloading"href="{% url 'miaas:physician_interpretation' %}">My Interpretations</a></li>
+                        <li><a class="onloading" href="{% url 'miaas:interpretation_search' %}">Search Interpretation Request</a></li>
                     </ul>
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                    <a id="nav_account" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false"><span id="navbar-logined-text">
                         <span>Hi, Dr. {{ user_session.name }} </span></span><span class="caret"></span>
                     </a>

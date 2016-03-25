@@ -33,7 +33,8 @@ location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
     {% include 'miaas/template_nav_physician.html' %}
     {#  relocate to interpretation  #}
     <script type="text/javascript">
-        location.replace({{ "'" }}{% url 'miaas:physician_interpretation' %}{{ "'" }});
+{#        location.replace({{ "'" }}{% url 'miaas:physician_interpretation' %}{{ "'" }});#}
+        location.replace({{ "'" }}{% url 'miaas:interpretation_response' %}{{ "'" }});
     </script>
 {% else %}
     <script type="text/javascript">
