@@ -154,16 +154,16 @@ def _get_session_context(request):
     return context
 
 
-def opinion(request, opinion_id):
-    return HttpResponse("Hello, opinion %s." % opinion_id)
-
-
-def user(request, user_name):
-    return HttpResponse("Hello, user %s." % user_name)
-
-
-def template(request):
-    return render(request, 'miaas/template.html', None)
+# def opinion(request, opinion_id):
+#     return HttpResponse("Hello, opinion %s." % opinion_id)
+#
+#
+# def user(request, user_name):
+#     return HttpResponse("Hello, user %s." % user_name)
+#
+#
+# def template(request):
+#     return render(request, 'miaas/template.html', None)
 
 
 def test_page(request):
