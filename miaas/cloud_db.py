@@ -1139,7 +1139,8 @@ class DbManager():
     # KH
     def retrieve_physician_interpretation_detail(self, intpr_id):
         intpr_detail = {}
-        db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.name, req.level, intpr.summary, intpr.interpretation, " \
+        db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.name, req.level, intpr.summary, " \
+                   "intpr.suspected_disease, intpr.opinion, intpr.recommendation, " \
                    "m.subject, m.image_type, m.timestamp, " \
                    "m.taken_from, m.physician, m.place, m.description, req.subject, req.message, m.image_id " \
                    "FROM interpretation intpr " \
@@ -1159,17 +1160,20 @@ class DbManager():
                     intpr_detail['physician_name'] = row[2]
                     intpr_detail['level'] = row[3]
                     intpr_detail['summary'] = row[4]
-                    intpr_detail['interpretation'] = row[5]
-                    intpr_detail['image_subject'] = row[6]
-                    intpr_detail['image_type'] = row[7]
-                    intpr_detail['image_date'] = row[8]
-                    intpr_detail['taken_from'] = row[9]
-                    intpr_detail['physician'] = row[10]
-                    intpr_detail['place'] = row[11]
-                    intpr_detail['description'] = row[12]
-                    intpr_detail['request_subject'] = row[13]
-                    intpr_detail['request_message'] = row[14]
-                    intpr_detail['image_id'] = row[15]
+                    intpr_detail['suspected_disease'] = row[5]
+                    intpr_detail['opinion'] = row[6]
+                    intpr_detail['recommendation'] = row[7]
+                    intpr_detail['image_subject'] = row[8]
+                    intpr_detail['image_type'] = row[9]
+                    intpr_detail['image_date'] = row[10]
+                    intpr_detail['medical_department'] = row[11]
+                    intpr_detail['taken_from'] = row[12]
+                    intpr_detail['physician'] = row[13]
+                    intpr_detail['place'] = row[14]
+                    intpr_detail['description'] = row[15]
+                    intpr_detail['request_subject'] = row[16]
+                    intpr_detail['request_message'] = row[17]
+                    intpr_detail['image_id'] = row[18]
             except Exception as e:
                 print("retrieve_patient_request_detail: ", e)
 
@@ -1181,6 +1185,7 @@ class DbManager():
         time_from = int(time_from) if time_from is not None else 0
         db_query = "SELECT intpr.intpr_id, req.timestamp, intpr.timestamp, req.subject, " \
                    "m.image_type, req.level, intpr.summary " \
+                   "intpr.suspected_disease, intpr.opinion, intpr.recommendation, " \
                    "FROM interpretation intpr " \
                    "JOIN request req ON intpr.request_id = req.request_id " \
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
@@ -1200,6 +1205,9 @@ class DbManager():
                     intpr['image_type'] = row[4]
                     intpr['level'] = row[5]
                     intpr['summary'] = row[6]
+                    intpr['suspected_disease'] = row[7]
+                    intpr['opinion'] = row[8]
+                    intpr['recommendation'] = row[9]
                     intprs.append(intpr)
             except Exception as e:
                 print("retrieve_patient_request_list: ", e)
@@ -1211,6 +1219,7 @@ class DbManager():
         time_from = int(time_from) if time_from is not None else 0
         db_query = "SELECT intpr.intpr_id, req.timestamp, intpr.timestamp, req.subject, " \
                    "m.image_type, req.level, intpr.summary " \
+                   "intpr.suspected_disease, intpr.opinion, intpr.recommendation, " \
                    "FROM interpretation intpr " \
                    "JOIN request req ON intpr.request_id = req.request_id " \
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
@@ -1230,6 +1239,9 @@ class DbManager():
                     intpr['image_type'] = row[4]
                     intpr['level'] = row[5]
                     intpr['summary'] = row[6]
+                    intpr['suspected_disease'] = row[7]
+                    intpr['opinion'] = row[8]
+                    intpr['recommendation'] = row[9]
                     intprs.append(intpr)
             except Exception as e:
                 print("retrieve_patient_request_list: ", e)
