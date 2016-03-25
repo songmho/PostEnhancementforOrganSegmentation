@@ -652,7 +652,7 @@ class DbManager():
                     intpr['suspected_disease'] = row[9]
                     intpr['opinion'] = row[10]
                     intpr['recommendation'] = row[11]
-                intpr_list.append(intpr)
+                    intpr_list.append(intpr)
                 intpr_by_image['intpr'] = intpr_list
             except Exception as e:
                 print("Retrieve_Interpretation_by_Image: ", e)
