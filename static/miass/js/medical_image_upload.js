@@ -79,11 +79,13 @@ $(document).ready(function() {
             $('#clinicName').removeAttr('required').val('');
             $('#physicianGroup').hide();
             $('#clinicNameGroup').hide();
+            $('#medicalDepartmentGroup').hide();
         } else {
             $('#takenPhysicianName').attr('required', '');
             $('#clinicName').attr('required', '');
             $('#physicianGroup').show();
             $('#clinicNameGroup').show();
+            $('#medicalDepartmentGroup').show();
         }
     });
 

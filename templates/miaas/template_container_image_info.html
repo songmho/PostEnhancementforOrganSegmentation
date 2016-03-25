@@ -25,35 +25,42 @@
     </div>
 
     <div class="col-xs-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Date</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Recorded Date</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span id="date" >{{ image.taken_date|datetime_string }}</span>
         </div>
     </div>
 
     <div class="col-xs-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Taken From</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Recording Place</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span id="taken" >{{ image.taken_from }}</span>
         </div>
     </div>
 
     <div class="col-xs-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Doctor in Charge</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span id="physician" >{{ image.physician }}</span>
         </div>
     </div>
 
     <div class="col-xs-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Place</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Clinic Name</label>
+        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+            <span id="place" >{{ image.place }}</span>
+        </div>
+    </div>
+
+    <div class="col-xs-12 form-group">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Medical Department</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span id="place" >{{ image.place }}</span>
         </div>
     </div>
 
     <div class="col-sm-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Description</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Notice</label>
         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
             <div id="description" >
                 <p>{{ image.description }}</p>
