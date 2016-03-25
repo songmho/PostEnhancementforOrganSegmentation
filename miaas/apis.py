@@ -554,8 +554,10 @@ def handle_interpretation_mgt(request):
                     'fee': fee,
                     'timestamp': timestamp,
                     'summary': data['summary'],
-                    'interpretation': data['interpretation'],
-                    'request_id': request_id
+                    'request_id': request_id,
+                    'suspected_disease': data['suspected_disease'],
+                    'opinion': data['opinion'],
+                    'recommendation': data['recommendation']
                 }
                 if_inserted = db.add_intpr(intpr)
                 db.update_medical_image_intprnum(data['image_id'])

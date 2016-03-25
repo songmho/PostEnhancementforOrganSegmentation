@@ -28,9 +28,8 @@
                         <table class="table table-striped table-hover col-xs-12">
                             <thead>
                             <td>Requested Date</td>
-                            <td>Request Subject</td>
+                            <td>Subject</td>
                             <td>Message</td>
-                            <td>Image Subject</td>
                             <td>Image Type</td>
                             <td>Interpretation Level</td>
                             <td>Status</td>
@@ -41,7 +40,6 @@
                                     <td>{{ intpr_req.request_date|datetime_string }}</td>
                                     <td>{{ intpr_req.request_subject }}</td>
                                     <td>{{ intpr_req.message|less_string }}</td>
-                                    <td>{{ intpr_req.image_subject }}</td>
                                     <td>{{ intpr_req.image_type }}</td>
                                     <td>{{ intpr_req.level }}</td>
                                     <td class="bold interpretation-status-{{ intpr_req.status }}">{{ intpr_req.status|get_interpretation_status }}</td>

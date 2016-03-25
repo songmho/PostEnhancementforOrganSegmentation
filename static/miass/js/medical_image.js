@@ -130,6 +130,7 @@ $(document).ready(function() {
             contentType: false,
             success: function(res) {
                 //console.log(res);
+
                 console.log(uploadStatus);
                 if (uploadStatus <= 2) {
                     stopFileProgressUpdate(false);
@@ -209,11 +210,13 @@ $(document).ready(function() {
             $('#reqMessage').removeAttr('required').val('');
             $('#reqSubjectGroup').hide();
             $('#reqMessageGroup').hide();
+            $('#medicalDepartmentGroup').hide();
         } else {
             $('#reqSubject').attr('required', '');
             $('#reqMessage').attr('required', '');
             $('#reqSubjectGroup').show();
             $('#reqMessageGroup').show();
+            $('#medicalDepartmentGroup').show();
         }
     });
 

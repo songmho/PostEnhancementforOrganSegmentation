@@ -23,11 +23,12 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             <form id="uploadImageForm" class="col-xs-12 col-form" action="/api/medical_image"
                   method="post" enctype="multipart/form-data">
                 <div class="form-container form-boxed form-horizontal row">
+
                     <div class="col-xs-12 form-group">
                         <label class="col-sm-3 col-md-2 control-label" for="subject" >Image Subject</label>
                         <div class="col-sm-9 col-md-10">
                             <input type="text" id="subject" name="subject" class="form-control"
-                                   placeholder="Subject" required>
+                                   placeholder="Example) CT image for suspected lung cancer" required>
                         </div>
                     </div>
 
@@ -35,7 +36,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-sm-3 col-md-2 control-label" for="image_file">Image File</label>
                         <div class="col-sm-9 col-md-10">
                             <input type="file" id="image_file" name="image_file" class="form-control"
-                                   placeholder="Medical Image" required accept=".csv, .edf, .png, .jpg, .dicom, .dcm, .zip">
+                                   placeholder="Supported file extensions are dcm, dicom, csv, edf, and zip." required>
                         </div>
                     </div>
 
@@ -53,8 +54,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             </select>
                         </div>
                     </div>
+
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="takenDate" >Date</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="takenDate" >Recorded Date</label>
                         <div class="col-sm-9 col-md-10">
                             <input type="date" id="takenDate" name="takenDate" class="form-control"
                                    placeholder="YYYY-MM-DD" required>
@@ -62,7 +64,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="takenFrom" >Taken From</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="takenFrom" >Recording Place</label>
                         <div class="col-sm-9 col-md-10">
                             <select class="form-control" id="takenFrom" name="takenFrom" required>
                                 <option>Medical Clinic</option>
@@ -72,10 +74,10 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div id="physicianGroup" class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="takenPhysicianName" >Physician</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="takenPhysicianName" >Doctor in Charge</label>
                         <div class="col-sm-9 col-md-10">
                             <input type="text" id="takenPhysicianName" name="takenPhysicianName" class="form-control"
-                                   placeholder="Examining Physician" required>
+                                   placeholder="Example) Doctor. Smith" required>
                         </div>
                     </div>
 
@@ -83,15 +85,23 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-sm-3 col-md-2 control-label" for="clinicName" >Clinic Name</label>
                         <div class="col-sm-9 col-md-10">
                             <input type="text" id="clinicName" name="clinicName" class="form-control"
-                                   placeholder="Place" required>
+                                   placeholder="Example) Seoul Severance Hospital" required>
+                        </div>
+                    </div>
+
+                    <div id="medicalDepartmentGroup" class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="medicalDepartment" >Medical Department</label>
+                        <div class="col-sm-9 col-md-10">
+                            <input type="text" id="medicalDepartment" name="medicalDepartment" class="form-control"
+                                   placeholder="Example) Cardiothoracic surgery" required>
                         </div>
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="imageDescription" >Description</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="imageDescription" >Notice</label>
                         <div class="col-sm-9 col-md-10">
                             <textarea type="textarea" id="imageDescription" name="imageDescription" class="form-control"
-                                      placeholder="Description" rows="5"></textarea>
+                                      placeholder="Write any notifications that need to be informed to physicians.&#10;Example) This image was taken for suspected lung cancer." rows="5"></textarea>
                         </div>
                     </div>
                 </div>
