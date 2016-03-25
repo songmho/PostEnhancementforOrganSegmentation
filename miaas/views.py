@@ -83,7 +83,7 @@ def archive_page(request):
 
         image_cnt = len(images)
         if image_cnt <= 0:
-            return render(request, 'miaas/archive.html', context)
+            return render(request, 'miaas/patient_archive.html', context)
         archive = {}
         request.session['image_cnt'] = image_cnt
         archive['image_cnt'] = image_cnt
@@ -112,19 +112,16 @@ def archive_page(request):
         context['archive'] = archive
 
     logger.info('archive get: %s' % request.GET)
-    # return render(request, 'miaas/archive.html', sctx.archive_context)
-    return render(request, 'miaas/archive.html', context)
+    return render(request, 'miaas/patient_archive.html', context)
 
 
 def archive_upload_page(request):
     context = _get_session_context(request)
-    # return render(request, 'miaas/medical_image_upload.html', sctx.default_context)
-    return render(request, 'miaas/medical_image_upload.html', context)
+    return render(request, 'miaas/patient_medical_image_upload.html', context)
 
 
 def medical_image_page(request, image_id):
     context = _get_session_context(request)
-    # return render(request, 'miaas/medical_image.html', sctx.default_context)
 
     if not image_id or int(image_id) < 0:
         return archive_page(request)
@@ -139,7 +136,7 @@ def medical_image_page(request, image_id):
             # logger.info('image page(%s): %s' % (result['image']['image_id'], request.session['medical_image']))
             # request.session['curr_image'] = result['image']
 
-    return render(request, 'miaas/medical_image.html', context)
+    return render(request, 'miaas/patient_medical_image.html', context)
 
 
 def physician_profile_page(request):
@@ -189,7 +186,7 @@ def interpretation_request_list_page(request):
 
         intpr_request_cnt = len(intpr_request_list)
         if intpr_request_cnt <= 0:
-            render(request, 'miaas/interpretation_request_list.html', context)
+            render(request, 'miaas/patient_interpretation_request_list.html', context)
         intpr_request = {}
         request.session['request_cnt'] = intpr_request_cnt
         intpr_request['request_cnt'] = intpr_request_cnt
@@ -219,7 +216,7 @@ def interpretation_request_list_page(request):
         context['intpr_request'] = intpr_request
 
     logger.info('interpretation_request_list_page get: %s' % request.GET)
-    return render(request, 'miaas/interpretation_request_list.html', context)
+    return render(request, 'miaas/patient_interpretation_request_list.html', context)
 
 
 # KH
@@ -240,7 +237,7 @@ def interpretation_request_detail_page(request, request_id):
         context['physician_response'] = physician_response
         logger.info("Status:%s" % request_detail['status'])
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
-    return render(request, 'miaas/interpretation_request_detail.html', context)
+    return render(request, 'miaas/paitent_interpretation_request_detail.html', context)
 
 
 # KH
@@ -264,7 +261,7 @@ def physician_interpretation_search(request):
             requested_intpr_list = request.session['requested_intpr_list']
         requested_intpr_cnt = len(requested_intpr_list)
         if requested_intpr_cnt <= 0:
-            return render(request, 'miaas/interpretation_search.html', context)
+            return render(request, 'miaas/physician_interpretation_search.html', context)
         requested_intpr = {}
         request.session['requested_intpr_cnt'] = requested_intpr_cnt
         requested_intpr['requested_intpr_cnt'] = requested_intpr_cnt
@@ -294,7 +291,7 @@ def physician_interpretation_search(request):
         context['requested_intpr'] = requested_intpr
 
     logger.info('physician_interpretation_search get: %s' % request.GET)
-    return render(request, 'miaas/interpretation_search.html', context)
+    return render(request, 'miaas/physician_interpretation_search.html', context)
 
 
 # KH
@@ -313,7 +310,7 @@ def physician_interpretation_response_page(request):
 
         intpr_response_cnt = len(intpr_response_list)
         if intpr_response_cnt <= 0:
-            render(request, 'miaas/interpretation_response_list.html', context)
+            render(request, 'miaas/physician_interpretation_response_list.html', context)
         intpr_response = {}
         request.session['intpr_response_cnt'] = intpr_response_cnt
         intpr_response['intpr_response_cnt'] = intpr_response_cnt
@@ -342,7 +339,7 @@ def physician_interpretation_response_page(request):
         context['intpr_response'] = intpr_response
 
     logger.info('interpretation_request_list_page get: %s' % request.GET)
-    return render(request, 'miaas/interpretation_response_list.html', context)
+    return render(request, 'miaas/physician_interpretation_response_list.html', context)
 
 
 # KH
@@ -360,7 +357,7 @@ def physician_interpretation_write(request, request_id):
         context['request_detail'] = request_detail
         logger.info("status:%s" % request_detail['status'])
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
-    return render(request, 'miaas/interpretation_write.html', context)
+    return render(request, 'miaas/physician_interpretation_write.html', context)
 
 
 # KH
@@ -379,7 +376,7 @@ def interpretation_page(request):
         logger.info(request.session['user']['user_id'])
         logger.info('intpr_cnt=%s', intpr_cnt)
         if intpr_cnt <= 0:
-            return render(request, 'miaas/interpretation.html', context)
+            return render(request, 'miaas/patient_interpretation_list.html', context)
         intpr = {}
         request.session['intpr_cnt'] = intpr_cnt
         intpr['intpr_cnt'] = intpr_cnt
@@ -408,7 +405,7 @@ def interpretation_page(request):
         context['interpret'] = intpr
 
     logger.info('interpret get: %s' % request.GET)
-    return render(request, 'miaas/interpretation.html', context)
+    return render(request, 'miaas/patient_interpretation_list.html', context)
 
 
 # KH
@@ -429,7 +426,7 @@ def physician_interpretation_page(request):
         logger.info(request.session['user']['user_id'])
         logger.info('intpr_cnt=%s', physician_intpr_cnt)
         if physician_intpr_cnt <= 0:
-            return render(request, 'miaas/interpretation_physician.html', context)
+            return render(request, 'miaas/physician_interpretation_list.html', context)
         physician_intpr = {}
         request.session['physician_intpr_cnt'] = physician_intpr_cnt
         physician_intpr['physician_intpr_cnt'] = physician_intpr_cnt
@@ -458,7 +455,7 @@ def physician_interpretation_page(request):
         context['physician_intpr'] = physician_intpr
 
     logger.info('physician_interpretation_page get: %s' % request.GET)
-    return render(request, 'miaas/interpretation_physician.html', context)
+    return render(request, 'miaas/physician_interpretation_list.html', context)
 
 
 def interpretation_detail_page(request, intpr_id):
@@ -474,7 +471,7 @@ def interpretation_detail_page(request, intpr_id):
         context['intpr'] = intpr_detail
 
     logger.info('interpretation_detail_page get: %s' % request.GET)
-    return render(request, 'miaas/interpretation_detail.html', context)
+    return render(request, 'miaas/patient_interpretation_detail.html', context)
 
 
 def physician_interpretation_detail_page(request, intpr_id):
@@ -492,7 +489,7 @@ def physician_interpretation_detail_page(request, intpr_id):
         context['request_detail'] = physician_intpr_detail
 
     logger.info('physician_interpretation_detail_page get: %s' % request.GET)
-    return render(request, 'miaas/interpretation_physician_detail.html', context)
+    return render(request, 'miaas/physician_interpretation_detail.html', context)
 
 
 def physician_request_search_detail_page(request, request_id):
@@ -509,4 +506,4 @@ def physician_request_search_detail_page(request, request_id):
         context['request_detail'] = request_detail
         logger.info("status:%s" % request_detail['status'])
     logger.info('physician_request_search_detail_page get: %s' % request.GET)
-    return render(request, 'miaas/interpretation_search_detail.html', context)
+    return render(request, 'miaas/physician_interpretation_search_detail.html', context)
