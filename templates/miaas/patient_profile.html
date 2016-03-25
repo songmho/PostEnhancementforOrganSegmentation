@@ -1,7 +1,7 @@
 {% if not user_session or user_session.user_type != 'patient' %}
-<script type="text/javascript">
-location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
-</script>
+    <script type="text/javascript">
+        location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
+    </script>
 {% endif %}
 
 {% load staticfiles %}
@@ -23,10 +23,10 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             <form id="patientProfileForm" class="col-xs-12 col-form">
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="height" >Height</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="height">Height</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
                             <input type="number" id="height" name="height" class="form-control"
-                                   >
+                            >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4">
                             <select class="form-control" id="heightType" name="heightType">
@@ -38,10 +38,10 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="weight" >Weight</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="weight">Weight</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
                             <input type="number" id="weight" name="weight" class="form-control"
-                                   >
+                            >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4">
                             <select class="form-control" id="weightType" name="weightType">
@@ -52,10 +52,11 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingCapacity" >Drinking Capacity</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingCapacity">Drinking
+                            Capacity</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
                             <input type="number" id="drinkingCapacity" name="drinkingCapacity" class="form-control"
-                                   >
+                            >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text">
                             <span>bottles</span>
@@ -63,10 +64,11 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingFrequency" >Drinking Frequency</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingFrequency">Drinking
+                            Frequency</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
                             <input type="number" id="drinkingFrequency" name="drinkingFrequency" class="form-control"
-                                   >
+                            >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text no-pad-right">
                             <span>times per a week</span>
@@ -74,10 +76,10 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="sleeping" >Sleeping Hours</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="sleeping">Sleeping Hours</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
                             <input type="number" id="sleeping" name="sleeping" class="form-control"
-                                   >
+                            >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text">
                             <span>hours per a day</span>
@@ -85,10 +87,10 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="exercise" >Exercise Hours</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="exercise">Exercise Hours</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
                             <input type="number" id="exercise" name="exercise" class="form-control"
-                                   >
+                            >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text no-pad-right">
                             <span>minutes per a day</span>
@@ -96,7 +98,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="smoking" >Smoking Status</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="smoking">Smoking Status</label>
                         <div class="col-sm-9 col-md-7">
                             <select class="form-control" id="smoking" name="smoking">
                                 <option>Nonsmoker</option>
@@ -115,10 +117,10 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="water" >Water Intake</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="water">Water Intake</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
                             <input type="number" id="water" name="water" class="form-control"
-                                   >
+                            >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text">
                             <span>cups per a day</span>
@@ -128,50 +130,88 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="diseaseHistory" >Disease History</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="pastMedicalHistory">Past Medical
+                            History</label>
                         <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="diseaseHistory" name="diseaseHistory" class="form-control"
-                                      placeholder="Diseases" rows="5"></textarea>
+                            <textarea type="textarea" id="pastMedicalHistory" name="pastMedicalHistory"
+                                      class="form-control"
+                                      placeholder="Write your past medical history which is about treatment, suffered diseases, or surgical history. &#10;Example) 10 years ago, I developed Hypertension which was controlled by medication and Diabetes Mellitus."
+                                      rows="5"></textarea>
                         </div>
                     </div>
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="medication" > Medication</label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="medication" name="medication" class="form-control"
-                                      placeholder="Medications" rows="5"></textarea>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="familyHistory" >Family History</label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="familyHistory" name="familyHistory" class="form-control"
-                                      placeholder="Family History (Heritability)" rows="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="significant" >Significant</label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="significant" name="significant" class="form-control"
-                                      placeholder="Significant Cases" rows="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="notice" >Notice</label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="notice" name="notice" class="form-control"
-                                      placeholder="Notices" rows="3"></textarea>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="form-btns-container row">
-                    <div id="btnFormReset" class="col-xs-12 col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-4 form-button">
-                        <button class="btn btn-lg btn-primary btn-block" type="button">Reset</button>
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="existingDiseases">Existing Diseases </label>
+                        <div class="col-sm-9 col-md-10">
+                            <textarea type="textarea" id="existingDiseases" name="existingDiseases"
+                                      class="form-control"
+                                      placeholder="Write your existing diseases. &#10;Example) Diabetes, Osteoporosis, …"
+                                      rows="5"></textarea>
+                        </div>
                     </div>
-                    <div id="btnFormUpdate" class="col-xs-12 col-sm-4 col-md-2 form-button">
-                        <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="suspectedDiseases">Suspected
+                            Diseases </label>
+                        <div class="col-sm-9 col-md-10">
+                            <textarea type="textarea" id="suspectedDiseases" name="suspectedDiseases"
+                                      class="form-control"
+                                      placeholder="Write your suspected diseases with related symptoms. &#10;Example) I frequently spit blood, so I was told that I have a possibility to have ileus."
+                                      rows="5"></textarea>
+                        </div>
                     </div>
-                </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="medications">Medications </label>
+                        <div class="col-sm-9 col-md-10">
+                            <textarea type="textarea" id="medications" name="medications"
+                                      class="form-control"
+                                      placeholder="Write your current or past medications. &#10;Example) I took Plendil and Avandia 10 years ago."
+                                      rows="5"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="familyMedicalHistory">Family Medical
+                            History </label>
+                        <div class="col-sm-9 col-md-10">
+                            <textarea type="textarea" id="familyMedicalHistory" name="familyMedicalHistory"
+                                      class="form-control"
+                                      placeholder="Write your family medical history. &#10;Example) My father died of heart attack at 54, had Type 2 DM."
+                                      rows="5"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="allergies">Allergies</label>
+                        <div class="col-sm-9 col-md-10">
+                            <textarea type="textarea" id="allergies" name="allergies"
+                                      class="form-control"
+                                      placeholder="Write your allergies. &#10;Example) I’m allergic to pollen."
+                                      rows="5"></textarea>
+                        </div>
+                    </div>
+
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="notice">Notice</label>
+                        <div class="col-sm-9 col-md-10">
+                            <textarea type="textarea" id="notice" name="notice"
+                                      class="form-control"
+                                      placeholder="Write any notifications that need to be informed to physicians. &#10;Example) I have my heart on the right side by nature."
+                                      rows="5"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-btns-container row">
+                        <div id="btnFormReset"
+                             class="col-xs-12 col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-4 form-button">
+                            <button class="btn btn-lg btn-primary btn-block" type="button">Reset</button>
+                        </div>
+                        <div id="btnFormUpdate" class="col-xs-12 col-sm-4 col-md-2 form-button">
+                            <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+                        </div>
+                    </div>
             </form>
         </div>
     </section>
@@ -181,16 +221,17 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 <div class="modal fade" id="updateFailedModal" tabindex="-1" role="dialog" aria-labelledby="updateFailedTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="updateFailedTitle">Update Failed</h4>
-        </div>
-        <div class="modal-body">
-        Signup failed
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="updateFailedTitle">Update Failed</h4>
+            </div>
+            <div class="modal-body">
+                Signup failed
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
@@ -199,16 +240,17 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 <div class="modal fade" id="updatedModal" tabindex="-1" role="dialog" aria-labelledby="updatedTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="updatedTitle">Update Success</h4>
-        </div>
-        <div class="modal-body">
-        Your profile is successfully updated.
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="updatedTitle">Update Success</h4>
+            </div>
+            <div class="modal-body">
+                Your profile is successfully updated.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>

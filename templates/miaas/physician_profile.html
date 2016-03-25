@@ -1,7 +1,7 @@
 {% if not user_session or user_session.user_type != 'physician' %}
-<script type="text/javascript">
-location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
-</script>
+    <script type="text/javascript">
+        location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
+    </script>
 {% endif %}
 
 {% load staticfiles %}
@@ -27,17 +27,18 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <h4 class="text-primary">Introduction</h4>
                     </div>
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="aboutMe" >About me</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="aboutMe">About me</label>
                         <div class="col-sm-9 col-md-10">
                             <textarea type="textarea" id="aboutMe" name="aboutMe" class="form-control"
-                                      placeholder="Introducing about me" rows="5"></textarea>
+                                      placeholder="Example)&#10;David Tom NYS License Number:	200507 &#10;Date of NYS Licensure:	08-16-1995&#10;National Provider ID:	1437184298"
+                                      rows="5"></textarea>
                         </div>
                     </div>
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="specialism" >About Specialism</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="specialism">About Specialism</label>
                         <div class="col-sm-9 col-md-10">
                             <textarea type="textarea" id="specialism" name="specialism" class="form-control"
-                                      placeholder="Introducing about my specialism" rows="5"></textarea>
+                                      placeholder="Example) Cardiothoracic Surgery" rows="5"></textarea>
                         </div>
                     </div>
                 </div>
@@ -63,7 +64,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             <span id="response">24</span>
                         </div>
 
-                        <label class="col-xs-12 col-sm-3 col-md-3 control-label"><span data-toggle="tooltip" data-placement="left" title="Perfect score is 10.0">Score</span></label>
+                        <label class="col-xs-12 col-sm-3 col-md-3 control-label"><span data-toggle="tooltip"
+                                                                                       data-placement="left"
+                                                                                       title="Perfect score is 10.0">Score</span></label>
                         <div class="col-xs-12 col-sm-9 col-md-3 control-text">
                             <span id="score" data-toggle="tooltip" data-placement="right" title="Perfect score is 10.0">8.6</span>
                         </div>
@@ -73,179 +76,219 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                 <!-- tab reference : http://www.nydoctorprofile.com/ -->
                 <div class="nav-tabs-group">
                     <ul id="detailTabs" class="nav nav-tabs nav-tabs-for-boxed" role="tablist">
-                        <li role="presentation" class="active"><a href="#formEducation" aria-controls="formPractice" role="tab" data-toggle="tab">Education</a></li>
-                        <li role="presentation"><a href="#formPractice" aria-controls="formPractice" role="tab" data-toggle="tab">Practice info</a></li>
-                        <li role="presentation"><a href="#formLegal" aria-controls="formPractice" role="tab" data-toggle="tab">Legal Actions</a></li>
-                        <li role="presentation"><a href="#formProfessional" aria-controls="formPractice" role="tab" data-toggle="tab">Professional Activities</a></li>
-                        <li role="presentation"><a href="#formStatement" aria-controls="formPractice" role="tab" data-toggle="tab">Statement</a></li>
+                        <li role="presentation" class="active"><a href="#formEducation" aria-controls="formPractice"
+                                                                  role="tab" data-toggle="tab">Education</a></li>
+                        <li role="presentation"><a href="#formPractice" aria-controls="formPractice" role="tab"
+                                                   data-toggle="tab">Practice info</a></li>
+                        <li role="presentation"><a href="#formLegal" aria-controls="formPractice" role="tab"
+                                                   data-toggle="tab">Legal Actions</a></li>
+                        <li role="presentation"><a href="#formProfessional" aria-controls="formPractice" role="tab"
+                                                   data-toggle="tab">Professional Activities</a></li>
+                        <li role="presentation"><a href="#formStatement" aria-controls="formPractice" role="tab"
+                                                   data-toggle="tab">Statement</a></li>
                     </ul>
 
                     <div class="tab-content">
-                        <div id="formEducation" role="tabpanel" class="tab-pane active form-container form-boxed form-horizontal nav-tabs-content row">
+                        <div id="formEducation" role="tabpanel"
+                             class="tab-pane active form-container form-boxed form-horizontal nav-tabs-content row">
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="medicalSchool" >Medical School</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="medicalSchool">Medical
+                                    School</label>
                                 <div class="col-sm-9 col-md-10">
-                                    <textarea type="textarea" id="medicalSchool" name="medicalSchool" class="form-control"
-                                              placeholder="Medical School" rows="5"></textarea>
+                                    <textarea type="textarea" id="medicalSchool" name="medicalSchool"
+                                              class="form-control"
+                                              placeholder="Example)&#10;G Washington Univ Sch Med & Hlth SCI, WASHINGTON DC, 1991" rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="graduate" >Graduate Medical Education</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="graduate">Graduate Medical
+                                    Education</label>
                                 <div class="col-sm-9 col-md-10">
                                     <textarea type="textarea" id="graduate" name="graduate" class="form-control"
-                                              placeholder="Graduate Medical Education" rows="5"></textarea>
+                                              placeholder="Example)&#10;Yale New Haven Hosp/07-01-1992/06-30-1995/&#10;Geo Washington Univ. Hosp/06-01-1991/06-30-1992" rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="certifications" >Board Certifications</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="certifications">Board
+                                    Certifications</label>
                                 <div class="col-sm-9 col-md-10">
-                                    <textarea type="textarea" id="certifications" name="certifications" class="form-control"
-                                              placeholder="Board Certifications" rows="3"></textarea>
+                                    <textarea type="textarea" id="certifications" name="certifications"
+                                              class="form-control"
+                                              placeholder="Example)&#10;Am BRD OF Ophthalmology/11-16-1997/12-31-2007&#10;AM BRD OF Ophthalmology/01-01-2008/12-31-2017" rows="3"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="memberships" >Professional Memberships</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="memberships">Professional
+                                    Memberships</label>
                                 <div class="col-sm-9 col-md-10">
                                     <textarea type="textarea" id="memberships" name="memberships" class="form-control"
-                                              placeholder="Professional Memberships" rows="3"></textarea>
+                                              placeholder="Example)&#10;Association of Chartered Certified Accountants" rows="3"></textarea>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="formPractice" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
+                        <div id="formPractice" role="tabpanel"
+                             class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="fieldsOfMedicine" >Fields of Medicine</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="fieldsOfMedicine">Fields of
+                                    Medicine</label>
                                 <div class="col-sm-9 col-md-10">
-                                    <textarea type="textarea" id="fieldsOfMedicine" name="fieldsOfMedicine" class="form-control"
-                                              placeholder="Fields of Medicine" rows="2"></textarea>
+                                    <textarea type="textarea" id="fieldsOfMedicine" name="fieldsOfMedicine"
+                                              class="form-control"
+                                              placeholder="Example)&#10;Ophthalmology" rows="2"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="hiv" >HIV Services</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="hiv">HIV Services</label>
                                 <div class="col-sm-9 col-md-10">
                                     <textarea type="textarea" id="hiv" name="hiv" class="form-control"
-                                              placeholder="HIV Services" rows="5"></textarea>
+                                              placeholder="Example)&#10;HIV Services and/or care for patients on ARV	" rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="offices" >Offices</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="offices">Offices</label>
                                 <div class="col-sm-9 col-md-10">
                                     <textarea type="textarea" id="offices" name="offices" class="form-control"
-                                              placeholder="Offices" rows="2"></textarea>
+                                              placeholder="Example)&#10;Soongsil Univ. Software Engineering Department" rows="2"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="languages" >Languages Available</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="languages">Languages
+                                    Available</label>
                                 <div class="col-sm-9 col-md-10">
                                     <textarea type="textarea" id="languages" name="languages" class="form-control"
-                                              placeholder="Languages Available" rows="2"></textarea>
+                                              placeholder="Example)&#10;English, Korean, ..." rows="2"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="insuranceProgram" >Medicaid & Government Insurance Programs</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="insuranceProgram">Medicaid &
+                                    Government Insurance Programs</label>
                                 <div class="col-sm-9 col-md-10">
-                                    <textarea type="textarea" id="insuranceProgram" name="insuranceProgram" class="form-control"
-                                              placeholder="Medicaid and Ohter Government Insurance Programs" rows="5"></textarea>
+                                    <textarea type="textarea" id="insuranceProgram" name="insuranceProgram"
+                                              class="form-control"
+                                              placeholder="Example)&#10;Seoul City Medical Framework Project"
+                                              rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="healthPlans" >Health Plans</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="healthPlans">Health Plans</label>
                                 <div class="col-sm-9 col-md-10">
                                     <textarea type="textarea" id="healthPlans" name="healthPlans" class="form-control"
-                                              placeholder="Health Plans" rows="3"></textarea>
+                                              placeholder="Example)&#10; None reported" rows="3"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="hospitalPrivileges" >Hospital Privileges</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="hospitalPrivileges">Hospital
+                                    Privileges</label>
                                 <div class="col-sm-9 col-md-10">
-                                    <textarea type="textarea" id="hospitalPrivileges" name="hospitalPrivileges" class="form-control"
-                                              placeholder="Hospital Privileges" rows="3"></textarea>
+                                    <textarea type="textarea" id="hospitalPrivileges" name="hospitalPrivileges"
+                                              class="form-control"
+                                              placeholder="Example)&#10; None reported" rows="3"></textarea>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="formLegal" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
+                        <div id="formLegal" role="tabpanel"
+                             class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="malpractice" >Malpractice</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="malpractice">Malpractice</label>
                                 <div class="col-sm-9 col-md-10">
                                     <textarea type="textarea" id="malpractice" name="malpractice" class="form-control"
-                                              placeholder="Malpractice" rows="3"></textarea>
+                                              placeholder="Example)&#10; None reported" rows="3"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="licenseeActions" >Licensee Actions</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="licenseeActions">Licensee
+                                    Actions</label>
                                 <div class="col-sm-9 col-md-10">
-                                    <textarea type="textarea" id="licenseeActions" name="licenseeActions" class="form-control"
-                                              placeholder="Licensee Actions" rows="5"></textarea>
+                                    <textarea type="textarea" id="licenseeActions" name="licenseeActions"
+                                              class="form-control"
+                                              placeholder="Example)&#10;The Department of Health Office of Professional Medical Conduct (OPMC) is responsible for taking action..." rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="outOfStateActions" >Out-of-State Actions</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="outOfStateActions">Out-of-State
+                                    Actions</label>
                                 <div class="col-sm-9 col-md-10">
-                                    <textarea type="textarea" id="outOfStateActions" name="outOfStateActions" class="form-control"
-                                              placeholder="Out-of-State Actions" rows="3"></textarea>
+                                    <textarea type="textarea" id="outOfStateActions" name="outOfStateActions"
+                                              class="form-control"
+                                              placeholder="Example)&#10; None reported" rows="3"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="currentLimits" >Current Limitations</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="currentLimits">Current
+                                    Limitations</label>
                                 <div class="col-sm-9 col-md-10">
-                                    <textarea type="textarea" id="currentLimits" name="currentLimits" class="form-control"
-                                              placeholder="Current Limitations" rows="3"></textarea>
+                                    <textarea type="textarea" id="currentLimits" name="currentLimits"
+                                              class="form-control"
+                                              placeholder="Example)&#10; None reported" rows="3"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="hspPrivRestrictions" >Hospital Privilege Restrictions</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="hspPrivRestrictions">Hospital
+                                    Privilege Restrictions</label>
                                 <div class="col-sm-9 col-md-10">
-                                    <textarea type="textarea" id="hspPrivRestrictions" name="hspPrivRestrictions" class="form-control"
-                                              placeholder="Hospital Privilege Restrictions" rows="3"></textarea>
+                                    <textarea type="textarea" id="hspPrivRestrictions" name="hspPrivRestrictions"
+                                              class="form-control"
+                                              placeholder="Example)&#10; None reported" rows="3"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="hspFRPriv" >Hospital Failure to Renew Privileges</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="hspFRPriv">Hospital Failure to Renew
+                                    Privileges</label>
                                 <div class="col-sm-9 col-md-10">
                                     <textarea type="textarea" id="hspFRPriv" name="hspFRPriv" class="form-control"
-                                              placeholder="Hospital Failure to Renew Privileges" rows="3"></textarea>
+                                              placeholder="Example)&#10; None reported" rows="3"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="criminalConvictions" >Criminal Convictions </label>
+                                <label class="col-sm-3 col-md-2 control-label" for="criminalConvictions">Criminal
+                                    Convictions </label>
                                 <div class="col-sm-9 col-md-10">
-                                    <textarea type="textarea" id="criminalConvictions" name="criminalConvictions" class="form-control"
-                                              placeholder="Criminal Convictions" rows="3"></textarea>
+                                    <textarea type="textarea" id="criminalConvictions" name="criminalConvictions"
+                                              class="form-control"
+                                              placeholder="Example)&#10; None reported" rows="3"></textarea>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="formProfessional" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
+                        <div id="formProfessional" role="tabpanel"
+                             class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="teaching" >Teaching Responsibilities </label>
+                                <label class="col-sm-3 col-md-2 control-label" for="teaching">Teaching
+                                    Responsibilities </label>
                                 <div class="col-sm-9 col-md-10">
                                     <textarea type="textarea" id="teaching" name="teaching" class="form-control"
-                                              placeholder="Teaching Responsibilities" rows="5"></textarea>
+                                              placeholder="Example)&#10;Soonsil Univ. Medical Course" rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="serviceActivity" >Professional & Community Service Activities</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="serviceActivity">Professional &
+                                    Community Service Activities</label>
                                 <div class="col-sm-9 col-md-10">
-                                    <textarea type="textarea" id="serviceActivity" name="serviceActivity" class="form-control"
-                                              placeholder="Professional & Community Service Activities" rows="5"></textarea>
+                                    <textarea type="textarea" id="serviceActivity" name="serviceActivity"
+                                              class="form-control"
+                                              placeholder="Example)&#10;Chief of MIaaS"
+                                              rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="publications" >Publications</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="publications">Publications</label>
                                 <div class="col-sm-9 col-md-10">
                                     <textarea type="textarea" id="publications" name="publications" class="form-control"
-                                              placeholder="Publications" rows="5"></textarea>
+                                              placeholder="Example)&#10; Medical Image Archiving and Analytic Service" rows="5"></textarea>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="formStatement" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
+                        <div id="formStatement" role="tabpanel"
+                             class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
                             <div class="col-xs-12 form-group">
-                                <label class="col-sm-3 col-md-2 control-label" for="statement" >Doctor's Statement</label>
+                                <label class="col-sm-3 col-md-2 control-label" for="statement">Doctor's
+                                    Statement</label>
                                 <div class="col-sm-9 col-md-10">
                                     <textarea type="textarea" id="statement" name="statement" class="form-control"
-                                              placeholder="Doctor's Statement" rows="10"></textarea>
+                                              placeholder="Example)&#10; None reported" rows="10"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -266,16 +309,17 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 <div class="modal fade" id="updateFailedModal" tabindex="-1" role="dialog" aria-labelledby="updateFailedTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="updateFailedTitle">Update Failed</h4>
-        </div>
-        <div class="modal-body">
-        Signup failed
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="updateFailedTitle">Update Failed</h4>
+            </div>
+            <div class="modal-body">
+                Signup failed
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
@@ -284,16 +328,17 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 <div class="modal fade" id="updatedModal" tabindex="-1" role="dialog" aria-labelledby="updatedTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="updatedTitle">Update Success</h4>
-        </div>
-        <div class="modal-body">
-        Your profile is successfully updated.
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="updatedTitle">Update Success</h4>
+            </div>
+            <div class="modal-body">
+                Your profile is successfully updated.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
