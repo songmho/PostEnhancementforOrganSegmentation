@@ -1141,7 +1141,7 @@ class DbManager():
         intpr_detail = {}
         db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.name, req.level, intpr.summary, " \
                    "intpr.suspected_disease, intpr.opinion, intpr.recommendation, " \
-                   "m.subject, m.image_type, m.timestamp, " \
+                   "m.subject, m.image_type, m.timestamp, m.medical_department, " \
                    "m.taken_from, m.physician, m.place, m.description, req.subject, req.message, m.image_id " \
                    "FROM interpretation intpr " \
                    "JOIN physician ph ON intpr.physician_id = ph.user_id " \
