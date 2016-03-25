@@ -192,37 +192,38 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <h3 class="text-success">Interpretation #{{ intpr_num|plus:1 }}</h3>
                 </div>
                 <div class="col-xs-12 col-form">
-                    <div class="form-container form-boxed form-horizontal row">
-                        <div class="col-sm-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician ID</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span ><!--a href="#"-->{{ intpr.physician_id }}<!--/a--></span>
-                            </div>
-
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span >{{ intpr.intpr_id }}</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>
-                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                                <span >{{ intpr.level|intpr_level_string }}</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
-                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                                <span >{{ intpr.summary }}</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>
-                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                                <div >{{ intpr.interpretation }}</div>
-                            </div>
-                        </div>
-                    </div>
+{#                    <div class="form-container form-boxed form-horizontal row">#}
+{#                        <div class="col-sm-12 form-group">#}
+{#                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician ID</label>#}
+{#                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">#}
+{#                                <span ><!--a href="#"-->{{ intpr.physician_id }}<!--/a--></span>#}
+{#                            </div>#}
+{##}
+{#                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>#}
+{#                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">#}
+{#                                <span >{{ intpr.intpr_id }}</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="col-sm-12 form-group">#}
+{#                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>#}
+{#                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">#}
+{#                                <span >{{ intpr.level|intpr_level_string }}</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="col-sm-12 form-group">#}
+{#                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>#}
+{#                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">#}
+{#                                <span >{{ intpr.summary }}</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="col-sm-12 form-group">#}
+{#                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>#}
+{#                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">#}
+{#                                <div >{{ intpr.interpretation }}</div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+                    {% include 'miaas/template_container_intpr_info.html' %}
                 </div>
             </div>
         {% endwith %}
@@ -254,116 +255,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
         </div>
     </div>
 </div>
-<div class="modal fade" id="imageUploadModal" tabindex="-1" role="dialog"
-     aria-labelledby="imageUploadModalTitle">
-    <form id="formUpdateFile" class="modal-dialog" role="document"
-          action="/api/medical_image" method="post" enctype="multipart/form-data">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="imageUploadModalTitle">Image Upload</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-group col-xs-12">
-                    <label class="col-sm-3 control-label" for="image_file">Medical Image</label>
-                    <div class="col-sm-9">
-                        <input type="file" id="image_file" name="image_file" class="form-control"
-                               placeholder="Medical Image" required>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer" style="border-top: none;">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary">Upload</button>
-            </div>
-        </div>
-    </form>
-</div>
-<div class="modal fade" id="uploadingProgressModal" tabindex="-1" role="dialog" aria-labelledby="uploadingProgressTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="uploadingProgressTitle">File Upload</h4>
-            </div>
-            <div class="modal-body modal-progress-body">
-                <div id="uploadStatus" class="progressStatus text-primary text-center">Uploading...</div><br/>
-                <div id="uploadProgress" class="progress-container">
-                </div>
-            </div>
-{#            <div class="modal-footer">#}
-{#                <button type="button" class="btn btn-primary">Cancel</button>#}
-{#            </div>#}
-        </div>
-    </div>
-</div>
 
-<div class="modal fade" id="imageViewModal" tabindex="-1" role="dialog" aria-labelledby="imageViewModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="imageViewModalTitle">Medical Image View</h4>
-            </div>
-            <div class="modal-body">
-                <div id="imageView" class="image-view">
-                    <div class="image-view-explorer col-sm-5 col-md-4">
-                        <h4>Image Explorer</h4>
-                        <ul id="image-view-list"></ul>
-                    </div>
-                    <div class="image-view-image col-sm-7 col-md-8">
-                        <h4>Image View&nbsp;&nbsp;&nbsp;<span id="imageViewModalTitleName" class="text-primary"></span></h4>
-
-                        <div id="imageViewerWrapper" style="width:512px;height:512px;position:relative;color:white;"
-                             oncontextmenu="return false"
-                             class='disable-selection noIbar'
-                             unselectable='on'
-                             onselectstart='return false;'
-                             onmousedown='return false;'>
-                            <div id="imageViewer" class="image-view-viewer"
-                                 style="width:512px;height:512px;top:0px;left:0px; position:absolute;">
-                            </div>
-                            <div id="imageViewerLoader" style="background-image: url('{% static 'lib/jquery/plugins/loading.gif' %}');"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="graphView" class="image-view">
-                    <div class="image-view-image col-xs-12 col-md-12">
-                        <div id="graphViewer" class="image-view-viewer">
-                        </div>
-                    </div>
-                    <div class="image-view-image-settings col-xs-12 col-md-12">
-                        <div class="form-group form-inline">
-                            <label class="control-label" for="rollPeriod" >Roll Period:</label>
-                            <input id="rollPeriod" type="number" name="rollPeriod" class="form-control"
-                                   placeholder="roll" size="1" maxlength="1">
-                            <button id="rollPeriodConfirm" class="btn btn-default">Change</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="alertModalTitle">Request Failed</h4>
-        </div>
-        <div class="modal-body">
-        Request failed
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-        </div>
-    </div>
-</div>
+{% include 'miaas/template_modal_uploader.html' %}
+{% include 'miaas/template_modal_imageviewer.html' %}
 
 {% include 'miaas/template_footer.html' %}
 

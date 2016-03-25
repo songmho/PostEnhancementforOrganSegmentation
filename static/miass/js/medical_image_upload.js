@@ -9,7 +9,7 @@ $(document).ready(function() {
         var minDate = 0;
         var imageDate = $('#takenDate');
         if(Date.parse(imageDate.val()) > currentTime || Date.parse(imageDate.val()) < minDate) {
-            openUploadFailedModal("Invalid Date");
+            openModal("Invalid Date", "Upload Failed");
             imageDate.focus();
             return;
         } else{
@@ -66,7 +66,7 @@ $(document).ready(function() {
                     $.LoadingOverlay('show');
                     location.href = archiveURL;
                 } else {
-                    openUploadFailedModal(res['msg']);
+                    openModal(res['msg'], "Upload Failed");
                 }
             }
         });
@@ -88,14 +88,6 @@ $(document).ready(function() {
     });
 
 });
-
-function openUploadFailedModal(msg) {
-    if (msg==undefined || msg==null || msg=='') {
-        msg = 'Uploading Medical Image Failed.';
-    }
-    $('#uploadFailModal .modal-body').text(msg);
-    $('#uploadFailModal').modal();
-}
 
 function openDeleteConfirmModal() {
     $('#deleteImageConfirmModal').modal();

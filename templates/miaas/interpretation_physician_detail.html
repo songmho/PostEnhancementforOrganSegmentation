@@ -20,126 +20,15 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
         <div class="row">
             <div class="col-xs-12 col-title">
                 {#                <h2 class="text-primary" id="titleSubject">Analytics Result for "{{ subject }}"</h2>#}
-                <h2 class="text-primary" id="titleSubject">Interpretation Result for "{{ physician_intpr_detail.request_subject }}"</h2>
+                <h2 class="text-primary" id="titleSubject">Interpretation Result for "{{ intpr.request_subject }}"</h2>
             </div>
 
             <div class="col-xs-12 col-form">
-                <div class="form-container form-boxed form-horizontal row">
-                    {#                    <div class="col-xs-12 form-title">#}
-                    {#                        <h3 class="text-center">Physician's Interpretation</h3>#}
-                    {#                    </div>#}
-{#                    <div class="col-sm-12 form-group">#}
-{#                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician ID</label>#}
-{#                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">#}
-{#                            <span id="itp1-id"><a href="#">{{ physician_intpr_detail.physician_id }}</a></span>#}
-{#                        </div>#}
-{##}
-{#                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>#}
-{#                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">#}
-{#                            <span id="itp1-name" >{{ physician_intpr_detail.physician_name }}</span>#}
-{#                        </div>#}
-{#                    </div>#}
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp1-level" >{{ physician_intpr_detail.level }}</span>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="itp1-summary" >{{ physician_intpr_detail.summary }}</span>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <div id="itp1-interpretation" >
-                                {{ physician_intpr_detail.interpretation }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% include 'miaas/template_container_intpr_info.html' %}
 
-                <div class="form-container form-boxed form-horizontal row">
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="imgSubject" >{{ physician_intpr_detail.image_subject }}</span>
-                        </div>
-                    </div>
+                {% include 'miaas/template_container_image_info.html' %}
 
-                    <div class="col-xs-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Image Type</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="type" >{{ physician_intpr_detail.image_type }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
-                                col-md-overlay-2 form-group medimage-preview-container">
-                        <div class="medimage-preview-wrapper">
-                            <div id="image-previewer" class="medimage-preview">
-                                <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Date</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="date" >{{ physician_intpr_detail.image_date|datetime_string }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Taken From</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="taken" >{{ physician_intpr_detail.taken_from }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="physician" >{{ physician_intpr_detail.physician }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Place</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="place" >{{ physician_intpr_detail.place }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Description</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <div id="description" >
-                                <p>{{ physician_intpr_detail.description }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-container form-boxed form-horizontal row">
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label no-pad-top" for="inputReqSubject" >Request Subject</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <span id="reqSubject" >{{ physician_intpr_detail.request_subject }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="reqMessage" >Request Message</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <div id="reqMessage" >
-                                <p>{{ physician_intpr_detail.request_message }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% include 'miaas/template_container_request_info.html' %}
 
                 <div class="form-btns-container row">
                     <div id="btnFormCancel" class="col-xs-12 col-md-4 col-md-offset-4 form-button">
@@ -152,74 +41,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="imageViewModal" tabindex="-1" role="dialog" aria-labelledby="imageViewModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="imageViewModalTitle">Medical Image View</h4>
-            </div>
-            <div class="modal-body">
-                <div id="imageView" class="image-view">
-                    <div class="image-view-explorer col-sm-5 col-md-4">
-                        <h4>Image Explorer</h4>
-                        <ul id="image-view-list"></ul>
-                    </div>
-                    <div class="image-view-image col-sm-7 col-md-8">
-                        <h4>Image View&nbsp;&nbsp;&nbsp;<span id="imageViewModalTitleName" class="text-primary"></span></h4>
-
-                        <div id="imageViewerWrapper" style="width:512px;height:512px;position:relative;color:white;"
-                             oncontextmenu="return false"
-                             class='disable-selection noIbar'
-                             unselectable='on'
-                             onselectstart='return false;'
-                             onmousedown='return false;'>
-                            <div id="imageViewer" class="image-view-viewer"
-                                 style="width:512px;height:512px;top:0px;left:0px; position:absolute;">
-                            </div>
-                            <div id="imageViewerLoader" style="background-image: url('{% static 'lib/jquery/plugins/loading.gif' %}');"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="graphView" class="image-view">
-                    <div class="image-view-image col-xs-12 col-md-12">
-                        <div id="graphViewer" class="image-view-viewer">
-                        </div>
-                    </div>
-                    <div class="image-view-image-settings col-xs-12 col-md-12">
-                        <div class="form-group form-inline">
-                            <label class="control-label" for="rollPeriod" >Roll Period:</label>
-                            <input id="rollPeriod" type="number" name="rollPeriod" class="form-control"
-                                   placeholder="roll" size="1" maxlength="1">
-                            <button id="rollPeriodConfirm" class="btn btn-default">Change</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="alertModalTitle">Request Failed</h4>
-        </div>
-        <div class="modal-body">
-        Request failed
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-        </div>
-    </div>
-</div>
-
+{% include 'miaas/template_modal_imageviewer.html' %}
 
 {% include 'miaas/template_footer.html' %}
 

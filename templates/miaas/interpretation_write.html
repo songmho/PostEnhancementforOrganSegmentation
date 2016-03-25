@@ -26,92 +26,9 @@
                 <h2 class="text-primary" id="titleSubject">Interpreting for "{{ request_detail.request_subject }}"</h2>
             </div>
             <form id="writeForm" class="col-xs-12 col-form">
-                <div class="form-container form-boxed form-horizontal row">
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" >Patient ID</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="name" >{{ request_detail.patient_id }}</span>
-                        </div>
-                        <label class="col-sm-3 col-md-2 control-label" >Patient Name</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="name" >{{ request_detail.name }}</span>
-                        </div>
-                        {% if request_detail.level == 3 %}
+                {% include 'miaas/template_container_request_info.html' %}
 
-                            <label class="col-sm-3 col-md-2 control-label" >Phone Number</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="phoneNumber" >{{ request_detail.phone_number }}</span>
-                            </div>
-
-                            <label class="col-sm-3 col-md-2 control-label" >Email</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="email" >{{ request_detail.email }}</span>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="form-container form-boxed form-horizontal row">
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="imgSubject" >{{ request_detail.image_subject }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Image Type</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="type" >{{ request_detail.image_type }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
-                                col-md-overlay-2 form-group medimage-preview-container">
-                        <div class="medimage-preview-wrapper">
-                            <div id="image-previewer" class="medimage-preview">
-                                <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Date</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="date" >{{ request_detail.image_date|datetime_string }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Taken From</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="taken" >{{ request_detail.taken_from }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="physician" >{{ request_detail.physician_name }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Place</label>
-                        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                            <span id="clinicName" >{{ request_detail.place }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Description</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <div id="description" >
-                                <p>{{ request_detail.description }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% include 'miaas/template_container_image_info.html' %}
 
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-sm-12 form-group">
@@ -152,199 +69,8 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade modal-profile" id="patientProfileModal" tabindex="-1" role="dialog" aria-labelledby="patientProfileModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="patientProfileModalTitle">Patient Profile</h4>
-            </div>
-            <div class="modal-body">
-                <div id="patientProfileForm" class="col-xs-12 col-form">
-                    <div class="form-container form-boxed form-horizontal row">
-                        <div class="col-xs-12 col-md-6 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="height">Height</label>
-                            <div class="col-xs-5 col-sm-4 col-md-3">
-                                <output id="height" name="hieght"></output>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 col-md-6 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="weight" >Weight</label>
-                            <div class="col-xs-5 col-sm-4 col-md-3">
-                                <output id="weight" name="weight"></output>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 col-md-6 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingCapacity" >Drinking Capacity</label>
-                            <div class="col-xs-5 col-sm-4 col-md-3">
-                                <output id="drinkingCapacity" name="drinkingCapacity"></output>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 col-md-6 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingFrequency" >Drinking Frequency</label>
-                            <div class="col-xs-5 col-sm-4 col-md-3">
-                                <output id="drinkingFrequency" name="drinkingFrequency"></output>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 col-md-6 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="sleeping" >Sleeping Hours</label>
-                            <div class="col-xs-5 col-sm-4 col-md-3">
-                                <output id="sleeping" name="sleeping"></output>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 col-md-6 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="exercise" >Exercise Hours</label>
-                            <div class="col-xs-5 col-sm-4 col-md-3">
-                                <output id="exercise" name="exercise"></output>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 col-md-6 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="smoking" >Smoking Status</label>
-                            <div class="col-sm-9 col-md-7">
-                                <output id="smoking" name="smoking"></output>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 col-md-6 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="water" >Water Intake</label>
-                            <div class="col-xs-5 col-sm-4 col-md-3">
-                                <output id="water" name="water"></output>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-container form-boxed form-horizontal row">
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label" for="diseaseHistory" >Disease History</label>
-                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                <output id="diseaseHistory" name="diseaseHistory"></output>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label" for="medication" > Medication</label>
-                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                <output id="medication" name="medication"></output>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label" for="familyHistory" >Family History</label>
-                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                <output id="familyHistory" name="familyHistory"></output>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label" for="significant" >Significant</label>
-                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                <output id="significant" name="significant"></output>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label" for="notice" >Notice</label>
-                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                <output id="notice" name="notice"></output>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="writeInterpretationModal" tabindex="-1" role="dialog" aria-labelledby="writeInterpretationModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="writeInterpretationModalTitle">Signin Failed</h4>
-            </div>
-            <div class="modal-body">
-                Signin failed
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="imageViewModal" tabindex="-1" role="dialog" aria-labelledby="imageViewModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="imageViewModalTitle">Medical Image View</h4>
-            </div>
-            <div class="modal-body">
-                <div id="imageView" class="image-view">
-                    <div class="image-view-explorer col-sm-5 col-md-4">
-                        <h4>Image Explorer</h4>
-                        <ul id="image-view-list"></ul>
-                    </div>
-                    <div class="image-view-image col-sm-7 col-md-8">
-                        <h4>Image View&nbsp;&nbsp;&nbsp;<span id="imageViewModalTitleName" class="text-primary"></span></h4>
-
-                        <div id="imageViewerWrapper" style="width:512px;height:512px;position:relative;color:white;"
-                             oncontextmenu="return false"
-                             class='disable-selection noIbar'
-                             unselectable='on'
-                             onselectstart='return false;'
-                             onmousedown='return false;'>
-                            <div id="imageViewer" class="image-view-viewer"
-                                 style="width:512px;height:512px;top:0px;left:0px; position:absolute;">
-                            </div>
-                            <div id="imageViewerLoader" style="background-image: url('{% static 'lib/jquery/plugins/loading.gif' %}');"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="graphView" class="image-view">
-                    <div class="image-view-image col-xs-12 col-md-12">
-                        <div id="graphViewer" class="image-view-viewer">
-                        </div>
-                    </div>
-                    <div class="image-view-image-settings col-xs-12 col-md-12">
-                        <div class="form-group form-inline">
-                            <label class="control-label" for="rollPeriod" >Roll Period:</label>
-                            <input id="rollPeriod" type="number" name="rollPeriod" class="form-control"
-                                   placeholder="roll" size="1" maxlength="1">
-                            <button id="rollPeriodConfirm" class="btn btn-default">Change</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="alertModalTitle">Request Failed</h4>
-        </div>
-        <div class="modal-body">
-        Request failed
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-        </div>
-    </div>
-</div>
+{% include 'miaas/template_modal_patient_profile.html' %}
+{% include 'miaas/template_modal_imageviewer.html' %}
 
 {% include 'miaas/template_footer.html' %}
 
@@ -370,7 +96,7 @@
                         $('#'+profile.type).val(profile.value);
                     }
                 } else {
-                    openWriteInterpretationModal(res['msg'], 'Getting Profile Failed');
+                    openModal(res['msg'], 'Getting Profile Failed');
                 }
             }
         });
@@ -394,9 +120,9 @@
                 success: function (res) {
                     $.LoadingOverlay('hide');
                     if (res['code'] == 'SUCCESS') {
-                        openWriteInterpretationModal("Success", "Writing Interpretation Succeed")
+                        openModal("Success", "Writing Interpretation Succeed")
                     } else {
-                        openWriteInterpretationModal(res['msg'], "Writing Interpretation Failed")
+                        openModal(res['msg'], "Writing Interpretation Failed")
                     }
                 }
             });
@@ -404,17 +130,6 @@
 
         setOpenImageViewerListener($('#image-previewer'));
     });
-
-    function openWriteInterpretationModal(msg, title) {
-        if (title!=undefined && title!=null && title!='') {
-            $('#writeInterpretationModalTitle').text(title)
-        }
-        if (msg==undefined || msg==null || msg=='') {
-            msg = 'Sign in failed. Please try again.'
-        }
-        $('#writeInterpretationModal .modal-body').text(msg);
-        $('#writeInterpretationModal').modal();
-    }
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");
     archiveURL = "{% url 'miaas:archive' %}";

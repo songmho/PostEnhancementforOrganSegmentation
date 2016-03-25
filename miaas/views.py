@@ -142,25 +142,6 @@ def medical_image_page(request, image_id):
     return render(request, 'miaas/medical_image.html', context)
 
 
-def interpretation_request_page(request):
-    context = _get_session_context(request)
-    # image_id = request.GET.get('image_id')
-    #
-    # db = cloud_db.DbManager()
-    # image_detail = db.retrieve_medical_image_by_id(image_id)
-    # context['image_detail'] = image_detail
-    #
-    # logger.info('interpret_request get: %s' % request.GET)
-
-    return render(request, 'miaas/interpretation_request.html', context)
-    # return render(request, 'miaas/interpretation_request.html', sctx.default_context)
-
-
-def physician_info_page(request):
-    context = _get_session_context(request)
-    return render(request, 'miaas/physician_info.html', sctx.default_context)
-
-
 def physician_profile_page(request):
     context = _get_session_context(request)
     return render(request, 'miaas/physician_profile.html', context)
@@ -490,8 +471,7 @@ def interpretation_detail_page(request, intpr_id):
 
         result = db.retrieve_medical_image_by_id(intpr_detail['image_id'])
         context['image'] = result
-
-        context['intpr_detail'] = intpr_detail
+        context['intpr'] = intpr_detail
 
     logger.info('interpretation_detail_page get: %s' % request.GET)
     return render(request, 'miaas/interpretation_detail.html', context)
@@ -508,7 +488,8 @@ def physician_interpretation_detail_page(request, intpr_id):
         result = db.retrieve_medical_image_by_id(physician_intpr_detail['image_id'])
         context['image'] = result
 
-        context['physician_intpr_detail'] = physician_intpr_detail
+        context['intpr'] = physician_intpr_detail
+        context['request_detail'] = physician_intpr_detail
 
     logger.info('physician_interpretation_detail_page get: %s' % request.GET)
     return render(request, 'miaas/interpretation_physician_detail.html', context)

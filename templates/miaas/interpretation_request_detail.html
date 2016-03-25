@@ -40,85 +40,9 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="form-container form-boxed form-horizontal row">
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="imgSubject" >{{ request_detail.image_subject }}</span>
-                            </div>
-                        </div>
 
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Image Type</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="type" >{{ request_detail.image_type }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
-                                col-md-overlay-2 form-group medimage-preview-container">
-                            <div class="medimage-preview-wrapper">
-                                <div id="image-previewer" class="medimage-preview">
-                                    <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Date</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="date" >{{ request_detail.image_date|datetime_string }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Taken From</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="taken" >{{ request_detail.taken_from }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="physician" >{{ request_detail.physician_name }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Place</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="place" >{{ request_detail.place }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Description</label>
-                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                                <div id="description" >
-                                    <p>{{ request_detail.description }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-container form-boxed form-horizontal row">
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label no-pad-top" for="inputReqSubject" >Request Subject</label>
-                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                                <span id="reqSubject" >{{ request_detail.request_subject }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label" for="reqMessage" >Request Message</label>
-                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                                <div id="reqMessage" >
-                                    <p>{{ request_detail.request_message }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {% include 'miaas/template_container_image_info.html' %}
+                    {% include 'miaas/template_container_request_info.html' %}
 
                     <div class="form-btns-container row">
                         <div id="btnFormCancel" class="col-xs-6 col-md-3 col-md-offset-3 form-button">
@@ -159,85 +83,8 @@
                 </div>
 
                 <div class="col-xs-12 col-form">
-                    <div class="form-container form-boxed form-horizontal row">
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="imgSubject" >{{ request_detail.image_subject }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Image Type</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="type" >{{ request_detail.image_type }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
-                                    col-md-overlay-2 form-group medimage-preview-container">
-                            <div class="medimage-preview-wrapper">
-                                <div id="image-previewer" class="medimage-preview">
-                                    <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Date</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="date" >{{ request_detail.image_date|datetime_string }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Taken From</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="taken" >{{ request_detail.taken_from }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="physician" >{{ request_detail.physician_name }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Place</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="place" >{{ request_detail.place }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Description</label>
-                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                                <div id="description" >
-                                    <p>{{ request_detail.description }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-container form-boxed form-horizontal row">
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label no-pad-top" for="inputReqSubject" >Request Subject</label>
-                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                                <span id="reqSubject" >{{ request_detail.request_subject }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label" for="reqMessage" >Request Message</label>
-                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                                <div id="reqMessage" >
-                                    <p>{{ request_detail.request_message }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {% include 'miaas/template_container_image_info.html' %}
+                    {% include 'miaas/template_container_request_info.html' %}
 
                     <div class="form-btns-container row">
                         <div id="btnFormCancel" class="col-xs-6 col-md-3 col-md-offset-3 form-button">
@@ -252,67 +99,7 @@
             {% elif request_detail.status == '3' or request_detail.status == 3 %} {# Finding Physician #}
                 <div class="col-xs-12 col-table">
                 <div class="col-xs-12 col-form">
-                    <div class="form-container form-boxed form-horizontal row">
-                        <div class="col-xs-12 form-group">
-                            <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="imgSubject" >{{ request_detail.image_subject }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Image Type</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="type" >{{ request_detail.image_type }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
-                                    col-md-overlay-2 form-group medimage-preview-container">
-                            <div class="medimage-preview-wrapper">
-                                <div id="image-previewer" class="medimage-preview">
-                                    <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Date</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="date" >{{ request_detail.image_date|datetime_string }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Taken From</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="taken" >{{ request_detail.taken_from }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="physician" >{{ request_detail.physician_name }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Place</label>
-                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                                <span id="place" >{{ request_detail.place }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Description</label>
-                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                                <div id="description" >
-                                    <p>{{ request_detail.description }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {% include 'miaas/template_container_image_info.html' %}
 
                     <div class="form-container form-boxed form-horizontal row">
                         <div class="col-xs-12 form-group">
@@ -351,255 +138,6 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="requestDetailModal" tabindex="-1" role="dialog" aria-labelledby="requestDetailModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="requestDetailModalTitle">Signin Failed</h4>
-            </div>
-            <div class="modal-body">
-                Signin failed
-            </div>
-            <div class="modal-footer">
-                <a type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Close</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade modal-profile" id="physicianProfileModal" tabindex="-1" role="dialog" aria-labelledby="physicianProfileModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="patientProfileModalTitle">Physician Profile</h4>
-            </div>
-            <div class="modal-body">
-                <section class="section section-default">
-                    <div class="row">
-                        <div class="col-xs-12 col-title">
-                            <h2 class="text-primary">Physician Profile</h2>
-                        </div>
-
-                        <form id="physicianProfileForm" class="col-xs-12 col-form">
-                            <div class="form-container form-boxed form-horizontal row">
-                                <div class="col-xs-12 form-small-title">
-                                    <h4 class="text-primary">Introduction</h4>
-                                </div>
-                                <div class="col-xs-12 form-group">
-                                    <label class="col-sm-3 col-md-2 control-label" for="aboutMe" >About me</label>
-                                    <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                        <output id="aboutMe" name="aboutMe"></output>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 form-group">
-                                    <label class="col-sm-3 col-md-2 control-label" for="specialism" >About Specialism</label>
-                                    <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                        <output id="specialism" name="specialism"></output>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-container form-boxed form-horizontal row" style="display: none;">
-                                <div class="col-xs-12 form-small-title">
-                                    <h4 class="text-primary">Activity Summary</h4>
-                                </div>
-                                <div class="col-sm-12 form-group">
-                                    <label class="col-xs-12 col-sm-3 col-md-3 control-label">Joined At</label>
-                                    <div class="col-xs-12 col-sm-9 col-md-3 control-text">
-                                        <span id="joinedAt">2014-12-27</span>
-                                    </div>
-
-                                    <label class="col-xs-12 col-sm-3 col-md-3 control-label">Recent Connection</label>
-                                    <div class="col-xs-12 col-sm-9 col-md-3 control-text">
-                                        <span id="recentConnection">2015-02-02</span>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 form-group">
-                                    <label class="col-xs-12 col-sm-3 col-md-3 control-label">Interpretation Count</label>
-                                    <div class="col-xs-12 col-sm-9 col-md-3 control-text">
-                                        <span id="response">24</span>
-                                    </div>
-
-                                    <label class="col-xs-12 col-sm-3 col-md-3 control-label"><span data-toggle="tooltip" data-placement="left" title="Perfect score is 10.0">Score</span></label>
-                                    <div class="col-xs-12 col-sm-9 col-md-3 control-text">
-                                        <span id="score" data-toggle="tooltip" data-placement="right" title="Perfect score is 10.0">8.6</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- tab reference : http://www.nydoctorprofile.com/ -->
-                            <div class="nav-tabs-group">
-                                <ul id="detailTabs" class="nav nav-tabs nav-tabs-for-boxed" role="tablist">
-                                    <li role="presentation" class="active"><a href="#formEducation" aria-controls="formPractice" role="tab" data-toggle="tab">Education</a></li>
-                                    <li role="presentation"><a href="#formPractice" aria-controls="formPractice" role="tab" data-toggle="tab">Practice info</a></li>
-                                    <li role="presentation"><a href="#formLegal" aria-controls="formPractice" role="tab" data-toggle="tab">Legal Actions</a></li>
-                                    <li role="presentation"><a href="#formProfessional" aria-controls="formPractice" role="tab" data-toggle="tab">Professional Activities</a></li>
-                                    <li role="presentation"><a href="#formStatement" aria-controls="formPractice" role="tab" data-toggle="tab">Statement</a></li>
-                                </ul>
-
-                                <div class="tab-content">
-                                    <div id="formEducation" role="tabpanel" class="tab-pane active form-container form-boxed form-horizontal nav-tabs-content row">
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="medicalSchool" >Medical School</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="medicalSchool" name="medicalSchool"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="graduate" >Graduate Medical Education</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="graduate" name="graduate"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="certifications" >Board Certifications</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="certifications" name="certifications"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="memberships" >Professional Memberships</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="memberships" name="memberships"></output>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="formPractice" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="fieldsOfMedicine" >Fields of Medicine</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="fieldsOfMedicine" name="fieldsOfMedicine"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="hiv" >HIV Services</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="hiv" name="hiv"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="offices" >Offices</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="offices" name="offices"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="languages" >Languages Available</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="languages" name="languages"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="insuranceProgram" >Medicaid & Government Insurance Programs</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="insuranceProgram" name="insuranceProgram"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="healthPlans" >Health Plans</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="healthPlans" name="healthPlans"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="hospitalPrivileges" >Hospital Privileges</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="hospitalPrivileges" name="hospitalPrivileges"></output>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="formLegal" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="malpractice" >Malpractice</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="malpractice" name="malpractice"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="licenseeActions" >Licensee Actions</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="licenseeActions" name="licenseeActions" ></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="outOfStateActions" >Out-of-State Actions</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="outOfStateActions" name="outOfStateActions"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="currentLimits" >Current Limitations</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="currentLimits" name="currentLimits"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="hspPrivRestrictions" >Hospital Privilege Restrictions</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="hspPrivRestrictions" name="hspPrivRestrictions"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="hspFRPriv" >Hospital Failure to Renew Privileges</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="hspFRPriv" name="hspFRPriv"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="criminalConvictions" >Criminal Convictions </label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="criminalConvictions" name="criminalConvictions"></output>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="formProfessional" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="teaching" >Teaching Responsibilities </label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="teaching" name="teaching"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="serviceActivity" >Professional & Community Service Activities</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="serviceActivity" name="serviceActivity"></output>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="publications" >Publications</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="publications" name="publications"></output>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="formStatement" role="tabpanel" class="tab-pane form-container form-boxed form-horizontal nav-tabs-content row">
-                                        <div class="col-xs-12 form-group">
-                                            <label class="col-sm-3 col-md-2 control-label" for="statement" >Doctor's Statement</label>
-                                            <div class="col-sm-9 col-md-10" style="height:100px;overflow-y:scroll">
-                                                <output id="statement" name="statement"></output>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </section>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="modal fade" id="updateFailedModal" tabindex="-1" role="dialog" aria-labelledby="updateFailedTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -628,81 +166,15 @@
         Are you sure to cancel the request?
         </div>
         <div class="modal-footer">
-            <button id="btnDeleteCofirm" type="button" class="btn btn-default" data-dismiss="modal">Delete</button>
+            <button id="btnDeleteConfirm" type="button" class="btn btn-default" data-dismiss="modal">Delete</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
         </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="imageViewModal" tabindex="-1" role="dialog" aria-labelledby="imageViewModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="imageViewModalTitle">Medical Image View</h4>
-            </div>
-            <div class="modal-body">
-                <div id="imageView" class="image-view">
-                    <div class="image-view-explorer col-sm-5 col-md-4">
-                        <h4>Image Explorer</h4>
-                        <ul id="image-view-list"></ul>
-                    </div>
-                    <div class="image-view-image col-sm-7 col-md-8">
-                        <h4>Image View&nbsp;&nbsp;&nbsp;<span id="imageViewModalTitleName" class="text-primary"></span></h4>
-
-                        <div id="imageViewerWrapper" style="width:512px;height:512px;position:relative;color:white;"
-                             oncontextmenu="return false"
-                             class='disable-selection noIbar'
-                             unselectable='on'
-                             onselectstart='return false;'
-                             onmousedown='return false;'>
-                            <div id="imageViewer" class="image-view-viewer"
-                                 style="width:512px;height:512px;top:0px;left:0px; position:absolute;">
-                            </div>
-                            <div id="imageViewerLoader" style="background-image: url('{% static 'lib/jquery/plugins/loading.gif' %}');"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="graphView" class="image-view">
-                    <div class="image-view-image col-xs-12 col-md-12">
-                        <div id="graphViewer" class="image-view-viewer">
-                        </div>
-                    </div>
-                    <div class="image-view-image-settings col-xs-12 col-md-12">
-                        <div class="form-group form-inline">
-                            <label class="control-label" for="rollPeriod" >Roll Period:</label>
-                            <input id="rollPeriod" type="number" name="rollPeriod" class="form-control"
-                                   placeholder="roll" size="1" maxlength="1">
-                            <button id="rollPeriodConfirm" class="btn btn-default">Change</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="alertModalTitle">Request Failed</h4>
-        </div>
-        <div class="modal-body">
-        Request failed
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-        </div>
-    </div>
-</div>
-
+{% include 'miaas/template_modal_physician_profile.html' %}
+{% include 'miaas/template_modal_imageviewer.html' %}
 
 {% include 'miaas/template_footer.html' %}
 
@@ -712,7 +184,7 @@
         $('.btn-request-cancel').click(function() {
             $('#cancelRequest').modal()
         });
-        $('#btnDeleteCofirm').click(function() {
+        $('#btnDeleteConfirm').click(function() {
             $.LoadingOverlay('show');
             $.ajax({
                 url:"/api/interpretation?action=delPatientReq&request_id={{ request_detail.request_id }}",
@@ -720,9 +192,9 @@
                 success: function (res) {
                     $.LoadingOverlay('hide');
                     if (res['code'] == 'SUCCESS') {
-                        openRequestDetailModal("Success", "Request Deletion Succeed")
+                        openModal("Success", "Request Deletion Succeed")
                     } else {
-                        openRequestDetailModal(res['msg'], "Request Deletion Failed")
+                        openModal(res['msg'], "Request Deletion Failed")
                     }
                 }
             });
@@ -745,7 +217,7 @@
                         resetProfile();
                         $('#physicianProfileModal').modal()
                     } else {
-                        openUpdateFailModal(res['msg'], 'Getting Profile Failed');
+                        openModal(res['msg'], 'Getting Profile Failed');
                     }
                 }
             });
@@ -766,9 +238,9 @@
                 success: function (res) {
                     $.LoadingOverlay('hide');
                     if (res['code'] == 'SUCCESS') {
-                        openRequestDetailModal("Success", "Physician Selection Succeed")
+                        openModal("Success", "Physician Selection Succeed")
                     } else {
-                        openRequestDetailModal(res['msg'], "Physician Selection Failed")
+                        openModal(res['msg'], "Physician Selection Failed")
                     }
                 }
             });
@@ -789,9 +261,9 @@
                 success: function (res) {
                     $.LoadingOverlay('hide');
                     if (res['code'] == 'SUCCESS') {
-                        openRequestDetailModal("Success", "Editing Request Succeed")
+                        openModal("Success", "Editing Request Succeed")
                     } else {
-                        openRequestDetailModal(res['msg'], "Editing Request Failed")
+                        openModal(res['msg'], "Editing Request Failed")
                     }
                 }
             });
@@ -809,28 +281,6 @@
             var profile = profiles[i];
             $('#'+profile.type).val(profile.value);
         }
-    }
-
-    function openRequestDetailModal(msg, title) {
-        if (title!=undefined && title!=null && title!='') {
-            $('#requestDetailModalTitle').text(title)
-        }
-        if (msg==undefined || msg==null || msg=='') {
-            msg = 'Sign in failed. Please try again.'
-        }
-        $('#requestDetailModal .modal-body').text(msg);
-        $('#requestDetailModal').modal();
-    }
-
-    function openUpdateFailModal(msg, title) {
-        if (title!=undefined && title!=null && title!='') {
-            $('#updateFailedTitle').text(title)
-        }
-        if (msg==undefined || msg==null || msg=='') {
-            msg = 'Updating failed. Please try again.'
-        }
-        $('#updateFailedModal .modal-body').text(msg);
-        $('#updateFailedModal').modal();
     }
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");

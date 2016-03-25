@@ -1,0 +1,43 @@
+<div class="modal fade" id="imageUploadModal" tabindex="-1" role="dialog"
+     aria-labelledby="imageUploadModalTitle">
+    <form id="formUpdateFile" class="modal-dialog" role="document"
+          action="/api/medical_image" method="post" enctype="multipart/form-data">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="imageUploadModalTitle">Image Upload</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group col-xs-12">
+                    <label class="col-sm-3 control-label" for="image_file">Medical Image</label>
+                    <div class="col-sm-9">
+                        <input type="file" id="image_file" name="image_file" class="form-control"
+                               placeholder="Medical Image" required>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: none;">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade" id="uploadingProgressModal" tabindex="-1" role="dialog" aria-labelledby="uploadingProgressTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="uploadingProgressTitle">File Upload</h4>
+            </div>
+            <div class="modal-body modal-progress-body">
+                <div id="uploadStatus" class="progressStatus text-primary text-center">Uploading...</div><br/>
+                <div id="uploadProgress" class="progress-container">
+                </div>
+            </div>
+{#            <div class="modal-footer">#}
+{#                <button type="button" class="btn btn-primary">Cancel</button>#}
+{#            </div>#}
+        </div>
+    </div>
+</div>

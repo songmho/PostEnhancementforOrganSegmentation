@@ -1,0 +1,63 @@
+{% load my_filters %}
+
+<div class="form-container form-boxed form-horizontal row">
+    <div class="col-xs-12 form-group">
+        <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>
+        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+            <span id="imgSubject" >{{ image.subject }}</span>
+        </div>
+    </div>
+
+    <div class="col-xs-12 form-group">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Image Type</label>
+        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+            <span id="type" >{{ image.image_type }}</span>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
+                col-md-overlay-2 form-group medimage-preview-container">
+        <div class="medimage-preview-wrapper">
+            <div id="image-previewer" class="medimage-preview">
+                <div class="text-center text-warning" style="margin-top:86px;">Image Preview</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 form-group">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Date</label>
+        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+            <span id="date" >{{ image.taken_date|datetime_string }}</span>
+        </div>
+    </div>
+
+    <div class="col-xs-12 form-group">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Taken From</label>
+        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+            <span id="taken" >{{ image.taken_from }}</span>
+        </div>
+    </div>
+
+    <div class="col-xs-12 form-group">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician</label>
+        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+            <span id="physician" >{{ image.physician }}</span>
+        </div>
+    </div>
+
+    <div class="col-xs-12 form-group">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Place</label>
+        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+            <span id="place" >{{ image.place }}</span>
+        </div>
+    </div>
+
+    <div class="col-sm-12 form-group">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Description</label>
+        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+            <div id="description" >
+                <p>{{ image.description }}</p>
+            </div>
+        </div>
+    </div>
+</div>

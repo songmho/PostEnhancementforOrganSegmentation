@@ -1,0 +1,43 @@
+{% load my_filters %}
+
+{#<div class="col-xs-12 form-title">#}
+{#    <h3 class="text-center">Physician's Interpretation</h3>#}
+{#</div>#}
+<div class="form-container form-boxed form-horizontal row">
+    {% if user_session.user_type == 'patient' %}
+    <div class="col-sm-12 form-group">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician ID</label>
+        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+            <span>
+                <a class="text-primary view-profile" href="#" physician_id="{{ intpr.physician_id }}">{{ intpr.physician_id }}</a>
+            </span>
+        </div>
+
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>
+        <div class="col-xs-12 col-sm-9 col-md-4 control-text">
+            <span>{{ intpr.physician_name }}</span>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="col-sm-12 form-group">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>
+        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+            <span >{{ intpr.level|intpr_level_string }}</span>
+        </div>
+    </div>
+    <div class="col-sm-12 form-group">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
+        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+            <span >{{ intpr.summary }}</span>
+        </div>
+    </div>
+    <div class="col-sm-12 form-group">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>
+        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+            <div >
+                {{ intpr.interpretation }}
+            </div>
+        </div>
+    </div>
+</div>

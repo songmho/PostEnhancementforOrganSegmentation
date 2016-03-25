@@ -21,7 +21,7 @@ $(document).ready(function() {
         e.preventDefault();
 
         if($('#inputPw').val() != $('#inputPwConfirm').val()) {
-            openUpdateFailModal("Password Confirm is not same.");
+            openModal("Password Confirm is not same.", "Update Failed");
         } else {
             updateUser();
         }
@@ -32,14 +32,14 @@ var updatingUser = {};
 function updateUser() {
     var inputPw = $('#inputPw');
     if(inputPw.val().length > 20) {
-        openUpdateFailModal("Invalid Password");
+        openModal("Invalid Password", "Update Failed");
         inputPw.focus();
         return;
     }
     var phoneRe = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g;
     var inputMobile = $('#inputMobile');
     if(!inputMobile.val().match(phoneRe)){
-        openUpdateFailModal("Invalid Phone Number");
+        openModal("Invalid Phone Number", "Update Failed");
         inputMobile.focus();
         return;
     }
@@ -57,7 +57,7 @@ function updateUser() {
         var minBirthday = 0;
         var inputBirthday = $('#inputBirthday');
         if(Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
-            openUpdateFailModal("Invalid Birthday");
+            openModal("Invalid Birthday");
             inputBirthday.focus();
             return;
         }
@@ -83,9 +83,9 @@ function updateUser() {
             $.LoadingOverlay('hide');
             if(res['code'] == 'SUCCESS') {
                 user = updatingUser;
-                openUpdatedModal();
+                openModal("Account information is successfully updated.", "Update Success");
             } else {
-                openUpdateFailModal(res['msg']);
+                openModal(res['msg'], "Update Failed");
             }
         }
     });
@@ -105,26 +105,4 @@ function resetUser() {
         $("#selectField").val(user.medicine_field).attr("selected", "selected");
         $('#inputLicence').val(user.license_number);
     }
-}
-
-function openUpdateFailModal(msg, title) {
-    if (title!=undefined && title!=null && title!='') {
-        $('#updateFailedTitle').text(title)
-    }
-    if (msg==undefined || msg==null || msg=='') {
-        msg = 'Updating failed. Please try again.'
-    }
-    $('#updateFailedModal .modal-body').text(msg);
-    $('#updateFailedModal').modal();
-}
-
-function openUpdatedModal(msg, title) {
-    if (title!=undefined && title!=null && title!='') {
-        $('#updatedTitle').text(title)
-    }
-    if (msg==undefined || msg==null || msg=='') {
-        msg = 'Account information is successfully updated.'
-    }
-    $('#updatedModal .modal-body').text(msg);
-    $('#updatedModal').modal();
 }
