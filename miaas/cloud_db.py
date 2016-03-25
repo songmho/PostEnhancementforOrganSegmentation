@@ -1184,8 +1184,8 @@ class DbManager():
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
         db_query = "SELECT intpr.intpr_id, req.timestamp, intpr.timestamp, req.subject, " \
-                   "m.image_type, req.level, intpr.summary " \
-                   "intpr.suspected_disease, intpr.opinion, intpr.recommendation, " \
+                   "m.image_type, req.level, intpr.summary, " \
+                   "intpr.suspected_disease, intpr.opinion, intpr.recommendation " \
                    "FROM interpretation intpr " \
                    "JOIN request req ON intpr.request_id = req.request_id " \
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
@@ -1218,8 +1218,8 @@ class DbManager():
         intprs = []
         time_from = int(time_from) if time_from is not None else 0
         db_query = "SELECT intpr.intpr_id, req.timestamp, intpr.timestamp, req.subject, " \
-                   "m.image_type, req.level, intpr.summary " \
-                   "intpr.suspected_disease, intpr.opinion, intpr.recommendation, " \
+                   "m.image_type, req.level, intpr.summary, " \
+                   "intpr.suspected_disease, intpr.opinion, intpr.recommendation " \
                    "FROM interpretation intpr " \
                    "JOIN request req ON intpr.request_id = req.request_id " \
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
