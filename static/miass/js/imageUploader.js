@@ -142,3 +142,30 @@ function easeInOutCubic (t, b, c, d) {
 	t -= 2;
 	return c/2*(t*t*t + 2) + b;
 }
+
+
+function getFileExtension(fileForm) {
+    var fakePath = fileForm.val();
+    var fakePaths = fakePath.split('.');
+    var ext = fakePaths[fakePaths.length-1];
+    return ext;
+}
+
+function checkImageTypeAndExtension(imageType, ext) {
+    if (ext == 'zip') return true;
+    switch(imageType) {
+        case 'EEG':
+        case 'ECG':
+        case 'EMG':
+            if (ext == 'csv' || ext == 'edf') return true;
+            else return false;
+
+        case 'CT':
+        case 'X-ray':
+        case 'MRI':
+        case 'US':
+            if (ext == 'jpg' || ext == 'png' || ext == 'dcm' || ext == 'dicom') return true;
+            else return false;
+    }
+    return false;
+}

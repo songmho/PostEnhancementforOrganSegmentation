@@ -21,6 +21,9 @@ cornerstoneWADOImageLoader.configure({
 var conerstoneloaded = false;
 
 function dicomloadAndView(wadoURI) {
+
+
+
     var element = $('#imageViewer').get(0);
     try {
         cornerstone.loadAndCacheImage(wadoURI).then(function(image) {
@@ -83,7 +86,7 @@ function csvGrpahLoadAndView(csvURL) {
 
         var elem = null;
         if(bShowGraphView) elem = document.getElementById("graphViewer");
-        else elem = document.getElementById("imageViewer")
+        else elem = document.getElementById("imageViewer");
 
         var g = new Dygraph(
             elem,
@@ -348,7 +351,10 @@ function resizeViewer() {
         $('#graphViewer').attr('width', chartWidth).attr('height', canvasSize);
     } else {
         var sizeStyle = {width: canvasSize + 'px', height: canvasSize + 'px'};
-        $('#imageViewer').css(sizeStyle);
+        console.log(sizeStyle);
+        $('#imageViewerWrapper').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
+        $('#imageViewer').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
+        //$('#imageViewer').attr('style', "width:"+canvasSize+"px; height:+"+canvasSize+"px; position:relative; color:white;");
         $('#imageViewerLoader').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewer canvas').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
     }

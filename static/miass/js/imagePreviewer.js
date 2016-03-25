@@ -66,8 +66,8 @@ function showDicomThumbnail(url) {
     var element = $('#image-previewer').get(0);
     try {
         cornerstone.loadAndCacheImage(url).then(function(image) {
-            console.log(image);
-            console.log(element);
+            //console.log(image);
+            //console.log(element);
             var viewport = cornerstone.getDefaultViewportForImage(element, image);
             cornerstone.displayImage(element, image, viewport);
             cornerstoneTools.mouseInput.disable(element);
