@@ -113,10 +113,10 @@
                 //console.log(JSON.stringify(res));
                 if(res['code'] == 'SUCCESS') {
                     profiles = res['profiles'];
-                    console.log(profiles);
+{#                    console.log(profiles);#}
                     for (var i in profiles) {
                         var profile = profiles[i];
-                        console.info("type="+profile.type+" / value="+profile.value);
+{#                        console.info("type="+profile.type+" / value="+profile.value);#}
                         $('#'+profile.type).val(profile.value);
                     }
                 } else {
