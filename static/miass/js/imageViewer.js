@@ -11,7 +11,7 @@ var bShowGraphView = false;
 
 cornerstoneWADOImageLoader.configure({
     beforeSend: function(xhr) {
-        console.log('beforesend');
+        //console.log('beforesend');
         // Add custom headers here (e.g. auth tokens)
         //xhr.setRequestHeader('x-auth-token', 'my auth token');
         showImageViewerLoader(true);
@@ -20,11 +20,98 @@ cornerstoneWADOImageLoader.configure({
 
 var conerstoneloaded = false;
 
-function dicomloadAndView(wadoURI) {
+function dicomReadHeader(wadoURL) {
+    $('#imageViewShowDetail').text('Detail Information Loading...')
+                .unbind('click').off('click');
 
+    var oReq = new XMLHttpRequest();
+    try {
+        oReq.open("get", wadoURL, true);
+    } catch(err) {
+        $('#imageViewShowDetail').text('Detail Information Loading Failed');
+        console.log(err);
+        return false;
+    }
 
+    oReq.responseType = "arraybuffer";
+    oReq.onreadystatechange = function(oEvent) {
+        if(oReq.readyState == 4) {
+            if(oReq.status == 200) {
+                var byteArray = new Uint8Array(oReq.response);
+
+                var kb = byteArray.length / 1024;
+                var mb = kb / 1024;
+                var byteStr = mb > 1 ? mb.toFixed(3) + " MB" : kb.toFixed(0) + " KB";
+                //document.getElementById('statusText').innerHTML = 'Status: Parsing ' + byteStr + ' bytes, please wait..';
+                console.log('Status: Parsing ' + byteStr + ' bytes, please wait..');
+                // set a short timeout to do the parse so the DOM has time to update itself with the above message
+                setTimeout(function() {
+                    // Invoke the paresDicom function and get back a DataSet object with the contents
+                    var dataSet;
+                    try {
+                        dataSet = dicomParser.parseDicom(byteArray);
+                        dicomShowDataSet(dataSet);
+                        $('#imageViewShowDetail').hide();
+
+                    } catch (err) {
+                        $('#imageViewShowDetail').text('Detail Information Loading Failed');
+                        console.log(err);
+                    }
+                }, 30);
+
+            } else {
+                $('#imageViewShowDetail').text('Detail Information Loading Failed');
+                console.log(oEvent);
+            }
+        }
+    };
+    oReq.send();
+}
+
+function dicomShowDataSet(dataSet) {
+    $('#imageViewerDetail span[data-dicom]').each(function(index, value) {
+        var attr = $(value).attr('data-dicom');
+        var element = dataSet.elements[attr];
+        var text = "";
+        if(element !== undefined)
+        {
+            var str = dataSet.string(attr);
+            if(str !== undefined) {
+                text = str;
+            }
+        }
+        $(value).text(text);
+    });
+
+    $('#imageViewerDetail span[data-dicomUint]').each(function(index, value) {
+        var attr = $(value).attr('data-dicomUint');
+        var element = dataSet.elements[attr];
+        var text = "";
+        if(element !== undefined)
+        {
+            if(element.length === 2)
+            {
+                text += dataSet.uint16(attr);
+            }
+            else if(element.length === 4)
+            {
+                text += dataSet.uint32(attr);
+            }
+        }
+
+        $(value).text(text);
+    });
+
+    $('#imageViewerDetail').show();
+}
+
+function dicomloadAndView(dicomURL) {
+
+    // prefix the url with wadouri: so cornerstone can find the image loader
+    var wadoURI = "wadouri:" + dicomURL;
 
     var element = $('#imageViewer').get(0);
+    showImageViewerLoader(true);
     try {
         cornerstone.loadAndCacheImage(wadoURI).then(function(image) {
             console.log(image);
@@ -39,17 +126,27 @@ function dicomloadAndView(wadoURI) {
                 cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
                 conerstoneloaded = true;
             }
+
+            $('#imageViewerDetail').hide();
+            $('#imageViewShowDetail').text('Show Detail Information').show()
+                    .unbind('click').off('click').click(function() {
+                dicomReadHeader(dicomURL);
+            });
+
+            console.log('dicom loaded');
+            showImageViewerLoader(false);
+
         }, function(err) {
             console.log(err);
+            showImageViewerLoader(false);
             openModal(err, "DICOM Loading Failed");
         });
     }
     catch(err) {
         console.log(err);
+        showImageViewerLoader(false);
         openModal(err, "DICOM Loading Failed");
     }
-    console.log('dicom loaded');
-    showImageViewerLoader(false);
 }
 
 function generalImageLoadAndView(imageURL) {
@@ -157,13 +254,10 @@ function downloadAndView(tagData)
     lastImageData = tagData;
     var url = makeURL(tagData);
     if(tagData['type'] == 'dcm') {
-        // prefix the url with wadouri: so cornerstone can find the image loader
-        url = "wadouri:" + url;
-
         // image enable the dicomImage element and activate a few tools
         dicomloadAndView(url);
         $('#imageViewModalTitleName').text(tagData['name']);
-        showImageViewerLoader(false);
+        //showImageViewerLoader(false);
     } else if (tagData['type'] == 'csv') {
         csvGrpahLoadAndView(url);
     } else {
@@ -351,7 +445,7 @@ function resizeViewer() {
         $('#graphViewer').attr('width', chartWidth).attr('height', canvasSize);
     } else {
         var sizeStyle = {width: canvasSize + 'px', height: canvasSize + 'px'};
-        console.log(sizeStyle);
+        //console.log(sizeStyle);
         $('#imageViewerWrapper').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewer').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         //$('#imageViewer').attr('style', "width:"+canvasSize+"px; height:+"+canvasSize+"px; position:relative; color:white;");

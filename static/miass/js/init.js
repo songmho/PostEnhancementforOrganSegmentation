@@ -29,17 +29,13 @@ function openModal(msg, title) {
     $('#alertModalTitle').text(title);
     $('#alertModal .modal-body').text(msg);
     $('#alertModal').modal();
-    console.log('open modal');
 }
 
 function highlightCurrentMenu() {
     var paths = jQuery(location).attr('pathname').split('/');
-    console.log(paths);
-    console.log(paths.length);
 
     if(paths.length >= 2) {
         var topMenuPath = paths[1];
-        console.log(topMenuPath);
 
         switch(topMenuPath) {
             case 'account':

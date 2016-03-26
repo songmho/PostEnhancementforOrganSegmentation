@@ -98,6 +98,7 @@ $(document).ready(function() {
         var imageType = $('#imageType').val();
         var ext = getFileExtension($('#image_file'));
         if (!checkImageTypeAndExtension(imageType, ext)) {
+            console.log(ext);
             $('#imageUploadModal').modal('hide');
             openModal('Please upload correct image file for image type.', 'Image Type Check');
             return;
