@@ -31,6 +31,7 @@ $(document).ready(function() {
         $('#takenDate').removeAttr('readonly');
         $('#takenFrom').removeAttr('disabled');
         $('#takenPhysicianName').removeAttr('readonly');
+        $('#medicalDepartment').removeAttr('readonly');
         $('#clinicName').removeAttr('readonly');
         $('#imageDescription').removeAttr('readonly');
     });
@@ -49,6 +50,7 @@ $(document).ready(function() {
         $('#takenFrom').attr('disabled', '');
         $('#takenPhysicianName').attr('readonly', '');
         $('#clinicName').attr('readonly', '');
+        $('#medicalDepartment').attr('readonly', '');
         $('#imageDescription').attr('readonly', '');
 
         var nowImageInfo = {
@@ -60,6 +62,7 @@ $(document).ready(function() {
             taken_from : $('#takenFrom').val(),
             physician : $('#takenPhysicianName').val(),
             place : $('#clinicName').val(),
+            medical_department: $('#medicalDepartment').val(),
             description : $('#imageDescription').val()
         };
         $.LoadingOverlay('show');

@@ -277,9 +277,9 @@
             $(this).val('');
         });
 
-        for (var i in profiles) {
-            var profile = profiles[i];
-            $('#'+profile.type).val(profile.value);
+        for (var profileName in profiles) {
+            var profile = profiles[profileName];
+            $('#'+profileName).val(profile);
         }
     }
 
