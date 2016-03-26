@@ -22,12 +22,27 @@
 }
 @media (min-width: 768px) {
     .modal#imageViewModal .modal-body .image-view {
-        min-height: 400px;
+        min-height: 440px;
     }
 }
 @media (min-width: 992px) {
     .modal#imageViewModal .modal-body .image-view {
         min-height: 600px;
+    }
+}
+
+@media (min-width: 768px) {
+    .modal#imageViewModal .modal-body .image-view > div {
+        height: 450px;
+    }
+    .modal#imageViewModal .modal-body .image-view > div.image-view-image {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+}
+@media (min-width:992px) {
+    .modal#imageViewModal .modal-body .image-view > div {
+        height: 610px;
     }
 }
 
@@ -53,7 +68,7 @@
 }
 @media (min-width: 768px) {
     .image-view #image-view-list {
-        height: 360px;
+        height: 400px;
         overflow-y: scroll;
     }
 }

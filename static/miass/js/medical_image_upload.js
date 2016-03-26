@@ -91,7 +91,3 @@ $(document).ready(function() {
     });
 
 });
-
-function openDeleteConfirmModal() {
-    $('#deleteImageConfirmModal').modal();
-}

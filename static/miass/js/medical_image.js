@@ -12,6 +12,9 @@ $(document).ready(function() {
     resetTakenLayout();
 
     $('#btnImageFile').click(function() {
+        var fileForm = $('#image_file');
+        fileForm.val('');       //reset file form
+
         $('#imageUploadModal').modal();
     });
 
@@ -94,6 +97,14 @@ $(document).ready(function() {
 
     $('#formUpdateFile').on('submit', function(e) {
         e.preventDefault();
+
+        var imageType = $('#imageType').val();
+        var ext = getFileExtension($('#image_file'));
+        if (!checkImageTypeAndExtension(imageType, ext)) {
+            $('#imageUploadModal').modal('hide');
+            openModal('Please upload correct image file for image type.', 'Image Type Check');
+            return;
+        }
 
         var data = new FormData($('#formUpdateFile').get(0));
         data.append('action', 'update');
