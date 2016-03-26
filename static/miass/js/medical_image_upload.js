@@ -9,7 +9,7 @@ $(document).ready(function() {
         var minDate = 0;
         var imageDate = $('#takenDate');
         if(Date.parse(imageDate.val()) > currentTime || Date.parse(imageDate.val()) < minDate) {
-            openModal("Invalid Date", "Upload Failed");
+            openModal("Recorded date must be after 1970 and before now.", "Upload Failed");
             imageDate.focus();
             return;
         } else{

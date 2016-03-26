@@ -45,20 +45,20 @@ $(document).ready(function() {
         var idRe = /^[a-z]+[a-z0-9]{5,19}$/g;
         var inputId = $('#inputId');
         if(inputId.val().length > 20 || !inputId.val().match(idRe)) {
-            openSignupFailModal("Invalid User ID");
+            openSignupFailModal("User ID is invalid, please enter small letters and numbers.");
             inputId.focus();
             return;
         }
         var inputPw = $('#inputPw');
         if(inputPw.val().length > 20) {
-            openSignupFailModal("Invalid Password");
+            openSignupFailModal("Too long password is entered, maximum length is 20.");
             inputPw.focus();
             return;
         }
         var phoneRe = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g;
         var inputMobile = $('#inputMobile');
         if(!inputMobile.val().match(phoneRe)){
-            openSignupFailModal("Invalid Phone Number");
+            openSignupFailModal("Please enter valid phone number.");
             inputMobile.focus();
             return;
         }
@@ -136,7 +136,7 @@ function signup(usertype) {
         var minBirthday = 0;
         var inputBirthday = $('#inputBirthday');
         if(Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
-            openSignupFailModal("Invalid Birthday");
+            openSignupFailModal("Your birthday may be before 1970 or after now.");
             inputBirthday.focus();
             return;
         }

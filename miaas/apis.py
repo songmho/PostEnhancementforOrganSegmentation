@@ -23,6 +23,9 @@ MSG_NO_USER_FOUND = "No user found."
 MSG_UNKNOWN_ERROR = "Unknown error."
 MSG_PROFILE_FAILED = "Profile update failed."
 MSG_ACCOUNT_FAILED = "Account update failed."
+MSG_INSERT_ERROR = "To insert data failed."
+MSG_UPDATE_ERROR = "To update data failed."
+MSG_DELETE_ERROR = "To delete data failed."
 MSG_NO_CHANGE = "There is no change."
 MSG_NO_MEDICAL_IMAGE = "There is not the requested medical image."
 
@@ -524,7 +527,7 @@ def handle_interpretation_mgt(request):
                 if if_inserted:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
-                    return JsonResponse(constants.CODE_FAILURE)
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
             # To create a response on a patient request
             elif action == 'physicianResp':
                 timestamp = int(round(time.time() * 1000))
@@ -540,7 +543,7 @@ def handle_interpretation_mgt(request):
                 if if_inserted:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
-                    return JsonResponse(constants.CODE_FAILURE)
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
             # To create an interpretation and update request and response
             elif action == 'finishIntpr':
                 fee = 20
@@ -567,9 +570,9 @@ def handle_interpretation_mgt(request):
                     if if_updated:
                         return JsonResponse(constants.CODE_SUCCESS)
                     else:
-                        return JsonResponse(constants.CODE_FAILURE)
+                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
                 else:
-                    return JsonResponse(constants.CODE_FAILURE)
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
         # To handle 'GET' interpretation request
         if request.method == 'GET':
             logger.info(request.GET)
@@ -627,7 +630,7 @@ def handle_interpretation_mgt(request):
                 if if_updated:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
-                    return JsonResponse(constants.CODE_FAILURE)
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
             # To update subject and message of a patient request
             elif action == 'reqUpdate':
                 request_id = data['request_id']
@@ -638,7 +641,7 @@ def handle_interpretation_mgt(request):
                 if if_updated:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
-                    return JsonResponse(constants.CODE_FAILURE)
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
         # To handle 'DELETE' interpretation request
         if request.method == 'DELETE':
             logger.info(request.GET)
@@ -652,7 +655,7 @@ def handle_interpretation_mgt(request):
                 if if_deleted:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
-                    return JsonResponse(constants.CODE_FAILURE)
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_DELETE_ERROR}))
     except Exception as e:
         logger.exception(e)
         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
@@ -684,7 +687,7 @@ def handle_analytics_mgt(request):
                 if if_inserted:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
-                    return JsonResponse(constants.CODE_FAILURE)
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
         if(request.method) == 'POST':
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
@@ -703,7 +706,7 @@ def handle_analytics_mgt(request):
                 if if_updated:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
-                    return JsonResponse(constants.CODE_FAILURE)
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
         if request.method == 'GET':
             logger.info(request.GET)
             action = request.GET.get('action')

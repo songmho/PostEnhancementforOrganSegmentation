@@ -180,6 +180,7 @@
 
 <!-- custom javascript -->
 <script>
+    listURL = "{% url 'miaas:interpretation_request_list' %}";
     $(document).ready(function() {
         $('.btn-request-cancel').click(function() {
             $('#cancelRequest').modal()
@@ -192,7 +193,7 @@
                 success: function (res) {
                     $.LoadingOverlay('hide');
                     if (res['code'] == 'SUCCESS') {
-                        openModal("Success", "Request Deletion Succeed")
+                        location.replace(listURL);
                     } else {
                         openModal(res['msg'], "Request Deletion Failed")
                     }
@@ -276,10 +277,14 @@
         $('#physicianProfileForm input, #physicianProfileForm textarea').each(function() {
             $(this).val('');
         });
-
         for (var profileName in profiles) {
             var profile = profiles[profileName];
-            $('#'+profileName).val(profile);
+            if(profile == null){
+                $('#' + profileName).val("The information isn't provided by the physician.");
+            }
+            else {
+                $('#' + profileName).val(profile);
+            }
         }
     }
 
