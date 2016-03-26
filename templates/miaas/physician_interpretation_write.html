@@ -37,21 +37,44 @@
                             <span id="itp1-level" >Level {{ request_detail.level }} </span>
                         </div>
                     </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Suspected Disease</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <textarea type="textarea" id="suspectedDisease" name="interpretation" class="form-control"
+                                      placeholder="Write suspected diseases. &#10; Example) Diabetes, Osteoporosis, …
+" rows="12" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Opinion</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <textarea type="textarea" id="opinion" name="interpretation" class="form-control"
+                                      placeholder="Write your opinions about the medical image.&#10;Example) Look closely at the third CT image, there is a tumor in right side of lung …
+" rows="12" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Recommendation</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <textarea type="textarea" id="recommendation" name="interpretation" class="form-control"
+                                      placeholder="Write recommended actions or treatments.&#10;Example) In this case, you’d better to take an operation as soon as possible…
+" rows="12" required></textarea>
+                        </div>
+                    </div>
+
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
                             <textarea type="textarea" id="summary" name="summary" class="form-control"
-                                      placeholder="Input your interpretation summary" rows="3" required></textarea>
+                                      placeholder="Write summary of your interpretation.&#10;Example) There is possibility of lung cancer, so you’d better to take an operation as soon as possible …
+" rows="3" required></textarea>
                         </div>
 
                     </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>
-                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <textarea type="textarea" id="interpretation" name="interpretation" class="form-control"
-                                      placeholder="Input your interpretation detail" rows="12" required></textarea>
-                        </div>
-                    </div>
+
                 </div>
                 <div class="form-btns-container row">
                     <div class="col-xs-12 col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-4 form-button">
@@ -90,6 +113,7 @@
                 //console.log(JSON.stringify(res));
                 if(res['code'] == 'SUCCESS') {
                     profiles = res['profiles'];
+                    console.log(profiles);
                     for (var i in profiles) {
                         var profile = profiles[i];
                         console.info("type="+profile.type+" / value="+profile.value);
@@ -114,7 +138,9 @@
                     image_id: '{{ request_detail.image_id }}',
                     level: '{{ request_detail.level }}',
                     summary: $('#summary').val(),
-                    interpretation:$('#interpretation').val()
+                    suspected_disease:$('#suspectedDisease').val(),
+                    opinion:$('#opinion').val(),
+                    recommendation:$('#recommendation').val()
                 }),
                 dataType: 'json',
                 success: function (res) {

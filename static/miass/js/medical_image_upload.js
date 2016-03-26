@@ -27,6 +27,7 @@ $(document).ready(function() {
             taken_from : $('#takenFrom').val(),
             physician : $('#takenPhysicianName').val(),
             place : $('#clinicName').val(),
+            medical_department : $('#medicalDepartment').val(),
             description : $('#imageDescription').val()
         }));
         //console.log(data);
