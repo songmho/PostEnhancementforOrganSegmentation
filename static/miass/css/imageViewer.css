@@ -21,12 +21,12 @@
 
 }
 @media (min-width: 768px) {
-    .modal#imageViewModal .modal-body #imageView {
+    .modal#imageViewModal .modal-body .image-view {
         min-height: 440px;
     }
 }
 @media (min-width: 992px) {
-    .modal#imageViewModal .modal-body #imageView {
+    .modal#imageViewModal .modal-body .image-view {
         min-height: 600px;
     }
 }

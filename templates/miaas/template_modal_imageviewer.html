@@ -303,10 +303,16 @@
                     </div>
                     <div class="image-view-image-settings col-xs-12 col-md-12">
                         <div class="form-group form-inline">
-                            <label class="control-label" for="rollPeriod" >Roll Period:</label>
+                            <label class="control-label">
+                                <a id="rollPeriodLabel" data-toggle="popover" data-placement="top"
+                                   herf="#" data-trigger="focus" role="button" tabindex="0"
+                                   title="Rolling Average"
+                                   data-content="Rolling average (moving average) is a calculation to analyze data points by creating series of averages of different subsets of the full data set. So rolling period is a period of rolling average.">
+                                    Rolling Period:</a>
+                            </label>
                             <input id="rollPeriod" type="number" name="rollPeriod" class="form-control"
-                                   placeholder="roll" size="1" maxlength="1">
-                            <button id="rollPeriodConfirm" class="btn btn-default">Change</button>
+                                   placeholder="period" size="1" maxlength="1">
+                            <button id="rollPeriodConfirm" class="btn btn-primary">Change</button>
                         </div>
                     </div>
                 </div>

@@ -278,6 +278,8 @@ $(cornerstone).bind('CornerstoneImageLoadProgress', function(eventData) {
 });
 
 $(document).ready(function() {
+    $('#rollPeriodLabel').popover();
+
     resizeViewer();
     window.addEventListener("resize", resizeViewer);
 
