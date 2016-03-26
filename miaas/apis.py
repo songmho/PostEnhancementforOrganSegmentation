@@ -6,6 +6,8 @@ from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
 
+from .forms import UploadForm
+
 import constants, cloud_db
 from image_manager import ImageManager, ImageRetriever
 
@@ -18,6 +20,7 @@ MSG_SIGNUP_FAILED = "Sign up failed."
 MSG_INVALID_IDPW = "Invalid ID and/or PW."
 MSG_INVALID_PARAMS = "Invalid parameters."
 MSG_NODATA = "No data."
+MSG_NO_FILE = "No file uploaded."
 MSG_NO_EMAIL = "No email entered."
 MSG_NO_USER_FOUND = "No user found."
 MSG_UNKNOWN_ERROR = "Unknown error."
@@ -495,6 +498,23 @@ def handle_medical_image_mgt(request):
         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
 
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
+
+@csrf_exempt
+def handle_multple_image_upload(request):
+    try:
+        if request.FILES == None:
+            raise Exception(MSG_NO_FILE)
+
+        files = request.FILES['attachments']
+        logger.info(files)
+        return JsonResponse(constants.CODE_SUCCESS)
+
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+
+    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
+
 
 @csrf_exempt
 def handle_interpretation_mgt(request):

@@ -59,9 +59,12 @@
     </form>
 </div>
 <div>
-    <div id="dicomViewer">
-
-    </div>
+    Django Multiple File Upload:
+    <form id="multiFileForm" action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Send" />
+    </form>
 </div>
 </body>
 
@@ -93,6 +96,44 @@
     }
 
     $(document).ready(function () {
+        $("#multiFileForm").on('submit', function(e) {
+            e.preventDefault();
+
+            var data = new FormData($('#multiFileForm').get(0));
+            data.append('action', 'upload');
+            data.append('image_info', JSON.stringify({
+                user_id : 'min',
+                subject : "Medical Image Test",
+                timestamp: new Date().getTime(),
+                image_type : "EEG",
+                taken_from : 'Medical Clinic',
+                physician : 'Max Hyper',
+                place : "Max Hyper's Hospital",
+                description : "This is test image information for upload testing"
+            }));
+            console.log(data);
+
+            $('#progress').text(0);
+            var xprogressID = new Date().getTime();
+            $.ajax({
+                url: $(this).attr('action') + '?X-Progress-ID='+xprogressID,
+                type: $(this).attr('method'),
+                data: data,
+                cache:false,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    console.log(res);
+                }
+            });
+
+{#            setTimeout(function() {#}
+{#                startFileProgressUpdate(xprogressID);#}
+{#            }, 500)#}
+
+        });
+
+
         g_progress_intv = null;
 
         $("#fileForm2").on('submit', function(e) {

@@ -4,15 +4,19 @@ __author__ = 'hanter'
 
 from django.shortcuts import render, get_object_or_404, render_to_response, redirect
 from django.template import RequestContext
-from django.http import *
+from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
 from django.core.urlresolvers import reverse
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
+from django.views.generic.edit import FormView
+from .forms import UploadForm
+
 from miaas import sample_contexts as sctx
 from miaas import cloud_db, constants
 import logging, json, time
+
 
 # get db data -> 404 template, urls in tutorial #3: https://docs.djangoproject.com/en/1.9/intro/tutorial03/
 # form, db class -> tutorial #4
@@ -152,22 +156,6 @@ def _get_session_context(request):
         if context.get('user_session'):
             context['user_session'].pop('password', None)
     return context
-
-
-# def opinion(request, opinion_id):
-#     return HttpResponse("Hello, opinion %s." % opinion_id)
-#
-#
-# def user(request, user_name):
-#     return HttpResponse("Hello, user %s." % user_name)
-#
-#
-# def template(request):
-#     return render(request, 'miaas/template.html', None)
-
-
-def test_page(request):
-    return render(request, 'miaas/test.html', None)
 
 
 # KH
@@ -508,3 +496,44 @@ def physician_request_search_detail_page(request, request_id):
         logger.info("status:%s" % request_detail['status'])
     logger.info('physician_request_search_detail_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_search_detail.html', context)
+
+
+
+
+
+
+# def opinion(request, opinion_id):
+#     return HttpResponse("Hello, opinion %s." % opinion_id)
+#
+#
+# def user(request, user_name):
+#     return HttpResponse("Hello, user %s." % user_name)
+#
+#
+# def template(request):
+#     return render(request, 'miaas/template.html', None)
+
+def test_page(request):
+    return render(request, 'miaas/test.html', None)
+
+
+def json_response_success(request):
+    return render(request, 'miaas/json_code_success.html', None)
+
+class UploadView(FormView):
+    template_name = 'miaas/test.html'
+    form_class = UploadForm
+    success_url = '/json_res/success'
+
+    def form_valid(self, form):
+        files = form.cleaned_data['attachments']
+        for file in form.cleaned_data['attachments']:
+            logger.info(file)
+
+            filepath = '%s/%s' % ('medical_images/temp', file._name)
+            fp = open(filepath, 'wb')
+            for chunk in file.chunks():
+                fp.write(chunk)
+            fp.close()
+
+        return super(UploadView, self).form_valid(form)
