@@ -13,7 +13,7 @@ from image_manager import ImageManager, ImageRetriever
 
 MSG_DB_FAILED = "Failed to handle DB requests."
 MSG_NO_USER_LOGGEDIN = "No user logged in."
-MSG_NOT_MATCHED_USER = "logged in user is not match with request user"
+MSG_NOT_MATCHED_USER = "Logged in user is not match with request user"
 MSG_NOT_MATCHED_IMAGE = "Access with wrong path"
 MSG_ALREADY_LOGGEDIN = "Already logged in."
 MSG_SIGNUP_FAILED = "Sign up failed."

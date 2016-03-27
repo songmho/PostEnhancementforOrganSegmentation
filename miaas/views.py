@@ -15,6 +15,7 @@ from .forms import UploadForm
 
 from miaas import sample_contexts as sctx
 from miaas import cloud_db, constants
+from image_manager import ImageManager, ImageRetriever
 import logging, json, time
 
 
@@ -498,7 +499,45 @@ def physician_request_search_detail_page(request, request_id):
     return render(request, 'miaas/physician_interpretation_search_detail.html', context)
 
 
+class UploadView(FormView):
+    template_name = 'miaas/test.html'
+    form_class = UploadForm
+    success_url = '/json_res/success'
 
+    def form_valid(self, form):
+        image_files = form.cleaned_data['attachments']
+
+        if(len(image_files) <=0 or 'image_info' not in self.request.POST):
+            raise Exception('Invalid Parameters.')
+
+        action = self.request.POST['action'].decode('utf-8')
+        image_info = json.loads(self.request.POST['image_info'].decode("utf-8"))
+        prev_timestamp = 0
+        if image_info.get('timestamp'):
+            prev_timestamp = image_info['timestamp']
+        image_info['timestamp'] = int(round(time.time() * 1000))
+
+        # if self.request.session['user']['user_id'] != image_info['user_id']:
+        #     raise Exception('logged in user is not match with request user')
+        if action != 'upload' and action != 'update':
+            raise Exception('Invalid Parameters.')
+
+        uploaded_path = None
+        im = ImageManager(image_files, image_info)
+
+        # if(len(image_files) == 1):
+        # im.uploaded_path = im.upload_file()
+
+        for file in form.cleaned_data['attachments']:
+            logger.info(file)
+
+            filepath = '%s/%s' % ('medical_images/temp', file._name)
+            fp = open(filepath, 'wb')
+            for chunk in file.chunks():
+                fp.write(chunk)
+            fp.close()
+
+        return super(UploadView, self).form_valid(form)
 
 
 
@@ -520,7 +559,7 @@ def test_page(request):
 def json_response_success(request):
     return render(request, 'miaas/json_code_success.html', None)
 
-class UploadView(FormView):
+class UploadViewTest(FormView):
     template_name = 'miaas/test.html'
     form_class = UploadForm
     success_url = '/json_res/success'
