@@ -448,13 +448,13 @@ class DbManager():
                     db_query = "SELECT image_id, user_id, subject, image_type, taken_from, " \
                                "physician, place, description, image_dir, size, timestamp, intpr_num, " \
                                "taken_date, medical_department FROM medical_image " \
-                               "WHERE user_id=%s and timestamp>=%s ORDER BY taken_date DESC"
+                               "WHERE user_id=%s and timestamp>=%s ORDER BY timestamp DESC"
                     cursor.execute(db_query, (user_id, time_from))
                 else:
                     db_query = "SELECT image_id, user_id, subject, image_type, taken_from, " \
                                "physician, place, description, image_dir, size, timestamp, intpr_num, " \
                                "taken_date, medical_department FROM medical_image " \
-                               "WHERE user_id=%s and timestamp>=%s ORDER BY taken_date DESC LIMIT %s OFFSET %s"
+                               "WHERE user_id=%s and timestamp>=%s ORDER BY timestamp DESC LIMIT %s OFFSET %s"
                     cursor.execute(db_query, (user_id, time_from, limit, offset))
                 self.connector.commit()
                 for row in cursor:
