@@ -42,7 +42,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                                 <td>{{ image.timestamp|datetime_string }}</td>
                                 <td>{{ image.subject }}</td>
                                 <td>{{ image.image_type }}</td>
-                                <td>{{ image.taken_date|datetime_string }}</td>
+                                <td>{{ image.taken_date|date_string }}</td>
                                 <td>{{ image.intpr_num }}</td>
                             </tr>
                         {% endfor %}
