@@ -57,6 +57,12 @@ def timestamp_to_datetime_string(timestamp):
         .replace(tzinfo=pytz.utc).astimezone(timezone_kr)\
         .strftime('%Y-%m-%d %H:%M')
 
+@register.filter(name='date_string')
+def timestamp_to_datetime_string(timestamp):
+    return datetime.datetime.fromtimestamp(int(timestamp)//1000)\
+        .replace(tzinfo=pytz.utc).astimezone(timezone_kr)\
+        .strftime('%Y-%m-%d')
+
 @register.filter(name='is_list')
 def is_list(arr):
     return isinstance(arr, list)
