@@ -16,6 +16,13 @@ $(document).ready(function() {
             console.log("rRR")
         }
 
+        var imageType = $('#imageType').val();
+        var ext = getFileExtension($('#image_file'));
+        if (!checkImageTypeAndExtension(imageType, ext)) {
+            console.log(ext);
+            openModal('Please upload correct image file for image type.', 'Image Type Check');
+            return;
+        }
 
         var data = new FormData($('#uploadImageForm').get(0));
         data.append('action', 'upload');

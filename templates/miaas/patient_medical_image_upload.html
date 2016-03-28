@@ -20,7 +20,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             <div class="col-xs-12 col-title">
                 <h2 class="text-primary">Upload Medical Image</h2>
             </div>
-            <form id="uploadImageForm" class="col-xs-12 col-form" action="/api/medical_image"
+            <form id="uploadImageForm" class="col-xs-12 col-form" action=""
                   method="post" enctype="multipart/form-data">
                 <div class="form-container form-boxed form-horizontal row">
 
@@ -35,7 +35,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="col-xs-12 form-group">
                         <label class="col-sm-3 col-md-2 control-label" for="image_file">Image File</label>
                         <div class="col-sm-9 col-md-10">
-                            <input type="file" id="image_file" name="image_file" class="form-control"
+                            {% csrf_token %}
+                            <input type="file" id="image_file" multiple="multiple" name="attachments" class="form-control"
                                    placeholder="Supported file extensions are dcm, dicom, csv, edf, and zip." required
                                    accept=".csv, .edf, .png, .jpg, .dicom, .dcm, .zip" >
                         </div>
