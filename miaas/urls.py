@@ -35,7 +35,8 @@ urlpatterns = [
     # url(r'^user/(?P<user_name>[ a-zA-Z_-]+)/$', views.user, name='user'),
     # url(r'^template$', views.template, name='template'),
 
-    url(r'^test$', views.test_page, name='test'),
+    # url(r'^test$', views.test_page, name='test'),
+    url(r'^test$', views.UploadView.as_view(), name='test'),
 
 
     ### for APIs ###
@@ -48,6 +49,9 @@ urlpatterns = [
     url(r'^api/analytics', apis.handle_analytics_mgt),
     url(r'^api/payment', apis.handle_payment_mgt),
     url(r'^api/get_upload_progress', apis.handle_image_uploading_progress),
+    url(r'^api/image_upload', apis.handle_multple_image_upload),
 
-    url(r'^api/archive$', apis.handle_archive)
+    url(r'^api/archive$', apis.handle_archive),
+
+    url(r'^json_res/success', views.json_response_success),
 ]

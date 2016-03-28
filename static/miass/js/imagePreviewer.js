@@ -3,8 +3,6 @@
  */
 
 function showThumbnail() {
-    console.log('thumbnail');
-
     var imageContainer = $('#image-previewer').get(0);
     cornerstone.disable(imageContainer);
 
@@ -13,8 +11,8 @@ function showThumbnail() {
     var thumbnail = getThumbnailImage();
     if(thumbnail != null) {
         var url = makeURL(thumbnail);
-        console.log(url);
-        console.log(thumbnail['type']);
+        //console.log(url);
+        //console.log(thumbnail['type']);
         setTimeout(function() {
             if (thumbnail['type'] == 'dcm') {
                 cornerstone.enable(imageContainer);
