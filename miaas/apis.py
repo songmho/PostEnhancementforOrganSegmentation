@@ -13,7 +13,7 @@ from image_manager import ImageManager, ImageRetriever
 
 MSG_DB_FAILED = "Failed to handle DB requests."
 MSG_NO_USER_LOGGEDIN = "No user logged in."
-MSG_NOT_MATCHED_USER = "logged in user is not match with request user"
+MSG_NOT_MATCHED_USER = "Logged in user is not match with request user"
 MSG_NOT_MATCHED_IMAGE = "Access with wrong path"
 MSG_ALREADY_LOGGEDIN = "Already logged in."
 MSG_SIGNUP_FAILED = "Sign up failed."
@@ -427,7 +427,8 @@ def handle_medical_image_mgt(request):
                 raise Exception(MSG_NOT_MATCHED_USER)
             db.delte_medical_image_by_id(image_id)
             try:
-                ImageManager.delete_uploaded_archive_file(image_dir)
+                ImageManager.delete_file(image_dir)
+                # ImageManager.delete_uploaded_archive_file(image_dir)
             except: pass
             if request.session.get('image_cnt'):
                 request.session['image_cnt'] -= 1
@@ -462,7 +463,7 @@ def handle_medical_image_mgt(request):
                         db.add_medical_image(image_info)
                     except Exception as e:
                         if uploaded_path:
-                            ImageManager.delete_uploaded_archive_file(uploaded_path)
+                            ImageManager.delete_file(uploaded_path)
                             im.delete_temp_file()
                         raise e
                     if not request.session.get('image_cnt'):
@@ -477,7 +478,7 @@ def handle_medical_image_mgt(request):
                         image_info['timestamp'] = prev_timestamp
                         image_info['image_dir'] = prev_path
                         # db.update_medical_image_dir(image_info)
-                        ImageManager.delete_uploaded_archive_file(uploaded_path)
+                        ImageManager.delete_file(uploaded_path)
                         raise e
                     #remove here!
                     image_id = int(image_info['image_id'])
@@ -490,7 +491,7 @@ def handle_medical_image_mgt(request):
                     # logger.info('curr_image session is updated: %s' % request.session['medical_image'][image_info['image_id']])
 
                     logger.info('remove old file: %s', prev_path)
-                    ImageManager.delete_uploaded_archive_file(prev_path)
+                    ImageManager.delete_file(prev_path)
                     return JsonResponse(dict(constants.CODE_SUCCESS, **{'new_dir': image_info['image_dir']}))
 
             else:

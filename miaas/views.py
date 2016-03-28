@@ -15,6 +15,7 @@ from .forms import UploadForm
 
 from miaas import sample_contexts as sctx
 from miaas import cloud_db, constants
+from image_manager import ImageManager, ImageRetriever
 import logging, json, time
 
 
@@ -498,8 +499,95 @@ def physician_request_search_detail_page(request, request_id):
     return render(request, 'miaas/physician_interpretation_search_detail.html', context)
 
 
+class ArchiveUploadView(FormView):
+    template_name = 'miaas/patient_medical_image_upload.html'
+    form_class = UploadForm
+    success_url = '/json_res/success'
+
+    def get_context_data(self, **kwargs):
+        context = _get_session_context(self.request)
+        return context
+
+    def form_valid(self, form):
+        try:
+            image_files = form.cleaned_data['attachments']
+
+            if(len(image_files) <=0 or 'image_info' not in self.request.POST):
+                raise Exception('Invalid Parameters.')
+
+            action = self.request.POST['action'].decode('utf-8')
+            image_info = json.loads(self.request.POST['image_info'].decode("utf-8"))
+            prev_timestamp = 0
+            if image_info.get('timestamp'):
+                prev_timestamp = image_info['timestamp']
+            image_info['timestamp'] = int(round(time.time() * 1000))
+
+            # if self.request.session['user']['user_id'] != image_info['user_id']:
+            #     raise Exception('logged in user is not match with request user')
+            if action != 'upload' and action != 'update':
+                raise Exception('Invalid Parameters.')
+
+            uploaded_path = None
+            im = ImageManager(image_files, image_info)
+            uploaded_path = im.upload_file()
+
+            db = cloud_db.DbManager()
+
+            if action == 'upload':
+                try:
+                    image_info['image_dir'] = uploaded_path
+                    db.add_medical_image(image_info)
+                except Exception as e:
+                    if uploaded_path:
+                        ImageManager.delete_file(uploaded_path)
+                        im.delete_temp_file()
+                    raise e
+                if not self.request.session.get('image_cnt'):
+                    self.request.session['image_cnt'] += 1
+                return JsonResponse(dict(constants.CODE_SUCCESS))
+            elif action == 'update':
+                prev_path = image_info['image_dir']
+                try:
+                    image_info['image_dir'] = uploaded_path
+                    db.update_medical_image_dir(image_info)
+                except Exception as e:
+                    image_info['timestamp'] = prev_timestamp
+                    image_info['image_dir'] = prev_path
+                    # db.update_medical_image_dir(image_info)
+                    ImageManager.delete_file(uploaded_path)
+                    raise e
+
+                logger.info('remove old file: %s', prev_path)
+                ImageManager.delete_file(prev_path)
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'new_dir': image_info['image_dir']}))
+
+        except Exception as e:
+            logger.exception(e)
+            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': 'Unknown error.'}))
+        # return super(UploadView, self).form_valid(form)
 
 
+class ArchiveDetailView(ArchiveUploadView):
+    template_name = 'miaas/patient_medical_image.html'
+
+    def get_context_data(self, **kwargs):
+        context = _get_session_context(self.request)
+        image_id = self.kwargs['image_id']
+
+        try:
+            if not image_id or int(image_id) < 0:
+                context['image'] = None
+            else:
+                db = cloud_db.DbManager()
+                result = db.retrieve_image_and_intpr(image_id)
+
+                if result.get('image') and isinstance(result.get('intpr'), list):
+                    context['image'] = result['image']
+                    context['intpr_list'] = result['intpr']
+        except:
+            context['image'] = None
+        return context
 
 
 # def opinion(request, opinion_id):
@@ -520,7 +608,7 @@ def test_page(request):
 def json_response_success(request):
     return render(request, 'miaas/json_code_success.html', None)
 
-class UploadView(FormView):
+class UploadViewTest(FormView):
     template_name = 'miaas/test.html'
     form_class = UploadForm
     success_url = '/json_res/success'
@@ -536,4 +624,4 @@ class UploadView(FormView):
                 fp.write(chunk)
             fp.close()
 
-        return super(UploadView, self).form_valid(form)
+        return super(UploadViewTest, self).form_valid(form)

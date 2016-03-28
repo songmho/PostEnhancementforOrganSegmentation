@@ -268,7 +268,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 <div class="modal fade" id="imageUploadModal" tabindex="-1" role="dialog"
      aria-labelledby="imageUploadModalTitle">
     <form id="formUpdateFile" class="modal-dialog" role="document"
-          action="/api/medical_image" method="post" enctype="multipart/form-data">
+          action="" method="post" enctype="multipart/form-data">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -277,8 +277,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             <div class="modal-body">
                 <div class="form-group col-xs-12">
                     <label class="col-sm-3 control-label" for="image_file">Medical Image</label>
+                    {% csrf_token %}
                     <div class="col-sm-9">
-                        <input type="file" id="image_file" name="image_file" class="form-control"
+                        <input type="file" id="image_file" multiple="multiple" name="attachments" class="form-control"
                                placeholder="Medical Image" accept=".csv, .edf, .png, .jpg, .dicom, .dcm, .zip" required>
                     </div>
                 </div>

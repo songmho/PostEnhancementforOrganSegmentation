@@ -145,7 +145,11 @@ function easeInOutCubic (t, b, c, d) {
 
 
 function getFileExtension(fileForm) {
+    console.log(fileForm);
+    console.log(fileForm.val());
+
     var fakePath = fileForm.val();
+
     var fakePaths = fakePath.split('.');
     var ext = fakePaths[fakePaths.length-1];
     return ext;

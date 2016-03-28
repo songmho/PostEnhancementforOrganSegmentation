@@ -16,8 +16,10 @@ urlpatterns = [
     url(r'^account$', views.account_page, name='account'),
 
     url(r'^archive$', views.archive_page, name='archive'),
-    url(r'^archive/upload$', views.archive_upload_page, name='archive_upload'),
-    url(r'^archive/detail/(?P<image_id>[0-9]+)$', views.medical_image_page, name='archive_detail'),
+    # url(r'^archive/upload$', views.archive_upload_page, name='archive_upload'),
+    url(r'^archive/upload$', views.ArchiveUploadView.as_view(), name='archive_upload'),
+    # url(r'^archive/detail/(?P<image_id>[0-9]+)$', views.medical_image_page, name='archive_detail'),
+    url(r'^archive/detail/(?P<image_id>[0-9]+)$', views.ArchiveDetailView.as_view(), name='archive_detail'),
 
     url(r'^interpretation$', views.interpretation_page, name='interpretation'),
     url(r'^interpretation/request$', views.interpretation_request_list_page, name='interpretation_request_list'),
@@ -36,7 +38,7 @@ urlpatterns = [
     # url(r'^template$', views.template, name='template'),
 
     # url(r'^test$', views.test_page, name='test'),
-    url(r'^test$', views.UploadView.as_view(), name='test'),
+    url(r'^test$', views.UploadViewTest.as_view(), name='test'),
 
 
     ### for APIs ###

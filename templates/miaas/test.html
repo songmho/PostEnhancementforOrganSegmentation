@@ -62,7 +62,9 @@
     Django Multiple File Upload:
     <form id="multiFileForm" action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+{#        {{ form.as_p }}#}
+
+        <input id="ttt" multiple="multiple" name="attachments" type="file">
         <input type="submit" value="Send" />
     </form>
 </div>
@@ -124,6 +126,9 @@
                 contentType: false,
                 success: function(res) {
                     console.log(res);
+                    if(res['code'] == 'SUCCESS') {
+                        console.log('hi');
+                    }
                 }
             });
 

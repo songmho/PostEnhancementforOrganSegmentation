@@ -19,42 +19,49 @@ class ImageManager():
     _temp_upload_dir = constants.TEMP_UPLOAD_DIR
     _supported_image_extensions = ['dicom', 'dcm', 'jpg', 'jpeg', 'png', 'zip']
     _supported_signal_extensions = ['csv', 'edf']
+    _supported_multi_extensions = ['dicom', 'dcm', 'jpg', 'jpeg', 'png']
 
-    def __init__(self, image_file, image_info):
-        self._original_file = image_file
+    def __init__(self, image_files, image_info):
+        self._original_files = image_files
         self._temp_file_path = None
         self._image_info = image_info
+        self._is_mutliple_file = False
 
     def upload_file(self):
         self.upload_as_temp()
-        if not self._is_supported_file(self._temp_file_path):
-            raise Exception("Unsupported File Extension.")
         temp_path = None
-        if self._is_zipfile(self._temp_file_path):
-            extract_dir = self._extract_zipfile(self._temp_file_path)
-            # success = self._dcm_to_jpg_indir(extract_dir)
-            # if not success:
-            #     raise Exception("Invalid Dicom Image Format.")
-            temp_path = extract_dir
-        else:
+        if self._is_mutliple_file:
             temp_path = self._temp_file_path
-            temp_path_ext = self._get_file_extension(temp_path)
-            if temp_path_ext == 'dcm' or temp_path_ext == 'dicom':
-                self.decompose(self._temp_file_path)
-            elif temp_path_ext == 'edf':
-                temp_path = edf_to_csv.edf_to_csv(temp_path)
+        else:
+            if not self._is_supported_file(self._temp_file_path):
+                raise Exception("Unsupported File Extension.")
+
+            if self._is_zipfile(self._temp_file_path):
+                extract_dir = self._extract_zipfile(self._temp_file_path)
+                # success = self._dcm_to_jpg_indir(extract_dir)
+                # if not success:
+                #     raise Exception("Invalid Dicom Image Format.")
+                temp_path = extract_dir
+            else:
+                temp_path = self._temp_file_path
+                temp_path_ext = self._get_file_extension(temp_path)
+                if temp_path_ext == 'dcm' or temp_path_ext == 'dicom':
+                    self.decompose(self._temp_file_path)
+                elif temp_path_ext == 'edf':
+                    temp_path = edf_to_csv.edf_to_csv(temp_path)
 
         logger.info('uploaded temp file: %s' % temp_path)
-
         archive_path = self._upload_to_archive(temp_path)
+
         self.delete_temp_file()
+        self.delete_file(temp_path)
         return archive_path
 
     def update_file(self):
         pass
 
     @classmethod
-    def delete_uploaded_archive_file(cls, archive_path):
+    def delete_file(cls, archive_path):
         try:
             if os.path.exists(archive_path):
                 if os.path.isfile(archive_path):
@@ -114,22 +121,61 @@ class ImageManager():
         return dicom_reader.convert_to_jpg(dcmfile, jpgfile)
 
     def upload_as_temp(self):
-        filename = self._original_file._name
-        tempdir = '%s/%s/' % (constants.TEMP_UPLOAD_DIR, self._image_info['user_id'])
-        try:
-            if not os.path.exists(os.path.dirname(tempdir)):
-                os.makedirs(os.path.dirname(tempdir))
+        if len(self._original_files) <= 0:
+            raise Exception('No files')
+        elif len(self._original_files) == 1:
+            filename = self._original_files[0]._name
+            tempdir = '%s/%s/' % (constants.TEMP_UPLOAD_DIR, self._image_info['user_id'])
+            try:
+                if not os.path.exists(os.path.dirname(tempdir)):
+                    os.makedirs(os.path.dirname(tempdir))
 
-            self._temp_file_path = '%s/%s' % (tempdir, filename)
-            fp = open(self._temp_file_path, 'wb')
-            for chunk in self._original_file.chunks():
-                fp.write(chunk)
-            fp.close()
-            return True
+                self._temp_file_path = '%s/%s' % (tempdir, filename)
+                fp = open(self._temp_file_path, 'wb')
+                for chunk in self._original_files[0].chunks():
+                    fp.write(chunk)
+                fp.close()
+                return True
 
-        except Exception as e:
-            logger.exception(e)
-            return False
+            except Exception as e:
+                logger.exception(e)
+                raise Exception('Uploading file failed.')
+                return False
+        else:
+            self._is_mutliple_file = True
+            first_ext = self._get_file_extension(self._original_files[0]._name)
+            if first_ext not in self._supported_multi_extensions:
+                raise Exception('These files are cannot upload multiply.')
+            for file in self._original_files:
+                ext = self._get_file_extension(file._name)
+                logger.info(ext)
+                if first_ext != ext:
+                    raise Exception('These files are not same extention files.')
+
+            userdir = '%s/%s' % (constants.TEMP_UPLOAD_DIR, self._image_info['user_id'])
+            tempfolder = '%s/%s' % (userdir, 'upload')
+            self._temp_file_path = tempfolder
+            try:
+                if not os.path.exists(userdir):
+                    os.makedirs(userdir)
+
+                logger.info(tempfolder)
+                if os.path.exists(tempfolder):
+                    shutil.rmtree(tempfolder)
+                os.makedirs(tempfolder)
+
+                for file in self._original_files:
+                    filepath = '%s/%s' % (tempfolder, file._name)
+                    fp = open(filepath, 'wb')
+                    for chunk in file.chunks():
+                        fp.write(chunk)
+                    fp.close()
+                return True
+
+            except Exception as e:
+                logger.exception(e)
+                raise Exception('Uploading file failed.')
+                return False
 
     def decompose(self, filepath):
         try:
