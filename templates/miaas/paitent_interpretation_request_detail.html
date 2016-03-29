@@ -239,7 +239,7 @@
                 success: function (res) {
                     $.LoadingOverlay('hide');
                     if (res['code'] == 'SUCCESS') {
-                        openModal("Success", "Physician Selection Succeed")
+                        location.replace(listURL);
                     } else {
                         openModal(res['msg'], "Physician Selection Failed")
                     }
