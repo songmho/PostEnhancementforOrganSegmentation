@@ -19,7 +19,7 @@ $(document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip();
 });
 
-function openModal(msg, title) {
+function openModal(msg, title, action) {
     if (title==undefined || title==null || title=='') {
         $('#alertModalTitle').text('Alert');
     }
@@ -28,6 +28,13 @@ function openModal(msg, title) {
     }
     $('#alertModalTitle').text(title);
     $('#alertModal .modal-body').text(msg);
+
+    if (action != undefined && action != null && jQuery.isFunction(action)) {
+        $('#alertModalClose').off('click');
+        $('#alertModalClose').unbind('click');
+        $('#alertModalClose').click(action);
+    }
+
     $('#alertModal').modal();
 }
 

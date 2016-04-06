@@ -255,7 +255,7 @@ $(document).ready(function() {
             success: function (res) {
                 $.LoadingOverlay('hide');
                 if(res['code'] == 'SUCCESS') {
-                    openModal('Request interpretation success.', "Request Success");
+                    openModal('Request interpretation success.', "Request Success", location.replace(requestListURL));
                 } else {
                     openModal(res['msg'], "Request Failed");
                 }
