@@ -121,6 +121,7 @@
                 ed.on('click', function() {
                     ed.off('click');
                     ed.setContent('');
+                    ed.undoManager.clear();
                 });
             }
         });
