@@ -247,6 +247,13 @@ b a.table-page-number {
 .interpretation-status-3 {
     color: #53B0A5;
 }
+div.interpretation-viewer {
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    background-color: #fff;
+    padding: 4px 8px;
+}
+
 
 
 /* Modal */

@@ -55,5 +55,6 @@ urlpatterns = [
 
     url(r'^api/archive$', apis.handle_archive),
 
+    url(r'^api/test', apis.handle_test),
     url(r'^json_res/success', views.json_response_success),
 ]

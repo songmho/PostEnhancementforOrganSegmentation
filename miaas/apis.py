@@ -782,3 +782,12 @@ def update_session(old_user, updated_user):
             old_user[key] = value
     return old_user
 
+
+@csrf_exempt
+def handle_test(request):
+    logger.info(request)
+    if len(request.body) == 0:
+        logger.info('no data')
+    else:
+        logger.info(request.body)
+    return JsonResponse(constants.CODE_SUCCESS)

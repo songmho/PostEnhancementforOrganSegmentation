@@ -12,64 +12,75 @@
 <body>
 
 <div>
-    <button id="login">login</button>
-    <button id="logout">logout</button>
-    <button id="signup">signup</button>
-    <button id="signup2">signup2</button>
-    <button id="idcheck">idcheck</button>
-</div>
-<div>
-    <button id="findid">findid</button>
-    <button id="findpw">findpw</button>
-</div>
-<div>
-    <button id="updatePatientInfo">updatePatientInfo</button>
-    <button id="getPatientInfo">getPatientInfo</button>
-    <button id="getPatientProfile">getPatientProfile</button>
-    <button id="addPatientProfile">addPatientProfile</button>
-</div>
-<div>
-    <button id="updatePhysicianInfo">updatePhysicianInfo</button>
-    <button id="getPhysicianInfo">getPhysicianInfo</button>
-    <button id="getPhysicianProfile">getPhysicianProfile</button>
-    <button id="addPhysicianProfile">addPhysicianProfile</button>
-</div>
-<div>
-    <button id="addMedicalImage">addMedicalImage</button>
-    <button id="retrieveMedicalImage">retrieveMedicalImage</button>
-    <button id="retrieveMedicalImages">retrieveMedicalImages</button>
-    <button id="deleteMedicalImage">deleteMedicalImage</button>
-</div>
-<br />
-<div>
-    <form action="/api/medical_image" method="post" enctype="multipart/form-data">
-        File:
-        <input type="hidden" name="action" value="upload" />
-        <input type="file" name="image_file" id="imageFile" />
-        <input type="submit" value="UPLOAD" />
-    </form>
-</div>
-<br />
-<div>
-    <form action="/api/medical_image" id="fileForm2" method="post" enctype="multipart/form-data">
-        File2:
-        <input type="file" name="image_file" id="imageFile2" />
-        <input type="submit" value="UPLOAD" />
-        <span>progress: <span id="progress">0</span>%</span>
-    </form>
-</div>
-<div>
-    Django Multiple File Upload:
-    <form id="multiFileForm" action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-{#        {{ form.as_p }}#}
+    <div>
+        <button id="login">login</button>
+        <button id="logout">logout</button>
+        <button id="signup">signup</button>
+        <button id="signup2">signup2</button>
+        <button id="idcheck">idcheck</button>
+    </div>
+    <div>
+        <button id="findid">findid</button>
+        <button id="findpw">findpw</button>
+    </div>
+    <div>
+        <button id="updatePatientInfo">updatePatientInfo</button>
+        <button id="getPatientInfo">getPatientInfo</button>
+        <button id="getPatientProfile">getPatientProfile</button>
+        <button id="addPatientProfile">addPatientProfile</button>
+    </div>
+    <div>
+        <button id="updatePhysicianInfo">updatePhysicianInfo</button>
+        <button id="getPhysicianInfo">getPhysicianInfo</button>
+        <button id="getPhysicianProfile">getPhysicianProfile</button>
+        <button id="addPhysicianProfile">addPhysicianProfile</button>
+    </div>
+    <div>
+        <button id="addMedicalImage">addMedicalImage</button>
+        <button id="retrieveMedicalImage">retrieveMedicalImage</button>
+        <button id="retrieveMedicalImages">retrieveMedicalImages</button>
+        <button id="deleteMedicalImage">deleteMedicalImage</button>
+    </div>
+    <br />
+    <div>
+        <form action="/api/medical_image" method="post" enctype="multipart/form-data">
+            File:
+            <input type="hidden" name="action" value="upload" />
+            <input type="file" name="image_file" id="imageFile" />
+            <input type="submit" value="UPLOAD" />
+        </form>
+    </div>
+    <br />
+    <div>
+        <form action="/api/medical_image" id="fileForm2" method="post" enctype="multipart/form-data">
+            File2:
+            <input type="file" name="image_file" id="imageFile2" />
+            <input type="submit" value="UPLOAD" />
+            <span>progress: <span id="progress">0</span>%</span>
+        </form>
+    </div>
+    <div>
+        Django Multiple File Upload:
+        <form id="multiFileForm" action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+    {#        {{ form.as_p }}#}
 
-        <input id="ttt" multiple="multiple" name="attachments" type="file">
-        <input type="submit" value="Send" />
+            <input id="ttt" multiple="multiple" name="attachments" type="file">
+            <input type="submit" value="Send" />
+        </form>
+    </div>
+    </div>
+
+<div>
+    <form method="post" action="/api/test">
+        <textarea id="mytextarea" name="testtextarea">Hello, World!</textarea>
+        <button type="button" onclick="ajaxSave();">Save</button>
     </form>
 </div>
+
 </body>
 
+<script src='//cdn.tinymce.com/4/tinymce.min.js'></script>
 <script src="{% static "lib/jquery/jquery-2.2.0.min.js" %}"></script>
 <script type="text/javascript">
     function startFileProgressUpdate(upload_id) {
@@ -483,6 +494,28 @@
             })
         })
     });
+</script>
+
+<script src="{% static 'lib/tinymce/tinymce.min.js' %}"></script>
+<script type="text/javascript">
+    tinymce.init({
+        mode: 'textareas',
+        selector: '#mytextarea',
+        menubar: false,
+        plugins: 'table link textcolor autolink autoresize',
+        toolbar: 'undo redo | styleselect | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table | link '
+    });
+
+    function ajaxSave() {
+        var ed = tinymce.get('mytextarea');
+
+        // Do you ajax call here, window.setTimeout fakes ajax call
+{#        ed.setProgressState(1); // Show progress#}
+{#        window.setTimeout(function() {#}
+{#                ed.setProgressState(0); // Hide progress#}
+                console.log(ed.getContent());
+{#        }, 1000);#}
+}
 </script>
 
 </html>

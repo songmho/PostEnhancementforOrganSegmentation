@@ -16,7 +16,7 @@
         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span>{{ intpr.physician_name }}</span>
-        </div>
+        </div>0
     </div>
     {% endif %}
 
@@ -26,16 +26,20 @@
             <span >{{ intpr.level|intpr_level_string }}</span>
         </div>
     </div>
+
+    {% autoescape off %}
     <div class="col-sm-12 form-group">
         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-            <span >{{ intpr.summary }}</span>
+            <div class="interpretation-viewer">
+                {{ intpr.summary }}
+            </div>
         </div>
     </div>
     <div class="col-sm-12 form-group">
         <label class="col-xs-12 col-sm-3 col-md-2 control-label" > Suspected Disease</label>
         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-            <div >
+            <div class="interpretation-viewer">
                 {{ intpr.suspected_disease }}
             </div>
         </div>
@@ -44,7 +48,7 @@
     <div class="col-sm-12 form-group">
         <label class="col-xs-12 col-sm-3 col-md-2 control-label" > Opinion</label>
         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-            <div >
+            <div class="interpretation-viewer">
                 {{ intpr.opinion }}
             </div>
         </div>
@@ -53,9 +57,10 @@
     <div class="col-sm-12 form-group">
         <label class="col-xs-12 col-sm-3 col-md-2 control-label" > Recommendation</label>
         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-            <div >
+            <div class="interpretation-viewer">
                 {{ intpr.recommendation }}
             </div>
         </div>
     </div>
+    {% endautoescape %}
 </div>

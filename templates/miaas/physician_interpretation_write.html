@@ -41,36 +41,44 @@
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Suspected Disease</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <textarea type="textarea" id="suspectedDisease" name="interpretation" class="form-control"
-                                      placeholder="Write suspected diseases. &#10; Example) Diabetes, Osteoporosis, …
-" rows="3" required></textarea>
+                            <textarea type="textarea" id="suspectedDisease" name="suspectedDisease" class="form-control interpretation-writer"
+                                      placeholder="Write suspected diseases. &#10; Example) Diabetes, Osteoporosis, …"
+                                      rows="3" >
+                                <p style="color: #999;">Write suspected diseases.<br/>Example) Diabetes, Osteoporosis, …</p>
+                            </textarea>
                         </div>
                     </div>
 
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Opinion</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <textarea type="textarea" id="opinion" name="interpretation" class="form-control"
-                                      placeholder="Write your opinions about the medical image.&#10;Example) Look closely at the third CT image, there is a tumor in right side of lung …
-" rows="7" required></textarea>
+                            <textarea type="textarea" id="opinion" name="opinion" class="form-control interpretation-writer"
+                                      placeholder="Write your opinions about the medical image.&#10;Example) Look closely at the third CT image, there is a tumor in right side of lung …"
+                                      rows="7" >
+                                <p style="color: #999;">Write your opinions about the medical image.<br/>Example) Look closely at the third CT image, there is a tumor in right side of lung …</p>
+                            </textarea>
                         </div>
                     </div>
 
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Recommendation</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <textarea type="textarea" id="recommendation" name="interpretation" class="form-control"
-                                      placeholder="Write recommended actions or treatments.&#10;Example) In this case, you’d better to take an operation as soon as possible…
-" rows="7" required></textarea>
+                            <textarea type="textarea" id="recommendation" name="recommendation" class="form-control interpretation-writer"
+                                      placeholder="Write recommended actions or treatments.&#10;Example) In this case, you’d better to take an operation as soon as possible…"
+                                      rows="7" >
+                                <p style="color: #999;">Write recommended actions or treatments.<br/>Example) In this case, you’d better to take an operation as soon as possible…</p>
+                            </textarea>
                         </div>
                     </div>
 
                     <div class="col-sm-12 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>
                         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-                            <textarea type="textarea" id="summary" name="summary" class="form-control"
-                                      placeholder="Write summary of your interpretation.&#10;Example) There is possibility of lung cancer, so you’d better to take an operation as soon as possible …
-" rows="3" required></textarea>
+                            <textarea type="textarea" id="summary" name="summary" class="form-control interpretation-writer"
+                                      placeholder="Write summary of your interpretation.&#10;Example) There is possibility of lung cancer, so you’d better to take an operation as soon as possible …"
+                                      rows="3" >
+                                <p style="color: #999;">Write summary of your interpretation.<br/>Example) There is possibility of lung cancer, so you’d better to take an operation as soon as possible …</p>
+                            </textarea>
                         </div>
 
                     </div>
@@ -81,7 +89,7 @@
                         <a class="btn btn-lg btn-primary btn-block" onclick="$('#patientProfileModal').modal();"> View Profile</a>
                     </div>
                     <div class="col-xs-12 col-sm-4 col-md-2 form-button">
-                        <button class="btn btn-lg btn-primary btn-block" type="submit">Write</button>
+                        <button id="btnWrite" class="btn btn-lg btn-primary btn-block" type="submit">Write</button>
                     </div>
 
                 </div>
@@ -102,6 +110,25 @@
     var profiles;
     $(document).ready(function() {
         $.LoadingOverlay('show');
+
+        tinymce.init({
+            selector: 'textarea.interpretation-writer',
+            menubar: false,
+            plugins: 'table link textcolor autolink autoresize',
+            toolbar: 'undo redo | styleselect | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table | link',
+            init_instance_callback: function(ed) {
+{#            }, setup: function(ed) {#}
+                ed.on('click', function() {
+                    ed.off('click');
+                    ed.setContent('');
+                });
+            }
+        });
+
+{#        $('.mce-edit-area iframe').each(function(elem) {#}
+{#            $(elem).contents().find('body').html();#}
+{#        });#}
+
         $.ajax("/api/patient_profile", {
             method: 'GET',
             data: {
@@ -127,31 +154,50 @@
 
         $('#writeForm').on('submit', function(e) {
             e.preventDefault();
-            $.LoadingOverlay('show');
-            $.ajax("/api/interpretation", {
-                method: 'PUT',
-                data: JSON.stringify({
-                    action: 'finishIntpr',
-                    request_id: '{{ request_detail.request_id }}',
-                    patient_id: '{{ request_detail.patient_id }}',
-                    physician_id: '{{ user_session.user_id }}',
-                    image_id: '{{ request_detail.image_id }}',
-                    level: '{{ request_detail.level }}',
-                    summary: $('#summary').val(),
-                    suspected_disease:$('#suspectedDisease').val(),
-                    opinion:$('#opinion').val(),
-                    recommendation:$('#recommendation').val()
-                }),
-                dataType: 'json',
-                success: function (res) {
-                    $.LoadingOverlay('hide');
-                    if (res['code'] == 'SUCCESS') {
-                        openModal("Success", "Writing Interpretation Succeed")
-                    } else {
-                        openModal(res['msg'], "Writing Interpretation Failed")
-                    }
+
+            var summary = tinymce.get('summary').getContent();
+            var suspectedDisease = tinymce.get('suspectedDisease').getContent();
+            var opinion = tinymce.get('opinion').getContent();
+            var recommendation = tinymce.get('recommendation').getContent();
+
+            if (/\S/.test(summary) && /\S/.test(suspectedDisease) &&
+                    /\S/.test(opinion) && /\S/.test(recommendation)) {
+
+                var matchstring = '^<p style="color: #999;">Write';
+                if (summary.match(matchstring) || suspectedDisease.match(matchstring) ||
+                        opinion.match(matchstring) || recommendation.match(matchstring)) {
+                    openModal('Fields are not filled! Please fill all the fields.', 'Writing Failed');
+                    return;
                 }
-            });
+
+                $.LoadingOverlay('show');
+                $.ajax("/api/interpretation", {
+                    method: 'PUT',
+                    data: JSON.stringify({
+                        action: 'finishIntpr',
+                        request_id: '{{ request_detail.request_id }}',
+                        patient_id: '{{ request_detail.patient_id }}',
+                        physician_id: '{{ user_session.user_id }}',
+                        image_id: '{{ request_detail.image_id }}',
+                        level: '{{ request_detail.level }}',
+                        summary: tinymce.get('summary').getContent(),
+                        suspected_disease: tinymce.get('suspectedDisease').getContent(),
+                        opinion: tinymce.get('opinion').getContent(),
+                        recommendation: tinymce.get('recommendation').getContent()
+                    }),
+                    dataType: 'json',
+                    success: function (res) {
+                        $.LoadingOverlay('hide');
+                        if (res['code'] == 'SUCCESS') {
+                            openModal("Success", "Writing Interpretation Succeed")
+                        } else {
+                            openModal(res['msg'], "Writing Interpretation Failed")
+                        }
+                    }
+                });
+            } else {
+                openModal('Fields are not filled! Please fill all the fields.', 'Writing Failed')
+            }
         });
 
         setOpenImageViewerListener($('#image-previewer'));
@@ -160,6 +206,9 @@
     imageInfo = JSON.parse("{{ image | jsonstr }}");
     archiveURL = "{% url 'miaas:archive' %}";
 </script>
+
+<!-- include the tinyMCE library -->
+<script src="{% static 'lib/tinymce/tinymce.min.js' %}"></script>
 
 <!-- include the cornerstone library -->
 <script src="{% static 'lib/wado/conerstone/cornerstone.js' %}"></script>
