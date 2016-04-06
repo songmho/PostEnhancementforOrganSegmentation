@@ -305,6 +305,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");
     archiveURL = "{% url 'miaas:archive' %}";
+    requestListURL = "{% url 'miaas:interpretation_request_list' %}";
 </script>
 
 <!-- include the progressbar library -->
