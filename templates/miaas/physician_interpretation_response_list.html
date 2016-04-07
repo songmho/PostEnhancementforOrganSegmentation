@@ -31,7 +31,6 @@
                             <td>Response Date</td>
                             <td>Patient ID</td>
                             <td>Request Subject</td>
-                            <td>Message</td>
                             <td>Image Subject</td>
                             <td>Image Type</td>
                             <td>Interpretation Level</td>
@@ -44,7 +43,6 @@
                                     <td>{{ response_info.response_date|datetime_string }}</td>
                                     <td>{{ response_info.patient_id }}</td>
                                     <td>{{ response_info.request_subject }}</td>
-                                    <td>{{ response_info.request_message|less_string }}</td>
                                     <td>{{ response_info.image_subject }}</td>
                                     <td>{{ response_info.image_type }}</td>
                                     <td>{{ response_info.level }}</td>
@@ -54,6 +52,8 @@
                             </tbody>
                         </table>
                         <div class="col-xs-12 text-center table-page-container">
+                        <a class="table-page-first" href="?page=1"> < </a>
+
                             {% for page_num in intpr_response.start_page|get_range_from_to2:intpr_response.end_page %}
                                 {% if page_num == intpr_response.now_page %}
                                     <b>
@@ -63,6 +63,7 @@
                                     </b>
                                 {% endif %}
                             {% endfor %}
+                        <a class="table-page-last" href="?page={{ intpr_response.end_page }}"> > </a>
                         </div>
                     </div>
                 {% else %}
