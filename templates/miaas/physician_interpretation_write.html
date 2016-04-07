@@ -108,6 +108,7 @@
 <!-- custom javascript -->
 <script>
     var profiles;
+    var phIntprList = "{% url 'miaas:physician_interpretation' %}";
     $(document).ready(function() {
         $.LoadingOverlay('show');
 
@@ -190,7 +191,7 @@
                     success: function (res) {
                         $.LoadingOverlay('hide');
                         if (res['code'] == 'SUCCESS') {
-                            openModal("Success", "Writing Interpretation Succeed")
+                            openModal("Success", "Writing Interpretation Succeed", location.replace(phIntprList))
                         } else {
                             openModal(res['msg'], "Writing Interpretation Failed")
                         }

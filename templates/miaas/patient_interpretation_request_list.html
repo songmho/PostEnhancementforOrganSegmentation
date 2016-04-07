@@ -29,7 +29,6 @@
                             <thead>
                             <td>Requested Date</td>
                             <td>Subject</td>
-                            <td>Message</td>
                             <td>Image Type</td>
                             <td>Interpretation Level</td>
                             <td>Status</td>
@@ -39,7 +38,6 @@
                                 <tr onclick="javascript: $.LoadingOverlay('show'); location.href='{% url 'miaas:interpretation_request_detail' intpr_req.request_id %}';">
                                     <td>{{ intpr_req.request_date|datetime_string }}</td>
                                     <td>{{ intpr_req.request_subject }}</td>
-                                    <td>{{ intpr_req.message|less_string }}</td>
                                     <td>{{ intpr_req.image_type }}</td>
                                     <td>{{ intpr_req.level }}</td>
                                     <td class="bold interpretation-status-{{ intpr_req.status }}">{{ intpr_req.status|get_interpretation_status }}</td>
@@ -48,6 +46,8 @@
                             </tbody>
                         </table>
                         <div class="col-xs-12 text-center table-page-container">
+                        <a class="table-page-first" href="?page=1"> < </a>
+
                             {% for page_num in intpr_request.start_page|get_range_from_to2:intpr_request.end_page %}
                                 {% if page_num == intpr_request.now_page %}
                                     <b>
@@ -57,6 +57,8 @@
                                     </b>
                                 {% endif %}
                             {% endfor %}
+
+                        <a class="table-page-last" href="?page={{ intpr_request.end_page }}"> > </a>
                         </div>
                     </div>
                 {% else %}

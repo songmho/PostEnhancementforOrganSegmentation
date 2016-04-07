@@ -49,6 +49,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         </tbody>
                     </table>
                     <div class="col-xs-12 text-center table-page-container">
+                        <a class="table-page-first" href="?page=1"> < </a>
                         {% for page_num in archive.start_page|get_range_from_to2:archive.end_page %}
                             {% if page_num == archive.now_page %}
                                 <b>
@@ -58,6 +59,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             </b>
                         {% endif %}
                         {% endfor %}
+                        <a class="table-page-last" href="?page={{ archive.end_page }}"> > </a>
                     </div>
 {#                    <div class="col-xs-12 text-center table-page-container">#}
 {#                    #}

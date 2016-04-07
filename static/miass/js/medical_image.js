@@ -288,11 +288,13 @@ function resetTakenLayout() {
         $('#clinicName').removeAttr('required').val('');
         $('#physicianGroup').css('visibility', 'hidden');
         $('#clinicNameGroup').css('visibility', 'hidden');
+        $('#medicalDepartmentGroup').css('visibility', 'hidden');
     } else {
         $('#takenPhysicianName').attr('required', '');
         $('#clinicName').attr('required', '');
         $('#physicianGroup').css('visibility', 'visible');
         $('#clinicNameGroup').css('visibility', 'visible');
+        $('#medicalDepartmentGroup').css('visibility', 'visible');
     }
 }
 
