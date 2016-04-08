@@ -42,7 +42,7 @@ $(document).ready(function() {
     //$('#btn-basic-next').click(function() {
     $('#col-signup-basic').on('submit', function(e) {
         e.preventDefault();
-        var idRe = /^[a-z]+[a-z0-9]{5,19}$/g;
+        var idRe = /^[a-z]+[a-z0-9]{3,19}$/g;
         var inputId = $('#inputId');
         if(inputId.val().length > 20 || !inputId.val().match(idRe)) {
             openSignupFailModal("User ID is invalid, please enter small letters and numbers.");
@@ -137,7 +137,7 @@ function signup(usertype) {
         var inputBirthday = $('#inputBirthday');
         console.log(minBirthday)
         if(Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
-            openSignupFailModal("Your birthday may be before 1970 or after now.");
+            openSignupFailModal("Your birthday may be after 1800 year or before now.");
             inputBirthday.focus();
             return;
         }
