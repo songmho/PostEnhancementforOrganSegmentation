@@ -133,7 +133,7 @@ function signup(usertype) {
     if(usertype == 'patient') {
         user['gender'] = $('#selectGender').val();
         var currentTime = new Date().getTime();
-        var minBirthday = 0;
+        var minBirthday = -5367427200;
         var inputBirthday = $('#inputBirthday');
         if(Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
             openSignupFailModal("Your birthday may be before 1970 or after now.");
