@@ -54,7 +54,7 @@ function updateUser() {
     if(user.user_type == 'patient') {
         updatingUser['gender'] = $('#selectGender').val();
         var currentTime = new Date().getTime();
-        var minBirthday = -5367427200;
+        var minBirthday = -5367427200000;
         var inputBirthday = $('#inputBirthday');
         if(Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
             openModal("Invalid Birthday");
