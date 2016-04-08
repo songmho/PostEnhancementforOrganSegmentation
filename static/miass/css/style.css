@@ -313,5 +313,6 @@ div.interpretation-viewer {
 .no-pad-bot { padding-bottom: 0 !important; }
 .no-pad-left { padding-left: 0 !important; }
 .no-pad-right { padding-right: 0 !important; }
+.pad-7-bot { padding-bottom: 7px !important; }
 .text-black { color: black !important;}
 .loadingoverlay { z-index: 6; !important; }
