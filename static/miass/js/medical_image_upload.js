@@ -6,7 +6,7 @@ $(document).ready(function() {
     $('#uploadImageForm').on('submit', function(e) {
         e.preventDefault();
         var currentTime = new Date().getTime();
-        var minDate = 0;
+        var minDate = -5367427200;
         var imageDate = $('#takenDate');
         if(Date.parse(imageDate.val()) > currentTime || Date.parse(imageDate.val()) < minDate) {
             openModal("Recorded date must be after 1970 and before now.", "Upload Failed");
