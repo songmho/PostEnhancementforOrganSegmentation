@@ -2,7 +2,6 @@
  * Created by hanter on 2016. 1. 27..
  */
 
-
 var usertype = null;
 
 $(document).ready(function() {
