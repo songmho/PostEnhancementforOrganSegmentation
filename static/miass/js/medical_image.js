@@ -4,7 +4,21 @@
 var bRequestIntpr = false;
 var reqLevel = 2;
 
+var fileChanged = false;
+var imageInfoFormChanged = false;
+
 $(document).ready(function() {
+    /*** for file selection ***/
+    $('#image_file').change(function() {
+        console.log('file changed');
+        fileChanged = true;
+    });
+
+    $('#imageInfoForm .form-control').change(function() {
+        console.log('imageInfoForm changed');
+        imageInfoFormChanged = true;
+    });
+
     /*** for edit image info ***/
     $('#takenFrom').change(function() {
         resetTakenLayout();
@@ -21,6 +35,9 @@ $(document).ready(function() {
     setOpenImageViewerListener($('#image-previewer'));
 
     $('#btnFormEdit').click(function() {
+        fileChanged = false;
+        imageInfoFormChanged = false;
+
         $('#btnFormEdit').hide();
         $('#btnFormDelete').hide();
         $('#btnFormEditConfirm').show();
@@ -28,6 +45,7 @@ $(document).ready(function() {
         $('#subject').removeAttr('readonly');
         $('#imageType').removeAttr('disabled');
         $('#btnImageFile').removeAttr('disabled');
+        $('#image_file').val('');
         $('#takenDate').removeAttr('readonly');
         $('#takenFrom').removeAttr('disabled');
         $('#takenPhysicianName').removeAttr('readonly');
@@ -52,45 +70,54 @@ $(document).ready(function() {
         $('#clinicName').attr('readonly', '');
         $('#medicalDepartment').attr('readonly', '');
         $('#imageDescription').attr('readonly', '');
+        
+        if (imageInfoFormChanged) {
+            var nowImageInfo = {
+                user_id: user['user_id'],
+                image_id: imageInfo.image_id,
+                subject: $('#subject').val(),
+                image_type: $('#imageType').val(),
+                taken_date: Date.parse($('#takenDate').val()),
+                taken_from: $('#takenFrom').val(),
+                physician: $('#takenPhysicianName').val(),
+                place: $('#clinicName').val(),
+                medical_department: $('#medicalDepartment').val(),
+                description: $('#imageDescription').val()
+            };
+            $.LoadingOverlay('show');
+            $.ajax("/api/medical_image", {
+                method: 'PUT',
+                data: JSON.stringify({
+                    action: 'update',
+                    image_info: nowImageInfo
+                }), dataType: 'json'
+                , success: function (res) {
+                    $.LoadingOverlay('hide');
+                    if (res['code'] == 'SUCCESS') {
+                        imageInfo.subject = nowImageInfo.subject;
+                        imageInfo.image_type = nowImageInfo.image_type;
+                        imageInfo.taken_date = nowImageInfo.taken_date;
+                        imageInfo.taken_from = nowImageInfo.taken_from;
+                        imageInfo.physician = nowImageInfo.physician;
+                        imageInfo.place = nowImageInfo.place;
+                        imageInfo.description = nowImageInfo.description;
+                        resetImageInfo();
 
-        var nowImageInfo = {
-            user_id : user['user_id'],
-            image_id: imageInfo.image_id,
-            subject : $('#subject').val(),
-            image_type : $('#imageType').val(),
-            taken_date: Date.parse($('#takenDate').val()),
-            taken_from : $('#takenFrom').val(),
-            physician : $('#takenPhysicianName').val(),
-            place : $('#clinicName').val(),
-            medical_department: $('#medicalDepartment').val(),
-            description : $('#imageDescription').val()
-        };
-        $.LoadingOverlay('show');
-        $.ajax("/api/medical_image", {
-            method: 'PUT',
-            data: JSON.stringify({
-                action: 'update',
-                image_info: nowImageInfo
-            }), dataType: 'json'
-            , success: function (res) {
-                $.LoadingOverlay('hide');
-                if(res['code'] == 'SUCCESS') {
-                    openModal('Updating image information is succeed.', "Update Image");
-                    imageInfo.subject = nowImageInfo.subject;
-                    imageInfo.image_type = nowImageInfo.image_type;
-                    imageInfo.taken_date = nowImageInfo.taken_date;
-                    imageInfo.taken_from = nowImageInfo.taken_from;
-                    imageInfo.physician = nowImageInfo.physician;
-                    imageInfo.place = nowImageInfo.place;
-                    imageInfo.description = nowImageInfo.description;
-                    resetImageInfo();
-                    //resetViewer();
-                } else {
-                    openModal(res['msg'], "Request Failed");
-                    resetImageInfo();
+                        if (fileChanged && $('#image_file').val()!="") {
+                            $('#formUpdateFile').submit();
+                        } else {
+                            openModal('Updating image information is succeed.', "Update Image");
+                        }
+                        //resetViewer();
+                    } else {
+                        openModal(res['msg'], "Updating Image Failed");
+                        resetImageInfo();
+                    }
                 }
-            }
-        });
+            });
+        } else if (fileChanged && $('#image_file').val()!="") {
+            $('#formUpdateFile').submit();
+        }
     });
 
 
@@ -158,7 +185,14 @@ $(document).ready(function() {
         });
     });
 
+    $('#imageUploadModalCancel').click(function() {
+        fileChanged = false;
+        $('#image_file').val('');
+    });
+
     $('#btnFormCancel').click(function() {
+        fileChanged = false;
+        imageInfoFormChanged = false;
         $('#btnFormEditConfirm').hide();
         $('#btnFormCancel').hide();
         $('#btnFormEdit').show();
@@ -170,6 +204,7 @@ $(document).ready(function() {
         $('#takenFrom').attr('disabled', '');
         $('#takenPhysicianName').attr('readonly', '');
         $('#clinicName').attr('readonly', '');
+        $('#medicalDepartment').attr('readonly', '');
         $('#imageDescription').attr('readonly', '');
         resetImageInfo();
         resetTakenLayout();
@@ -286,12 +321,14 @@ function resetTakenLayout() {
     if(tf == 'Home') {
         $('#takenPhysicianName').removeAttr('required').val('');
         $('#clinicName').removeAttr('required').val('');
+        $('#medicalDepartmentGroup').removeAttr('required').val('');
         $('#physicianGroup').css('visibility', 'hidden');
         $('#clinicNameGroup').css('visibility', 'hidden');
         $('#medicalDepartmentGroup').css('visibility', 'hidden');
     } else {
         $('#takenPhysicianName').attr('required', '');
         $('#clinicName').attr('required', '');
+        $('#medicalDepartmentGroup').attr('required', '');
         $('#physicianGroup').css('visibility', 'visible');
         $('#clinicNameGroup').css('visibility', 'visible');
         $('#medicalDepartmentGroup').css('visibility', 'visible');
