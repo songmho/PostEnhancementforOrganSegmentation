@@ -20,6 +20,20 @@
 .modal#imageViewModal .modal-content {
 
 }
+
+.modal#imageViewModal .modal-footer {
+    border-top: none;
+}
+
+.modal#imageViewModal .graph-label-group {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.modal#imageViewModal .graph-label-group > div.checkbox {
+    display: inline-block;
+    margin-right: 30px;
+}
+
 @media (min-width: 768px) {
     .modal#imageViewModal .modal-body .image-view {
         min-height: 440px;

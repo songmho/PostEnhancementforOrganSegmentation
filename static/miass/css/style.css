@@ -179,10 +179,17 @@ b a.table-page-number {
         padding-top: 7px;
     }
 }
+.form-group.form-inline {
+    display: inline-block;
+}
 .form-group.form-inline .pull-right {
     margin-left: 2px;
     margin-right: 2px;
 }
+.form-control.form-control-inline {
+    display: inline-block;
+}
+
 
 /* Column */
 @media (min-width: 992px) {

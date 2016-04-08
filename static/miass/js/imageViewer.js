@@ -2,6 +2,9 @@
  * Created by hanter on 2016. 3. 12..
  */
 
+var graphColors = ['#D76474', '#ADD764', '#8E64D7', '#64D7C7', '#607D8B', '#FFD600',
+                   '#1493CC', '#3F51B5', '#FF5722', '#2196F3', '#009688', '#795548'];
+
 var imageDirs = null;
 var $imageViewer = null;
 var lastImageData = null;
@@ -175,6 +178,7 @@ function generalImageLoadAndView(imageURL) {
     image.src = imageURL;
 }
 
+var graph = null;
 function csvGrpahLoadAndView(csvURL) {
     showImageViewerLoader(true);
     setTimeout(function() {
@@ -185,9 +189,10 @@ function csvGrpahLoadAndView(csvURL) {
         if(bShowGraphView) elem = document.getElementById("graphViewer");
         else elem = document.getElementById("imageViewer");
 
-        var g = new Dygraph(
+        var g = new Dygraph (
             elem,
             data, {
+                //labels: [ "Time", "Direct_1", "Abdomen_1"],
                 width: chartWidth,
                 height: canvasSize,
                 //valueRange: [-3, 5.1],
@@ -202,10 +207,48 @@ function csvGrpahLoadAndView(csvURL) {
                 animatedZooms: true,
                 strokeWidth: 2,
                 //color: '#D76474',
-                colors: ['#D76474', '#ADD764', '#8E64D7', '#64D7C7', '#FF0023', '#FFF519', '#1493CC'],
-                plotter: smoothPlotter
+                colors: graphColors,
+                plotter: smoothPlotter,
+
+                //visibility: [true, true, true, false, false, false],
+                //drawCallback: function(g) {
+                //    console.log(g.getLabels());
+                //}
             }
         );
+        g.ready(function(g) {
+            console.log(g.getLabels());
+            var lables = g.getLabels();
+
+            if (lables.length > 2) {
+                $('#graphLabelChecks').show();
+                var checkboxesHTMLString = "";
+                for (var i = 1; i < lables.length; i++) {
+                    checkboxesHTMLString += '<div class="checkbox"><label style="color:'
+                        + graphColors[i - 1] + ';"><input type="checkbox" data-column="' + (i - 1)
+                        + '"> ' + lables[i] + '</label></div>'
+                }
+                //checkboxesHTMLString += '<button id="columnChangeBtn" class="btn btn-primary">Show</button>';
+                $('#graphLabelChecks').empty().html(checkboxesHTMLString);
+                $('#graphLabelChecks input:checkbox').prop('checked', true).change(function () {
+                    var pos = parseInt($(this).data('column'));
+                    g.setVisibility(pos, $(this).prop('checked'));
+                });
+
+                //$('#columnChangeBtn').off('click').unbind('click').click(function() {
+                //    var labelCnt = lables.length-1;
+                //    var arrVisibility = new Array(labelCnt);
+                //    $('#graphLabelChecks input:checkbox').each(function() {
+                //        var pos = parseInt($(this).data('column'));
+                //        arrVisibility[pos] = $(this).prop('checked');
+                //        g.setVisibility(pos, $(this).prop('checked'));
+                //    });
+                //    //g.setVisibility(arrVisibility);
+                //});
+            } else {
+                $('#graphLabelChecks').hide();
+            }
+        });
 
         $('#rollPeriodConfirm').off('click');
         $('#rollPeriodConfirm').click(function() {
