@@ -54,6 +54,7 @@ class DbManager():
             except Exception as e:
                 logger.exception(e)
                 raise Exception( "find_user Error" + e.message)
+        return if_exist
 
     def find_id(self, email, name):
         user_id = None
@@ -360,6 +361,7 @@ class DbManager():
             except Exception as e:
                 logger.exception(e)
                 raise Exception( "add_physician_profile Error" + e.message)
+        return if_updated
 
     def retrieve_physician_profile(self, physician_id, type=None):
         profile = {}
@@ -428,6 +430,8 @@ class DbManager():
             except Exception as e:
                 logger.exception(e)
                 raise Exception( "add_medical_image Error" + e.message)
+
+        return  if_inserted
 
 
     # To update a medical image information by 'image_id'
