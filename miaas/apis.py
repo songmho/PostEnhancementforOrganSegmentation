@@ -64,6 +64,7 @@ def handle_session_mgt(request):
 
             user = {}
             user_type = db.retrieve_user(user_id, password)
+            print user_type
             if user_type is None:
                 raise Exception(MSG_INVALID_IDPW)
             elif user_type == 'patient':
