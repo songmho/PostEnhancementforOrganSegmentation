@@ -1242,7 +1242,8 @@ class DbManager():
         time_from = int(time_from) if time_from is not None else 0
         db_query = "SELECT intpr.intpr_id, req.timestamp, intpr.timestamp, req.subject, " \
                    "m.image_type, req.level, intpr.summary, " \
-                   "intpr.suspected_disease, intpr.opinion, intpr.recommendation " \
+                   "intpr.suspected_disease, intpr.opinion, intpr.recommendation, " \
+                   "req.subject, m.subject " \
                    "FROM interpretation intpr " \
                    "JOIN request req ON intpr.request_id = req.request_id " \
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
@@ -1264,6 +1265,8 @@ class DbManager():
                     intpr['suspected_disease'] = row[7]
                     intpr['opinion'] = row[8]
                     intpr['recommendation'] = row[9]
+                    intpr['request_subject'] = row[10]
+                    intpr['image_subject'] = row[11]
                     intprs.append(intpr)
             except Exception as e:
                 logger.exception(e)
