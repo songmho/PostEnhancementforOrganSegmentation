@@ -53,7 +53,7 @@ def handle_session_mgt(request):
             ### login ###
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
-            data = json.loads(request.body.decode("utf-8"))
+            data = json.loads(request.body)
 
             if not data.get('user_id') or not data.get('password'):
                 raise Exception(MSG_INVALID_PARAMS)
@@ -130,7 +130,7 @@ def handle_user_mgt(request):
             # signup (register)
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
-            data = json.loads(request.body.decode("utf-8"))
+            data = json.loads(request.body)
 
             if not data.get('action'):
                 raise Exception(MSG_INVALID_PARAMS)
@@ -242,9 +242,9 @@ def handle_patient_profile_mgt(request):
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
             # logger.info(request.body)
-            # logger.info(request.body.decode("utf-8"))
+            # logger.info(request.body)
             # data = json.loads(request.body)
-            data = json.loads(request.body.decode("utf-8"))
+            data = json.loads(request.body)
             # logger.info(data)
             if not data.get('profiles'):
                 raise Exception("No changed data")
@@ -302,7 +302,7 @@ def handle_physician_profile_mgt(request):
             # update physician profile
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
-            data = json.loads(request.body.decode("utf-8"))
+            data = json.loads(request.body)
             # logger.info(data)
             # print(data)
             if not data.get('user_id') or not data.get('profiles'):
@@ -407,7 +407,7 @@ def handle_medical_image_mgt(request):
             #update medical image
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
-            data = json.loads(request.body.decode("utf-8"))
+            data = json.loads(request.body)
 
             action = data['action']
             if not action:
@@ -445,9 +445,9 @@ def handle_medical_image_mgt(request):
         elif request.method == 'POST':
             #add medical iamge and upload medical image
             if 'image_file' in request.FILES and 'image_info' in request.POST:
-                action = request.POST['action'].decode("utf-8")
+                action = request.POST['action']
 
-                image_info = json.loads(request.POST['image_info'].decode("utf-8"))
+                image_info = json.loads(request.POST['image_info'])
                 prev_timestamp = 0
                 if image_info.get('timestamp'):
                     prev_timestamp = image_info['timestamp']
@@ -539,7 +539,7 @@ def handle_interpretation_mgt(request):
         if request.method == 'PUT':
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
-            data = json.loads(request.body.decode("utf-8"))
+            data = json.loads(request.body)
             action = data['action']
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
@@ -648,7 +648,7 @@ def handle_interpretation_mgt(request):
         elif request.method == 'POST':
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
-            data = json.loads(request.body.decode("utf-8"))
+            data = json.loads(request.body)
             action = data['action']
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
@@ -701,7 +701,7 @@ def handle_analytics_mgt(request):
         if request.method == 'PUT':
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
-            data = json.loads(request.body.decode("utf-8"))
+            data = json.loads(request.body)
             action = data['action']
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
@@ -723,7 +723,7 @@ def handle_analytics_mgt(request):
         if(request.method) == 'POST':
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
-            data = json.loads(request.body.decode("utf-8"))
+            data = json.loads(request.body)
             action = data['action']
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
