@@ -39,6 +39,8 @@ class DbManager():
                 logger.exception(e)
                 raise Exception( "retrieve_user Error" + e.message)
 
+        return user_type
+
     def find_user(self, user_id):
         if_exist = False
         with self.connector.cursor() as cursor:
@@ -1186,12 +1188,14 @@ class DbManager():
         db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.name, req.level, intpr.summary, " \
                    "intpr.suspected_disease, intpr.opinion, intpr.recommendation, " \
                    "m.subject, m.image_type, m.timestamp, m.medical_department, " \
-                   "m.taken_from, m.physician, m.place, m.description, req.subject, req.message, m.image_id " \
+                   "m.taken_from, m.physician, m.place, m.description, req.subject, req.message, m.image_id, " \
+                   "m.user_id, pa.name, pa.email, pa.phone_number " \
                    "FROM interpretation intpr " \
                    "JOIN physician ph ON intpr.physician_id = ph.user_id " \
                    "JOIN user u ON ph.user_id = u.user_id " \
                    "JOIN request req ON intpr.request_id = req.request_id " \
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
+                   "JOIN user pa ON pa.user_id = m.user_id " \
                    "WHERE intpr.intpr_id =%s"%intpr_id
 
         with self.connector.cursor() as cursor:
@@ -1218,9 +1222,13 @@ class DbManager():
                     intpr_detail['request_subject'] = row[16]
                     intpr_detail['request_message'] = row[17]
                     intpr_detail['image_id'] = row[18]
+                    intpr_detail['patient_id'] = row[19]
+                    intpr_detail['name'] = row[20]
+                    intpr_detail['email'] = row[21]
+                    intpr_detail['phone_number'] = row[22]
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_physician_interpretation_detail Error" + e.message)
+                raise Exception("retrieve_physician_interpretation_detail Error" + e.message)
 
         return intpr_detail
 
@@ -1238,7 +1246,6 @@ class DbManager():
                    "ORDER BY intpr.timestamp DESC"%(patient_id, time_from)
         with self.connector.cursor() as cursor:
             try:
-                raise Exception("TEST")
                 cursor.execute(db_query)
                 self.connector.commit()
                 for row in cursor:
