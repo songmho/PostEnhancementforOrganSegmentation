@@ -43,7 +43,7 @@
     </div>
     <br />
     <div>
-        <form action="/api/medical_image" method="post" enctype="multipart/form-data">
+        <form action="/api/medical_image" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
             File:
             <input type="hidden" name="action" value="upload" />
             <input type="file" name="image_file" id="imageFile" />
@@ -52,7 +52,7 @@
     </div>
     <br />
     <div>
-        <form action="/api/medical_image" id="fileForm2" method="post" enctype="multipart/form-data">
+        <form action="/api/medical_image" id="fileForm2" method="post" accept-charset="UTF-8" enctype="multipart/form-data">
             File2:
             <input type="file" name="image_file" id="imageFile2" />
             <input type="submit" value="UPLOAD" />
@@ -61,7 +61,7 @@
     </div>
     <div>
         Django Multiple File Upload:
-        <form id="multiFileForm" action="" method="post" enctype="multipart/form-data">
+        <form id="multiFileForm" action="" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
             {% csrf_token %}
     {#        {{ form.as_p }}#}
 
@@ -72,7 +72,7 @@
     </div>
 
 <div>
-    <form method="post" action="/api/test">
+    <form method="post" action="/api/test" accept-charset="UTF-8">
         <textarea id="mytextarea" name="testtextarea">Hello, World!</textarea>
         <button type="button" onclick="ajaxSave();">Save</button>
     </form>

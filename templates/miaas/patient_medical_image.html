@@ -23,7 +23,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             <div class="col-xs-12 col-title">
                 <h2 class="text-primary" id="titleSubject">{{ image.subject }}</h2>
             </div>
-            <form id="imageInfoForm" class="col-xs-12 col-form">
+            <form id="imageInfoForm" class="col-xs-12 col-form" accept-charset="UTF-8">
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-group">
                         <label class="col-sm-3 col-md-2 control-label" for="subject" >Image Subject</label>
@@ -149,7 +149,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                 </div>
             </form>
 
-            <form id="requestIntprForm" class="col-xs-12 col-form" style="display: none;">
+            <form id="requestIntprForm" class="col-xs-12 col-form" style="display: none;" accept-charset="UTF-8">
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-group">
                         <label class="col-sm-3 col-md-2 control-label" for="reqLevel"
@@ -267,7 +267,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
 <div class="modal fade" id="imageUploadModal" tabindex="-1" role="dialog"
      aria-labelledby="imageUploadModalTitle">
-    <form id="formUpdateFile" class="modal-dialog" role="document"
+    <form id="formUpdateFile" class="modal-dialog" role="document" accept-charset="UTF-8"
           action="" method="post" enctype="multipart/form-data">
         <div class="modal-content">
             <div class="modal-header">
