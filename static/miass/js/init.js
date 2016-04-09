@@ -12,6 +12,14 @@ $(document).ready(function() {
         $(this).tab('show');
     });
 
+    $('textarea.form-control').keyup(function(event) {
+        console.log($(this));
+        if($(this).val().length > 1000) {
+            openModal("Max Textarea Length is 1000", "Alert");
+            $(this).val($(this).val().substring(0, 1000));
+        }
+    });
+
     $('.onloading').click(function() {
         $.LoadingOverlay('show');
     });
