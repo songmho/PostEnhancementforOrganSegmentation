@@ -172,17 +172,14 @@ class DbManager():
     def add_patient_profile(self, user_id, timestamp, profiles):
         if_inserted = False
         # Build an insert query
-        db_query = "INSERT INTO patient_profile (user_id, type, value, timestamp) VALUES "
+        db_query = "INSERT INTO patient_profile (user_id, type, value, timestamp) VALUES (%s, %s, %s, %s)"
         items = []
         for prof in profiles:
             prof['value'] = prof['value']
-            items.append("('%s', '%s', '%s', %s)"%(user_id, prof['type'], prof['value'], timestamp))
-        separator = ","
-        db_query += separator.join(items)
-
+            items.append((user_id, prof['type'], prof['value'], timestamp))
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query)
+                cursor.executemany(db_query, items)
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
