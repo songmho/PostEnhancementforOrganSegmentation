@@ -2,7 +2,6 @@
  * Created by hanter on 2016. 1. 27..
  */
 
-
 var usertype = null;
 
 $(document).ready(function() {
@@ -42,7 +41,7 @@ $(document).ready(function() {
     //$('#btn-basic-next').click(function() {
     $('#col-signup-basic').on('submit', function(e) {
         e.preventDefault();
-        var idRe = /^[a-z]+[a-z0-9]{5,19}$/g;
+        var idRe = /^[a-z]+[a-z0-9]{3,19}$/g;
         var inputId = $('#inputId');
         if(inputId.val().length > 20 || !inputId.val().match(idRe)) {
             openSignupFailModal("User ID is invalid, please enter small letters and numbers.");
@@ -132,12 +131,12 @@ function signup(usertype) {
 
     if(usertype == 'patient') {
         user['gender'] = $('#selectGender').val();
-        var currentTime = new Date().getTime();
+        var currentTime = new Date().getTime() + 3600*9;
         var minBirthday = -5367427200000;
         var inputBirthday = $('#inputBirthday');
         console.log(minBirthday)
         if(Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
-            openSignupFailModal("Your birthday may be before 1970 or after now.");
+            openSignupFailModal("Your birthday may be after 1800 year or before now.");
             inputBirthday.focus();
             return;
         }

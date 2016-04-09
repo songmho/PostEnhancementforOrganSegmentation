@@ -5,11 +5,13 @@
 $(document).ready(function() {
     $('#uploadImageForm').on('submit', function(e) {
         e.preventDefault();
-        var currentTime = new Date().getTime();
+        var currentTime = new Date().getTime() + 3600*9;
         var minDate = -5367427200000;
         var imageDate = $('#takenDate');
+        console.log(currentTime);
+        console.log(Date.parse(imageDate.val()));
         if(Date.parse(imageDate.val()) > currentTime || Date.parse(imageDate.val()) < minDate) {
-            openModal("Recorded date must be after 1970 and before now.", "Upload Failed");
+            openModal("Recorded date must be after 1800 and before now.", "Upload Failed");
             imageDate.focus();
             return;
         } else{
