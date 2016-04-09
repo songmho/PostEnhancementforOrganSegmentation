@@ -38,8 +38,6 @@ class DbManager():
             except Exception as e:
                 logger.exception(e)
                 raise Exception( "retrieve_user Error" + e.message)
-            finally:
-                return user_type
 
     def find_user(self, user_id):
         if_exist = False
@@ -54,9 +52,6 @@ class DbManager():
             except Exception as e:
                 logger.exception(e)
                 raise Exception( "find_user Error" + e.message)
-
-            finally:
-                return if_exist
 
     def find_id(self, email, name):
         user_id = None
@@ -406,6 +401,7 @@ class DbManager():
         if_inserted = False
         with self.connector.cursor() as cursor:
             try:
+                raise Exception( "add_medical_image Error")
                 # Add a medical image information to 'medical_image' table
                 user_id = medical_image['user_id']
                 subject = medical_image['subject']
@@ -431,8 +427,6 @@ class DbManager():
                 logger.exception(e)
                 raise Exception( "add_medical_image Error" + e.message)
 
-            finally:
-                return if_inserted
 
     # To update a medical image information by 'image_id'
     def update_medical_image_by_id(self, medical_image):
@@ -626,8 +620,6 @@ class DbManager():
             except Exception as e:
                 logger.exception(e)
                 raise Exception( "add_intpr Error" + e.message)
-            finally:
-                return if_inserted
 
     def retrieve_intpr_by_id(self, intpr_id):
         db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \
@@ -1244,9 +1236,9 @@ class DbManager():
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
                    "WHERE intpr.patient_id='%s' and intpr.timestamp>%s " \
                    "ORDER BY intpr.timestamp DESC"%(patient_id, time_from)
-
         with self.connector.cursor() as cursor:
             try:
+                raise Exception("TEST")
                 cursor.execute(db_query)
                 self.connector.commit()
                 for row in cursor:
@@ -1264,7 +1256,7 @@ class DbManager():
                     intprs.append(intpr)
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_patient_intpr_list Error" + e.message)
+                raise Exception("retrieve_patient_intpr_list Error" + e.message)
         return intprs
 
     # KH
