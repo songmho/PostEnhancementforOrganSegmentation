@@ -158,12 +158,13 @@ function updateProfile() {
         success: function(res) {
             $.LoadingOverlay('hide');
             //console.log(JSON.stringify(res));
-            if(res['code'] = 'SUCCESS') {
+            if(res['code'] == 'SUCCESS') {
                 if(!profiles.length){
                     profiles = newProfiles;
                 }
                 openUpdatedModal();
             } else {
+                console.log(res['msg']);
                 openUpdateFailModal(res['msg'], 'Update Failed');
             }
         }
