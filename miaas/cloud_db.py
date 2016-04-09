@@ -1238,7 +1238,6 @@ class DbManager():
                    "ORDER BY intpr.timestamp DESC"%(patient_id, time_from)
         with self.connector.cursor() as cursor:
             try:
-                raise Exception("TEST")
                 cursor.execute(db_query)
                 self.connector.commit()
                 for row in cursor:

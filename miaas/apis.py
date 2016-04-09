@@ -241,7 +241,9 @@ def handle_patient_profile_mgt(request):
             # update patient profile
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
-            data = json.loads(request.body.decode("utf-8"))
+            logger.info(request.body)
+            logger.info(request.body.decode("utf-8"))
+            data = json.loads(request.body)
             if not data.get('user_id') or not data.get('profiles') or not data.get('timestamp'):
                 raise Exception(MSG_INVALID_PARAMS)
             user_id = data['user_id']
