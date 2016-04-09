@@ -157,6 +157,7 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 db_query = "UPDATE user as u INNER JOIN patient as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.gender=%s, p.birthday=%s WHERE u.user_id=%s"
+                print(db_query)
                 cursor.execute(db_query, (password, name, phone_number, email, gender, birthday, user_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
@@ -626,6 +627,7 @@ class DbManager():
             except Exception as e:
                 logger.exception(e)
                 raise Exception( "add_intpr Error" + e.message)
+        return if_inserted
 
     def retrieve_intpr_by_id(self, intpr_id):
         db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \

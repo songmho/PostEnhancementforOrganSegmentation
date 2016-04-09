@@ -157,15 +157,14 @@ function updateProfile() {
         dataType: 'json',
         success: function(res) {
             $.LoadingOverlay('hide');
-            //console.log(JSON.stringify(res));
+            console.log(JSON.stringify(res));
             if(res['code'] == 'SUCCESS') {
                 if(!profiles.length){
                     profiles = newProfiles;
                 }
                 openUpdatedModal();
             } else {
-                console.log(res['msg']);
-                openUpdateFailModal(res['msg'], 'Update Failed');
+                openModal(res['msg'], 'Update Failed');
             }
         }
     });

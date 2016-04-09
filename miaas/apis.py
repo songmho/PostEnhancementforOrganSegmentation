@@ -64,7 +64,6 @@ def handle_session_mgt(request):
 
             user = {}
             user_type = db.retrieve_user(user_id, password)
-            print user_type
             if user_type is None:
                 raise Exception(MSG_INVALID_IDPW)
             elif user_type == 'patient':
@@ -231,21 +230,25 @@ def handle_patient_profile_mgt(request):
             if not user_id:
                 raise Exception(MSG_INVALID_PARAMS)
 
-            print(request.session['user']['user_type'])
             if request.session['user']['user_type'] == 'patient':
                 if request.session['user']['user_id'] != user_id:
                     raise Exception(MSG_NOT_MATCHED_USER)
             patient_profile = db.retrieve_patient_profile(user_id)
+            # print(patient_profile)
             return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': patient_profile}))
 
         elif (request.method) == 'POST':
             # update patient profile
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
-            logger.info(request.body)
-            logger.info(request.body.decode("utf-8"))
-            data = json.loads(request.body)
-            if not data.get('user_id') or not data.get('profiles') or not data.get('timestamp'):
+            # logger.info(request.body)
+            # logger.info(request.body.decode("utf-8"))
+            # data = json.loads(request.body)
+            data = json.loads(request.body.decode("utf-8"))
+            # logger.info(data)
+            if not data.get('profiles'):
+                raise Exception("No changed data")
+            if not data.get('user_id') or not data.get('timestamp'):
                 raise Exception(MSG_INVALID_PARAMS)
             user_id = data['user_id']
             timestamp = data['timestamp']
@@ -292,7 +295,7 @@ def handle_physician_profile_mgt(request):
             #     raise Exception(MSG_NOT_MATCHED_USER)
 
             physician_profile = db.retrieve_physician_profile(user_id)
-            print(physician_profile)
+            # print(physician_profile)
             return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': physician_profile}))
 
         elif (request.method) == 'POST':
@@ -300,7 +303,8 @@ def handle_physician_profile_mgt(request):
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
             data = json.loads(request.body.decode("utf-8"))
-            logger.info(data)
+            # logger.info(data)
+            # print(data)
             if not data.get('user_id') or not data.get('profiles'):
                 raise Exception(MSG_INVALID_PARAMS)
             user_id = data['user_id']
