@@ -403,7 +403,6 @@ class DbManager():
         if_inserted = False
         with self.connector.cursor() as cursor:
             try:
-                raise Exception( "add_medical_image Error")
                 # Add a medical image information to 'medical_image' table
                 user_id = medical_image['user_id']
                 subject = medical_image['subject']
