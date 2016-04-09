@@ -65,7 +65,8 @@ class DbManager():
                 row = cursor.fetchone()
                 user_id = row[0]
             except Exception as e:
-                print("find_id: ", e)
+                raise "find_id Error" + e.message
+
         return user_id
 
     def find_passwd(self, user_id, email, name):
@@ -171,7 +172,7 @@ class DbManager():
             items.append("('%s', '%s', '%s', %s)"%(user_id, prof['type'], prof['value'], timestamp))
         separator = ","
         db_query += separator.join(items)
-        print db_query
+
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query)
@@ -180,7 +181,7 @@ class DbManager():
                 if row_count > 0:
                     if_inserted = True
             except Exception as e:
-                print("add_patient_profile: ", e)
+                raise "add_patient_profile Error" + e.message
         return if_inserted
 
     # type='None' (performance low)
@@ -1038,7 +1039,7 @@ class DbManager():
                    "WHEN req.status = 2 Then 2 " \
                    "WHEN req.status = 0 Then 0 " \
                    "END DESC"%physician_id
-        print db_query
+
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query)
@@ -1070,7 +1071,7 @@ class DbManager():
                            "JOIN miaas.medical_image m ON req.image_id = m.image_id " \
                            "JOIN miaas.user u ON m.user_id = u.user_id " \
                            "WHERE req.request_id=%s"
-        print(db_query_request%request_id)
+
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query_request, request_id)
@@ -1197,7 +1198,7 @@ class DbManager():
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
                    "WHERE intpr.patient_id='%s' and intpr.timestamp>%s " \
                    "ORDER BY intpr.timestamp DESC"%(patient_id, time_from)
-        print(db_query)
+
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query)
