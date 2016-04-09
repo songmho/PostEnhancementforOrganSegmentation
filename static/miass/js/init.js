@@ -13,7 +13,6 @@ $(document).ready(function() {
     });
 
     $('textarea.form-control').keyup(function(event) {
-        console.log($(this));
         if($(this).val().length > 1000) {
             openModal("Max Textarea Length is 1000", "Alert");
             $(this).val($(this).val().substring(0, 1000));
