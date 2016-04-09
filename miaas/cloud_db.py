@@ -22,7 +22,7 @@ class DbManager():
             self.connector = pymysql.connect(host=host, port=port, user=user, passwd=password, db=dbName)
             self.is_connected = True
         except Exception as e:
-            print(e)
+            raise "DB Connection Error" + e.message
             self.is_connected = False
 
     def retrieve_user(self, user_id, password):
@@ -35,7 +35,7 @@ class DbManager():
                 row = cursor.fetchone()
                 user_type = row[0]
             except Exception as e:
-                print("Retrieve_User: ", e)
+                raise "Retrieve User Error" + e.message
             finally:
                 return user_type
 
@@ -50,7 +50,8 @@ class DbManager():
                 if row is not None:
                     if_exist = True
             except Exception as e:
-                print("Find_User: ", e)
+                raise "Find User Error" + e.message
+
             finally:
                 return if_exist
 
@@ -77,6 +78,7 @@ class DbManager():
                 row = cursor.fetchone()
                 passwd = row[0]
             except Exception as e:
+                raise "Find Password Error" + e.message
                 print("Find_Passwd: ", e)
         return passwd
 
@@ -105,6 +107,7 @@ class DbManager():
                 if row_count > 0:
                     if_inserted = True
             except Exception as e:
+                raise "Patient Registration Error" + e.message
                 print("Add_Patient: ", e)
         return if_inserted
 
@@ -134,6 +137,7 @@ class DbManager():
                     else:
                         user['password'] = row[8]
             except Exception as e:
+                raise "Retrieve Patient Error" + e.message
                 print("Retrieve_Patient: ", e)
         return user
 
@@ -156,6 +160,7 @@ class DbManager():
                 if row_count > 0:
                     if_updated = True
             except Exception as e:
+                raise "Update Patient Error" + e.message
                 print('Update_Patient: ', e)
         return if_updated
 
@@ -521,12 +526,11 @@ class DbManager():
     def update_medical_image_dir(self, medical_image):
         if_updated = False
         image_dir= medical_image['image_dir']
-        timestamp = medical_image['timestamp']
         image_id = medical_image['image_id']
         with self.connector.cursor() as cursor:
             try:
-                db_query = "UPDATE medical_image SET image_dir=%s, timestamp=%s WHERE image_id=%s"
-                cursor.execute(db_query, (image_dir, timestamp, image_id))
+                db_query = "UPDATE medical_image SET image_dir=%s WHERE image_id=%s"
+                cursor.execute(db_query, (image_dir, image_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 print(row_count)
@@ -979,21 +983,21 @@ class DbManager():
         requests = []
         time_from = int(time_from) if time_from is not None else 0
         if query_type == "Image Type" and image_type is not None:
-            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level " \
+            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level, m.subject " \
                        "FROM request req " \
                        "JOIN medical_image m on req.image_id = m.image_id " \
                        "WHERE status >= 2 and image_type='%s' and req.timestamp>%s and '%s' NOT IN(SELECT physician_id FROM response res WHERE req.request_id=res.request_id) " \
                        "ORDER BY req.timestamp DESC" % (image_type, time_from, physician_id)
 
         elif query_type == "Request Subject" and request_subject is not None:
-            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level " \
+            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level, m.subject " \
                        "FROM request req " \
                        "JOIN medical_image m on req.image_id = m.image_id " \
                        "WHERE status >= 2 and req.subject Like '%s' and  req.timestamp>%s and '%s' NOT IN(SELECT physician_id FROM response res WHERE req.request_id=res.request_id) " \
                        "ORDER BY req.timestamp DESC" % ("%" + request_subject + "%", time_from, physician_id)
 
         else:
-            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level " \
+            db_query = "SELECT req.request_id, req.timestamp, m.user_id, m.image_type, req.subject, req.status, req.level, m.subject " \
                        "FROM request req " \
                        "JOIN medical_image m on req.image_id = m.image_id " \
                        "WHERE status >= 2 and req.timestamp>%s and '%s' NOT IN(SELECT physician_id FROM response res WHERE req.request_id=res.request_id) " \
@@ -1011,6 +1015,7 @@ class DbManager():
                     request['request_subject'] = row[4]
                     request['status'] = row[5]
                     request['level'] = row[6]
+                    request['image_subject'] = row[7]
                     requests.append(request)
             except Exception as e:
                 print("Retrieve_Physician_Interpretation: ", e)
@@ -1025,7 +1030,7 @@ class DbManager():
                    "FROM response res " \
                    "JOIN request req on res.request_id = req.request_id " \
                    "JOIN medical_image m on req.image_id = m.image_id  " \
-                   "WHERE res.physician_id = '%s' " \
+                   "WHERE res.physician_id = '%s' and req.status > 0 " \
                    "ORDER BY " \
                    "CASE " \
                    "WHEN req.status = 1 Then 3 " \
@@ -1219,7 +1224,8 @@ class DbManager():
         time_from = int(time_from) if time_from is not None else 0
         db_query = "SELECT intpr.intpr_id, req.timestamp, intpr.timestamp, req.subject, " \
                    "m.image_type, req.level, intpr.summary, " \
-                   "intpr.suspected_disease, intpr.opinion, intpr.recommendation " \
+                   "intpr.suspected_disease, intpr.opinion, intpr.recommendation, " \
+                   "m.user_id, m.subject " \
                    "FROM interpretation intpr " \
                    "JOIN request req ON intpr.request_id = req.request_id " \
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
@@ -1242,6 +1248,8 @@ class DbManager():
                     intpr['suspected_disease'] = row[7]
                     intpr['opinion'] = row[8]
                     intpr['recommendation'] = row[9]
+                    intpr['patient_id'] = row[10]
+                    intpr['image_subject'] = row[11]
                     intprs.append(intpr)
             except Exception as e:
                 print("retrieve_patient_request_list: ", e)

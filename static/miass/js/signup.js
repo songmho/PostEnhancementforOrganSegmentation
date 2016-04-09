@@ -131,7 +131,7 @@ function signup(usertype) {
 
     if(usertype == 'patient') {
         user['gender'] = $('#selectGender').val();
-        var currentTime = new Date().getTime();
+        var currentTime = new Date().getTime() + 3600*9;
         var minBirthday = -5367427200000;
         var inputBirthday = $('#inputBirthday');
         console.log(minBirthday)
