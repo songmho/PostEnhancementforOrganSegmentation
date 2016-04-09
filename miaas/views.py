@@ -517,6 +517,7 @@ class ArchiveUploadView(FormView):
 
             action = self.request.POST['action']
             image_info = json.loads(self.request.POST['image_info'])
+
             prev_timestamp = 0
             if image_info.get('timestamp'):
                 prev_timestamp = image_info['timestamp']
@@ -582,6 +583,7 @@ class ArchiveDetailView(ArchiveUploadView):
             else:
                 db = cloud_db.DbManager()
                 result = db.retrieve_image_and_intpr(image_id)
+                logger.info(result)
 
                 if result.get('image') and isinstance(result.get('intpr'), list):
                     context['image'] = result['image']

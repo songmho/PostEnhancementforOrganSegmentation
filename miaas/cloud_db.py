@@ -19,7 +19,7 @@ class DbManager():
         password = 'lovejesus'
         dbName = 'miaas'
         try:
-            self.connector = pymysql.connect(host=host, port=port, user=user, passwd=password, db=dbName)
+            self.connector = pymysql.connect(host=host, port=port, user=user, passwd=password, db=dbName, charset='utf8')
             self.is_connected = True
         except Exception as e:
             logger.exception(e)
