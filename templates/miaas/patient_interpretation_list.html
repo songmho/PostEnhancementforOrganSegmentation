@@ -29,6 +29,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <thead>
                             <td>Request Date</td>
                             <td>Interpret Date</td>
+                            <td>Request Subject</td>
+                            <td>Image Subject</td>
                             <td>Image Type</td>
                             <td>Level</td>
                         </thead>
@@ -37,6 +39,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                             <tr onclick="javascript : $.LoadingOverlay('show'); location.href='{% url 'miaas:interpretation_detail' intpr.intpr_id %}';">
                                 <td>{{ intpr.request_date|datetime_string }}</td>
                                 <td>{{ intpr.interpret_date|datetime_string }}</td>
+                                <td>{{ intpr.request_subject }}</td>
+                                <td>{{ intpr.image_subject }}</td>
                                 <td>{{ intpr.image_type }}</td>
                                 <td>{{ intpr.level }}</td>
                             </tr>
