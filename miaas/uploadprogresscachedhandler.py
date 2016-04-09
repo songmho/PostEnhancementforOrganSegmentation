@@ -46,7 +46,7 @@ class UploadProgressCachedHandler(FileUploadHandler):
             data = cache.get(self.cache_key)
             data['uploaded'] += self.chunk_size
             cache.set(self.cache_key, data)
-            logger.info('receive_chunk, size=%s' % (data['uploaded']))
+            # logger.info('receive_chunk, size=%s' % (data['uploaded']))
         return raw_data
 
     def file_complete(self, file_size):

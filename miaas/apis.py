@@ -297,6 +297,7 @@ def handle_physician_profile_mgt(request):
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
             data = json.loads(request.body.decode("utf-8"))
+            logger.info(data)
             if not data.get('user_id') or not data.get('profiles'):
                 raise Exception(MSG_INVALID_PARAMS)
             user_id = data['user_id']
@@ -454,6 +455,9 @@ def handle_medical_image_mgt(request):
                 uploaded_path = None
                 im = ImageManager(image_file, image_info)
                 uploaded_path = im.upload_file()
+                logger.info(uploaded_path)
+                uploaded_path = uploaded_path.encode('UTF-8')
+                logger.info(uploaded_path)
 
                 logger.info('image is uploaded to: %s', uploaded_path)
 

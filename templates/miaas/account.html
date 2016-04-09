@@ -34,7 +34,7 @@ location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputId" >ID</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="text" id="inputId" name="id" class="form-control" readonly
+                            <input type="text" id="inputId" maxlength="20" name="id" class="form-control" readonly
                                 value="{{ user_session.user_id }}"/>
                         </div>
                     </div>
@@ -42,7 +42,7 @@ location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputName" >Name</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="text" id="inputName" name="name" class="form-control" required
+                            <input type="text" id="inputName" maxlength="100" name="name" class="form-control" required
                                 value="{{ user_session.name }}" />
                         </div>
                     </div>
@@ -50,30 +50,30 @@ location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPw" >Password</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="password" id="inputPw" name="pw" class="form-control" required
+                            <input type="password" id="inputPw" maxlength="20" name="pw" class="form-control" required
                                 placeholder="Input Password" />
                         </div>
                     </div>
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPwConfirm" >Password Confirm</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="password" id="inputPwConfirm" name="confirm" class="form-control" required
+                            <input type="password" id="inputPwConfirm" maxlength="20" name="confirm" class="form-control" required
                                 placeholder="Input Password Confirm" />
                         </div>
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPw" >Phone Number</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputMobile" >Phone Number</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="tel" id="inputMobile" name="mobile" class="form-control" required
+                            <input type="tel" maxlength="20" id="inputMobile" name="mobile" class="form-control" required
                                 value="{{ user_session.phone_number }}" />
                         </div>
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPw" >Email Address</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputEmail" >Email Address</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="email" id="inputEmail" name="email" class="form-control" required
+                            <input type="email" id="inputEmail" maxlength="100" name="email" class="form-control" required
                                 value="{{ user_session.email }}" />
                         </div>
                     </div>
@@ -118,7 +118,7 @@ location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputLicence" >Licence ID</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="text" id="inputLicence" name="licence" class="form-control" required
+                            <input type="text" id="inputLicence" maxlength="40" name="licence" class="form-control" required
                                 value="{{ user_session.license_number }}" />
                         </div>
                     </div>

@@ -515,8 +515,8 @@ class ArchiveUploadView(FormView):
             if(len(image_files) <=0 or 'image_info' not in self.request.POST):
                 raise Exception('Invalid Parameters.')
 
-            action = self.request.POST['action'].decode('utf-8')
-            image_info = json.loads(self.request.POST['image_info'].decode("utf-8"))
+            action = self.request.POST['action']
+            image_info = json.loads(self.request.POST['image_info'])
             prev_timestamp = 0
             if image_info.get('timestamp'):
                 prev_timestamp = image_info['timestamp']
@@ -530,6 +530,7 @@ class ArchiveUploadView(FormView):
             uploaded_path = None
             im = ImageManager(image_files, image_info)
             uploaded_path = im.upload_file()
+            # uploaded_path = uploaded_path.encode('UTF-8')
 
             db = cloud_db.DbManager()
 
