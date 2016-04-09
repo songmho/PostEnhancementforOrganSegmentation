@@ -627,6 +627,8 @@ class DbManager():
                 logger.exception(e)
                 raise Exception( "add_intpr Error" + e.message)
 
+        return if_inserted
+
     def retrieve_intpr_by_id(self, intpr_id):
         db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \
                    "level, fee, timestamp, summary, request_id, " \
