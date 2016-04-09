@@ -455,9 +455,9 @@ def handle_medical_image_mgt(request):
                 uploaded_path = None
                 im = ImageManager(image_file, image_info)
                 uploaded_path = im.upload_file()
-                logger.info(uploaded_path)
-                uploaded_path = uploaded_path.encode('UTF-8')
-                logger.info(uploaded_path)
+                # logger.info(uploaded_path)
+                # uploaded_path = uploaded_path.encode('UTF-8')
+                # logger.info(uploaded_path)
 
                 logger.info('image is uploaded to: %s', uploaded_path)
 

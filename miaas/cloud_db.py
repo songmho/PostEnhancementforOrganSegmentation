@@ -95,7 +95,7 @@ class DbManager():
                 # Add patient information to 'user' table
                 user_id = patient['user_id']
                 password = patient['password']
-                name = patient['name'].encode('utf-8').decode('latin-1')
+                name = patient['name']
                 phone_number = patient['phone_number']
                 email = patient['email']
                 join_date = patient['join_date']
@@ -151,7 +151,7 @@ class DbManager():
         if_updated = False
         user_id = user['user_id']
         password = user['password']
-        name = user['name'].encode('utf-8').decode('latin-1')
+        name = user['name']
         phone_number = user['phone_number']
         email = user['email']
         gender = user['gender']
@@ -176,7 +176,7 @@ class DbManager():
         db_query = "INSERT INTO patient_profile (user_id, type, value, timestamp) VALUES "
         items = []
         for prof in profiles:
-            prof['value'] = prof['value'].encode('utf-8').decode('latin-1')
+            prof['value'] = prof['value']
             items.append("('%s', '%s', '%s', %s)"%(user_id, prof['type'], prof['value'], timestamp))
         separator = ","
         db_query += separator.join(items)
@@ -213,7 +213,7 @@ class DbManager():
                     for row in cursor:
                         profile = {}
                         profile['type'] = row[0]
-                        profile['value'] = unicode(row[1], errors='ignore')
+                        profile['value'] = row[1]
                         profile['timestamp'] = row[2]
                         profiles.append(profile)
                 except Exception as e:
@@ -235,7 +235,7 @@ class DbManager():
                     for row in cursor:
                         profile = {}
                         profile['type'] = row[0]
-                        profile['value'] = unicode(row[1], errors='ignore')
+                        profile['value'] = row[1]
                         profile['timestamp'] = row[2]
                         profiles.append(profile)
                 except Exception as e:
@@ -250,7 +250,7 @@ class DbManager():
                 # Add physician information to 'user' table
                 user_id = physician['user_id']
                 password = physician['password']
-                name = physician['name'].encode('utf-8').decode('latin-1')
+                name = physician['name']
                 phone_number = physician['phone_number']
                 email = physician['email']
                 join_date = physician['join_date']
@@ -322,7 +322,7 @@ class DbManager():
         if_updated = False
         user_id = user['user_id']
         password = user['password']
-        name = user['name'].encode('utf-8').decode('latin-1')
+        name = user['name']
         phone_number = user['phone_number']
         email = user['email']
         license_number = user['license_number']
@@ -826,8 +826,8 @@ class DbManager():
                 # Add request information to 'request' table
                 image_id = request['image_id']
                 status = request['status']
-                subject = request['subject'].encode('utf-8').decode('latin-1')
-                message = request['message'].encode('utf-8').decode('latin-1')
+                subject = request['subject']
+                message = request['message']
                 timestamp = request['timestamp']
                 level = request['level']
                 db_query = "INSERT INTO request (image_id, status, subject, message, timestamp, level) VALUES (%s, %s, %s, %s, %s, %s)"
@@ -866,8 +866,8 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 db_query = "UPDATE request SET subject=%s, message=%s WHERE request_id=%s"
-                subject = subject.encode('utf-8').decode('latin-1')
-                message = message.encode('utf-8').decode('latin-1')
+                subject = subject
+                message = message
                 cursor.execute(db_query, (subject, message, request_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
@@ -905,8 +905,8 @@ class DbManager():
                 # Add response information to 'response' table
                 request_id = response['request_id']
                 physician_id = response['physician_id']
-                message = response['message'].encode('utf-8').decode('latin-1')
-                # message = response['message']
+                message = response['message']
+                # message = respo.encode('utf-8').decode('latin-1')nse['message']
                 timestamp = response['timestamp']
                 status = response['status']
                 print(request_id, physician_id, message, timestamp, status)
