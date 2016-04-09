@@ -69,7 +69,7 @@
                     $.LoadingOverlay('hide');
                     console.info(res)
                     if (res['code'] == 'SUCCESS') {
-                        openModal("Success", "Physician Response Succeed")
+                        openModal("Success", "Physician Response Succeed", location.replace("{% url 'miaas:interpretation_search' %}"))
                     } else {
                         openModal(res['msg'], "Physician Response Failed")
                     }
