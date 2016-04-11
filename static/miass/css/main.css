@@ -2,14 +2,23 @@ html {
     background-color: #e6e6e6;
 }
 body {
+    padding: 0;
     font-size: 16px;
     background-color: #fff;
+}
+@media (min-width: 992px) {
+    body {
+        padding-top: 10px;
+    }
+}
+section {
+    margin-bottom: 60px;
 }
 
 .page-container {
     margin-top: 20px;
     margin-bottom: 40px;
-    min-height: 600px;
+    min-height: 540px;
 }
 
 .menu-title {
@@ -23,12 +32,14 @@ body {
     font-size: 18px;
     font-weight: 300;
     margin-left: 3px;
+    color: #47525d;
 }
 
 .menu-right {
     font-size: 18px;
     margin-top: 32px;
-    text-align: center;
+    text-align: left;
+    padding-left: 3px;
 }
 
 @media (min-width: 992px) {
@@ -49,23 +60,34 @@ body {
 
 .intro-content .intro-column {
     display: block;
-    margin-top: 40px;
-    margin-bottom: 20px;
+    width: 350px;
+    margin: 80px auto 20px auto;
+    float: none;
 }
 
-@media (max-width: 991px) {
+@media (min-width: 768px) {
     .intro-content .intro-column {
         width: 400px;
-        margin-top: 80px;
-        margin-left: auto;
-        margin-right: auto;
-        float: none;
     }
 }
 
-@media (max-width: 767px) {
+@media (min-width: 992px) {
     .intro-content .intro-column {
-        width: 350px;
+        width: 33.33333333%;
+        margin-top: 40px;
+        margin-bottom: 20px;
+        float: left;
+    }
+
+    .intro-content .intro-column.column-left {
+        /*margin-left: 16.66666667%;*/
+        margin-left: 13.33333333%;
+    }
+
+    .intro-content .intro-column.column-right {
+        float: right;
+        /*margin-right: 16.66666667%;*/
+        margin-right: 13.33333333%;
     }
 }
 
@@ -85,6 +107,7 @@ body {
 
 .intro-content .intro-column .column-content {
     font-weight: 300;
+    color: #47525d;
     /*text-align: center;*/
     /*font-style: italic;*/
 }
@@ -118,4 +141,64 @@ footer.page-footer .footer-copyright {
 footer.page-footer .footer-copyright .copyright-logo {
     margin-top: 10px;
     height: 30px;
+}
+
+/*signin form*/
+.form-signin {
+
+}
+.form-signin .checkbox {
+    font-weight: normal;
+}
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+         -moz-box-sizing: border-box;
+                    box-sizing: border-box;
+    padding: 10px;
+    font-size: 18px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin input[type="text"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.additional-signin {
+    margin-top: 24px;
+    color: #7A7677;
+}
+
+.form-signin .hr-label {
+    padding: 0;
+    margin: 5px 0;
+    position: relative;
+    text-align: center;
+    clear: both;
+    color: #3d464d;
+}
+.form-signin .hr-label::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #d0d4d9;
+}
+.form-signin .hr-label > .hr-label-text {
+    font-size: 14px;
+    line-height: 26px;
+    padding: 0 8px;
+    vertical-align: top;
+    display: inline-block;
+    position: relative;
+    background-color: #fff;
 }
