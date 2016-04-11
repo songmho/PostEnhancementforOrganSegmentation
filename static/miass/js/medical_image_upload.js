@@ -87,12 +87,14 @@ $(document).ready(function() {
         if(tf == 'Home') {
             $('#takenPhysicianName').removeAttr('required').val('');
             $('#clinicName').removeAttr('required').val('');
+            $('#medicalDepartment').removeAttr('required').val('');
             $('#physicianGroup').hide();
             $('#clinicNameGroup').hide();
             $('#medicalDepartmentGroup').hide();
         } else {
             $('#takenPhysicianName').attr('required', '');
             $('#clinicName').attr('required', '');
+            $('#medicalDepartment').attr('required', '');
             $('#physicianGroup').show();
             $('#clinicNameGroup').show();
             $('#medicalDepartmentGroup').show();
