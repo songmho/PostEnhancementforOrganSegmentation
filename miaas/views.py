@@ -38,6 +38,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def main_page(request):
+    context = _get_session_context(request)
+    # context = {
+    #     'session': sctx.default_session,
+    # }
+    return render(request, 'miaas/main.html', context)
 
 def index_page(request):
     context = _get_session_context(request)

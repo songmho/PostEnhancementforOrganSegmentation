@@ -304,6 +304,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     $('#takenDate').val(new Date(parseInt("{{ image.taken_date }}")).format("yyyy-MM-dd"));
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");
+
     archiveURL = "{% url 'miaas:archive' %}";
     requestListURL = "{% url 'miaas:interpretation_request_list' %}";
 </script>
