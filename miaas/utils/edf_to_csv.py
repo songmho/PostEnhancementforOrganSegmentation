@@ -10,12 +10,10 @@ file_suffixes = ["_data", "_signals"]
 
 def edf_to_ascii(filepath):
     # For linux server
-    # p = subprocess.Popen(['sudo', 'edf2ascii.exe', filepath.encode('ascii', 'ignore')],
-    #                      stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    # p.stdin.write("'" + '\n')
-    # p.stdin.close()
-    p = subprocess.Popen(['edf2ascii.exe', filepath.encode('ascii', 'ignore')],
+    p = subprocess.Popen(['sudo', './edf2ascii.out', filepath.encode('ascii', 'ignore')],
                          stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p.stdin.write("'" + '\n')
+    p.stdin.close()
     for line in p.stdout.readlines():
         # print line
         pass
@@ -36,8 +34,7 @@ def rename_labels(path, name):
     _data = pd.read_csv(path + name + file_suffixes[0] + ".csv")
     _data.columns = labels
     _data.index = _data['Time']
-    _data.iloc[:1000][labels[1:]].to_csv(path + name + file_suffixes[0] + ".csv")
-
+    _data.iloc[:5000][labels[1:]].to_csv(path + name + file_suffixes[0] + ".csv")
 
 
 def delete_other_files(path, name):
