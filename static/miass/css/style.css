@@ -110,6 +110,8 @@ b a.table-page-number {
     text-decoration: underline;
 }
 
+
+
 @media (min-width: 768px) {
     td .btns-2-container div:nth-child(1) {
         padding-right: 5px;

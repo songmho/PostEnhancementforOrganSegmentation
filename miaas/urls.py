@@ -21,16 +21,15 @@ urlpatterns = [
     # url(r'^archive/detail/(?P<image_id>[0-9]+)$', views.medical_image_page, name='archive_detail'),
     url(r'^archive/detail/(?P<image_id>[0-9]+)$', views.ArchiveDetailView.as_view(), name='archive_detail'),
 
-    url(r'^interpretation$', views.interpretation_page, name='interpretation'),
-    url(r'^interpretation/request$', views.interpretation_request_list_page, name='interpretation_request_list'),
-    url(r'^interpretation/request/detail/(?P<request_id>[0-9]+)$', views.interpretation_request_detail_page, name='interpretation_request_detail'),
-    url(r'^interpretation/(?P<intpr_id>[0-9]+)$', views.interpretation_detail_page, name='interpretation_detail'),
+    url(r'^interpretation$', views.patient_interpretation_list_page, name='interpretation'),
+    url(r'^interpretation/request$', views.patient_request_list_page, name='interpretation_request_list'),
+    url(r'^interpretation/request/detail/(?P<request_id>[0-9]+)$', views. tail_page, name='interpretation_detail'),
 
     url(r'^interpretations$', views.physician_interpretation_page, name='physician_interpretation'),
     url(r'^interpretations/detail/(?P<intpr_id>[0-9]+)$', views.physician_interpretation_detail_page, name='physician_interpretation_detail'),
     url(r'^interpretations/response$', views.physician_interpretation_response_page, name='interpretation_response'),
     url(r'^interpretations/search$', views.physician_interpretation_search, name='interpretation_search'),
-    url(r'^interpretations/search/detail(?P<request_id>[0-9]+)$', views.physician_request_search_detail_page, name='interpretation_search_detail'),
+    url(r'^interpretations/search/detail/(?P<request_id>[0-9]+)$', views.physician_request_search_detail_page, name='interpretation_search_detail'),
     url(r'^interpretations/write/(?P<request_id>[0-9]+)$', views.physician_interpretation_write, name='interpretation_write'),
 
     # url(r'^opinion/(?P<opinion_id>[0-9]+)/$', views.opinion, name='opinion'),

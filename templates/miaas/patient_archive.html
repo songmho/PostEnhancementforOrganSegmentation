@@ -1,7 +1,7 @@
 {% if not user_session or user_session.user_type != 'patient' %}
-<script type="text/javascript">
-location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
-</script>
+    <script type="text/javascript">
+        location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
+    </script>
 {% endif %}
 
 {% load staticfiles %}
@@ -10,10 +10,9 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {% include 'miaas/template_header.html' %}
 
 <!-- custom css -->
-
-
 {% include 'miaas/template_nav_patient.html' %}
-
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/jquery.dataTables.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/dataTable-custom.css' %}">
 
 <div class="container">
     <section class="section section-default">
@@ -21,76 +20,26 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             <div class="col-xs-12 col-title">
                 <h2 class="text-primary">Medical Image Archive</h2>
             </div>
-
             <div class="col-xs-12 col-table">
-            {% if archive and archive.image_cnt > 0 %}
-                <div class="table-container row">
-                    <div class="table-title col-xs-12">Medical Image List</div>
-                    <table class="table table-striped table-hover col-xs-12">
-                        <thead>
-                            <td>Upload Date</td>
-                            <td>Image Subject</td>
-                            <td>Image Type</td>
-                            <td>Recorded Date</td>
-                            <td>Interpretation Count</td>
-                        </thead>
-                        <tbody>
-                        {% for image in archive.images %}
-                            <tr onclick="javascript:
-                                    $.LoadingOverlay('show');
-                                    location.href='{% url 'miaas:archive_detail' image.image_id %}';">
-                                <td>{{ image.timestamp|datetime_string }}</td>
-                                <td>{{ image.subject }}</td>
-                                <td>{{ image.image_type }}</td>
-                                <td>{{ image.taken_date|date_string }}</td>
-                                <td>{{ image.intpr_num }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    <div class="col-xs-12 text-center table-page-container">
-                        <a class="table-page-first" href="?page=1"> < </a>
-                        {% for page_num in archive.start_page|get_range_from_to2:archive.end_page %}
-                            {% if page_num == archive.now_page %}
-                                <b>
-                            {% endif %}
-                        <a class="table-page-number" href="?page={{ page_num }}">{{ page_num }}</a>
-                        {% if page_num == archive.now_page %}
-                            </b>
-                        {% endif %}
-                        {% endfor %}
-                        <a class="table-page-last" href="?page={{ archive.end_page }}"> > </a>
-                    </div>
-{#                    <div class="col-xs-12 text-center table-page-container">#}
-{#                    #}
-{#                    {% for page_num in archive.image_count|get_page_num:10|get_range2 %}#}
-{#                    {% for page_num in archive.start_page|get_range_from_to2:archive.end_page %}#}
-{#                        {% if page_num == archive.now_page %}#}
-{#                            <b>#}
-{#                        {% endif %}#}
-{#                            <a class="table-page-number" href="?page={{ page_num }}">{{ page_num }}</a>#}
-{#                        {% if page_num == archive.now_page %}#}
-{#                            </b>#}
-{#                        {% endif %}#}
-{#                    {% endfor %}#}
-{#                    </div>#}
-                </div>
-            {% else %}
-                <div class="table-nodata" >
-                    <h4 class="text-danger">There is no data</h4>
-                    <p>You can upload your FIRST medical image</p>
-                    <a class="btn btn-default" href="{% url 'miaas:archive_upload' %}" type="button">Upload</a>
-                </div>
-            {% endif %}
-            </div>
+                {% if dt_list %}
+                    <div class="table-container row">
+                    <div class="table-title col-xs-12 col-md-4">Medical Image List</div>
+                    <table id="dataTable" class="display" width="100%"></table>
+                {% else %}
 
-        {% if archive and archive.image_cnt > 0 %}
-            <div class="col-xs-12 col-md-4 col-md-offset-4">
-                <a class="btn btn-primary btn-lg btn-block"
-                   href="{% url 'miaas:archive_upload' %}" type="button">Upload Image</a>
+                    <div class="table-nodata" >
+                        <h4 class="text-danger">There is no data</h4>
+                        <p>You can upload your FIRST medical image</p>
+                        <a class="btn btn-default" href="{% url 'miaas:archive_upload' %}" type="button">Upload</a>
+                    </div>
+
+                </div>
+                    <div class="col-xs-12 col-md-4 col-md-offset-4">
+                        <a class="btn btn-primary btn-lg btn-block"
+                           href="{% url 'miaas:archive_upload' %}" type="button">Upload Image</a>
+                    </div>
+                {% endif %}
             </div>
-        {% endif %}
-        </div>
     </section>
 </div>
 
@@ -98,7 +47,28 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
-
+<script src="{% static 'lib/jquery/jquery.dataTables.min.js' %}"></script>
+<script>
+    var dataSet = {{ dt_list | safe }};
+    $(document).ready(function() {
+        var table = $('#dataTable').DataTable({
+            data: dataSet,
+            columns: [
+                { title: "Upload Date" },
+                { title: "Image Subject" },
+                { title: "Image Type" },
+                { title: "Recorded Date" },
+                { title: "Interpretation Count" }
+            ]
+        });
+        $('#dataTable tbody').on('click', 'tr', function () {
+            $.LoadingOverlay('show');
+            var data = table.row( this ).data();
+            var index_id = data[data.length-1];
+            location.href = '{% url 'miaas:archive' %}/detail/' + index_id;
+        });
+    });
+</script>
 
 </body>
 </html>
