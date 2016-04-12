@@ -130,11 +130,13 @@ function dicomloadAndView(dicomURL) {
                 conerstoneloaded = true;
             }
 
-            $('#imageViewerDetail').hide();
-            $('#imageViewShowDetail').text('Show Detail Information').show()
-                    .unbind('click').off('click').click(function() {
-                dicomReadHeader(dicomURL);
-            });
+            //$('#imageViewerDetail').hide();
+            //$('#imageViewShowDetail').text('Show Detail Information').show()
+            //        .unbind('click').off('click').click(function() {
+            //    dicomReadHeader(dicomURL);
+            //});
+            $('#imageViewShowDetail').text('Loading Detail Information...').show();
+            dicomReadHeader(dicomURL);
 
             console.log('dicom loaded');
             showImageViewerLoader(false);
@@ -209,6 +211,9 @@ function csvGrpahLoadAndView(csvURL) {
                 //color: '#D76474',
                 colors: graphColors,
                 plotter: smoothPlotter,
+                ylabel: 'Micro Volt (μV)',
+                xlabel: 'Time (ms)'
+
 
                 //visibility: [true, true, true, false, false, false],
                 //drawCallback: function(g) {
@@ -220,10 +225,21 @@ function csvGrpahLoadAndView(csvURL) {
             console.log(g.getLabels());
             var lables = g.getLabels();
 
+            var timeLable = lables[0];
+            if(timeLable.length != 0 && !/^[\s]*$/.test(timeLable) && timeLable.trim().toLowerCase() != 'time') {
+                $('#graphView .dygraph-xlabel').text(timeLable);
+            }
+
             if (lables.length > 2) {
+                var startLabel = 1;
+                if (lables.length > 3 && lables[1].trim().toLowerCase().startsWith('time')) {
+                    startLabel = 2;
+                    g.setVisibility(0, false);
+                }
+
                 $('#graphLabelChecks').show();
                 var checkboxesHTMLString = "";
-                for (var i = 1; i < lables.length; i++) {
+                for (var i = startLabel; i < lables.length; i++) {
                     checkboxesHTMLString += '<div class="checkbox"><label style="color:'
                         + graphColors[i - 1] + ';"><input type="checkbox" data-column="' + (i - 1)
                         + '"> ' + lables[i] + '</label></div>'

@@ -131,3 +131,7 @@
 #rollPeriod {
     width: 80px;
 }
+
+.dygraph-label {
+    font-weight: 500;
+}
