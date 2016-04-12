@@ -5,6 +5,7 @@ from . import views, apis
 
 app_name = 'miaas'
 urlpatterns = [
+    # url(r'^$', views.main_page, name='main'),
     url(r'^$', views.index_page, name='index'),
     # url(r'^$', views.IndexView.as_view(), name='index'),
 
@@ -41,19 +42,19 @@ urlpatterns = [
 
 
     ### for APIs ###
-    url(r'^api/sessions', apis.handle_session_mgt),
-    url(r'^api/user', apis.handle_user_mgt),
-    url(r'^api/patient_profile', apis.handle_patient_profile_mgt),
-    url(r'^api/physician_profile', apis.handle_physician_profile_mgt),
-    url(r'^api/medical_image', apis.handle_medical_image_mgt),
-    url(r'^api/interpretation', apis.handle_interpretation_mgt),
-    url(r'^api/analytics', apis.handle_analytics_mgt),
-    url(r'^api/payment', apis.handle_payment_mgt),
-    url(r'^api/get_upload_progress', apis.handle_image_uploading_progress),
-    url(r'^api/image_upload', apis.handle_multple_image_upload),
+    url(r'^api/sessions$', apis.handle_session_mgt),
+    url(r'^api/user$', apis.handle_user_mgt),
+    url(r'^api/patient_profile$', apis.handle_patient_profile_mgt),
+    url(r'^api/physician_profile$', apis.handle_physician_profile_mgt),
+    url(r'^api/medical_image$', apis.handle_medical_image_mgt),
+    url(r'^api/interpretation$', apis.handle_interpretation_mgt),
+    url(r'^api/analytics$', apis.handle_analytics_mgt),
+    url(r'^api/payment$', apis.handle_payment_mgt),
+    url(r'^api/get_upload_progress$', apis.handle_image_uploading_progress),
+    url(r'^api/image_upload$', apis.handle_multple_image_upload),
 
     url(r'^api/archive$', apis.handle_archive),
 
-    url(r'^api/test', apis.handle_test),
-    url(r'^json_res/success', views.json_response_success),
+    url(r'^api/test$', apis.handle_test),
+    url(r'^json_res/success$', views.json_response_success),
 ]
