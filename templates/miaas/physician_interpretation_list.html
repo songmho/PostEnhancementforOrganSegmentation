@@ -10,7 +10,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {% include 'miaas/template_header.html' %}
 
 <!-- custom css -->
-
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/jquery.dataTables.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/dataTable-custom.css' %}">
 
 {% include 'miaas/template_nav_physician.html' %}
 
@@ -22,45 +23,10 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             </div>
 
             <div class="col-xs-12 col-table">
-                {% if physician_intpr.physician_intpr_list %}
+                {% if dt_list %}
                     <div class="table-container row">
                         <div class="table-title col-xs-12">Interpretation List</div>
-                        <table class="table table-striped table-hover col-xs-12">
-                            <thead>
-                            <td>Request Date</td>
-                            <td>Interpret Date</td>
-                            <td>Patient ID</td>
-                            <td>Image Subject</td>
-                            <td>Image Type</td>
-                            <td>Level</td>
-                            </thead>
-                            <tbody>
-                            {% for intpr in physician_intpr.physician_intpr_list %}
-                                <tr onclick="javascript: $.LoadingOverlay('show'); location.href='{% url 'miaas:physician_interpretation_detail' intpr.intpr_id %}';">
-                                    <td>{{ intpr.request_date|datetime_string }}</td>
-                                    <td>{{ intpr.interpret_date|datetime_string }}</td>
-                                    <td>{{ intpr.patient_id }}</td>
-                                    <td>{{ intpr.image_subject }}</td>
-                                    <td>{{ intpr.image_type }}</td>
-                                    <td>{{ intpr.level }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                        <div class="col-xs-12 text-center table-page-container">
-                        <a class="table-page-first" href="?page=1"> < </a>
-                            {% for page_num in physician_intpr.start_page|get_range_from_to2:physician_intpr.end_page %}
-                                {% if page_num == physician_intpr.now_page %}
-                                    <b>
-                                {% endif %}
-                            <a class="table-page-number" href="?page={{ page_num }}">{{ page_num }}</a>
-                                {% if page_num == physician_intpr.now_page %}
-                                    </b>
-                                {% endif %}
-                            {% endfor %}
-                        <a class="table-page-last" href="?page={{ physician_intpr.end_page }}"> > </a>
-                        </div>
-                    </div>
+                        <table id="dataTable" class="display" width="100%"></table>
                 {% else %}
                     <div class="table-nodata">
                         <h4 class="text-danger">There is no interpretations</h4>
@@ -77,6 +43,29 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
+<script src="{% static 'lib/jquery/jquery.dataTables.min.js' %}"></script>
+<script>
+    var dataSet = {{ dt_list | safe }};
+    $(document).ready(function() {
+        var table = $('#dataTable').DataTable({
+            data: dataSet,
+            columns: [
+                { title: "Request Date" },
+                { title: "Interpret Date" },
+                { title: "Patient ID" },
+                { title: "Image Subject" },
+                { title: "Image Type." },
+                { title: "Level" }
+            ]
+        });
+        $('#dataTable tbody').on('click', 'tr', function () {
+            $.LoadingOverlay('show');
+            var data = table.row( this ).data();
+            var index_id = data[data.length-1];
+            location.href = '{% url 'miaas:physician_interpretation' %}/detail/' +index_id;
+        });
+    });
+</script>
 
 
 </body>

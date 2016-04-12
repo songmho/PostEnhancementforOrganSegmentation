@@ -2950,6 +2950,14 @@ select[multiple].input-lg {
     margin-bottom: 0;
     vertical-align: middle;
   }
+  .form-inline .align-label {
+    margin-bottom: 0;
+    margin-top : 1%;
+    font-size: 16px;
+    font-weight: 500;
+    color: #9d9d9d;
+    vertical-align: middle;
+  }
   .form-inline .radio,
   .form-inline .checkbox {
     display: inline-block;
