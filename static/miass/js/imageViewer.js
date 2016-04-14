@@ -373,6 +373,7 @@ function playDicomSequence(images) {
         //showImageViewerLoader(false);
         showImageViewerLoader(true);
         //showDicomSequenceLoader(true);
+        showDicomSequenceLoader(false);
     });
     $('#sequenceLoaderStatus').text('0/' + files.length);
     //console.log(files);
