@@ -45,6 +45,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     $(document).ready(function() {
         var table = $('#dataTable').DataTable({
             data: dataSet,
+            order: [[ 0, "desc" ]],
             columns: [
                 { title: "Request Date" },
                 { title: "Interpret Date" },

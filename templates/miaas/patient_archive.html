@@ -49,10 +49,11 @@
 <!-- custom javascript -->
 <script src="{% static 'lib/jquery/jquery.dataTables.min.js' %}"></script>
 <script>
-    var dataSet = {{ dt_list | safe }};
+    var dataSet = {{ dt_list | safe | escape  }};
     $(document).ready(function() {
         var table = $('#dataTable').DataTable({
             data: dataSet,
+            order: [[ 0, "desc" ]],
             columns: [
                 { title: "Upload Date" },
                 { title: "Image Subject" },

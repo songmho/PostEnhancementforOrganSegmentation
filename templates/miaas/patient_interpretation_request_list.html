@@ -49,6 +49,7 @@
     $(document).ready(function() {
         var table = $('#dataTable').DataTable({
             data: dataSet,
+            order: [[ 0, "desc" ]],
             columns: [
                 { title: "Requested Date" },
                 { title: "Request Subject" },
