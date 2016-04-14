@@ -24,7 +24,8 @@ urlpatterns = [
 
     url(r'^interpretation$', views.patient_interpretation_list_page, name='interpretation'),
     url(r'^interpretation/request$', views.patient_request_list_page, name='interpretation_request_list'),
-    url(r'^interpretation/request/detail/(?P<request_id>[0-9]+)$', views.interpretation_detail_page, name='interpretation_detail'),
+    url(r'^interpretation/request/detail/(?P<request_id>[0-9]+)$', views.patient_interpretation_request_detail_page, name='interpretation_request_detail'),
+    url(r'^interpretation/(?P<intpr_id>[0-9]+)$', views.interpretation_detail_page, name='interpretation_detail'),
 
     url(r'^interpretations$', views.physician_interpretation_page, name='physician_interpretation'),
     url(r'^interpretations/detail/(?P<intpr_id>[0-9]+)$', views.physician_interpretation_detail_page, name='physician_interpretation_detail'),
