@@ -11,6 +11,8 @@ var lastImageData = null;
 var canvasSize = 512;
 var chartWidth = 1100;
 var bShowGraphView = false;
+var bShowDicomDetail = true;
+
 
 cornerstoneWADOImageLoader.configure({
     beforeSend: function(xhr) {
@@ -32,6 +34,7 @@ function dicomReadHeader(wadoURL) {
         oReq.open("get", wadoURL, true);
     } catch(err) {
         $('#imageViewShowDetail').text('Detail Information Loading Failed');
+        $('#imageViewerDetail').hide();
         console.log(err);
         return false;
     }
@@ -54,16 +57,28 @@ function dicomReadHeader(wadoURL) {
                     try {
                         dataSet = dicomParser.parseDicom(byteArray);
                         dicomShowDataSet(dataSet);
-                        $('#imageViewShowDetail').hide();
+
+                        $('#imageViewShowDetail').text('Hide Detail Information')
+                            .unbind('click').off('click').click(function() {
+                                bShowDicomDetail = false;
+                                $('#imageViewerDetail').hide();
+                                $('#imageViewShowDetail').text('Show Detail Information')
+                                        .unbind('click').off('click').click(function() {
+                                    dicomReadHeader(wadoURL);
+                                    bShowDicomDetail = true;
+                                });
+                            });
 
                     } catch (err) {
                         $('#imageViewShowDetail').text('Detail Information Loading Failed');
+                        $('#imageViewerDetail').hide();
                         console.log(err);
                     }
                 }, 30);
 
             } else {
                 $('#imageViewShowDetail').text('Detail Information Loading Failed');
+                $('#imageViewerDetail').hide();
                 console.log(oEvent);
             }
         }
@@ -130,11 +145,24 @@ function dicomloadAndView(dicomURL) {
                 conerstoneloaded = true;
             }
 
-            $('#imageViewerDetail').hide();
-            $('#imageViewShowDetail').text('Show Detail Information').show()
-                    .unbind('click').off('click').click(function() {
+            //
+            //$('#imageViewShowDetail').text('Show Detail Information').show()
+            //        .unbind('click').off('click').click(function() {
+            //    dicomReadHeader(dicomURL);
+            //});
+            $('#imageViewerDetailContainer').show();
+            $('#imageViewShowDetail').show();
+            if (bShowDicomDetail) {
+                $('#imageViewShowDetail').text('Loading Detail Information...');
                 dicomReadHeader(dicomURL);
-            });
+            } else {
+                $('#imageViewerDetail').hide();
+                $('#imageViewShowDetail').text('Show Detail Information')
+                        .unbind('click').off('click').click(function() {
+                    dicomReadHeader(dicomURL);
+                    bShowDicomDetail = true;
+                });
+            }
 
             console.log('dicom loaded');
             showImageViewerLoader(false);
@@ -209,6 +237,9 @@ function csvGrpahLoadAndView(csvURL) {
                 //color: '#D76474',
                 colors: graphColors,
                 plotter: smoothPlotter,
+                ylabel: 'Micro Volt (μV)',
+                xlabel: 'Time (ms)'
+
 
                 //visibility: [true, true, true, false, false, false],
                 //drawCallback: function(g) {
@@ -220,10 +251,21 @@ function csvGrpahLoadAndView(csvURL) {
             console.log(g.getLabels());
             var lables = g.getLabels();
 
+            var timeLable = lables[0];
+            if(timeLable.length != 0 && !/^[\s]*$/.test(timeLable) && timeLable.trim().toLowerCase() != 'time') {
+                $('#graphView .dygraph-xlabel').text(timeLable);
+            }
+
             if (lables.length > 2) {
+                var startLabel = 1;
+                if (lables.length > 3 && lables[1].trim().toLowerCase().startsWith('time')) {
+                    startLabel = 2;
+                    g.setVisibility(0, false);
+                }
+
                 $('#graphLabelChecks').show();
                 var checkboxesHTMLString = "";
-                for (var i = 1; i < lables.length; i++) {
+                for (var i = startLabel; i < lables.length; i++) {
                     checkboxesHTMLString += '<div class="checkbox"><label style="color:'
                         + graphColors[i - 1] + ';"><input type="checkbox" data-column="' + (i - 1)
                         + '"> ' + lables[i] + '</label></div>'
@@ -292,10 +334,12 @@ function showGraphView(bShow) {
     }
 }
 
-function downloadAndView(tagData)
-{
+function downloadAndView(tagData){
+    showDicomSequenceLoader(false);
+
     lastImageData = tagData;
-    var url = makeURL(tagData);
+    console.log(tagData['dir']);
+    var url = makeURL(tagData['dir']);
     if(tagData['type'] == 'dcm') {
         // image enable the dicomImage element and activate a few tools
         dicomloadAndView(url);
@@ -308,10 +352,150 @@ function downloadAndView(tagData)
     }
 }
 
-function makeURL(tagData) {
+var dicomSeq = [];
+var dicomPlayingSequenceInterval = null;
+var dicomPlayingLoadWaitingInterval = null;
+var dicomSeqCnt = 0;
+
+function playDicomSequence(images) {
+    console.log('playDicomSeq');
+    var files = images.files.split(':');
+
+    var imageViewer = $('#imageViewer').get(0);
+    var canvas = $('#imageViewer canvas')[0];
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    $('#imageViewerDetailContainer').hide();
+    $('#imageViewShowDetail').hide();
+
+    setTimeout(function() {
+        showImageViewerLoader(true/*false*/);
+        //showDicomSequenceLoader(true);
+    });
+    $('#sequenceLoaderStatus').text('0/' + files.length);
+    //console.log(files);
+
+    dicomPlayingLoadWaitingInterval = null;
+    var fileCnt = files.length, loadCnt = 0;
+    dicomSeq = [];
+
+    //if (window.Worker) {
+    //    //worker = new Worker("dicomSequenceLoadWorker.js");
+    //    worker = new Worker("/static/miass/js/dicomSequenceLoadWorker.js");
+    //    worker.onmessage = function (event) {
+    //        console.log(event);
+    //
+    //        var result = event.data;
+    //        console.log(result);
+    //    };
+    //    worker.postMessage({imageInfo:imageInfo, files: files});
+    //    console.log('worker post message!');
+    //} else {
+    //    alert("This browser didn't support Worker!");
+    //}
+
+    try {
+        for (var idx = 0; idx < files.length; idx++) {
+            var wadoURI = "wadouri:" + makeURL(files[idx]);
+            cornerstone.loadAndCacheImage(wadoURI).then(function (image) {
+                //console.log(image);
+                dicomSeq.push(image);
+                loadCnt++;
+            }, function(err) {
+                console.log(err);
+                fileCnt--;
+            });
+        }
+
+        dicomPlayingLoadWaitingInterval = setInterval(function () {
+            //$('#sequenceLoaderStatus').text(dicomSeq.length + '/' + files.length);
+            console.log(loadCnt + '/' + fileCnt);
+
+            if (loadCnt == fileCnt) {
+            //if (dicomSeq.length == files.length) {
+                clearInterval(dicomPlayingLoadWaitingInterval);
+                dicomPlayingLoadWaitingInterval = null;
+
+                dicomSeq.sort(function (a, b) {
+                    //console.log(a.imageId);
+                    //console.log(b.imageId);
+                    return a.imageId.toString().localeCompare(b.imageId.toString());
+                });
+                console.log(dicomSeq);
+
+                showImageViewerLoader(false);
+                try {
+                    dicomPlayingSequenceInterval = setInterval(function () {
+                        var element = dicomSeq[dicomSeqCnt];
+                        var viewport = cornerstone.getDefaultViewportForImage(imageViewer, element);
+                        cornerstone.displayImage(imageViewer, element, viewport);
+                        if(conerstoneloaded === true) {
+                            cornerstoneTools.mouseInput.disable(element);
+                            cornerstoneTools.mouseWheelInput.disable(element);
+                            cornerstoneTools.wwwc.deactivate(element, 1); // ww/wc is the default tool for left mouse button
+                            cornerstoneTools.pan.deactivate(element, 2); // pan is the default tool for middle mouse button
+                            cornerstoneTools.zoom.deactivate(element, 4); // zoom is the default tool for right mouse button
+                            cornerstoneTools.zoomWheel.deactivate(element); // zoom is the default tool for middle mouse wheel
+                            conerstoneloaded = false;
+                        }
+
+                        dicomSeqCnt++;
+                        if(dicomSeqCnt >= dicomSeq.length) dicomSeqCnt = 0;
+                    }, 50);
+
+                } catch (err) {
+                    console.log(err);
+                    showDicomSequenceLoader(false);
+                    showImageViewerLoader(false);
+                    stopDicomSequence();
+                    openModal(err, "DICOM Loading Failed");
+                    return;
+                }
+            }
+        }, 50);
+    } catch (err) {
+        stopDicomSequence();
+        showDicomSequenceLoader(false);
+        showImageViewerLoader(false);
+        openModal(err, "DICOM Loading Failed");
+        return;
+    }
+}
+
+function stopDicomSequence() {
+    if(dicomPlayingLoadWaitingInterval != null) {
+        clearInterval(dicomPlayingLoadWaitingInterval);
+        dicomPlayingLoadWaitingInterval = null;
+    }
+    if(dicomPlayingSequenceInterval != null) {
+        clearInterval(dicomPlayingSequenceInterval);
+        dicomPlayingSequenceInterval = null;
+    }
+}
+
+var worker = null;
+function workerTest() {
+    if (window.Worker) {
+        //worker = new Worker("dicomSequenceLoadWorker.js");
+        worker = new Worker("/static/miass/js/dicomSequenceLoadWorker.js");
+        worker.onmessage = function (event) {
+            console.log(event);
+
+            var result = event.data;
+            console.log(result);
+        };
+        worker.postMessage({a: 5, b: 9});
+        console.log('worker post message!');
+    } else {
+        alert("This browser didn't support Worker!");
+    }
+}
+
+function makeURL(relativeURL) {
     return SERVER_ADDRESS + '/api/archive?image_user_id=' + imageInfo['user_id']
         + '&image_id=' + imageInfo['image_id']
-        + '&image_dir=' + tagData['dir'];
+        + '&image_dir=' + relativeURL;
 }
 
 $(cornerstone).bind('CornerstoneImageLoadProgress', function(eventData) {
@@ -322,6 +506,7 @@ $(cornerstone).bind('CornerstoneImageLoadProgress', function(eventData) {
 
 $(document).ready(function() {
     $('#rollPeriodLabel').popover();
+    $('#btnImageControlHelp').popover();
 
     resizeViewer();
     window.addEventListener("resize", resizeViewer);
@@ -337,6 +522,10 @@ $(document).ready(function() {
 
     var imageContainer = $('#imageViewer').get(0);
     cornerstone.enable(imageContainer);
+
+    //$('.image-view-image').scroll(function(e) {
+    //    console.log(e);
+    //});
 });
 
 function openImageViewer() {
@@ -384,26 +573,42 @@ function openImageViewer() {
                 break;
             }
 
-            $('#image-view-list a').each(function (elem) {
-                $(this).off('click');
+            $('#image-view-list a.image-explorer-list-item').each(function (elem) {
+                $(this).off('click').unbind('click');
                 $(this).click(function () {
                     //console.log($(this).data());
                     var imageData = $(this).data();
                     imageData['name'] = $(this).text();
+                    stopDicomSequence();
                     downloadAndView(imageData);
+                });
+            });
+
+            $('#image-view-list a.image-explorer-list-play').each(function (elem) {
+                $(this).off('click').unbind('click');
+                $(this).click(function () {
+                    var images = $(this).data();
+                    stopDicomSequence();
+                    playDicomSequence(images)
                 });
             });
         }
 
         console.log('image view modal opened');
         $.LoadingOverlay('hide');
+        $('#imageViewModal').off('hidden.bs.modal').on('hidden.bs.modal', function() {
+            $('#imageViewShowDetail').hide();
+            stopDicomSequence();
+            showDicomSequenceLoader(false);
+        });
         $('#imageViewModal').modal({backdrop: 'static'});
     }, 0);
 }
 
 function generateExplorer(dirs, name) {
     if (dirs['type'] == 'folder') {
-        var htmlString = '<span>'+name+'</span><ul>';
+        //var htmlString = '<span>' + name + '▶' + '</span><ul>';
+        var htmlString = '';
         //for (var dirName in dirs['file_list']) {
         //var childDirs = dirs['file_list'][dirName];
         var dirKeys = [];
@@ -411,15 +616,38 @@ function generateExplorer(dirs, name) {
             dirKeys.push(dirkey);
         }
         dirKeys.sort();
-        for (var i=0; i<dirKeys.length; i++) {
-            var dirName = dirKeys[i];
-            var childDirs = dirs['file_list'][dirName];
-            htmlString += '<li>'+generateExplorer(childDirs, dirName)+'</li>'
+
+        if (dirKeys.length >= 1) {
+            var bHasFile = false;
+            var fileList = [];
+            for (var i=0; i<dirKeys.length; i++) {
+                var file = dirs['file_list'][dirKeys[i]];
+                if (file['type'] == 'dcm' || file['type'] == 'dicom') {
+                    bHasFile = true;
+                    fileList.push(file['dir']);
+                }
+            }
+
+            if (bHasFile && fileList.length >= 2) {
+                //console.log(fileList.join(':'));
+                htmlString = '<span>' + name + '&nbsp;<a class="image-explorer-list-play" '
+                    + 'data-files="' + fileList.join(':') + '" data-title="' + name
+                    + '"><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span></a></span> <ul>';
+            } else {
+                htmlString = '<span>' + name + '</span><ul>';
+            }
+
+            for (var i=0; i<dirKeys.length; i++) {
+                var dirName = dirKeys[i];
+                var childDirs = dirs['file_list'][dirName];
+                htmlString += '<li>'+generateExplorer(childDirs, dirName)+'</li>'
+            }
+            htmlString += '</ul>';
         }
-        htmlString += '</ul>';
         return htmlString;
     } else {
-        return '<a data-dir="'+dirs['dir']+'" data-type="'+dirs['type']+'">'+name+'</a>';
+        return '<a class="image-explorer-list-item" data-dir="'+dirs['dir']
+            + '" data-type="'+dirs['type']+'">'+name+'</a>';
     }
 }
 
@@ -495,6 +723,7 @@ function resizeViewer() {
         $('#imageViewer').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         //$('#imageViewer').attr('style', "width:"+canvasSize+"px; height:+"+canvasSize+"px; position:relative; color:white;");
         $('#imageViewerLoader').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
+        $('#imageViewerSequenceLoader').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewer canvas').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
     }
 }
@@ -502,6 +731,11 @@ function resizeViewer() {
 function showImageViewerLoader(bShow) {
     if(bShow) $('#imageViewerLoader').show();
     else $('#imageViewerLoader').hide();
+}
+
+function showDicomSequenceLoader(bShow) {
+    if(bShow) $('#imageViewerSequenceLoader').show();
+    else $('#imageViewerSequenceLoader').hide();
 }
 
 function resetViewer() {

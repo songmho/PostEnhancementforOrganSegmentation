@@ -109,13 +109,17 @@
     padding-left: 12px;
 }
 
-.medimage-preview {
-    z-index: 1;
-    cursor: pointer;
+.image-view-image #imageViewerDetail strong {
+    color: #7A7677;
 }
 
 .image-view-image-settings {
     margin: 20px 20px 0px 20px;
+}
+
+.medimage-preview {
+    z-index: 1;
+    cursor: pointer;
 }
 
 #imageViewerLoader {
@@ -130,4 +134,35 @@
 
 #rollPeriod {
     width: 80px;
+}
+
+.dygraph-label {
+    font-weight: 500;
+}
+
+#btnImageControlHelp {
+    margin-bottom: 10px;
+    margin-right: 20px;
+}
+@media (min-width: 992px) {
+    #btnImageControlHelp {
+        margin-top: 10px;
+    }
+}
+
+#imageViewHeaderHelper .popover {
+    overflow: visible !important;
+    z-index: 2;
+}
+
+#imageViewerSequenceLoader {
+    z-index: 3;
+    background-color: white;
+    color: black;
+    padding-top: calc(50% - 18px);
+    width: 512px;
+    height: 512px;
+    position: absolute;
+    left: 0px;
+    top: 0px
 }

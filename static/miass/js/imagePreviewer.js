@@ -10,7 +10,7 @@ function showThumbnail() {
 
     var thumbnail = getThumbnailImage();
     if(thumbnail != null) {
-        var url = makeURL(thumbnail);
+        var url = makeURL(thumbnail['dir']);
         //console.log(url);
         //console.log(thumbnail['type']);
         setTimeout(function() {
