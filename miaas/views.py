@@ -275,7 +275,7 @@ def archive_page(request):
             temp.append(timestamp_to_date_string(json.dumps(r['uploaded_date'])))
             temp.append(json.dumps(r['image_subject']).encode("utf8"))
             temp.append(json.dumps(r['image_type']))
-            temp.append(json.dumps(r['recorded_date']))
+            temp.append(timestamp_to_date_string(json.dumps(r['recorded_date'])))
             temp.append(json.dumps(r['intpr_num']))
             temp.append(json.dumps(r['image_id']))
             dt_list.append(temp)
