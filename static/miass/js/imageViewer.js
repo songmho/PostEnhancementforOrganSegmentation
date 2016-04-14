@@ -370,9 +370,9 @@ function playDicomSequence(images) {
     $('#imageViewShowDetail').hide();
 
     setTimeout(function() {
-        showImageViewerLoader(false);
-        //showImageViewerLoader(true;
-        showDicomSequenceLoader(true);
+        //showImageViewerLoader(false);
+        showImageViewerLoader(true);
+        //showDicomSequenceLoader(true);
     });
     $('#sequenceLoaderStatus').text('0/' + files.length);
     //console.log(files);
