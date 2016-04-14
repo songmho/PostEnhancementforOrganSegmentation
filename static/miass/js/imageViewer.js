@@ -370,8 +370,9 @@ function playDicomSequence(images) {
     $('#imageViewShowDetail').hide();
 
     setTimeout(function() {
-        showImageViewerLoader(true/*false*/);
-        //showDicomSequenceLoader(true);
+        showImageViewerLoader(false);
+        //showImageViewerLoader(true;
+        showDicomSequenceLoader(true);
     });
     $('#sequenceLoaderStatus').text('0/' + files.length);
     //console.log(files);
@@ -424,6 +425,7 @@ function playDicomSequence(images) {
                 });
                 console.log(dicomSeq);
 
+                showDicomSequenceLoader(false);
                 showImageViewerLoader(false);
                 try {
                     dicomPlayingSequenceInterval = setInterval(function () {
