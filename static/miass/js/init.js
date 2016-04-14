@@ -2,7 +2,7 @@
  * Created by hanter on 2016. 1. 26..
  */
 
-var SERVER_ADDRESS = 'http://localhost:8000';
+$.getScript('/static/miass/js/constants.js');
 
 $(document).ready(function() {
     highlightCurrentMenu();

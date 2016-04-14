@@ -380,9 +380,23 @@ function playDicomSequence(images) {
     var fileCnt = files.length, loadCnt = 0;
     dicomSeq = [];
 
+    //if (window.Worker) {
+    //    //worker = new Worker("dicomSequenceLoadWorker.js");
+    //    worker = new Worker("/static/miass/js/dicomSequenceLoadWorker.js");
+    //    worker.onmessage = function (event) {
+    //        console.log(event);
+    //
+    //        var result = event.data;
+    //        console.log(result);
+    //    };
+    //    worker.postMessage({imageInfo:imageInfo, files: files});
+    //    console.log('worker post message!');
+    //} else {
+    //    alert("This browser didn't support Worker!");
+    //}
+
     try {
         for (var idx = 0; idx < files.length; idx++) {
-
             var wadoURI = "wadouri:" + makeURL(files[idx]);
             cornerstone.loadAndCacheImage(wadoURI).then(function (image) {
                 //console.log(image);
@@ -392,7 +406,6 @@ function playDicomSequence(images) {
                 console.log(err);
                 fileCnt--;
             });
-
         }
 
         dicomPlayingLoadWaitingInterval = setInterval(function () {
@@ -448,8 +461,6 @@ function playDicomSequence(images) {
         openModal(err, "DICOM Loading Failed");
         return;
     }
-
-
 }
 
 function stopDicomSequence() {
