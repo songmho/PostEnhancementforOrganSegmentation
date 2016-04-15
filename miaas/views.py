@@ -409,8 +409,8 @@ class ArchiveUploadView(FormView):
                         ImageManager.delete_file(uploaded_path)
                         im.delete_temp_file()
                     raise e
-                if not self.request.session.get('image_cnt'):
-                    self.request.session['image_cnt'] += 1
+                # if not self.request.session.get('image_cnt'):
+                #     self.request.session['image_cnt'] += 1
                 return JsonResponse(dict(constants.CODE_SUCCESS))
             elif action == 'update':
                 prev_path = image_info['image_dir']
