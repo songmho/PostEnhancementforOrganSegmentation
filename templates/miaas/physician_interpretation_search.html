@@ -10,10 +10,6 @@
 {% include 'miaas/template_header.html' %}
 
 <!-- custom css -->
-<link rel="stylesheet" type="text/css" href="{% static 'miass/css/jquery.dataTables.min.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'miass/css/dataTable-custom.css' %}">
-
-
 {% include 'miaas/template_nav_physician.html' %}
 
 <div class="container">
@@ -26,7 +22,7 @@
                 {% if dt_list %}
                     <div class="table-container row">
                         <div class="table-title col-xs-12 col-md-4">Medical Image List</div>
-                        <table id="dataTable" class="display" width="100%"></table>
+                        <table id="dataTable" class="table table-striped table-bordered table-hover" width="100%"></table>
                     </div>
                 {% else %}
                     <div class="table-nodata">

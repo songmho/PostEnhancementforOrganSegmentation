@@ -127,6 +127,10 @@ b a.table-page-number {
     }
 }
 
+a:focus {
+    outline: 5px auto;
+}
+
 /* Form */
 .form-container.form-boxed {
     padding: 15px;

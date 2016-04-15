@@ -8,11 +8,10 @@
 {% load my_filters %}
 
 {% include 'miaas/template_header.html' %}
-
-<!-- custom css -->
 {% include 'miaas/template_nav_patient.html' %}
-<link rel="stylesheet" type="text/css" href="{% static 'miass/css/jquery.dataTables.min.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'miass/css/dataTable-custom.css' %}">
+<!-- custom css -->
+<link rel="stylesheet" type="text/css" href="{% static 'miass/data_table_css/dataTables.bootstrap.css' %}">
+
 
 <div class="container">
     <section class="section section-default">
@@ -24,7 +23,7 @@
                 {% if dt_list %}
                     <div class="table-container row">
                         <div class="table-title col-xs-12 col-md-4">Medical Image List</div>
-                        <table id="dataTable" class="display" width="100%"></table>
+                        <table id="dataTable" class="table table-striped table-bordered table-hover display" width="100%"></table>
                         {% else %}
 
                         <div class="table-nodata" >
@@ -47,8 +46,10 @@
 
 {% include 'miaas/template_footer.html' %}
 
+
+<script src="{% static 'miass/data_table_js/jquery.dataTables.js' %}"></script>
+<script src="{% static 'miass/data_table_js/dataTables.bootstrap.js' %}"></script>
 <!-- custom javascript -->
-<script src="{% static 'lib/jquery/jquery.dataTables.min.js' %}"></script>
 <script>
     var dataSet = {{ dt_list |  safe }};
     $(document).ready(function() {
