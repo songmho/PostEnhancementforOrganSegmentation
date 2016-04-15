@@ -7,6 +7,7 @@ app_name = 'miaas'
 urlpatterns = [
     # url(r'^$', views.main_page, name='main'),
     url(r'^$', views.index_page, name='index'),
+    url(r'^main$', views.main_page, name='main'),
     # url(r'^$', views.IndexView.as_view(), name='index'),
 
     url(r'^signin$', views.signin_page, name='signin'),

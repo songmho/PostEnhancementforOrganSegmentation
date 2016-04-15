@@ -4,12 +4,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="imageViewModalTitle">Medical Image View</h4>
+                <h4 class="modal-title" id="imageViewModalTitle">Medical Image Viewer</h4>
             </div>
             <div class="modal-body">
                 <div id="imageView" class="image-view">
                     <div class="image-view-explorer col-sm-5 col-md-4">
-                        <h4>Image Explorer</h4>
+                        <h4>Image File Explorer</h4>
                         <ul id="image-view-list"></ul>
                     </div>
                     <div class="image-view-image col-sm-7 col-md-8">
@@ -47,6 +47,7 @@
                         </div>
                         <div id="imageViewerDetailContainer">
                             <div id="imageViewerDetail" style="display: none; margin-top:30px;">
+                                <h4 class="text-primary">Detail Information</h4>
                                 <!-- panels for dicom information -->
                                 <div class="panel panel-default ">
                                     <div class="panel-heading">
@@ -54,18 +55,18 @@
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Patient Name</strong>: <span data-dicom="x00100010"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Patient ID</strong>: <span data-dicom="x00100020"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Patient Birth Date</strong>: <span data-dicom="x00100030"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Patient Gender</strong>: <span data-dicom="x00100040"></span>
                                             </div>
                                         </div>
@@ -78,26 +79,26 @@
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Study Description</strong>: <span data-dicom="x00081030"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Protocol Name</strong>: <span data-dicom="x00181030"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Accession #</strong>: <span data-dicom="x00080050"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Study Id</strong>: <span data-dicom="x00200010"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Study Date</strong>: <span data-dicom="x00080020"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Study Time</strong>: <span data-dicom="x00080030"></span>
                                             </div>
                                         </div>
@@ -110,26 +111,26 @@
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Series Description</strong>: <span data-dicom="x0008103e"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Series #</strong>: <span data-dicom="x00200011"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Modality</strong>: <span data-dicom="x00080060"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Body Part</strong>: <span data-dicom="x00180015"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Series Date</strong>: <span data-dicom="x00080021"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Series Time</strong>: <span data-dicom="x00080031"></span>
                                             </div>
                                         </div>
@@ -142,26 +143,26 @@
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Instance #</strong>: <span data-dicom="x00200013"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Acquisition #</strong>: <span data-dicom="x00200012"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Acquisition Date</strong>: <span data-dicom="x00080022"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Acquisition Time</strong>: <span data-dicom="x00080032"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Content Date</strong>: <span data-dicom="x00080023"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Content Time</strong>: <span data-dicom="x00080033"></span>
                                             </div>
                                         </div>
@@ -174,58 +175,58 @@
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Rows</strong>: <span data-dicomUint="x00280010"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Columns</strong>: <span data-dicomUint="x00280011"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Photometric Interpretation</strong>: <span data-dicom="x00280004"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Image Type</strong>: <span data-dicom="x00080008"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Bits Allocated</strong>: <span data-dicomUint="x00280100"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Bits Stored</strong>: <span data-dicomUint="x00280101"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>HighBit</strong>: <span data-dicomUint="x00280102"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Pixel Representation (0=us)</strong>: <span data-dicomUint="x00280103"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Rescale Slope</strong>: <span data-dicom="x00281053"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Rescale Intercept</strong>: <span data-dicom="x00281052"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Image Position Patient</strong>: <span data-dicom="x00200032"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Image Orientation Patient</strong>: <span data-dicom="x00200037"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Pixel Spacing</strong>: <span data-dicom="x00280030"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Samples Per Pixel</strong>: <span data-dicomUint="x00280002"></span>
                                             </div>
                                         </div>
@@ -239,18 +240,18 @@
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Manufacturer</strong>: <span data-dicom="x00080070"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Model</strong>: <span data-dicom="x00081090"></span>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>Station Name</strong>: <span data-dicom="x00081010"></span>
                                             </div>
-                                            <div class="col-xs-6">
+                                            <div class="col-xs-12 col-sm-6">
                                                 <strong>AE Title</strong>: <span data-dicom="x00020016"></span>
                                             </div>
                                         </div>
@@ -311,6 +312,13 @@
                                 </div>
                             </div>
                             <span><a id="imageViewShowDetail" href="#" style="display: none; background-color: white;">Show Detail Information</a></span>
+                        </div>
+                        <div id="imageViewerSequenceController" class="text-center" style="display: none;">
+                            <a id="seqControllerStepBackward" class="btn btn-primary disabled"><span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span></a>
+                            <a id="seqControllerBackward" class="btn btn-primary btn-seq-play"><span class="glyphicon glyphicon-backward" aria-hidden="true"></span></a>
+                            <a id="seqControllerPause" class="btn btn-primary"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></a>
+                            <a id="seqControllerPlay" class="btn btn-primary btn-seq-play"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
+                            <a id="seqControllerStepForward" class="btn btn-primary disabled"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></a>
                         </div>
                     </div>
                 </div>

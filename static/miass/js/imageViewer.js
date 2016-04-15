@@ -349,6 +349,7 @@ function downloadAndView(tagData){
         csvGrpahLoadAndView(url);
     } else {
         generalImageLoadAndView(url);
+        $('#imageViewModalTitleName').text(tagData['name']);
     }
 }
 
@@ -356,9 +357,12 @@ var dicomSeq = [];
 var dicomPlayingSequenceInterval = null;
 var dicomPlayingLoadWaitingInterval = null;
 var dicomSeqCnt = 0;
+var dicomSeqPlaying = false;
+var dicomSeqForward = true;
 
 function playDicomSequence(images) {
     console.log('playDicomSeq');
+    $('#imageViewModalTitleName').text(images['title']);
     var files = images.files.split(':');
 
     var imageViewer = $('#imageViewer').get(0);
@@ -370,10 +374,10 @@ function playDicomSequence(images) {
     $('#imageViewShowDetail').hide();
 
     setTimeout(function() {
-        //showImageViewerLoader(false);
-        showImageViewerLoader(true);
-        //showDicomSequenceLoader(true);
-        showDicomSequenceLoader(false);
+        showImageViewerLoader(false);
+        showDicomSequenceLoader(true);
+        //showImageViewerLoader(true);
+        //showDicomSequenceLoader(false);
     });
     $('#sequenceLoaderStatus').text('0/' + files.length);
     //console.log(files);
@@ -411,28 +415,29 @@ function playDicomSequence(images) {
         }
 
         dicomPlayingLoadWaitingInterval = setInterval(function () {
-            //$('#sequenceLoaderStatus').text(dicomSeq.length + '/' + files.length);
-            console.log(loadCnt + '/' + fileCnt);
+            setTimeout(function() {
+                $('#sequenceLoaderStatus').text(dicomSeq.length + '/' + files.length);
+            }, 10);
+
+            //console.log(loadCnt + '/' + fileCnt);
 
             if (loadCnt == fileCnt) {
-            //if (dicomSeq.length == files.length) {
                 clearInterval(dicomPlayingLoadWaitingInterval);
                 dicomPlayingLoadWaitingInterval = null;
 
-                dicomSeq.sort(function (a, b) {
-                    //console.log(a.imageId);
-                    //console.log(b.imageId);
-                    return a.imageId.toString().localeCompare(b.imageId.toString());
+                dicomSeq.sort(function(a, b) {
+                    return cmpStringsWithNumbers(a.imageId.toString(), b.imageId.toString());
                 });
-                console.log(dicomSeq);
 
                 showDicomSequenceLoader(false);
                 showImageViewerLoader(false);
+
+                $('#imageViewerSequenceController').show();
                 try {
+                    dicomSeqPlaying = true;
                     dicomPlayingSequenceInterval = setInterval(function () {
                         var element = dicomSeq[dicomSeqCnt];
-                        var viewport = cornerstone.getDefaultViewportForImage(imageViewer, element);
-                        cornerstone.displayImage(imageViewer, element, viewport);
+                        displayImageSequence(imageViewer, element);
                         if(conerstoneloaded === true) {
                             cornerstoneTools.mouseInput.disable(element);
                             cornerstoneTools.mouseWheelInput.disable(element);
@@ -446,6 +451,51 @@ function playDicomSequence(images) {
                         dicomSeqCnt++;
                         if(dicomSeqCnt >= dicomSeq.length) dicomSeqCnt = 0;
                     }, 50);
+
+                    $('#seqControllerPause').click(function() {
+                        if(dicomSeqPlaying) {
+                            clearInterval(dicomPlayingSequenceInterval);
+                            dicomSeqPlaying = false;
+
+                            $('#seqControllerStepBackward').removeClass('disabled').click(function() {
+                                dicomSeqCnt--;
+                                if(dicomSeqCnt < 0) dicomSeqCnt = dicomSeq.length - 1;
+                                displayImageSequence(imageViewer, dicomSeq[dicomSeqCnt]);
+                            });
+                            $('#seqControllerStepForward').removeClass('disabled').click(function() {
+                                dicomSeqCnt++;
+                                if(dicomSeqCnt >= dicomSeq.length) dicomSeqCnt = 0;
+                                displayImageSequence(imageViewer, dicomSeq[dicomSeqCnt]);
+                            });
+                        }
+                    });
+
+                    $('.btn-seq-play').click(function() {
+                        if(dicomSeqPlaying) clearInterval(dicomPlayingSequenceInterval);
+
+                        $('#seqControllerStepBackward').off('click').unbind('click').addClass('disabled');
+                        $('#seqControllerStepForward').off('click').unbind('click').addClass('disabled');
+
+                        if($(this).attr('id') == 'seqControllerPlay') {
+                            dicomSeqForward = true;
+                        } else if ($(this).attr('id') == 'seqControllerBackward') {
+                            dicomSeqForward = false;
+                        }
+
+                        dicomPlayingSequenceInterval = setInterval(function() {
+                            displayImageSequence(imageViewer, dicomSeq[dicomSeqCnt]);
+
+                            if(dicomSeqForward) {
+                                dicomSeqCnt++;
+                                if(dicomSeqCnt >= dicomSeq.length) dicomSeqCnt = 0;
+                            } else {
+                                dicomSeqCnt--;
+                                if(dicomSeqCnt < 0) dicomSeqCnt = dicomSeq.length - 1;
+                            }
+                        }, 50);
+
+                        dicomSeqPlaying = true;
+                    });
 
                 } catch (err) {
                     console.log(err);
@@ -466,7 +516,19 @@ function playDicomSequence(images) {
     }
 }
 
+function displayImageSequence(imageViewer, element) {
+    var viewport = cornerstone.getDefaultViewportForImage(imageViewer, element);
+    cornerstone.displayImage(imageViewer, element, viewport);
+}
+
 function stopDicomSequence() {
+    $('#imageViewerSequenceController').hide();
+    $('#seqControllerStepBackward').off('click').unbind('click').addClass('disabled');
+    $('#seqControllerBackward').off('click').unbind('click');
+    $('#seqControllerPause').off('click').unbind('click');
+    $('#seqControllerPlay').off('click').unbind('click');
+    $('#seqControllerStepForward').off('click').unbind('click').addClass('disabled');
+
     if(dicomPlayingLoadWaitingInterval != null) {
         clearInterval(dicomPlayingLoadWaitingInterval);
         dicomPlayingLoadWaitingInterval = null;
@@ -476,6 +538,55 @@ function stopDicomSequence() {
         dicomPlayingSequenceInterval = null;
     }
 }
+
+// Regular expression to separate the digit string from the non-digit strings.
+var reParts = /\d+|\D+/g;
+// Regular expression to test if the string has a digit.
+var reDigit = /\d/;
+// Add cmpStringsWithNumbers to the global namespace.  This function takes to
+// strings and compares them, returning -1 if `a` comes before `b`, 0 if `a`
+// and `b` are equal, and 1 if `a` comes after `b`.
+cmpStringsWithNumbers = function(a, b) {
+    // Get rid of casing issues.
+    a = a.toUpperCase();
+    b = b.toUpperCase();
+
+    // Separates the strings into substrings that have only digits and those
+    // that have no digits.
+    var aParts = a.match(reParts);
+    var bParts = b.match(reParts);
+
+    // Used to determine if aPart and bPart are digits.
+    var isDigitPart;
+
+    // If `a` and `b` are strings with substring parts that match...
+    if(aParts && bParts &&
+        (isDigitPart = reDigit.test(aParts[0])) == reDigit.test(bParts[0])) {
+        // Loop through each substring part to compare the overall strings.
+        var len = Math.min(aParts.length, bParts.length);
+        for(var i = 0; i < len; i++) {
+            var aPart = aParts[i];
+            var bPart = bParts[i];
+
+            // If comparing digits, convert them to numbers (assuming base 10).
+            if(isDigitPart) {
+                aPart = parseInt(aPart, 10);
+                bPart = parseInt(bPart, 10);
+            }
+
+            // If the substrings aren't equal, return either -1 or 1.
+            if(aPart != bPart) {
+                return aPart < bPart ? -1 : 1;
+            }
+
+            // Toggle the value of isDigitPart since the parts will alternate.
+            isDigitPart = !isDigitPart;
+        }
+    }
+
+    // Use normal comparison.
+    return (a >= b) - (a <= b);
+};
 
 var worker = null;
 function workerTest() {
@@ -592,7 +703,26 @@ function openImageViewer() {
                 $(this).click(function () {
                     var images = $(this).data();
                     stopDicomSequence();
-                    playDicomSequence(images)
+                    playDicomSequence(images);
+                });
+            });
+
+            $('#image-view-list a.image-view-list-expander').each(function (elem) {
+                $(this).off('click').unbind('click');
+                if(!$(this).data('expanded')) {
+                    $(this).parent().parent().find('> ul').hide();
+                }
+
+                $(this).click(function() {
+                    var expanded = $(this).data('expanded');
+                    if (expanded) {
+                        $(this).removeClass('glyphicon-collapse-down').addClass('glyphicon-expand');
+                        $(this).parent().parent().find('> ul').hide();
+                    } else {
+                        $(this).removeClass('glyphicon-expand').addClass('glyphicon-collapse-down');
+                        $(this).parent().parent().find('> ul').show();
+                    }
+                    $(this).data('expanded', !expanded);
                 });
             });
         }
@@ -618,7 +748,7 @@ function generateExplorer(dirs, name) {
         for (var dirkey in dirs['file_list']) {
             dirKeys.push(dirkey);
         }
-        dirKeys.sort();
+        dirKeys.sort(cmpStringsWithNumbers);
 
         if (dirKeys.length >= 1) {
             var bHasFile = false;
@@ -631,13 +761,17 @@ function generateExplorer(dirs, name) {
                 }
             }
 
+            htmlString = '<span>' + '<a aria-hidden="true" class="image-view-list-expander glyphicon ';
+            if (bHasFile) htmlString += 'glyphicon-expand" data-expanded="false';
+            else htmlString += 'glyphicon-collapse-down" data-expanded="true';
+            htmlString += '"></a>&nbsp;' + name;
             if (bHasFile && fileList.length >= 2) {
                 //console.log(fileList.join(':'));
-                htmlString = '<span>' + name + '&nbsp;<a class="image-explorer-list-play" '
+                htmlString += '&nbsp;<a class="image-explorer-list-play" '
                     + 'data-files="' + fileList.join(':') + '" data-title="' + name
-                    + '"><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span></a></span> <ul>';
+                    + '"><span class="glyphicon glyphicon-play" aria-hidden="true"></span>Play&nbsp;</a></span> <ul>';
             } else {
-                htmlString = '<span>' + name + '</span><ul>';
+                htmlString += '</span><ul>';
             }
 
             for (var i=0; i<dirKeys.length; i++) {
@@ -728,6 +862,7 @@ function resizeViewer() {
         $('#imageViewerLoader').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewerSequenceLoader').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewer canvas').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
+        $('#imageViewerSequenceController').css({width: canvasSize+'px'});
     }
 }
 
