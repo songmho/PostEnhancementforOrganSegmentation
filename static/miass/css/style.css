@@ -191,7 +191,9 @@ b a.table-page-number {
 .form-control.form-control-inline {
     display: inline-block;
 }
-
+.form-container .control-text {
+    word-break: break-all;
+}
 
 /* Column */
 @media (min-width: 992px) {
