@@ -272,16 +272,16 @@ def archive_page(request):
         results = db.retrieve_list("patient_image_list", request.session['user']['user_id'])
         for r in results:
             temp = []
-            temp.append(timestamp_to_date_string(json.dumps(r['uploaded_date'])))
-            temp.append(json.dumps(r['image_subject']).encode("utf8"))
-            temp.append(json.dumps(r['image_type']))
-            temp.append(timestamp_to_date_string(json.dumps(r['recorded_date'])))
-            temp.append(json.dumps(r['intpr_num']))
-            temp.append(json.dumps(r['image_id']))
+            temp.append(timestamp_to_date_string(r['uploaded_date']))
+            temp.append(r['image_subject'])
+            temp.append(r['image_type'])
+            temp.append(timestamp_to_date_string(r['recorded_date']))
+            temp.append(r['intpr_num'])
+            temp.append(r['image_id'])
             dt_list.append(temp)
 
         # Render the page
-        context['dt_list'] = dt_list
+        context['dt_list'] = json.dumps(dt_list)
 
     logger.info('archive get: %s' % request.GET)
     return render(request, 'miaas/patient_archive.html', context)

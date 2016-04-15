@@ -23,23 +23,24 @@
             <div class="col-xs-12 col-table">
                 {% if dt_list %}
                     <div class="table-container row">
-                    <div class="table-title col-xs-12 col-md-4">Medical Image List</div>
-                    <table id="dataTable" class="display" width="100%"></table>
-                {% else %}
+                        <div class="table-title col-xs-12 col-md-4">Medical Image List</div>
+                        <table id="dataTable" class="display" width="100%"></table>
+                        {% else %}
 
-                    <div class="table-nodata" >
-                        <h4 class="text-danger">There is no data</h4>
-                        <p>You can upload your FIRST medical image</p>
-                        <a class="btn btn-default" href="{% url 'miaas:archive_upload' %}" type="button">Upload</a>
-                    </div>
-
-                </div>
-                    <div class="col-xs-12 col-md-4 col-md-offset-4">
-                        <a class="btn btn-primary btn-lg btn-block"
-                           href="{% url 'miaas:archive_upload' %}" type="button">Upload Image</a>
+                        <div class="table-nodata" >
+                            <h4 class="text-danger">There is no data</h4>
+                            <p>You can upload your FIRST medical image</p>
+                            <a class="btn btn-default" href="{% url 'miaas:archive_upload' %}" type="button">Upload</a>
+                        </div>
                     </div>
                 {% endif %}
             </div>
+            {% if dt_list %}
+                <div class="col-xs-12 col-md-4 col-md-offset-4">
+                    <a class="btn btn-primary btn-lg btn-block"
+                       href="{% url 'miaas:archive_upload' %}" type="button">Upload Image</a>
+                </div>
+            {% endif %}
     </section>
 </div>
 
@@ -49,7 +50,7 @@
 <!-- custom javascript -->
 <script src="{% static 'lib/jquery/jquery.dataTables.min.js' %}"></script>
 <script>
-    var dataSet = {{ dt_list | safe | escape  }};
+    var dataSet = {{ dt_list |  safe }};
     $(document).ready(function() {
         var table = $('#dataTable').DataTable({
             data: dataSet,
