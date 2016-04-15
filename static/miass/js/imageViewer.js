@@ -706,6 +706,25 @@ function openImageViewer() {
                     playDicomSequence(images);
                 });
             });
+
+            $('#image-view-list a.image-view-list-expander').each(function (elem) {
+                $(this).off('click').unbind('click');
+                if(!$(this).data('expanded')) {
+                    $(this).parent().parent().find('> ul').hide();
+                }
+
+                $(this).click(function() {
+                    var expanded = $(this).data('expanded');
+                    if (expanded) {
+                        $(this).removeClass('glyphicon-collapse-down').addClass('glyphicon-expand');
+                        $(this).parent().parent().find('> ul').hide();
+                    } else {
+                        $(this).removeClass('glyphicon-expand').addClass('glyphicon-collapse-down');
+                        $(this).parent().parent().find('> ul').show();
+                    }
+                    $(this).data('expanded', !expanded);
+                });
+            });
         }
 
         console.log('image view modal opened');
@@ -742,13 +761,17 @@ function generateExplorer(dirs, name) {
                 }
             }
 
+            htmlString = '<span>' + '<a aria-hidden="true" class="image-view-list-expander glyphicon ';
+            if (bHasFile) htmlString += 'glyphicon-expand" data-expanded="false';
+            else htmlString += 'glyphicon-collapse-down" data-expanded="true';
+            htmlString += '"></a>&nbsp;' + name;
             if (bHasFile && fileList.length >= 2) {
                 //console.log(fileList.join(':'));
-                htmlString = '<span>' + name + '&nbsp;<a class="image-explorer-list-play" '
+                htmlString += '&nbsp;<a class="image-explorer-list-play" '
                     + 'data-files="' + fileList.join(':') + '" data-title="' + name
-                    + '"><span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play</a></span> <ul>';
+                    + '"><span class="glyphicon glyphicon-play" aria-hidden="true"></span>Play&nbsp;</a></span> <ul>';
             } else {
-                htmlString = '<span>' + name + '</span><ul>';
+                htmlString += '</span><ul>';
             }
 
             for (var i=0; i<dirKeys.length; i++) {

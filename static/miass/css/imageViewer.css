@@ -79,13 +79,13 @@
 }
 @media (min-width: 768px) {
     .image-view #image-view-list {
-        height: 400px;
+        height: 450px;
         overflow-y: scroll;
     }
 }
 @media (min-width: 992px) {
     .image-view #image-view-list {
-        height: 560px;
+        height: 590px;
     }
 }
 @media (max-width: 767px) {
@@ -94,8 +94,14 @@
     }
 }
 
+#image-view-list {
+    white-space: nowrap;
+}
 .image-view #image-view-list a {
     cursor: pointer;
+}
+.image-view #image-view-list a.image-view-list-expander {
+    color: #7A7677;
 }
 
 #imageViewerDetail .panel .panel-body div span {
