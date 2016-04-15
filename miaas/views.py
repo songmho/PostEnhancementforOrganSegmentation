@@ -225,15 +225,16 @@ def patient_interpretation_list_page(request):
         results = db.retrieve_list("patient_intpr_list", request.session['user']['user_id'])
         for r in results:
             temp = []
-            temp.append(timestamp_to_date_string(json.dumps(r['request_date'])))
-            temp.append(timestamp_to_date_string(json.dumps(r['interpret_date'])))
-            temp.append(json.dumps(r['request_subject']))
-            temp.append(json.dumps(r['image_subject']))
-            temp.append(json.dumps(r['image_type']))
-            temp.append(json.dumps(r['intpr_id']))
+            temp.append(timestamp_to_date_string(r['request_date']))
+            temp.append(timestamp_to_date_string(r['interpret_date']))
+            temp.append(r['request_subject'])
+            temp.append(r['image_subject'])
+            temp.append(r['image_type'])
+            temp.append(r['level'])
+            temp.append(r['intpr_id'])
             dt_list.append(temp)
         # Render the page
-        context['dt_list'] = dt_list
+        context['dt_list'] = json.dumps(dt_list)
     logger.info('interpret get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_list.html', context)
 
@@ -247,17 +248,17 @@ def patient_request_list_page(request):
         results = db.retrieve_list("patient_request_list", request.session['user']['user_id'])
         for r in results:
             temp = []
-            temp.append(timestamp_to_date_string(json.dumps(r['request_date'])))
-            temp.append(json.dumps(r['request_subject']))
-            temp.append(json.dumps(r['image_subject']))
-            temp.append(json.dumps(r['image_type']))
-            temp.append(json.dumps(r['level']))
-            temp.append(get_interpretation_status(json.dumps(r['status'])))
-            temp.append(json.dumps(r['request_id']))
+            temp.append(timestamp_to_date_string(r['request_date']))
+            temp.append(r['request_subject'])
+            temp.append(r['image_subject'])
+            temp.append(r['image_type'])
+            temp.append(r['level'])
+            temp.append(get_interpretation_status(r['status']))
+            temp.append(r['request_id'])
             dt_list.append(temp)
 
         # Render the page
-        context['dt_list'] = dt_list
+        context['dt_list'] = json.dumps(dt_list)
 
     logger.info('patient_request_list_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_request_list.html', context)
@@ -297,17 +298,17 @@ def physician_interpretation_search(request):
         results = db.retrieve_list("physician_search_request_list", request.session['user']['user_id'])
         for r in results:
             temp = []
-            temp.append(timestamp_to_date_string(json.dumps(r['request_date'])))
-            temp.append(json.dumps(r['patient_id']))
-            temp.append(json.dumps(r['request_subject']))
-            temp.append(json.dumps(r['image_subject']))
-            temp.append(json.dumps(r['image_type']))
-            temp.append(json.dumps(r['level']))
-            temp.append(json.dumps(r['request_id']))
+            temp.append(timestamp_to_date_string(r['request_date']))
+            temp.append(r['patient_id'])
+            temp.append(r['request_subject'])
+            temp.append(r['image_subject'])
+            temp.append(r['image_type'])
+            temp.append(r['level'])
+            temp.append(r['request_id'])
             dt_list.append(temp)
 
         # Render the page
-        context['dt_list'] = dt_list
+        context['dt_list'] = json.dumps(dt_list)
     logger.info('physician_interpretation_search get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_search.html', context)
 
@@ -321,19 +322,19 @@ def physician_interpretation_response_page(request):
         results = db.retrieve_list("physician_response_list", request.session['user']['user_id'])
         for r in results:
             temp = []
-            temp.append(timestamp_to_date_string(json.dumps(r['request_date'])))
-            temp.append(timestamp_to_date_string(json.dumps(r['response_date'])))
-            temp.append(json.dumps(r['patient_id']))
-            temp.append(json.dumps(r['request_subject']))
-            temp.append(json.dumps(r['image_subject']))
-            temp.append(json.dumps(r['image_type']))
-            temp.append(json.dumps(r['level']))
-            temp.append(get_interpretation_status(json.dumps(r['status'])))
-            temp.append(json.dumps(r['request_id']))
+            temp.append(timestamp_to_date_string(r['request_date']))
+            temp.append(timestamp_to_date_string(r['response_date']))
+            temp.append(r['patient_id'])
+            temp.append(r['request_subject'])
+            temp.append(r['image_subject'])
+            temp.append(r['image_type'])
+            temp.append(r['level'])
+            temp.append(get_interpretation_status(r['status']))
+            temp.append(r['request_id'])
             dt_list.append(temp)
 
         # Render the page
-        context['dt_list'] = dt_list
+        context['dt_list'] = json.dumps(dt_list)
     logger.info('interpretation_request_list_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_response_list.html', context)
 
@@ -347,17 +348,17 @@ def physician_interpretation_page(request):
         results = db.retrieve_list("physician_intpr_list", request.session['user']['user_id'])
         for r in results:
             temp = []
-            temp.append(timestamp_to_date_string(json.dumps(r['request_date'])))
-            temp.append(timestamp_to_date_string(json.dumps(r['interpret_date'])))
-            temp.append(json.dumps(r['patient_id']))
-            temp.append(json.dumps(r['image_subject']))
-            temp.append(json.dumps(r['image_type']))
-            temp.append(json.dumps(r['level']))
-            temp.append(json.dumps(r['intpr_id']))
+            temp.append(timestamp_to_date_string(r['request_date']))
+            temp.append(timestamp_to_date_string(r['interpret_date']))
+            temp.append(r['patient_id'])
+            temp.append(r['image_subject'])
+            temp.append(r['image_type'])
+            temp.append(r['level'])
+            temp.append(r['intpr_id'])
             dt_list.append(temp)
 
         # Render the page
-        context['dt_list'] = dt_list
+        context['dt_list'] = json.dumps(dt_list)
 
     logger.info('physician_interpretation_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_list.html', context)

@@ -64,16 +64,28 @@ timezone_kr = pytz.timezone('Asia/Seoul')
 
 @register.filter(name='datetime_string')
 def timestamp_to_datetime_string(timestamp):
-    return datetime.datetime.fromtimestamp(int(timestamp) // 1000) \
-        .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
-        .strftime('%Y-%m-%d %H:%M')
+    try:
+        return datetime.datetime.fromtimestamp(int(timestamp) // 1000) \
+            .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
+            .strftime('%m/%d/%y %H:%M')
+
+    except ValueError as e:
+        return (datetime.datetime(1970, 1, 1) + datetime.timedelta(int(timestamp) // 1000))\
+            .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
+            .strftime('%m/%d/%y')
 
 
 @register.filter(name='date_string')
 def timestamp_to_datetime_string(timestamp):
-    return datetime.datetime.fromtimestamp(int(timestamp) // 1000) \
-        .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
-        .strftime('%Y-%m-%d')
+    try:
+        return datetime.datetime.fromtimestamp(int(timestamp) // 1000) \
+            .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
+            .strftime('%m/%d/%y')
+
+    except ValueError as e:
+        return (datetime.datetime(1970, 1, 1) + datetime.timedelta(int(timestamp) // 1000))\
+            .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
+            .strftime('%m/%d/%y')
 
 
 @register.filter(name='is_list')
