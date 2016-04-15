@@ -4,12 +4,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="imageViewModalTitle">Medical Image View</h4>
+                <h4 class="modal-title" id="imageViewModalTitle">Medical Image Viewer</h4>
             </div>
             <div class="modal-body">
                 <div id="imageView" class="image-view">
                     <div class="image-view-explorer col-sm-5 col-md-4">
-                        <h4>Image Explorer</h4>
+                        <h4>Image File Explorer</h4>
                         <ul id="image-view-list"></ul>
                     </div>
                     <div class="image-view-image col-sm-7 col-md-8">
@@ -47,6 +47,7 @@
                         </div>
                         <div id="imageViewerDetailContainer">
                             <div id="imageViewerDetail" style="display: none; margin-top:30px;">
+                                <h4 class="text-primary">Detail Information</h4>
                                 <!-- panels for dicom information -->
                                 <div class="panel panel-default ">
                                     <div class="panel-heading">
@@ -311,6 +312,13 @@
                                 </div>
                             </div>
                             <span><a id="imageViewShowDetail" href="#" style="display: none; background-color: white;">Show Detail Information</a></span>
+                        </div>
+                        <div id="imageViewerSequenceController" class="text-center" style="display: none;">
+                            <a id="seqControllerStepBackward" class="btn btn-primary disabled"><span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span></a>
+                            <a id="seqControllerBackward" class="btn btn-primary btn-seq-play"><span class="glyphicon glyphicon-backward" aria-hidden="true"></span></a>
+                            <a id="seqControllerPause" class="btn btn-primary"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></a>
+                            <a id="seqControllerPlay" class="btn btn-primary btn-seq-play"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
+                            <a id="seqControllerStepForward" class="btn btn-primary disabled"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></a>
                         </div>
                     </div>
                 </div>

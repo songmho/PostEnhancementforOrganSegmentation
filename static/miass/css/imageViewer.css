@@ -36,18 +36,18 @@
 
 @media (min-width: 768px) {
     .modal#imageViewModal .modal-body .image-view {
-        min-height: 440px;
+        min-height: 480px;
     }
 }
 @media (min-width: 992px) {
     .modal#imageViewModal .modal-body .image-view {
-        min-height: 600px;
+        min-height: 620px;
     }
 }
 
 @media (min-width: 768px) {
     .modal#imageViewModal .modal-body #imageView > div {
-        height: 450px;
+        height: 490px;
     }
     .modal#imageViewModal .modal-body #imageView > div.image-view-image {
         overflow-y: scroll;
@@ -56,7 +56,7 @@
 }
 @media (min-width:992px) {
     .modal#imageViewModal .modal-body #imageView > div {
-        height: 610px;
+        height: 630px;
     }
 }
 
@@ -146,7 +146,7 @@
 }
 @media (min-width: 992px) {
     #btnImageControlHelp {
-        margin-top: 10px;
+        margin-top: 4px;
     }
 }
 
@@ -165,4 +165,12 @@
     position: absolute;
     left: 0px;
     top: 0px
+}
+
+#imageViewerSequenceController {
+    padding-top: 12px;
+}
+
+#imageViewerSequenceController .btn {
+    width: 60px;
 }
