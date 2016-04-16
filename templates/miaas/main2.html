@@ -3,7 +3,7 @@
 
 {% include 'miaas/template_header.html' %}
 
-    <link rel="stylesheet" type="text/css" href="{% static 'miass/css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'miass/css/main2.css' %}">
 
 </head>
 
@@ -14,9 +14,8 @@
                 <span><a href="http://smartylab.co.kr" target="_blank">Lean More</a></span>&nbsp;&nbsp;&nbsp;
                 <span><a href="mailto:someone@example.com">Contact Us</a></span>
             </div>
-            <div class="menu-title-container">
-                <h1 class="menu-title-shadow">MIAAS</h1>
-                <h1 class="menu-title">MIAAS</h1>
+            <div>
+                <h1 class="menu-title text-primary">MIAAS</h1>
                 <h4 class="menu-subtitle">Medical Image Archival & Analytics Service</h4>
             </div>
         </div>
@@ -26,52 +25,44 @@
         <section class="section">
             <div>
                 <br />
-                <h1 class="intro-title text-center">Health Life with Digital Healthcare Service</h1>
+                <h1 class="intro-title text-center text-primary">Health Life with Digital Healthcare Service</h1>
                 <div class="intro-content">
                     <div class="row">
                         <div class="col-xs-12 col-md-4 intro-column column-right" >
                             <div class="column-image center-block">
-                                <div class="form-signin-container">
-                                    <form id="loginForm" class="form-signin" name="signinForm" accept-charset="UTF-8">
-                                        <label for="inputId" class="sr-only">Username</label>
-                                        <input type="text" id="inputId" name="id" maxlength="20" class="form-control"
-                                               placeholder="User ID" required autofocus>
-                                        <label for="inputPw" class="sr-only">Password</label>
-                                        <input type="password" id="inputPw" name="pw" maxlength="20" class="form-control"
-                                               placeholder="Password" required>
-                                        <div class="checkbox">
-                                            <label>
-                                                <input id="checkRemember" type="checkbox" value="remember"> Remember Me
-                                            </label>
-                                        </div>
-                                        <button id="btnLogin" class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
-                                    </form>
-                                    <div id="loginOther">
-                                        <a href="{% url 'miaas:signup' %}">Signup</a>&nbsp;&nbsp;&nbsp;&nbsp;
-                                        <a href="{% url 'miaas:find' %}" class="pull-right">Find ID/PW</a>
+                                <form id="loginForm" class="form-signin" name="signinForm" accept-charset="UTF-8">
+                                    <label for="inputId" class="sr-only">Username</label>
+                                    <input type="text" id="inputId" name="id" maxlength="20" class="form-control"
+                                           placeholder="User ID" required autofocus>
+                                    <label for="inputPw" class="sr-only">Password</label>
+                                    <input type="password" id="inputPw" name="pw" maxlength="20" class="form-control"
+                                           placeholder="Password" required>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="checkRemember" type="checkbox" value="remember"> Remember Me
+                                        </label>
                                     </div>
+                                    <button id="btnLogin" class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
+                                </form>
+                                <div id="loginOther">
+                                    <a href="{% url 'miaas:signup' %}">Signup</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a href="{% url 'miaas:find' %}" class="pull-right">Find ID/PW</a>
                                 </div>
                             </div>
-                            <div class="column-title title-3">
-                                <h5 class="title-text">Second Opinions</h5>
-                            </div>
-                            <div class="column-content">Seek second opinions on<br/>your medical diagnosis.</div>
+                            <h5 class="column-title">Second Opinions</h5>
+                            <div class="column-content">Seek second opinions on your medical diagnosis.</div>
                         </div>
 
                         <div class="col-xs-12 col-md-4 intro-column column-left" >
                             <div class="column-image center-block" style="background-image: url('{% static 'miass/image/main/mimage.png' %}');"></div>
-                            <div class="column-title title-1">
-                                <h5 class="title-text">Archival in One Place</h5>
-                            </div>
-                            <div class="column-content">Archive all your medical images<br/>in the free cloud storage.</div>
+                            <h5 class="column-title">Archival in One Place</h5>
+                            <div class="column-content">Archive all your medical images in the free cloud storage.</div>
                         </div>
 
                         <div class="col-xs-12 col-md-4 intro-column column-left">
                             <div class="column-image center-block" style="background-image: url('{% static 'miass/image/main/manal.png' %}');"></div>
-                            <div class="column-title title-2">
-                                <h5 class="title-text">Medical Analytics</h5>
-                            </div>
-                            <div class="column-content">Analyze your medical data<br/>with advanced machine learning.</div>
+                            <h5 class="column-title">Medical Analytics</h5>
+                            <div class="column-content">Analyze your medical data with advanced machine learning.</div>
                         </div>
 
 {#                        <div class="col-xs-12 col-md-4 intro-column column-right">#}
@@ -87,14 +78,19 @@
 
     <footer class="page-footer">
         <div class="container footer-container">
-            <div class="footer-contents pull-left">
-                <span>Smartylab Corporation, Seoul, Korea</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <div>Smartylab Corporation, Seoul, Korea</div>
+            <div>
                 <span>Tel. 02-826-0909</span>&nbsp;&nbsp;&nbsp;
                 <span><a href="http://smartylab.co.kr" target="_blank">http://smartylab.co.kr</a></span>
             </div>
-            <a href="http://smartylab.co.kr" target="_blank" class="pull-right">
-                <image src="{% static 'miass/image/main/logo.png' %}" class="copyright-logo"></image>
-            </a>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                <span>© 2016 SmartyLab, All rights reserved.</span>
+                <a href="http://smartylab.co.kr" target="_blank">
+                    <image src="{% static 'miass/image/main/logo.png' %}" class="copyright-logo pull-right"></image>
+                </a>
+            </div>
         </div>
     </footer>
 
