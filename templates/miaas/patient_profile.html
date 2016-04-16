@@ -25,14 +25,14 @@
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="height">Height</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="height" name="height" maxlength="10" class="form-control"
+                            <input type="number" id="height" name="height" maxlength="10" class="form-control" min="0" max= "500"
                             >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4">
                             <select class="form-control" id="heightType" name="heightType">
-                                <option>Centimeters</option>
-                                <option>Inch</option>
-                                <option>Feet</option>
+                                <option value="Centimeters">Centimeters</option>
+                                <option value="Inch">Inch</option>
+                                <option value="Feet">Feet</option>
                             </select>
                         </div>
                     </div>
@@ -40,13 +40,13 @@
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="weight">Weight</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="weight" name="weight" maxlength="10" class="form-control"
+                            <input type="number" id="weight" name="weight" maxlength="10" class="form-control" min="0" max="500"
                             >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4">
                             <select class="form-control" id="weightType" name="weightType">
-                                <option>Kilogram</option>
-                                <option>Pound</option>
+                                <option value="Kilogram">Kilogram</option>
+                                <option value="Pound">Pound</option>
                             </select>
                         </div>
                     </div>
@@ -55,11 +55,11 @@
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingCapacity">Drinking
                             Capacity</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="drinkingCapacity" name="drinkingCapacity" maxlength="10" class="form-control"
+                            <input type="number" id="drinkingCapacity" name="drinkingCapacity" maxlength="10" class="form-control" min="0" max="1000"
                             >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text">
-                            <span>bottles</span>
+                            <span>glasses</span>
                         </div>
                     </div>
 
@@ -67,7 +67,7 @@
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingFrequency">Drinking
                             Frequency</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="drinkingFrequency" name="drinkingFrequency" maxlength="10" class="form-control"
+                            <input type="number" id="drinkingFrequency" name="drinkingFrequency" maxlength="10" class="form-control" min="0" max="500"
                             >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text no-pad-right">
@@ -78,7 +78,7 @@
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="sleeping">Sleeping Hours</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="sleeping" name="sleeping" maxlength="10" class="form-control"
+                            <input type="number" id="sleeping" name="sleeping" maxlength="10" class="form-control" min="0" max="1440"
                             >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text">
@@ -89,7 +89,7 @@
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="exercise">Exercise Hours</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="exercise" name="exercise" maxlength="10" class="form-control"
+                            <input type="number" id="exercise" name="exercise" maxlength="10" class="form-control" min="0" max="1440"
                             >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text no-pad-right">
@@ -119,7 +119,7 @@
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="water">Water Intake</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
-                            <input type="number" id="water" name="water" maxlength="10" class="form-control"
+                            <input type="number" id="water" name="water" maxlength="10" class="form-control" min="0" max="500"
                             >
                         </div>
                         <div class="col-xs-7 col-sm-5 col-md-4 control-text">

@@ -29,13 +29,37 @@ $(document).ready(function() {
         e.preventDefault();
         updateProfile();
     });
+
+    var heightType = $('#heightType');
+    var height = $('#height');
+    heightType.change(function (){
+        if(heightType.val() == "Centimeters"){
+            height.attr('max', 500)
+        }
+        else if(heightType.val() == 'Inch'){
+            height.attr('max', 200)
+        }
+        else if(heightType.val() == 'Feet'){
+            height.attr('max', 17)
+        }
+    });
+
+    var weightType = $('#weightType');
+    var weight = $('#weight');
+    weightType.change(function (){
+        if(weightType.val() == "Kilogram"){
+            weight.attr('max', 500)
+        }
+        else if(weightType.val() == 'Pound'){
+            weight.attr('max', 1200)
+        }
+    });
 });
 
 
 function resetProfile() {
     $('#patientProfileForm input, #patientProfileForm textarea').each(function() {
-        $(this).val('');
-    });
+        $(this).val('');    });
 
     console.log(profiles);
 
@@ -45,11 +69,28 @@ function resetProfile() {
         if(profile.type == "height") {
             var height = profile.value.split(" ");
             $('#height').val(height[0]);
-            $('#heightType').val(height[1]).attr("selected", "selected");
+            var heightType = $('#heightType');
+            heightType.val(height[1]).attr("selected", "selected");
+            if(heightType.val() == "Centimeters"){
+                $('#height').attr('max', 500)
+            }
+            else if(heightType.val() == 'Inch'){
+                $('#height').attr('max', 200)
+            }
+            else if(heightType.val() == 'Feet'){
+                $('#height').attr('max', 17)
+            }
         } else if(profile.type == "weight") {
             var weight = profile.value.split(" ");
+            var weightType = $('#weightType');
             $('#weight').val(weight[0]);
-            $('#weightType').val(weight[1]).attr("selected", "selected");
+            weightType.val(weight[1]).attr("selected", "selected");
+            if(weightType.val() == "Kilogram"){
+                $('#weight').attr('max', 500)
+            }
+            else if(weightType.val() == 'Pound'){
+                $('#weight').attr('max', 1200)
+            }
         } else if(profile.type == "smoking") {
             $('#smoking').val(profile.value).attr("selected", "selected");
         } else {
