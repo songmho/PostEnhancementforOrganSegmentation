@@ -37,8 +37,6 @@ class DbManager():
                 user_type = row[0]
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_user Error" + e.message)
-
         return user_type
 
     def find_user(self, user_id):
