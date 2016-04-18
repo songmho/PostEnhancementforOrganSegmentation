@@ -29,11 +29,11 @@
                             <td>Acceptance Message</td>
                             </thead>
                             <tbody>
-                            {% for res in physician_response.responses %}
+                            {% for res in responses %}
                                 <tr>
                                     <td><a class="text-primary view-profile" href="#" physician_id="{{ res.physician_id }}">{{ res.physician_id }}</a></td>
                                     <td>{{ res.physician_name }}</td>
-                                    <td>{{ res.medicine_filed }}</td>
+                                    <td>{{ res.medical_field }}</td>
                                     <td>{{ res.response_message }}</td>
                                 </tr>
                             {% endfor %}
@@ -67,11 +67,11 @@
                         <td>Select</td>
                         </thead>
                         <tbody>
-                        {% for res in physician_response.responses %}
+                        {% for res in responses %}
                             <tr>
                                 <td><a class="text-primary view-profile" href="#" physician_id="{{ res.physician_id }}">{{ res.physician_id }}</a></td>
                                 <td>{{ res.physician_name }}</td>
-                                <td>{{ res.medicine_filed }}</td>
+                                <td>{{ res.medical_field }}</td>
                                 <td>{{ res.response_message }}</td>
                                 <td class="valign vcenter">
                                     <a class="btn btn-success btn-block btn-physician-select" physician_id="{{ res.physician_id }}" >SELECT</a>
