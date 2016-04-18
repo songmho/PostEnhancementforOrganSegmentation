@@ -208,6 +208,7 @@ class ImageManager():
 
         # find sysfiles and check the file is dicom file
         sysfile_list = []
+        is_there_dicom = True
         for root, dirs, files in os.walk(zipfiledir):
             rootpath = os.path.abspath(root)
             for dir in dirs:
@@ -220,8 +221,12 @@ class ImageManager():
                     try:
                         dicom_file = dicom.read_file(filepath)
                         if len(dicom_file.pixel_array):
+                            is_there_dicom = False
                             os.rename(filepath, filepath+'.dcm')
+                        else:
+                            os.remove(filepath)
                     except Exception as e:
+                        os.remove(filepath)
                         logger.info(e)
                 # logger.info("################################################3")
                 # logger.info('/home/sel/MIaaS/src/miaas/decompose.py'+ str(filepath))
@@ -230,7 +235,8 @@ class ImageManager():
 
                 if file.startswith('.') or file.startswith('__'):
                     sysfile_list.append(filepath)
-
+        if is_there_dicom:
+            raise Exception("The .zip file doesn't contain dicom files.")
         # remove sysfiles
         for sysfile in sysfile_list:
             if not os.path.exists(sysfile):
