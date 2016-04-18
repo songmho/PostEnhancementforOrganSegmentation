@@ -12,7 +12,7 @@ body {
     }
 }
 section {
-    margin-bottom: 40px;
+    margin-bottom: 60px;
 }
 
 .page-container {
@@ -25,69 +25,22 @@ section {
     font-weight: 400;
     font-size: 48px;
     margin-bottom: 0;
-    text-outline: 2px 2px #D76474;
-    color: #ffffff;
-    text-shadow: 1px 1px 0 #D76474,
-        -1px 1px 0 #D76474,
-        1px -1px 0 #D76474,
-        -1px -1px 0 #D76474,
-        0px 1px 0 #D76474,
-        0px -1px 0 #D76474,
-        -1px 0px 0 #D76474,
-        1px 0px 0 #D76474,
-        2px 2px 0 #D76474,
-        -2px 2px 0 #D76474,
-        2px -2px 0 #D76474,
-        -2px -2px 0 #D76474,
-        0px 2px 0 #D76474,
-        0px -2px 0 #D76474,
-        -2px 0px 0 #D76474,
-        2px 0px 0 #D76474,
-        1px 2px 0 #D76474,
-        -1px 2px 0 #D76474,
-        1px -2px 0 #D76474,
-        -1px -2px 0 #D76474,
-        2px 1px 0 #D76474,
-        -2px 1px 0 #D76474,
-        2px -1px 0 #D76474,
-        -2px -1px 0 #D76474;
-}
-.menu-title-container {
-    position:relative;
-    display: inline-block;
-}
-.menu-title-shadow {
-    font-weight: 400;
-    font-size: 48px;
-    margin-bottom: 0;
-    position: absolute;
-    left: 0;
-    top: 0;
-    color: #ffffff;
-    text-shadow: 4px 4px 5px rgba(127,127,127,0.5);
 }
 
 .menu-subtitle {
     margin-top: 0;
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 300;
     margin-left: 3px;
     color: #47525d;
 }
 
 .menu-right {
-    z-index: 1;
     font-size: 18px;
     margin-top: 32px;
     text-align: left;
     padding-left: 3px;
 }
-
-.menu-right a {
-    color: #000;
-    font-weight: 700;
-}
-
 
 @media (min-width: 992px) {
     .menu-right {
@@ -100,9 +53,9 @@ section {
     font-size: 40px;
     line-height: 48px;
     margin-top: 30px;
-    margin-bottom: 20px;
-    font-weight: 500;
-    color: #2962FF;
+    margin-bottom: 50px;
+    font-weight: 300;
+    /*color: #7CB342;*/
 }
 
 @media (max-width: 767px) {
@@ -152,39 +105,19 @@ section {
 }
 
 .intro-content .intro-column .column-title {
-    margin-top: 40px;
-    margin-bottom: 12px;
-}
-
-.intro-content .intro-column .column-title .title-text {
-    margin: 0 auto;
-    padding: 8px 6px;
-    width: 260px;
-    color: #000;
-    border: 2px solid #000;
+    color: #7CB342;
     font-size: 22px;
-    font-weight: 500;
+    font-weight: 400;
     text-align: center;
-}
-.intro-content .intro-column .column-title.title-1 .title-text {
-    border-color: #FFC107;  /*amber*/
-    background-color: #FFF8E1;
-}
-.intro-content .intro-column .column-title.title-2 .title-text {
-    border-color: #03A9F4;  /*lightblue*/
-    background-color: #E0F7FA; /*cyan*/
-}
-.intro-content .intro-column .column-title.title-3 .title-text {
-    border-color: #F48FB1;  /*pink*/
-    background-color: #ffefff;
+    margin-top: 40px;
+    margin-bottom: 18px;
 }
 
 .intro-content .intro-column .column-content {
-    font-weight: 700;
-    color: #000;
-    /*color: #47525d;*/
-    text-align: center;
-    font-style: italic;
+    font-weight: 300;
+    color: #47525d;
+    /*text-align: center;*/
+    /*font-style: italic;*/
 }
 
 footer.page-footer {
@@ -197,40 +130,42 @@ footer.page-footer {
 footer.page-footer .footer-container {
     padding-top: 20px;
     padding-bottom: 20px;
-    height: 70px;
     font-size: 14px;
-}
-
-footer.page-footer .footer-container .footer-contents {
-    margin-top: 4px;
 }
 
 footer.page-footer .footer-container a {
     color: #fff;
 }
 
-footer.page-footer .copyright-logo {
+footer.page-footer .footer-copyright {
+    overflow: hidden;
+    height: 50px;
+    line-height: 50px;
+    color: rgba(255,255,255,0.8);
+    background-color: rgba(51,51,51,0.08);
+    font-size: 13px;
+}
+
+footer.page-footer .footer-copyright .copyright-logo {
+    margin-top: 10px;
     height: 30px;
 }
 
 /*signin form*/
-.form-signin-container {
-    padding: 8px 20px;
-    font-size: 14px;
-}
+.form-signin {
 
+}
 .form-signin .checkbox {
     font-weight: normal;
 }
-
 .form-signin .form-control {
-    font-size: 14px;
     position: relative;
     height: auto;
     -webkit-box-sizing: border-box;
          -moz-box-sizing: border-box;
                     box-sizing: border-box;
     padding: 10px;
+    font-size: 18px;
 }
 .form-signin .form-control:focus {
     z-index: 2;
@@ -248,4 +183,30 @@ footer.page-footer .copyright-logo {
 .additional-signin {
     margin-top: 24px;
     color: #7A7677;
+}
+
+.form-signin .hr-label {
+    padding: 0;
+    margin: 5px 0;
+    position: relative;
+    text-align: center;
+    clear: both;
+    color: #3d464d;
+}
+.form-signin .hr-label::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #d0d4d9;
+}
+.form-signin .hr-label > .hr-label-text {
+    font-size: 14px;
+    line-height: 26px;
+    padding: 0 8px;
+    vertical-align: top;
+    display: inline-block;
+    position: relative;
+    background-color: #fff;
 }
