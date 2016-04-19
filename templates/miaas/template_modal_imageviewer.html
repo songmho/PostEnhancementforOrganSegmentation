@@ -313,12 +313,34 @@
                             </div>
                             <span><a id="imageViewShowDetail" href="#" style="display: none; background-color: white;">Show Detail Information</a></span>
                         </div>
-                        <div id="imageViewerSequenceController" class="text-center" style="display: none;">
-                            <a id="seqControllerStepBackward" class="btn btn-primary disabled"><span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span></a>
-                            <a id="seqControllerBackward" class="btn btn-primary btn-seq-play"><span class="glyphicon glyphicon-backward" aria-hidden="true"></span></a>
-                            <a id="seqControllerPause" class="btn btn-primary"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></a>
-                            <a id="seqControllerPlay" class="btn btn-primary btn-seq-play"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
-                            <a id="seqControllerStepForward" class="btn btn-primary disabled"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></a>
+                        <div id="imageViewerSequenceController" style="display: none;">
+                            <div id="seqControllerProgress" class="progress ">
+                                <div class="progress-bar progress-bar-primary" role="progressbar"
+                                     aria-valuenow="40" aria-valuemin="0" aria-valuemax="444" style="width: 40%">
+                                </div>
+                                <div class="progress-bar progress-bar-for-seg" role="progressbar"
+                                     style="width: 10%; display: none;">
+                                </div>
+                                <div id="seqControllerProgressSegA" class="progress-segment" style="display: none;">A</div>
+                                <div id="seqControllerProgressSegB" class="progress-segment" style="display: none;">B</div>
+                            </div>
+                            <div id="seqControllerProgressText" class="progress-text">
+                                45/719
+                            </div>
+                            <div id="seqControllerBasicButtons" class="text-center seq-controller-buttons">
+                                <a id="seqControllerStepBackward" class="btn btn-primary disabled"><span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span></a>
+                                <a id="seqControllerBackward" class="btn btn-primary btn-seq-play"><span class="glyphicon glyphicon-play glyphicon-play-back" aria-hidden="true"></span></a>
+                                <a id="seqControllerPause" class="btn btn-primary"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></a>
+                                <a id="seqControllerPlay" class="btn btn-primary btn-seq-play"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
+                                <a id="seqControllerStepForward" class="btn btn-primary disabled"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></a>
+                            </div>
+                            <div id="seqControllerSegmentButtons" class="text-center seq-controller-buttons">
+                                <a id="seqControllerSegmentA" class="btn btn-primary">Set [A</a>
+                                <a id="seqControllerSegmentB" class="btn btn-primary">Set B]</a>
+                                <a id="seqControllerSegmentRepetitionAB" class="btn btn-primary btn-seq-seg-play">[A<span class="glyphicon glyphicon-play" aria-hidden="true"></span>B]</a>
+                                <a id="seqControllerSegmentRepetitionBA" class="btn btn-primary btn-seq-seg-play">[A<span class="glyphicon glyphicon-play glyphicon-play-back" aria-hidden="true"></span>B]</a>
+                                <a id="seqControllerSegmentClear" class="btn btn-primary">Clear</a>
+                            </div>
                         </div>
                     </div>
                 </div>

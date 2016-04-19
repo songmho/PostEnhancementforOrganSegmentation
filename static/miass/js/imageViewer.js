@@ -359,9 +359,24 @@ var dicomPlayingLoadWaitingInterval = null;
 var dicomSeqCnt = 0;
 var dicomSeqPlaying = false;
 var dicomSeqForward = true;
+var dicomSeqDragging = false;
+var dicomSeqSegRepeting = false;
+var dicomSeqSegRepetingAB = true;
+var dicomSeqSegA = 0,  dicomSeqSegB = 0;
 
-function playDicomSequence(images) {
-    console.log('playDicomSeq');
+function setPlayDicomSequence(images) {
+    dicomSeq = [];
+    dicomPlayingSequenceInterval = null;
+    dicomPlayingLoadWaitingInterval = null;
+    dicomSeqCnt = 0;
+    dicomSeqPlaying = false;
+    dicomSeqForward = true;
+    dicomSeqDragging = false;
+    dicomSeqSegRepeting = false;
+    dicomSeqSegRepetingAB = true;
+    dicomSeqSegA = 0;
+    dicomSeqSegB = 0;
+
     $('#imageViewModalTitleName').text(images['title']);
     var files = images.files.split(':');
 
@@ -380,26 +395,8 @@ function playDicomSequence(images) {
         //showDicomSequenceLoader(false);
     });
     $('#sequenceLoaderStatus').text('0/' + files.length);
-    //console.log(files);
 
-    dicomPlayingLoadWaitingInterval = null;
     var fileCnt = files.length, loadCnt = 0;
-    dicomSeq = [];
-
-    //if (window.Worker) {
-    //    //worker = new Worker("dicomSequenceLoadWorker.js");
-    //    worker = new Worker("/static/miass/js/dicomSequenceLoadWorker.js");
-    //    worker.onmessage = function (event) {
-    //        console.log(event);
-    //
-    //        var result = event.data;
-    //        console.log(result);
-    //    };
-    //    worker.postMessage({imageInfo:imageInfo, files: files});
-    //    console.log('worker post message!');
-    //} else {
-    //    alert("This browser didn't support Worker!");
-    //}
 
     try {
         for (var idx = 0; idx < files.length; idx++) {
@@ -432,13 +429,20 @@ function playDicomSequence(images) {
                 showDicomSequenceLoader(false);
                 showImageViewerLoader(false);
 
+                dicomSeqSegA = 0;
+                dicomSeqSegB = dicomSeq.length-1;
+                $('#seqControllerProgress .progress-bar-primary').attr('aria-valuemax', dicomSeq.length-1)
+                    .attr('aria-valuenow', 0).css({width: '0%'});
+
                 $('#imageViewerSequenceController').show();
                 try {
                     dicomSeqPlaying = true;
                     dicomPlayingSequenceInterval = setInterval(function () {
-                        var element = dicomSeq[dicomSeqCnt];
-                        displayImageSequence(imageViewer, element);
-                        if(conerstoneloaded === true) {
+                        if(dicomSeqDragging) return;
+
+                        var element = $('#imageViewer').get(0);
+                        displayImageSequence(imageViewer, dicomSeqCnt);
+                        /*if(conerstoneloaded === true) {
                             cornerstoneTools.mouseInput.disable(element);
                             cornerstoneTools.mouseWheelInput.disable(element);
                             cornerstoneTools.wwwc.deactivate(element, 1); // ww/wc is the default tool for left mouse button
@@ -446,6 +450,15 @@ function playDicomSequence(images) {
                             cornerstoneTools.zoom.deactivate(element, 4); // zoom is the default tool for right mouse button
                             cornerstoneTools.zoomWheel.deactivate(element); // zoom is the default tool for middle mouse wheel
                             conerstoneloaded = false;
+                        }*/
+                        if(conerstoneloaded === false) {
+                            cornerstoneTools.mouseInput.enable(element);
+                            cornerstoneTools.mouseWheelInput.enable(element);
+                            cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
+                            cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
+                            cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
+                            cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
+                            conerstoneloaded = true;
                         }
 
                         dicomSeqCnt++;
@@ -460,14 +473,16 @@ function playDicomSequence(images) {
                             $('#seqControllerStepBackward').removeClass('disabled').click(function() {
                                 dicomSeqCnt--;
                                 if(dicomSeqCnt < 0) dicomSeqCnt = dicomSeq.length - 1;
-                                displayImageSequence(imageViewer, dicomSeq[dicomSeqCnt]);
+                                displayImageSequence(imageViewer, dicomSeqCnt);
                             });
                             $('#seqControllerStepForward').removeClass('disabled').click(function() {
                                 dicomSeqCnt++;
                                 if(dicomSeqCnt >= dicomSeq.length) dicomSeqCnt = 0;
-                                displayImageSequence(imageViewer, dicomSeq[dicomSeqCnt]);
+                                displayImageSequence(imageViewer, dicomSeqCnt);
                             });
                         }
+
+                        displayImageSequence(imageViewer, dicomSeqCnt);
                     });
 
                     $('.btn-seq-play').click(function() {
@@ -483,7 +498,8 @@ function playDicomSequence(images) {
                         }
 
                         dicomPlayingSequenceInterval = setInterval(function() {
-                            displayImageSequence(imageViewer, dicomSeq[dicomSeqCnt]);
+                            if(dicomSeqDragging) return;
+                            displayImageSequence(imageViewer, dicomSeqCnt);
 
                             if(dicomSeqForward) {
                                 dicomSeqCnt++;
@@ -495,6 +511,68 @@ function playDicomSequence(images) {
                         }, 50);
 
                         dicomSeqPlaying = true;
+                    });
+
+                    $('#seqControllerSegmentA').click(function() {
+                        dicomSeqSegA = dicomSeqCnt;
+                        $('#seqControllerProgressSegA').show().css({
+                            left: (5+(dicomSeqSegA/(dicomSeq.length-1)*canvasSize)) + 'px'
+                        });
+                    });
+                    $('#seqControllerSegmentB').click(function() {
+                        dicomSeqSegB = dicomSeqCnt;
+                        $('#seqControllerProgressSegB').show().css({
+                            left: (5+(dicomSeqSegB/(dicomSeq.length-1)*canvasSize)) + 'px'
+                        });
+                    });
+                    $('#seqControllerSegmentClear').click(function() {
+                        dicomSeqSegRepeting = false;
+                        dicomSeqSegA = 0;
+                        dicomSeqSegB = dicomSeq.length-1;
+                        $('#seqControllerProgressSegA').hide();
+                        $('#seqControllerProgressSegB').hide();
+                    });
+                    $('.btn-seq-seg-play').click(function() {
+                        if(dicomSeqPlaying) clearInterval(dicomPlayingSequenceInterval);
+
+                        $('#seqControllerStepBackward').off('click').unbind('click').addClass('disabled');
+                        $('#seqControllerStepForward').off('click').unbind('click').addClass('disabled');
+
+                        if($(this).attr('id') == 'seqControllerSegmentRepetitionAB') {
+                            dicomSeqSegRepetingAB = true;
+                        } else if ($(this).attr('id') == 'seqControllerSegmentRepetitionBA') {
+                            dicomSeqSegRepetingAB = false;
+                        }
+
+                        dicomPlayingSequenceInterval = setInterval(function() {
+                            if(dicomSeqDragging) return;
+                            displayImageSequence(imageViewer, dicomSeqCnt, true);
+
+                            if(dicomSeqSegRepetingAB) { //A->B
+                                dicomSeqCnt++;
+                                if (dicomSeqSegA <= dicomSeqSegB) { //A->B
+                                    if(dicomSeqCnt > dicomSeqSegB) dicomSeqCnt = dicomSeqSegA;
+                                } else { //A->last->first->B
+                                    if(dicomSeqCnt >= dicomSeq.length) dicomSeqCnt = 0;
+                                    else if(dicomSeqCnt == dicomSeqSegB+1) dicomSeqCnt = dicomSeqSegA;
+                                }
+
+                            } else {
+                                dicomSeqCnt--;
+                                if (dicomSeqSegA <= dicomSeqSegB) { //A<-B
+                                    if (dicomSeqCnt < dicomSeqSegA) dicomSeqCnt = dicomSeqSegB;
+                                } else { //A<-last<-first<-B
+                                    if(dicomSeqCnt < 0) dicomSeqCnt = dicomSeq.length - 1;
+                                    else if(dicomSeqCnt == dicomSeqSegA-1) dicomSeqCnt = dicomSeqSegB;
+                                }
+                            }
+                        }, 50);
+
+                        dicomSeqSegRepeting = true;
+                        dicomSeqPlaying = true;
+                    });
+
+                    $('#seqControllerSegmentRepetition').click(function() {
                     });
 
                 } catch (err) {
@@ -516,9 +594,45 @@ function playDicomSequence(images) {
     }
 }
 
-function displayImageSequence(imageViewer, element) {
-    var viewport = cornerstone.getDefaultViewportForImage(imageViewer, element);
-    cornerstone.displayImage(imageViewer, element, viewport);
+function displayImageSequence(imageViewer, nowCnt, segRepeting) {
+    if(segRepeting == undefined || segRepeting == null) segRepeting = false;
+
+    var image = dicomSeq[nowCnt];
+    var viewport = cornerstone.getDefaultViewportForImage(imageViewer, image);
+    cornerstone.displayImage(imageViewer, image, viewport);
+
+    if(segRepeting) {
+        var marginLeft = dicomSeqSegA / (dicomSeq.length - 1) * canvasSize;
+        var width = (nowCnt - dicomSeqSegA) / (dicomSeq.length - 1) * canvasSize;
+
+        if(dicomSeqSegA > dicomSeqSegB && nowCnt <= dicomSeqSegB) {
+            var segBarWidth = nowCnt / (dicomSeq.length - 1) * canvasSize;
+            $('#seqControllerProgress .progress-bar-for-seg')
+                .show().css({
+                    width: segBarWidth + 'px'
+                });
+
+            width = (dicomSeq.length-dicomSeqSegA) * canvasSize;
+        } else {
+            $('#seqControllerProgress .progress-bar-for-seg').hide();
+        }
+
+        $('#seqControllerProgress .progress-bar-primary')
+            .attr('aria-valuenow', nowCnt).css({
+                'margin-left': marginLeft + 'px',
+                //width: (nowCnt/(dicomSeq.length-1)*100)+'%',
+                width: width + 'px'
+            });
+
+    } else {
+        $('#seqControllerProgress .progress-bar-for-seg').hide();
+        $('#seqControllerProgress .progress-bar-primary')
+            .attr('aria-valuenow', nowCnt).css({
+                'margin-left': '0',
+                width: (nowCnt/(dicomSeq.length-1)*100)+'%'
+            });
+    }
+    $('#seqControllerProgressText').text((nowCnt+1)+' / ' + dicomSeq.length);
 }
 
 function stopDicomSequence() {
@@ -537,6 +651,39 @@ function stopDicomSequence() {
         clearInterval(dicomPlayingSequenceInterval);
         dicomPlayingSequenceInterval = null;
     }
+}
+
+function setDicomSequenceProgressbar() {
+    $('#seqControllerProgress').mousedown(function() {
+        dicomSeqDragging = true;
+    }).mouseup(function(e) {
+        dicomSeqDragging = false;
+
+        var parentOffset = $(this).parent().offset();
+        var relXOffset = e.pageX - parentOffset.left;
+        var seqOffset = Math.round(relXOffset/$(this).width()*(dicomSeq.length-1));
+        if (seqOffset < 0) seqOffset = 0;
+        else if (seqOffset > dicomSeq.length-1) seqOffset = dicomSeq.length-1;
+
+        dicomSeqCnt = seqOffset;
+        displayImageSequence($('#imageViewer').get(0), dicomSeqCnt);
+    }).mousemove(function(e) {
+        if(dicomSeqDragging) {
+            var parentOffset = $(this).parent().offset();
+            var relXOffset = e.pageX - parentOffset.left;
+            var seqOffset = Math.round(relXOffset/$(this).width()*(dicomSeq.length-1));
+            if (seqOffset < 0) seqOffset = 0;
+            else if (seqOffset > dicomSeq.length-1) seqOffset = dicomSeq.length-1;
+
+            dicomSeqCnt = seqOffset;
+            displayImageSequence($('#imageViewer').get(0), dicomSeqCnt);
+        }
+    }); //리스너부분 코드 function 하나로 만들면 제대로 동작 안함
+
+    $('body').mouseup(function(e) {
+        dicomSeqDragging = false;
+    });
+
 }
 
 // Regular expression to separate the digit string from the non-digit strings.
@@ -588,24 +735,6 @@ cmpStringsWithNumbers = function(a, b) {
     return (a >= b) - (a <= b);
 };
 
-var worker = null;
-function workerTest() {
-    if (window.Worker) {
-        //worker = new Worker("dicomSequenceLoadWorker.js");
-        worker = new Worker("/static/miass/js/dicomSequenceLoadWorker.js");
-        worker.onmessage = function (event) {
-            console.log(event);
-
-            var result = event.data;
-            console.log(result);
-        };
-        worker.postMessage({a: 5, b: 9});
-        console.log('worker post message!');
-    } else {
-        alert("This browser didn't support Worker!");
-    }
-}
-
 function makeURL(relativeURL) {
     return SERVER_ADDRESS + '/api/archive?image_user_id=' + imageInfo['user_id']
         + '&image_id=' + imageInfo['image_id']
@@ -637,7 +766,10 @@ $(document).ready(function() {
     var imageContainer = $('#imageViewer').get(0);
     cornerstone.enable(imageContainer);
 
+    setDicomSequenceProgressbar();
+
     //$('.image-view-image').scroll(function(e) {
+    //    console.log(e);
     //    console.log(e);
     //});
 });
@@ -703,7 +835,7 @@ function openImageViewer() {
                 $(this).click(function () {
                     var images = $(this).data();
                     stopDicomSequence();
-                    playDicomSequence(images);
+                    setPlayDicomSequence(images);
                 });
             });
 
@@ -863,6 +995,16 @@ function resizeViewer() {
         $('#imageViewerSequenceLoader').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewer canvas').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewerSequenceController').css({width: canvasSize+'px'});
+        $('#imageViewerSequenceController .progress-text').css({width: canvasSize+'px'});
+
+        if(dicomSeq.length >= 2) {
+            $('#seqControllerProgressSegA').css({
+                left: (5 + (dicomSeqSegA / (dicomSeq.length - 1) * canvasSize)) + 'px'
+            });
+            $('#seqControllerProgressSegB').css({
+                left: (5 + (dicomSeqSegB / (dicomSeq.length - 1) * canvasSize)) + 'px'
+            });
+        }
     }
 }
 
