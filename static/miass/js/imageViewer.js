@@ -365,6 +365,18 @@ var dicomSeqSegRepetingAB = true;
 var dicomSeqSegA = 0,  dicomSeqSegB = 0;
 
 function setPlayDicomSequence(images) {
+    dicomSeq = [];
+    dicomPlayingSequenceInterval = null;
+    dicomPlayingLoadWaitingInterval = null;
+    dicomSeqCnt = 0;
+    dicomSeqPlaying = false;
+    dicomSeqForward = true;
+    dicomSeqDragging = false;
+    dicomSeqSegRepeting = false;
+    dicomSeqSegRepetingAB = true;
+    dicomSeqSegA = 0;
+    dicomSeqSegB = 0;
+
     $('#imageViewModalTitleName').text(images['title']);
     var files = images.files.split(':');
 
@@ -384,9 +396,7 @@ function setPlayDicomSequence(images) {
     });
     $('#sequenceLoaderStatus').text('0/' + files.length);
 
-    dicomPlayingLoadWaitingInterval = null;
     var fileCnt = files.length, loadCnt = 0;
-    dicomSeq = [];
 
     try {
         for (var idx = 0; idx < files.length; idx++) {
@@ -654,7 +664,6 @@ function setDicomSequenceProgressbar() {
         var seqOffset = Math.round(relXOffset/$(this).width()*(dicomSeq.length-1));
         if (seqOffset < 0) seqOffset = 0;
         else if (seqOffset > dicomSeq.length-1) seqOffset = dicomSeq.length-1;
-        console.log('seqOffset: ' + seqOffset);
 
         dicomSeqCnt = seqOffset;
         displayImageSequence($('#imageViewer').get(0), dicomSeqCnt);
@@ -665,12 +674,11 @@ function setDicomSequenceProgressbar() {
             var seqOffset = Math.round(relXOffset/$(this).width()*(dicomSeq.length-1));
             if (seqOffset < 0) seqOffset = 0;
             else if (seqOffset > dicomSeq.length-1) seqOffset = dicomSeq.length-1;
-            console.log('seqOffset: ' + seqOffset);
 
             dicomSeqCnt = seqOffset;
             displayImageSequence($('#imageViewer').get(0), dicomSeqCnt);
         }
-    }); //리스너부분 코드 fuction 하나로 만들면 제대로 동작 안함
+    }); //리스너부분 코드 function 하나로 만들면 제대로 동작 안함
 
     $('body').mouseup(function(e) {
         dicomSeqDragging = false;

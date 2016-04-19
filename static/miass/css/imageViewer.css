@@ -188,7 +188,8 @@
     border-radius: 0px 0px 4px 4px;
 }
 #seqControllerProgress.progress .progress-bar {
-    transition: width 0.05s ease;
+    /*transition: width 0.05s ease;*/
+    transition: width 0.05s;
 }
 .seq-controller-buttons {
     margin-top: 8px;
