@@ -44,6 +44,9 @@ def main2_page(request):
     return render(request, 'miaas/main2.html', context)
 def main_page(request):
     context = _get_session_context(request)
+    # context = {
+    #     'session': sctx.default_session,
+    # }
     return render(request, 'miaas/main.html', context)
 
 def index_page(request):
@@ -84,25 +87,6 @@ def archive_upload_page(request):
     return render(request, 'miaas/patient_medical_image_upload.html', context)
 
 
-def medical_image_page(request, image_id):
-    context = _get_session_context(request)
-
-    if not image_id or int(image_id) < 0:
-        return archive_page(request)
-    else:
-        db = cloud_db.DbManager()
-        result = db.retrieve_image_and_intpr(image_id)
-
-        if result.get('image') and isinstance(result.get('intpr'), list):
-            context['image'] = result['image']
-            context['intpr_list'] = result['intpr']
-            # request.session['medical_image'][str(result['image']['image_id'])] = result['image']
-            # logger.info('image page(%s): %s' % (result['image']['image_id'], request.session['medical_image']))
-            # request.session['curr_image'] = result['image']
-
-    return render(request, 'miaas/patient_medical_image.html', context)
-
-
 def physician_profile_page(request):
     context = _get_session_context(request)
     return render(request, 'miaas/physician_profile.html', context)
@@ -133,22 +117,6 @@ def physician_interpretation_write(request, request_id):
         logger.info("status:%s" % request_detail['status'])
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_write.html', context)
-
-
-def interpretation_detail_page(request, intpr_id):
-    context = _get_session_context(request)
-    if request.session.get('user'):
-        logger.info('interpretation_detail_page call db')
-        # Interpretation details.
-        db = cloud_db.DbManager()
-        intpr_detail = db.retrieve_interpretation_detail(intpr_id)
-
-        result = db.retrieve_medical_image_by_id(intpr_detail['image_id'])
-        context['image'] = result
-        context['intpr'] = intpr_detail
-
-    logger.info('interpretation_detail_page get: %s' % request.GET)
-    return render(request, 'miaas/patient_interpretation_detail.html', context)
 
 
 def physician_interpretation_detail_page(request, intpr_id):
@@ -191,24 +159,58 @@ def physician_request_search_detail_page(request, request_id):
 ####################
 
 # patient
+def medical_image_page(request, image_id):
+    context = _get_session_context(request)
+    if not image_id or int(image_id) < 0:
+        return archive_page(request)
+    else:
+        db = cloud_db_copy.DbManager()
+        image, = db.retrieve_detail(db.PATIENT_IMAGE_DETAIL, image_id)
+        intpr_list = db.retrieve_list(db.IMAGE_INTPR_LIST, image_id)
+
+        context['image'] = image
+        context['intpr_list'] = intpr_list
+
+        # if result.get('image') and isinstance(result.get('intpr'), list):
+        #     context['image'] = result['image']
+        #     context['intpr_list'] = result['intpr']
+            # request.session['medical_image'][str(result['image']['image_id'])] = result['image']
+            # logger.info('image page(%s): %s' % (result['image']['image_id'], request.session['medical_image']))
+            # request.session['curr_image'] = result['image']
+    return render(request, 'miaas/patient_medical_image.html', context)
+
+
+def patient_interpretation_detail_page(request, intpr_id):
+    context = _get_session_context(request)
+    if not intpr_id or int(intpr_id) < 0:
+        return patient_interpretation_list_page(request)
+    if request.session.get('user'):
+        db = cloud_db_copy.DbManager()
+        print intpr_id
+        intpr, physician, request_detail, image = db.retrieve_detail(db.PATIENT_INTPR_DETAIL, intpr_id)
+        context['intpr'] = intpr
+        context['physician'] = physician
+        context['request_detail'] = request_detail
+        context['image'] = image
+    logger.info('interpretation_detail_page get: %s' % request.GET)
+    return render(request, 'miaas/patient_interpretation_detail.html', context)
+
+
 def patient_interpretation_request_detail_page(request, request_id):
     context = _get_session_context(request)
+    if not request_id or int(request_id) < 0:
+        return patient_request_list_page(request)
     if request.session.get('user'):
-        logger.info('interpretation_request_detail_page call db')
-        # Retrieve details.
-        db = cloud_db.DbManager()
-        physician_response = {}
-        request_detail, responses = db.retrieve_patient_request_detail(request_id)
-        physician_response['responses'] = responses
-
-        result = db.retrieve_medical_image_by_id(request_detail['image_id'])
-        context['image'] = result
-
+        db = cloud_db_copy.DbManager()
+        request_detail, image = db.retrieve_detail(db.PATIENT_REQUEST_DETAIL, request_id)
+        responses =  db.retrieve_list(db.REQUEST_RESPONSE_LIST, request_detail['request_id'])
+        context['image'] = image
         context['request_detail'] = request_detail
-        context['physician_response'] = physician_response
-        logger.info("Status:%s" % request_detail['status'])
+        context['responses'] = responses
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
     return render(request, 'miaas/paitent_interpretation_request_detail.html', context)
+
+# phsician
 
 
 ####################
@@ -222,7 +224,7 @@ def patient_interpretation_list_page(request):
     if request.session.get('user'):
         # Retrieve lists.
         db = cloud_db_copy.DbManager()
-        results = db.retrieve_list("patient_intpr_list", request.session['user']['user_id'])
+        results = db.retrieve_list(db.PATIENT_INTPR_LIST, request.session['user']['user_id'])
         for r in results:
             temp = []
             temp.append(timestamp_to_date_string(r['request_date']))
@@ -232,9 +234,11 @@ def patient_interpretation_list_page(request):
             temp.append(r['image_type'])
             temp.append(r['level'])
             temp.append(r['intpr_id'])
-            dt_list.append(temp)
+            if len(temp):
+                dt_list.append(temp)
         # Render the page
-        context['dt_list'] = json.dumps(dt_list)
+        if len(dt_list):
+            context['dt_list'] = json.dumps(dt_list)
     logger.info('interpret get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_list.html', context)
 
@@ -245,7 +249,7 @@ def patient_request_list_page(request):
     if request.session.get('user'):
         # Retrieve lists.
         db = cloud_db_copy.DbManager()
-        results = db.retrieve_list("patient_request_list", request.session['user']['user_id'])
+        results = db.retrieve_list(db.PATIENT_REQUEST_LIST, request.session['user']['user_id'])
         for r in results:
             temp = []
             temp.append(timestamp_to_date_string(r['request_date']))
@@ -255,10 +259,12 @@ def patient_request_list_page(request):
             temp.append(r['level'])
             temp.append(get_interpretation_status(r['status']))
             temp.append(r['request_id'])
-            dt_list.append(temp)
+            if len(temp):
+                dt_list.append(temp)
 
         # Render the page
-        context['dt_list'] = json.dumps(dt_list)
+        if len(dt_list):
+            context['dt_list'] = json.dumps(dt_list)
 
     logger.info('patient_request_list_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_request_list.html', context)
@@ -270,7 +276,7 @@ def archive_page(request):
     if request.session.get('user'):
         # Retrieve lists.
         db = cloud_db_copy.DbManager()
-        results = db.retrieve_list("patient_image_list", request.session['user']['user_id'])
+        results = db.retrieve_list(db.PATIENT_IMAGE_LIST, request.session['user']['user_id'])
         for r in results:
             temp = []
             temp.append(timestamp_to_date_string(r['uploaded_date']))
@@ -279,10 +285,12 @@ def archive_page(request):
             temp.append(timestamp_to_date_string(r['recorded_date']))
             temp.append(r['intpr_num'])
             temp.append(r['image_id'])
-            dt_list.append(temp)
+            if len(temp):
+                dt_list.append(temp)
 
         # Render the page
-        context['dt_list'] = json.dumps(dt_list)
+        if len(dt_list):
+            context['dt_list'] = json.dumps(dt_list)
 
     logger.info('archive get: %s' % request.GET)
     return render(request, 'miaas/patient_archive.html', context)
@@ -295,7 +303,7 @@ def physician_interpretation_search(request):
     if request.session.get('user'):
         # Retrieve lists.
         db = cloud_db_copy.DbManager()
-        results = db.retrieve_list("physician_search_request_list", request.session['user']['user_id'])
+        results = db.retrieve_list(db.PHYSICIAN_SEARCH_REQUEST_LIST, request.session['user']['user_id'])
         for r in results:
             temp = []
             temp.append(timestamp_to_date_string(r['request_date']))
@@ -305,10 +313,12 @@ def physician_interpretation_search(request):
             temp.append(r['image_type'])
             temp.append(r['level'])
             temp.append(r['request_id'])
-            dt_list.append(temp)
+            if len(temp):
+                dt_list.append(temp)
 
         # Render the page
-        context['dt_list'] = json.dumps(dt_list)
+        if len(dt_list):
+            context['dt_list'] = json.dumps(dt_list)
     logger.info('physician_interpretation_search get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_search.html', context)
 
@@ -319,7 +329,7 @@ def physician_interpretation_response_page(request):
     if request.session.get('user'):
         # Retrieve lists.
         db = cloud_db_copy.DbManager()
-        results = db.retrieve_list("physician_response_list", request.session['user']['user_id'])
+        results = db.retrieve_list(db.PHYSICIAN_RESPONSE_LIST, request.session['user']['user_id'])
         for r in results:
             temp = []
             temp.append(timestamp_to_date_string(r['request_date']))
@@ -331,10 +341,12 @@ def physician_interpretation_response_page(request):
             temp.append(r['level'])
             temp.append(get_interpretation_status(r['status']))
             temp.append(r['request_id'])
-            dt_list.append(temp)
+            if len(temp):
+                dt_list.append(temp)
 
         # Render the page
-        context['dt_list'] = json.dumps(dt_list)
+        if len(dt_list):
+            context['dt_list'] = json.dumps(dt_list)
     logger.info('interpretation_request_list_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_response_list.html', context)
 
@@ -345,7 +357,7 @@ def physician_interpretation_page(request):
     if request.session.get('user'):
         # Retrieve lists.
         db = cloud_db_copy.DbManager()
-        results = db.retrieve_list("physician_intpr_list", request.session['user']['user_id'])
+        results = db.retrieve_list(db.PHYSICIAN_INTPR_LIST, request.session['user']['user_id'])
         for r in results:
             temp = []
             temp.append(timestamp_to_date_string(r['request_date']))
@@ -355,11 +367,12 @@ def physician_interpretation_page(request):
             temp.append(r['image_type'])
             temp.append(r['level'])
             temp.append(r['intpr_id'])
-            dt_list.append(temp)
+            if len(temp):
+                dt_list.append(temp)
 
         # Render the page
-        context['dt_list'] = json.dumps(dt_list)
-
+        if len(dt_list):
+            context['dt_list'] = json.dumps(dt_list)
     logger.info('physician_interpretation_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_list.html', context)
 

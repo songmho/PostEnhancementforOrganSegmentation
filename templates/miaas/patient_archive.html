@@ -52,6 +52,7 @@
 <!-- custom javascript -->
 <script>
     var dataSet = {{ dt_list |  safe }};
+
     $(document).ready(function() {
         var table = $('#dataTable').DataTable({
             data: dataSet,

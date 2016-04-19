@@ -50,8 +50,14 @@ def get_interpretation_status(status):
 
 @register.filter(name='intpr_level_string')
 def intpr_level_string(level):
-    level = int(level)
-    return constants.LEVEL_STRING[level]
+    try:
+        level = int(level)
+        return constants.LEVEL_STRING[level]
+
+    except Exception as e:
+        level = 0
+        level = int(level)
+        return constants.LEVEL_STRING[level]
 
 
 @register.filter(name='jsonstr')
@@ -70,7 +76,7 @@ def timestamp_to_datetime_string(timestamp):
             .strftime('%m/%d/%y %H:%M')
 
     except ValueError as e:
-        return (datetime.datetime(1970, 1, 1) + datetime.timedelta(int(timestamp) // 1000))\
+        return (datetime.datetime(1970, 1, 1) + datetime.timedelta(int(timestamp) // 1000)) \
             .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
             .strftime('%m/%d/%y')
 
@@ -83,7 +89,7 @@ def timestamp_to_datetime_string(timestamp):
             .strftime('%m/%d/%y')
 
     except ValueError as e:
-        return (datetime.datetime(1970, 1, 1) + datetime.timedelta(int(timestamp) // 1000))\
+        return (datetime.datetime(1970, 1, 1) + datetime.timedelta(int(timestamp) // 1000)) \
             .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
             .strftime('%m/%d/%y')
 
