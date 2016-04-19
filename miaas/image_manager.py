@@ -225,12 +225,16 @@ class ImageManager():
                             os.rename(filepath, filepath+'.dcm')
                         else:
                             os.remove(filepath)
+                            continue
                     except Exception as e:
                         os.remove(filepath)
                         logger.info(e)
+                        continue
                 # logger.info("################################################3")
                 # logger.info('/home/sel/MIaaS/src/miaas/decompose.py'+ str(filepath))
                 # logger.info(os.getcwd())
+                else:
+                    is_there_dicom = False
                 self.decompose(filepath)
 
                 if file.startswith('.') or file.startswith('__'):
