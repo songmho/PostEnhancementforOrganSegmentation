@@ -595,20 +595,14 @@ function displayImageSequence(imageViewer, nowCnt, segRepeting) {
         var marginLeft = dicomSeqSegA / (dicomSeq.length - 1) * canvasSize;
         var width = (nowCnt - dicomSeqSegA) / (dicomSeq.length - 1) * canvasSize;
 
-        if(dicomSeqSegA > dicomSeqSegB) {
-            var segBarWidth = 0;
-            if (nowCnt <= dicomSeqSegB) {
-                segBarWidth = nowCnt / (dicomSeq.length - 1) * canvasSize;
-                $('#seqControllerProgress .progress-bar-for-seg')
-                    .show().css({
-                        width: segBarWidth + 'px'
-                    });
+        if(dicomSeqSegA > dicomSeqSegB && nowCnt <= dicomSeqSegB) {
+            var segBarWidth = nowCnt / (dicomSeq.length - 1) * canvasSize;
+            $('#seqControllerProgress .progress-bar-for-seg')
+                .show().css({
+                    width: segBarWidth + 'px'
+                });
 
-                width = (dicomSeq.length-dicomSeqSegA) * canvasSize;
-
-            } else {
-                $('#seqControllerProgress .progress-bar-for-seg').hide();
-            }
+            width = (dicomSeq.length-dicomSeqSegA) * canvasSize;
         } else {
             $('#seqControllerProgress .progress-bar-for-seg').hide();
         }
