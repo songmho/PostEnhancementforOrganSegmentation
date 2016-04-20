@@ -800,11 +800,35 @@ function openImageViewer() {
             listExplorer.empty();
             for (var rootName in imageDirs) {
                 var rootImgInfo = imageDirs[rootName];
+                console.log(rootImgInfo);
 
                 if (rootImgInfo['type'] == 'folder') {
-                    for (var dirName in rootImgInfo['file_list']) {
-                        var dirs = rootImgInfo['file_list'][dirName];
-                        listExplorer.append('<li>' + generateExplorer(dirs, dirName) + '</li>');
+
+                    var rootDirKeys = [];
+                    for (var rootdirkey in rootImgInfo['file_list']) {
+                        rootDirKeys.push(rootdirkey);
+                    }
+                    rootDirKeys.sort(cmpStringsWithNumbers);
+
+                    if (rootDirKeys.length >= 1) {
+                        var bHasFile = false;
+                        var fileList = [];
+                        for (var i = 0; i < rootDirKeys.length; i++) {
+                            var file = rootImgInfo['file_list'][rootDirKeys[i]];
+                            if (file['type'] == 'dcm') {
+                                bHasFile = true;
+                                fileList.push(file['dir']);
+                            }
+                        }
+
+                        if(bHasFile && fileList.length >=2) {
+                            listExplorer.append('<li>' + generateExplorer(rootImgInfo, 'Images') + '</li>');
+                        } else {
+                            for (var dirName in rootImgInfo['file_list']) {
+                                var dirs = rootImgInfo['file_list'][dirName];
+                                listExplorer.append('<li>' + generateExplorer(dirs, dirName) + '</li>');
+                            }
+                        }
                     }
                 } else {
                     listExplorer.append('<span><a data-dir="' + rootImgInfo['dir']
@@ -887,7 +911,7 @@ function generateExplorer(dirs, name) {
             var fileList = [];
             for (var i=0; i<dirKeys.length; i++) {
                 var file = dirs['file_list'][dirKeys[i]];
-                if (file['type'] == 'dcm' || file['type'] == 'dicom') {
+                if (file['type'] == 'dcm') {
                     bHasFile = true;
                     fileList.push(file['dir']);
                 }
