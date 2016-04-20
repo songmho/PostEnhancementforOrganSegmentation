@@ -19,11 +19,15 @@ $(document).ready(function() {
         }
 
         var imageType = $('#imageType').val();
-        var ext = getFileExtension($('#image_file'));
-        if (!checkImageTypeAndExtension(imageType, ext)) {
-            console.log(ext);
-            openModal('Please upload correct image file for image type.', 'Image Type Check');
-            return;
+        var filenames = getFiles($('#image_file'));
+        for (var i=0; i<filenames.length; i++) {
+            var ext = getFileExtension(filenames[i]);
+            if (!checkImageTypeAndExtension(imageType, ext)) {
+                console.log(ext);
+                $('#imageUploadModal').modal('hide');
+                openModal('Please upload correct image file for image type.', 'Image Type Check');
+                return;
+            }
         }
 
         var data = new FormData($('#uploadImageForm').get(0));
