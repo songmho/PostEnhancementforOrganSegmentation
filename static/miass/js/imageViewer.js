@@ -2,8 +2,10 @@
  * Created by hanter on 2016. 3. 12..
  */
 
-var graphColors = ['#D76474', '#ADD764', '#8E64D7', '#64D7C7', '#607D8B', '#FFD600',
-                   '#1493CC', '#3F51B5', '#FF5722', '#2196F3', '#009688', '#795548'];
+var graphColors = ['#D76474', '#ADD764', '#8E64D7', '#64D7C7', '#607D8B',
+                   '#FFD600', '#1493CC', '#3F51B5', '#FF5722', '#2196F3',
+                   '#009688', '#795548', '#512DA8', '#B71C1C', '#FF9800',
+                   '#4CAF50', '#9C27B0', '#FF4081', '#00E5FF', '#CDDC39'];
 
 var imageDirs = null;
 var $imageViewer = null;
