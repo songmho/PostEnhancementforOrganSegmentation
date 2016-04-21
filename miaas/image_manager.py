@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 
 class ImageManager():
     _temp_upload_dir = constants.TEMP_UPLOAD_DIR
-    _supported_image_extensions = ['dicom', 'dcm', 'jpg', 'jpeg', 'png', 'zip']
+    _supported_image_extensions = ['dcm', 'jpg', 'jpeg', 'png', 'zip']
     _supported_signal_extensions = ['csv', 'edf']
-    _supported_multi_extensions = ['dicom', 'dcm', 'jpg', 'jpeg', 'png']
+    _supported_multi_extensions = ['dcm', 'jpg', 'jpeg', 'png']
 
     def __init__(self, image_files, image_info):
         self._original_files = image_files
@@ -38,14 +38,11 @@ class ImageManager():
 
             if self._is_zipfile(self._temp_file_path):
                 extract_dir = self._extract_zipfile(self._temp_file_path)
-                # success = self._dcm_to_jpg_indir(extract_dir)
-                # if not success:
-                #     raise Exception("Invalid Dicom Image Format.")
                 temp_path = extract_dir
             else:
                 temp_path = self._temp_file_path
                 temp_path_ext = self._get_file_extension(temp_path)
-                if temp_path_ext == 'dcm' or temp_path_ext == 'dicom':
+                if temp_path_ext == 'dcm':
                     self.decompose(self._temp_file_path)
                 elif temp_path_ext == 'edf':
                     temp_path = edf_to_csv.edf_to_csv(temp_path)
@@ -95,31 +92,6 @@ class ImageManager():
         shutil.move(temp_path, archive_path)
         return archive_path
 
-    def _dcm_to_jpg_indir(self, dir):
-        for root, dirs, files in os.walk(dir):
-            rootpath = os.path.abspath(root)
-            for file in files:
-                if file.startswith('.') or file.startswith('__'):
-                    continue
-                dcmpath = os.path.join(rootpath, file)
-                fileext = self._get_file_extension(dcmpath)
-                if fileext not in ImageManager._supported_image_extensions:
-                    logger.info('not supoorted image extension: %s' % file)
-                    return False
-                if fileext == 'dicom' or fileext == 'dcm':
-                    jpgpath = os.path.join(rootpath, '%s.jpg' % (os.path.splitext(file)[0]))
-                    # logger.info('%s -> %s' % (dcmpath, jpgpath))
-                    success = self._dcm_to_jpg(str(dcmpath), str(jpgpath))
-                    if not success:
-                        logger.info('dcm to jpg failed with: %s' % (file))
-                        return False
-                    os.remove(dcmpath)
-
-        return True
-
-    def _dcm_to_jpg(self, dcmfile, jpgfile):
-        return dicom_reader.convert_to_jpg(dcmfile, jpgfile)
-
     def upload_as_temp(self):
         if len(self._original_files) <= 0:
             raise Exception('No files')
@@ -141,6 +113,7 @@ class ImageManager():
                 logger.exception(e)
                 raise Exception('Uploading file failed.')
                 return False
+
         else:
             self._is_mutliple_file = True
             first_ext = self._get_file_extension(self._original_files[0]._name)
@@ -150,7 +123,7 @@ class ImageManager():
                 ext = self._get_file_extension(file._name)
                 logger.info(ext)
                 if first_ext != ext:
-                    raise Exception('These files are not same extention files.')
+                    raise Exception('These files are not same extension files.')
 
             userdir = '%s/%s' % (constants.TEMP_UPLOAD_DIR, self._image_info['user_id'])
             tempfolder = '%s/%s' % (userdir, 'upload')
@@ -209,39 +182,75 @@ class ImageManager():
         # find sysfiles and check the file is dicom file
         sysfile_list = []
         is_there_dicom = True
+        first_file_ext = None
+        supported_files = False
         for root, dirs, files in os.walk(zipfiledir):
             rootpath = os.path.abspath(root)
+
+            # for remove sysfiles
             for dir in dirs:
                 dirpath = os.path.join(rootpath, dir)
                 if dir.startswith('.') or dir.startswith('__'):
                     sysfile_list.append(dirpath)
+
+            # remove invalid dicom files
+            # and add *.dcm file extension
             for file in files:
                 filepath = os.path.join(rootpath, file)
-                if not self._is_supported_file(filepath):
+
+                # for remove sysfiles
+                if file.startswith('.') or file.startswith('__'):
+                    sysfile_list.append(filepath)
+                    continue
+
+                file_ext = self._get_file_extension(filepath)
+                if first_file_ext is None:
+                    first_file_ext = file_ext
+
+                if file_ext != first_file_ext:
+                    raise Exception('The files in zip are not same extension files.')
+                elif file_ext is None:
+                    # check dicom file and add *.dcm extension
                     try:
                         dicom_file = dicom.read_file(filepath)
                         if len(dicom_file.pixel_array):
-                            is_there_dicom = False
+                            supported_files = True
                             os.rename(filepath, filepath+'.dcm')
+                            self.decompose(filepath+'.dcm')
                         else:
+                            # remove invalid dicom files
                             os.remove(filepath)
                             continue
                     except Exception as e:
                         os.remove(filepath)
                         logger.info(e)
                         continue
+                elif file_ext == 'dicom':
+                    supported_files = True
+                    dcmpath = filepath.replace('.dicom', '.dcm')
+                    os.rename(filepath, dcmpath)
+                    self.decompose(dcmpath)
+                elif file_ext not in self._supported_multi_extensions:
+                    raise Exception('The files in zip are cannot upload multiply. '
+                                    'The zip file only contains *.jpg, *.png, *.dcm.')
+                else:
+                    # common image files (jpg, png, dcm)
+                    if file_ext == 'dcm':
+                        print ('decompose %s' % filepath)
+                        self.decompose(filepath)
+                    supported_files = True
+                    pass
+
                 # logger.info("################################################3")
                 # logger.info('/home/sel/MIaaS/src/miaas/decompose.py'+ str(filepath))
                 # logger.info(os.getcwd())
-                else:
-                    is_there_dicom = False
-                self.decompose(filepath)
 
-                if file.startswith('.') or file.startswith('__'):
-                    sysfile_list.append(filepath)
-        if is_there_dicom:
-            raise Exception("The .zip file doesn't contain dicom files.")
-        # remove sysfiles
+
+
+        if not supported_files:
+            raise Exception("The zip file doesn't contain supported files.")
+
+        #remove sysfile
         for sysfile in sysfile_list:
             if not os.path.exists(sysfile):
                 continue
@@ -249,8 +258,6 @@ class ImageManager():
                 os.remove(sysfile)
             else:
                 shutil.rmtree(sysfile)
-
-        # remove invalid dicom files
 
         return zipfiledir
 
@@ -278,6 +285,8 @@ class ImageManager():
 
     def _is_supported_file(self, filepath):
         ext = self._get_file_extension(filepath)
+        if ext == None:
+            return False
         return ext in ImageManager._supported_image_extensions or \
                ext in ImageManager._supported_signal_extensions
 
@@ -287,6 +296,8 @@ class ImageManager():
 
     def _get_file_extension(self, filepath):
         filename = self._get_file_name(filepath)
+        if filename.find(".") < 0:
+            return None
         return filename.split(".")[-1].lower()
 
 
