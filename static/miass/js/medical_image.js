@@ -72,6 +72,29 @@ $(document).ready(function() {
         $('#imageDescription').attr('readonly', '');
         
         if (imageInfoFormChanged) {
+            if (fileChanged) {
+                //if file is changed, image type must be corresponded
+                var imageType = $('#imageType').val();
+                var filenames = getFiles($('#image_file'));
+                for (var i=0; i<filenames.length; i++) {
+                    var ext = getFileExtension(filenames[i]);
+                    if (!checkImageTypeAndExtension(imageType, ext)) {
+                        console.log(ext);
+                        $('#imageUploadModal').modal('hide');
+                        openModal('Please upload correct image files for image type.', 'Image Type Check');
+                        return;
+                    }
+                }
+            } else {
+                //if also file is not changed, image type must be corresponded
+                if (checkImageTypeIsGraphic($('#imageType').val())
+                        != checkImageTypeIsGraphic(imageInfo.image_type)) {
+                    $('#imageUploadModal').modal('hide');
+                    openModal('Please select correct image type for uploaded image files.', 'Image Type Check');
+                    return;
+                }
+            }
+
             var nowImageInfo = {
                 user_id: user['user_id'],
                 image_id: imageInfo.image_id,
@@ -84,6 +107,7 @@ $(document).ready(function() {
                 medical_department: $('#medicalDepartment').val(),
                 description: $('#imageDescription').val()
             };
+
             $.LoadingOverlay('show');
             $.ajax("/api/medical_image", {
                 method: 'PUT',
@@ -132,7 +156,7 @@ $(document).ready(function() {
             if (!checkImageTypeAndExtension(imageType, ext)) {
                 console.log(ext);
                 $('#imageUploadModal').modal('hide');
-                openModal('Please upload correct image file for image type.', 'Image Type Check');
+                openModal('Please upload correct image files for image type.', 'Image Type Check');
                 return;
             }
         }

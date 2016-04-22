@@ -172,3 +172,18 @@ function checkImageTypeAndExtension(imageType, ext) {
     }
     return false;
 }
+
+function checkImageTypeIsGraphic(imageType) {
+    switch(imageType) {
+        case 'EEG':
+        case 'ECG':
+        case 'EMG':
+            return false;
+        case 'CT':
+        case 'X-ray':
+        case 'MRI':
+        case 'US':
+            return true;
+    }
+    return undefined;
+}
