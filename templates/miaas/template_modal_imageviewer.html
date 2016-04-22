@@ -324,8 +324,15 @@
                                 <div id="seqControllerProgressSegA" class="progress-segment" style="display: none;">A</div>
                                 <div id="seqControllerProgressSegB" class="progress-segment" style="display: none;">B</div>
                             </div>
-                            <div id="seqControllerProgressText" class="progress-text">
-                                45/719
+                            <div class="seq-controller-progress-info">
+                                <div id="seqControllerIntervalForm" class="form-group">
+                                    <label class="control-label">Play Interval: </label>&nbsp;
+                                    <input id="seqControllerInterval" class="form-control form-control-inline"
+                                           type="number" size="3" maxlength="3" value="50" min="10" max="1000" /> ms
+                                </div>
+                                <div id="seqControllerProgressText" class="pull-right progress-text">
+                                    45 / 719
+                                </div>
                             </div>
                             <div id="seqControllerBasicButtons" class="text-center seq-controller-buttons">
                                 <a id="seqControllerStepBackward" class="btn btn-primary disabled"><span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span></a>

@@ -369,6 +369,7 @@ function downloadAndView(tagData){
 var dicomSeq = [];
 var dicomPlayingSequenceInterval = null;
 var dicomPlayingLoadWaitingInterval = null;
+var dicomSeqPlayingIntervalTime = 50;
 var dicomSeqCnt = 0;
 var dicomSeqPlaying = false;
 var dicomSeqForward = true;
@@ -397,6 +398,9 @@ function setPlayDicomSequence(images) {
     var canvas = $('#imageViewer canvas')[0];
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    dicomSeqPlayingIntervalTime = 50;
+    $('#seqControllerInterval').val(50);
 
     $('#imageViewerDetailContainer').hide();
     $('#imageViewShowDetail').hide();
@@ -521,7 +525,7 @@ function setPlayDicomSequence(images) {
                                 dicomSeqCnt--;
                                 if(dicomSeqCnt < 0) dicomSeqCnt = dicomSeq.length - 1;
                             }
-                        }, 50);
+                        }, dicomSeqPlayingIntervalTime);
 
                         dicomSeqPlaying = true;
                     });
@@ -579,7 +583,7 @@ function setPlayDicomSequence(images) {
                                     else if(dicomSeqCnt == dicomSeqSegA-1) dicomSeqCnt = dicomSeqSegB;
                                 }
                             }
-                        }, 50);
+                        }, dicomSeqPlayingIntervalTime);
 
                         dicomSeqSegRepeting = true;
                         dicomSeqPlaying = true;
@@ -780,6 +784,18 @@ $(document).ready(function() {
     cornerstone.enable(imageContainer);
 
     setDicomSequenceProgressbar();
+    dicomSeqPlayingIntervalTime = 50;
+    $('#seqControllerInterval').change(function() {
+        var value = $('#seqControllerInterval').val();
+        if(value < 10) {
+            value = 10;
+            $('#seqControllerInterval').val(10);
+        } else if (value > 1000) {
+            value = 1000;
+            $('#seqControllerInterval').val(1000);
+        }
+        dicomSeqPlayingIntervalTime = value;
+    })
 
     //$('.image-view-image').scroll(function(e) {
     //    console.log(e);
@@ -1032,7 +1048,7 @@ function resizeViewer() {
         $('#imageViewerSequenceLoader').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewer canvas').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewerSequenceController').css({width: canvasSize+'px'});
-        $('#imageViewerSequenceController .progress-text').css({width: canvasSize+'px'});
+        //$('#imageViewerSequenceController .progress-text').css({width: canvasSize+'px'});
 
         if(dicomSeq.length >= 2) {
             $('#seqControllerProgressSegA').css({
