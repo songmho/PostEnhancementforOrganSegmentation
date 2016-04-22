@@ -37,12 +37,16 @@ function openModal(msg, title, action) {
     $('#alertModal .modal-body').text(msg);
 
     if (action != undefined && action != null && jQuery.isFunction(action)) {
-        $('#alertModalClose').off('click');
-        $('#alertModalClose').unbind('click');
-        $('#alertModalClose').click(action);
+        $('#alertModal .modal-alert-close').off('click');
+        $('#alertModal .modal-alert-close').unbind('click');
+        $('#alertModal .modal-alert-close').click(action);
+        $('#alertModal').modal({backdrop: 'static', keyboard: false});
+    } else {
+        $('#alertModal .modal-alert-close').off('click');
+        $('#alertModal .modal-alert-close').unbind('click');
+        $('#alertModal').modal();
     }
 
-    $('#alertModal').modal();
 }
 
 function highlightCurrentMenu() {
