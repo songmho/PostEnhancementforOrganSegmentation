@@ -12,6 +12,7 @@ var $imageViewer = null;
 var lastImageData = null;
 var canvasSize = 512;
 var chartWidth = 1100;
+var chartHeight = 1100;
 var bShowGraphView = false;
 var bShowDicomDetail = true;
 
@@ -235,7 +236,7 @@ function csvGrpahLoadAndView(csvURL) {
             data, {
                 //labels: [ "Time", "Direct_1", "Abdomen_1"],
                 width: chartWidth,
-                height: canvasSize,
+                height: chartHeight,
                 //valueRange: [-3, 5.1],
                 axes: {
                     y: {
@@ -1023,6 +1024,7 @@ function resizeViewer() {
     var windowWidth = $(window).width();
     canvasSize = 512;
     chartWidth = 1100;
+    chartHeight = canvasSize;
     if (windowWidth < 768) {
         canvasSize = 320;
         chartWidth = windowWidth;
@@ -1035,9 +1037,12 @@ function resizeViewer() {
     }
 
     if(bShowGraphView) {
-        var sizeStyle = {width: chartWidth + 'px', height: canvasSize + 'px'};
+        if (windowWidth >= 992) {
+            chartHeight += 64;
+        }
+        var sizeStyle = {width: chartWidth + 'px', height: chartHeight + 'px'};
         $('#graphViewer').css(sizeStyle);
-        $('#graphViewer').attr('width', chartWidth).attr('height', canvasSize);
+        $('#graphViewer').attr('width', chartWidth).attr('height', chartHeight);
     } else {
         var sizeStyle = {width: canvasSize + 'px', height: canvasSize + 'px'};
         //console.log(sizeStyle);
