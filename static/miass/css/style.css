@@ -158,6 +158,7 @@ a:focus {
     }
 }
 .form-btns-container {
+    padding: 15px;
 
 }
 .form-btns-container .form-button {
