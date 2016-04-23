@@ -3,22 +3,22 @@
     <div class="col-xs-12 form-group">
         <label class="col-sm-3 col-md-2 control-label" >Patient ID</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-            <span id="patientId" class="control-value" >{{ request_detail.patient_id }}</span>
+            <span id="patientId" class="control-value" >{{ patient.user_id }}</span>
         </div>
         <label class="col-sm-3 col-md-2 control-label" >Patient Name</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-            <span id="patientName" class="control-value" >{{ request_detail.name }}</span>
+            <span id="patientName" class="control-value" >{{ patient.patient_name }}</span>
         </div>
         {% if request_detail.level == 3 %}
 
             <label class="col-sm-3 col-md-2 control-label" >Phone Number</label>
             <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                <span id="phoneNumber" class="control-value" >{{ request_detail.phone_number }}</span>
+                <span id="phoneNumber" class="control-value" >{{ patient.phone_number }}</span>
             </div>
 
             <label class="col-sm-3 col-md-2 control-label" >Email</label>
             <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-                <span id="email" class="control-value" >{{ request_detail.email }}</span>
+                <span id="email" class="control-value" >{{ patient.email }}</span>
             </div>
         {% endif %}
     </div>

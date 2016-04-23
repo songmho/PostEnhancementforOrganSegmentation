@@ -39,15 +39,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 def main2_page(request):
     context = _get_session_context(request)
     return render(request, 'miaas/main2.html', context)
+
+
 def main_page(request):
     context = _get_session_context(request)
     # context = {
     #     'session': sctx.default_session,
     # }
     return render(request, 'miaas/main.html', context)
+
 
 def index_page(request):
     context = _get_session_context(request)
@@ -101,59 +105,6 @@ def _get_session_context(request):
     return context
 
 
-# KH
-def physician_interpretation_write(request, request_id):
-    context = _get_session_context(request)
-    if request.session.get('user'):
-        logger.info('physician_interpretation_write call db')
-        # Retrieve details.
-        db = cloud_db.DbManager()
-        request_detail = db.retrieve_request_info(request_id)
-
-        result = db.retrieve_medical_image_by_id(request_detail['image_id'])
-        context['image'] = result
-
-        context['request_detail'] = request_detail
-        logger.info("status:%s" % request_detail['status'])
-    logger.info('interpretation_request_detail_page get: %s' % request.GET)
-    return render(request, 'miaas/physician_interpretation_write.html', context)
-
-
-def physician_interpretation_detail_page(request, intpr_id):
-    context = _get_session_context(request)
-    if request.session.get('user'):
-        logger.info('interpretation_detail_page call db')
-        # Interpretation details.
-        db = cloud_db.DbManager()
-        physician_intpr_detail = db.retrieve_physician_interpretation_detail(intpr_id)
-
-        result = db.retrieve_medical_image_by_id(physician_intpr_detail['image_id'])
-        context['image'] = result
-
-        context['intpr'] = physician_intpr_detail
-        context['request_detail'] = physician_intpr_detail
-
-    logger.info('physician_interpretation_detail_page get: %s' % request.GET)
-    return render(request, 'miaas/physician_interpretation_detail.html', context)
-
-
-def physician_request_search_detail_page(request, request_id):
-    context = _get_session_context(request)
-    if request.session.get('user'):
-        logger.info('physician_request_search_detail_page call db')
-        # Retrieve details.
-        db = cloud_db.DbManager()
-        request_detail = db.retrieve_request_info(request_id)
-
-        result = db.retrieve_medical_image_by_id(request_detail['image_id'])
-        context['image'] = result
-
-        context['request_detail'] = request_detail
-        logger.info("status:%s" % request_detail['status'])
-    logger.info('physician_request_search_detail_page get: %s' % request.GET)
-    return render(request, 'miaas/physician_interpretation_search_detail.html', context)
-
-
 ####################
 #  Details Pages #
 ####################
@@ -174,9 +125,9 @@ def medical_image_page(request, image_id):
         # if result.get('image') and isinstance(result.get('intpr'), list):
         #     context['image'] = result['image']
         #     context['intpr_list'] = result['intpr']
-            # request.session['medical_image'][str(result['image']['image_id'])] = result['image']
-            # logger.info('image page(%s): %s' % (result['image']['image_id'], request.session['medical_image']))
-            # request.session['curr_image'] = result['image']
+        # request.session['medical_image'][str(result['image']['image_id'])] = result['image']
+        # logger.info('image page(%s): %s' % (result['image']['image_id'], request.session['medical_image']))
+        # request.session['curr_image'] = result['image']
     return render(request, 'miaas/patient_medical_image.html', context)
 
 
@@ -203,14 +154,57 @@ def patient_interpretation_request_detail_page(request, request_id):
     if request.session.get('user'):
         db = cloud_db_copy.DbManager()
         request_detail, image = db.retrieve_detail(db.PATIENT_REQUEST_DETAIL, request_id)
-        responses =  db.retrieve_list(db.REQUEST_RESPONSE_LIST, request_detail['request_id'])
+        responses = db.retrieve_list(db.REQUEST_RESPONSE_LIST, request_detail['request_id'])
         context['image'] = image
         context['request_detail'] = request_detail
         context['responses'] = responses
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
     return render(request, 'miaas/paitent_interpretation_request_detail.html', context)
 
-# phsician
+
+# physician
+def physician_request_search_detail_page(request, request_id):
+    context = _get_session_context(request)
+    if not request_id or int(request_id) < 0:
+        return physician_interpretation_search(request)
+    if request.session.get('user'):
+        db = cloud_db_copy.DbManager()
+        request_detail, patient, image = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
+        context['request_detail'] = request_detail
+        context['patient'] = patient
+        context['image'] = image
+
+    logger.info('physician_request_search_detail_page get: %s' % request.GET)
+    return render(request, 'miaas/physician_interpretation_search_detail.html', context)
+
+
+def physician_interpretation_write(request, request_id):
+    context = _get_session_context(request)
+    if not request_id or int(request_id) < 0:
+        return physician_interpretation_response_page(request)
+    if request.session.get('user'):
+        db = cloud_db_copy.DbManager()
+        request_detail, patient, image = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
+        context['request_detail'] = request_detail
+        context['patient'] = patient
+        context['image'] = image
+    logger.info('interpretation_request_detail_page get: %s' % request.GET)
+    return render(request, 'miaas/physician_interpretation_write.html', context)
+
+
+def physician_interpretation_detail_page(request, intpr_id):
+    context = _get_session_context(request)
+    if not intpr_id or int(intpr_id) < 0:
+        return physician_interpretation_page(request)
+    if request.session.get('user'):
+        db = cloud_db_copy.DbManager()
+        intpr, patient, request_detail, image = db.retrieve_detail(db.PHYSICIAN_INTPR_DETAIL, intpr_id)
+        context['intpr'] = intpr
+        context['patient'] = patient
+        context['request_detail'] = request_detail
+        context['image'] = image
+    logger.info('physician_interpretation_detail_page get: %s' % request.GET)
+    return render(request, 'miaas/physician_interpretation_detail.html', context)
 
 
 ####################

@@ -2,25 +2,30 @@
  * Created by hanter on 2016. 2. 23..
  */
 
-$(document).ready(function() {
+$(document).ready(function () {
     console.log(user);
-
     if (user.user_type == 'patient') {
+
         $("#selectGender").val(user.gender).attr("selected", "selected");
-        $('#inputBirthday').val(new Date(user.birthday).format("yyyy-MM-dd"));
+        var inputBirthday = $('#inputBirthday');
+        inputBirthday.val(new Date(user.birthday).format("yyyy-MM-dd"));
+        inputBirthday.prop('max', function () {
+            return new Date().toJSON().split('T')[0];
+        });
+
     } else if (user.user_type = 'physician') {
         $("#selectField").val(user.medicine_field).attr("selected", "selected");
         //certification
     }
 
-    $('#btnFormReset').click(function(){
+    $('#btnFormReset').click(function () {
         resetUser();
     });
 
-    $('#accountForm').on('submit', function(e) {
+    $('#accountForm').on('submit', function (e) {
         e.preventDefault();
 
-        if($('#inputPw').val() != $('#inputPwConfirm').val()) {
+        if ($('#inputPw').val() != $('#inputPwConfirm').val()) {
             openModal("Password Confirm is not same.", "Update Failed");
         } else {
             updateUser();
@@ -31,14 +36,14 @@ $(document).ready(function() {
 var updatingUser = {};
 function updateUser() {
     var inputPw = $('#inputPw');
-    if(inputPw.val().length > 20) {
+    if (inputPw.val().length > 20) {
         openModal("Invalid Password", "Update Failed");
         inputPw.focus();
         return;
     }
     var phoneRe = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g;
     var inputMobile = $('#inputMobile');
-    if(!inputMobile.val().match(phoneRe)){
+    if (!inputMobile.val().match(phoneRe)) {
         openModal("Invalid Phone Number", "Update Failed");
         inputMobile.focus();
         return;
@@ -51,19 +56,19 @@ function updateUser() {
     updatingUser['email'] = $('#inputEmail').val();
     updatingUser['user_type'] = user.user_type;
 
-    if(user.user_type == 'patient') {
+    if (user.user_type == 'patient') {
         updatingUser['gender'] = $('#selectGender').val();
         var currentTime = new Date().getTime();
         var minBirthday = -5367427200000;
         var inputBirthday = $('#inputBirthday');
-        if(Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
+        if (Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
             openModal("Invalid Birthday");
             inputBirthday.focus();
             return;
         }
         updatingUser['birthday'] = Date.parse(inputBirthday.val())
 
-    } else if(user.user_type == 'physician') {
+    } else if (user.user_type == 'physician') {
         updatingUser['medicine_field'] = $('#selectField').val();
         updatingUser['license_number'] = $('#inputLicence').val();
         //user['certificate_dir'] = $('#fileCertification').val();
@@ -78,10 +83,10 @@ function updateUser() {
             user: updatingUser
         }),
         dataType: 'json',
-        success: function(res) {
+        success: function (res) {
             console.log(res);
             $.LoadingOverlay('hide');
-            if(res['code'] == 'SUCCESS') {
+            if (res['code'] == 'SUCCESS') {
                 user = updatingUser;
                 openModal("Account information is successfully updated.", "Update Success");
             } else {
@@ -98,7 +103,7 @@ function resetUser() {
     $('#inputMobile').val(user.phone_number);
     $('#inputEmail').val(user.email);
 
-    if(user.user_type == 'patient') {
+    if (user.user_type == 'patient') {
         $("#selectGender").val(user.gender).attr("selected", "selected");
         $('#inputBirthday').val(new Date(user.birthday).format("yyyy-MM-dd"));
     } else if (user.user_type == 'physician') {

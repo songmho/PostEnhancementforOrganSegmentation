@@ -8,7 +8,9 @@ $(document).ready(function() {
     $('#col-signup-basic').hide();
     $('#col-signup-detail-patient').hide();
     $('#col-signup-detail-physician').hide();
-
+    $('#inputBirthday').prop('max', function(){
+        return new Date().toJSON().split('T')[0];
+    });
     $('#btn-patient').click(function() {
         usertype = 'patient';
         $('#selectField').removeAttr('required');
@@ -43,7 +45,17 @@ $(document).ready(function() {
         e.preventDefault();
         var idRe = /^[a-z]+[a-z0-9]{3,19}$/g;
         var inputId = $('#inputId');
-        if(inputId.val().length > 20 || !inputId.val().match(idRe)) {
+        if(inputId.val().length > 20){
+            openSignupFailModal("The length of User ID is too long, maximum length is 20.");
+            inputId.focus();
+            return;
+        }
+        if(inputId.val().length < 4){
+            openSignupFailModal("The length of User ID should be at least 4.");
+            inputId.focus();
+            return;
+        }
+        if(!inputId.val().match(idRe)) {
             openSignupFailModal("User ID is invalid, please enter small letters and numbers.");
             inputId.focus();
             return;
@@ -51,6 +63,11 @@ $(document).ready(function() {
         var inputPw = $('#inputPw');
         if(inputPw.val().length > 20) {
             openSignupFailModal("Too long password is entered, maximum length is 20.");
+            inputPw.focus();
+            return;
+        }
+        if(inputPw.val().length < 4) {
+            openSignupFailModal("The length of password should be at least 4.");
             inputPw.focus();
             return;
         }
