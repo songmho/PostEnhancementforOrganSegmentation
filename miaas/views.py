@@ -159,7 +159,7 @@ def patient_interpretation_request_detail_page(request, request_id):
         context['request_detail'] = request_detail
         context['responses'] = responses
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
-    return render(request, 'miaas/paitent_interpretation_request_detail.html', context)
+    return render(request, 'miaas/patient_interpretation_request_detail.html', context)
 
 
 # physician
