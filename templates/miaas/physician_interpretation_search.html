@@ -26,7 +26,8 @@
                     </div>
                 {% else %}
                     <div class="table-nodata">
-                        <h4 class="text-danger">There is no requests.</h4>
+                        <h4 class="text-danger">There is no any requests.</h4>
+                        <p>Please wait for any patient's request.</p>
                     </div>
                 {% endif %}
             </div>
@@ -39,6 +40,7 @@
 <!-- custom javascript -->
 <script src="{% static 'lib/jquery/jquery.dataTables.min.js' %}"></script>
 <script>
+    {% if dt_list %}
     var dataSet = {{ dt_list | safe }};
     $(document).ready(function() {
         var table = $('#dataTable').DataTable({
@@ -60,6 +62,7 @@
             location.href = '{% url 'miaas:interpretation_search' %}/detail/' +index_id;
         });
     });
+    {% endif %}
 </script>
 
 
