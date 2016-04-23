@@ -109,8 +109,9 @@ b a.table-page-number {
     font-size: 30px;
     text-decoration: underline;
 }
-
-
+.table.table-inner-page td {
+    word-break: break-all;
+}
 
 @media (min-width: 768px) {
     td .btns-2-container div:nth-child(1) {

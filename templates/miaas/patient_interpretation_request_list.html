@@ -45,7 +45,11 @@
     {% if dt_list %}
     var dataSet = {{ dt_list | safe }};
     $(document).ready(function() {
-        var table = $('#dataTable').DataTable({
+        var table = $('#dataTable')
+                .on('order.dt', setStatusColor)
+                .on('search.dt', setStatusColor)
+                .on('page.dt', setStatusColor)
+                .DataTable({
             data: dataSet,
             order: [[ 0, "desc" ]],
             columns: [
@@ -54,8 +58,11 @@
                 { title: "Image Subject" },
                 { title: "Image Type" },
                 { title: "Level" },
-                { title: "Status" }
-            ]
+                { title: "Status", className: "req-table-status" }
+            ]/*,
+            fnInitComplete: function() {
+                setStatusColor();
+            }*/
         });
         $('#dataTable tbody').on('click', 'tr', function () {
             $.LoadingOverlay('show');
@@ -64,6 +71,23 @@
             location.href = '{% url 'miaas:interpretation_request_list' %}/detail/' +index_id;
         });
     });
+
+    function setStatusColor() {
+        $('#dataTable td.req-table-status').each(function() {
+            var status = $(this).text();
+            switch(status){
+                case 'Finding Physician':
+                    $(this).css({color: '#53B0A5'});
+                    break;
+                case 'Candidate Waiting':
+                    $(this).css({color: '#D76464'});
+                    break;
+                case 'Waiting Interpretation':
+                    $(this).css({color: '#78A52C'});
+                    break;
+            }
+        });
+    }
     {% endif %}
 </script>
 

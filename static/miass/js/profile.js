@@ -126,14 +126,14 @@ function updateProfile() {
         return
     }
     var drinkingCapacity = $('#drinkingCapacity');
-    if(drinkingCapacity.val() <= 0&& drinkingCapacity.val()!=""){
-        openUpdateFailModal('Drinking capacity must be larger than 0', 'Update Failed');
+    if(drinkingCapacity.val() < 0 && drinkingCapacity.val()!=""){
+        openUpdateFailModal('Drinking capacity must be equal or larger than 0', 'Update Failed');
         drinkingCapacity.focus();
         return
     }
     var drinkingFrequency = $('#drinkingFrequency');
-    if(drinkingFrequency.val() <= 0&& drinkingFrequency.val()!=""){
-        openUpdateFailModal('Drinking frequency must be larger than 0', 'Update Failed');
+    if(drinkingFrequency.val() < 0 && drinkingFrequency.val()!=""){
+        openUpdateFailModal('Drinking frequency must be equal or larger than 0', 'Update Failed');
         drinkingFrequency.focus();
         return
     }
@@ -144,14 +144,14 @@ function updateProfile() {
         return
     }
     var exercise = $('#exercise');
-    if((exercise.val() <= 0 || exercise.val() >= 1440) && exercise.val()!=""){
-        openUpdateFailModal('Exercise hours must be larger than 0 and lower than 1440', 'Update Failed');
+    if((exercise.val() < 0 || exercise.val() > 1440) && exercise.val()!=""){
+        openUpdateFailModal('Exercise Time must be larger than 0 and lower than 1440', 'Update Failed');
         exercise.focus();
         return
     }
     var water = $('#water');
-    if(water.val() <= 0 && water.val()!=""){
-        openUpdateFailModal('Water intake must be larger thna 0', 'Update Failed');
+    if(water.val() < 0 && water.val()!=""){
+        openUpdateFailModal('Water intake must be larger than 0', 'Update Failed');
         water.focus();
         return
     }
