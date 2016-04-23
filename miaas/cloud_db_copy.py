@@ -171,7 +171,7 @@ class DbManager:
                          "JOIN medical_image m ON intpr.image_id = m.image_id "
                          "WHERE intpr.intpr_id = %s",
 
-                "columns": [INTPR_COLUMNS, PHYSICIAN_COLUMNS, REQUEST_COLUMNS, IMAGE_COLUMNS]},
+                "columns": [INTPR_COLUMNS, PHYSICIAN_COLUMNS+["password"], REQUEST_COLUMNS, IMAGE_COLUMNS]},
 
         PATIENT_REQUEST_DETAIL:
             {
@@ -196,7 +196,7 @@ class DbManager:
                       "JOIN patient_info pai ON m.user_id = pai.user_id "
                       "WHERE req.request_id = %s",
 
-             "columns": [REQUEST_COLUMNS, PATIENT_COLUMNS, IMAGE_COLUMNS]},
+             "columns": [REQUEST_COLUMNS, PATIENT_COLUMNS+["password"], IMAGE_COLUMNS]},
 
         PHYSICIAN_INTPR_DETAIL:
             {"query": "SELECT intpr.*, pai.*, req.*, m.* "
@@ -206,7 +206,7 @@ class DbManager:
                       "JOIN medical_image m ON intpr.image_id = m.image_id "
                       "WHERE intpr.intpr_id = %s",
 
-             "columns": [INTPR_COLUMNS, PATIENT_COLUMNS, REQUEST_COLUMNS, IMAGE_COLUMNS]},
+             "columns": [INTPR_COLUMNS, PATIENT_COLUMNS+["password"], REQUEST_COLUMNS, IMAGE_COLUMNS]},
         PATIENT_INFO_ID:
             {"query": "SELECT * "
                       "FROM patient_info "
@@ -336,5 +336,5 @@ if __name__ == '__main__':
     # image, = db.retrieve_detail(db.PATIENT_IMAGE_DETAIL, 211)
     # intprs = db.retrieve_list(db.IMAGE_INTPR_LIST, image['image_id'])
 
-    res = db.retrieve_detail(db.PATIENT_PROFILE, "hanter")
-    print len(res)
+    request_detail, patient, image = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, 23)
+    print image
