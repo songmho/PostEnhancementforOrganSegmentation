@@ -8,9 +8,11 @@
 {% load my_filters %}
 
 {% include 'miaas/template_header.html' %}
+{% include 'miaas/template_nav_physician.html' %}
 
 <!-- custom css -->
-{% include 'miaas/template_nav_physician.html' %}
+<link rel="stylesheet" type="text/css" href="{% static 'miass/data_table_css/dataTables.bootstrap.css' %}">
+
 
 <div class="container">
     <section class="section section-default">
@@ -37,7 +39,8 @@
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
-<script src="{% static 'lib/jquery/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'miass/data_table_js/jquery.dataTables.js' %}"></script>
+<script src="{% static 'miass/data_table_js/dataTables.bootstrap.js' %}"></script>
 <script>
     var dataSet = {{ dt_list | safe }};
     $(document).ready(function() {
