@@ -17,8 +17,6 @@ $(document).ready(function () {
             openModal("Recorded date must be after 1800 and before now.", "Upload Failed");
             imageDate.focus();
             return;
-        } else {
-            console.log("rRR")
         }
 
         var imageType = $('#imageType').val();

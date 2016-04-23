@@ -9,6 +9,10 @@ var imageInfoFormChanged = false;
 
 $(document).ready(function() {
     /*** for file selection ***/
+    var imageDate = $('#takenDate');
+    imageDate.prop('max', function () {
+        return new Date().toJSON().split('T')[0];
+    });
     $('#image_file').change(function() {
         console.log('file changed');
         fileChanged = true;
@@ -56,6 +60,15 @@ $(document).ready(function() {
 
     $('#imageInfoForm').on('submit', function(e) {
         e.preventDefault();
+        var currentTime = new Date().getTime() + 3600 * 9;
+        var minDate = -5367427200000;
+        console.log(currentTime);
+        console.log(Date.parse(imageDate.val()));
+        if (Date.parse(imageDate.val()) > currentTime || Date.parse(imageDate.val()) < minDate) {
+            openModal("Recorded date must be after 1800 and before now.", "Upload Failed");
+            imageDate.focus();
+            return;
+        }
 
         $('#btnFormEditConfirm').hide();
         $('#btnFormCancel').hide();
