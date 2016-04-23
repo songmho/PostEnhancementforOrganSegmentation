@@ -109,7 +109,7 @@ b a.table-page-number {
     font-size: 30px;
     text-decoration: underline;
 }
-.table.table-inner-page td {
+.table td.word-break {
     word-break: break-all;
 }
 
