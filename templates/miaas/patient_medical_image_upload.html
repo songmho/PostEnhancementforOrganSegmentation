@@ -37,8 +37,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <div class="col-sm-9 col-md-10">
                             {% csrf_token %}
                             <input type="file" id="image_file" multiple="multiple" name="attachments" class="form-control"
-                                   placeholder="Supported file extensions are dcm, dicom, csv, edf, and zip." required
-                                   accept=".csv, .edf, .png, .jpg, .dicom, .dcm, .zip" >
+                                   placeholder="Supported file extensions are dcm, jpg, png, csv, edf, and zip." required
+                                   accept=".csv, .edf, .png, .jpg, .dcm, .zip" >
                         </div>
                     </div>
 

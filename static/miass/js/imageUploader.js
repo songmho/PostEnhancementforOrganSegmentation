@@ -143,20 +143,19 @@ function easeInOutCubic (t, b, c, d) {
 	return c/2*(t*t*t + 2) + b;
 }
 
+function getFiles(fileForm) {
+    var files = fileForm.prop("files");
+    var names = $.map(files, function(val) { return val.name; });
+    return names;
+}
 
-function getFileExtension(fileForm) {
-    console.log(fileForm);
-    console.log(fileForm.val());
-
-    var fakePath = fileForm.val();
-
+function getFileExtension(fakePath) {
     var fakePaths = fakePath.split('.');
     var ext = fakePaths[fakePaths.length-1];
     return ext;
 }
 
 function checkImageTypeAndExtension(imageType, ext) {
-    if (ext == 'zip') return true;
     switch(imageType) {
         case 'EEG':
         case 'ECG':
@@ -168,7 +167,7 @@ function checkImageTypeAndExtension(imageType, ext) {
         case 'X-ray':
         case 'MRI':
         case 'US':
-            if (ext == 'jpg' || ext == 'png' || ext == 'dcm' || ext == 'dicom') return true;
+            if (ext == 'jpg' || ext == 'png' || ext == 'dcm' || ext == 'zip') return true;
             else return false;
     }
     return false;

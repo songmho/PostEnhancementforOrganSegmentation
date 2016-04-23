@@ -49,7 +49,7 @@ function dicomReadHeader(wadoURL) {
                 var mb = kb / 1024;
                 var byteStr = mb > 1 ? mb.toFixed(3) + " MB" : kb.toFixed(0) + " KB";
                 //document.getElementById('statusText').innerHTML = 'Status: Parsing ' + byteStr + ' bytes, please wait..';
-                console.log('Status: Parsing ' + byteStr + ' bytes, please wait..');
+                //console.log('Status: Parsing ' + byteStr + ' bytes, please wait..');
                 // set a short timeout to do the parse so the DOM has time to update itself with the above message
                 setTimeout(function() {
                     // Invoke the paresDicom function and get back a DataSet object with the contents
@@ -132,7 +132,7 @@ function dicomloadAndView(dicomURL) {
     showImageViewerLoader(true);
     try {
         cornerstone.loadAndCacheImage(wadoURI).then(function(image) {
-            console.log(image);
+            //console.log(image);
             var viewport = cornerstone.getDefaultViewportForImage(element, image);
             cornerstone.displayImage(element, image, viewport);
             if(conerstoneloaded === false) {
@@ -181,6 +181,17 @@ function dicomloadAndView(dicomURL) {
 }
 
 function generalImageLoadAndView(imageURL) {
+    if(conerstoneloaded === true) {
+        var element = $('#imageViewer').get(0);
+        cornerstoneTools.mouseInput.disable(element);
+        cornerstoneTools.mouseWheelInput.disable(element);
+        cornerstoneTools.wwwc.disable(element);
+        cornerstoneTools.pan.disable(element);
+        cornerstoneTools.zoom.disable(element);
+        cornerstoneTools.zoomWheel.disable(element);
+        conerstoneloaded = false;
+    }
+
     var canvas = $('#imageViewer canvas')[0];
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -442,15 +453,15 @@ function setPlayDicomSequence(images) {
 
                         var element = $('#imageViewer').get(0);
                         displayImageSequence(imageViewer, dicomSeqCnt);
-                        /*if(conerstoneloaded === true) {
-                            cornerstoneTools.mouseInput.disable(element);
-                            cornerstoneTools.mouseWheelInput.disable(element);
-                            cornerstoneTools.wwwc.deactivate(element, 1); // ww/wc is the default tool for left mouse button
-                            cornerstoneTools.pan.deactivate(element, 2); // pan is the default tool for middle mouse button
-                            cornerstoneTools.zoom.deactivate(element, 4); // zoom is the default tool for right mouse button
-                            cornerstoneTools.zoomWheel.deactivate(element); // zoom is the default tool for middle mouse wheel
-                            conerstoneloaded = false;
-                        }*/
+                        //if(conerstoneloaded === true) {
+                        //    cornerstoneTools.mouseInput.disable(element);
+                        //    cornerstoneTools.mouseWheelInput.disable(element);
+                        //    cornerstoneTools.wwwc.disable(element);
+                        //    cornerstoneTools.pan.disable(element);
+                        //    cornerstoneTools.zoom.disable(element);
+                        //    cornerstoneTools.zoomWheel.disable(element);
+                        //    conerstoneloaded = false;
+                        //}
                         if(conerstoneloaded === false) {
                             cornerstoneTools.mouseInput.enable(element);
                             cornerstoneTools.mouseWheelInput.enable(element);
@@ -800,11 +811,35 @@ function openImageViewer() {
             listExplorer.empty();
             for (var rootName in imageDirs) {
                 var rootImgInfo = imageDirs[rootName];
+                console.log(rootImgInfo);
 
                 if (rootImgInfo['type'] == 'folder') {
-                    for (var dirName in rootImgInfo['file_list']) {
-                        var dirs = rootImgInfo['file_list'][dirName];
-                        listExplorer.append('<li>' + generateExplorer(dirs, dirName) + '</li>');
+
+                    var rootDirKeys = [];
+                    for (var rootdirkey in rootImgInfo['file_list']) {
+                        rootDirKeys.push(rootdirkey);
+                    }
+                    rootDirKeys.sort(cmpStringsWithNumbers);
+
+                    if (rootDirKeys.length >= 1) {
+                        var bHasFile = false;
+                        var fileList = [];
+                        for (var i = 0; i < rootDirKeys.length; i++) {
+                            var file = rootImgInfo['file_list'][rootDirKeys[i]];
+                            if (file['type'] == 'dcm') {
+                                bHasFile = true;
+                                fileList.push(file['dir']);
+                            }
+                        }
+
+                        if(bHasFile && fileList.length >=2) {
+                            listExplorer.append('<li>' + generateExplorer(rootImgInfo, 'Images') + '</li>');
+                        } else {
+                            for (var dirName in rootImgInfo['file_list']) {
+                                var dirs = rootImgInfo['file_list'][dirName];
+                                listExplorer.append('<li>' + generateExplorer(dirs, dirName) + '</li>');
+                            }
+                        }
                     }
                 } else {
                     listExplorer.append('<span><a data-dir="' + rootImgInfo['dir']
@@ -887,7 +922,7 @@ function generateExplorer(dirs, name) {
             var fileList = [];
             for (var i=0; i<dirKeys.length; i++) {
                 var file = dirs['file_list'][dirKeys[i]];
-                if (file['type'] == 'dcm' || file['type'] == 'dicom') {
+                if (file['type'] == 'dcm') {
                     bHasFile = true;
                     fileList.push(file['dir']);
                 }
