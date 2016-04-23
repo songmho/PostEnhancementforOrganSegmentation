@@ -173,6 +173,7 @@ def physician_request_search_detail_page(request, request_id):
         context['request_detail'] = request_detail
         context['patient'] = patient
         context['image'] = image
+        print image
 
     logger.info('physician_request_search_detail_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_search_detail.html', context)
