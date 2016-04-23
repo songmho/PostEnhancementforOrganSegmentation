@@ -155,7 +155,7 @@
         $.ajax("/api/patient_profile", {
             method: 'GET',
             data: {
-                user_id: '{{ request_detail.patient_id }}'
+                user_id: '{{ patient.user_id }}'
             },
             dataType: 'json',
             success: function(res) {
@@ -199,7 +199,7 @@
                     data: JSON.stringify({
                         action: 'finishIntpr',
                         request_id: '{{ request_detail.request_id }}',
-                        patient_id: '{{ request_detail.patient_id }}',
+                        patient_id: '{{ patient.user_id }}',
                         physician_id: '{{ user_session.user_id }}',
                         image_id: '{{ request_detail.image_id }}',
                         level: '{{ request_detail.level }}',
