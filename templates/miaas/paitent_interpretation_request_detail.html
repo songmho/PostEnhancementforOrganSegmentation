@@ -206,6 +206,7 @@
 
         $('.view-profile').click(function(){
             var physician_id = $(this).attr('physician_id');
+            console.log(physician_id);
             $.LoadingOverlay('show');
             $.ajax("/api/physician_profile", {
                 method: 'GET',
@@ -215,6 +216,7 @@
                 dataType: 'json',
                 success: function(res) {
                     $.LoadingOverlay('hide');
+                    console.log(res);
                     if(res['code'] == 'SUCCESS') {
                         profiles = res['profiles'];
                         resetProfile();
@@ -224,7 +226,6 @@
                     }
                 }
             });
-
         });
 
         $('.btn-physician-select').click(function() {

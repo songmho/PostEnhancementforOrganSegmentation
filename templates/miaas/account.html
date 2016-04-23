@@ -92,7 +92,7 @@ location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPw" >Birthday</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="date" id="inputBirthday" name="birthday" class="form-control" required />
+                            <input type="date" id="inputBirthday" name="birthday" min="1800-01-01" class="form-control" required />
                         </div>
                     </div>
 

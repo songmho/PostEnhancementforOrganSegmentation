@@ -395,6 +395,7 @@ class DbManager():
             except Exception as e:
                 logger.exception(e)
                 raise Exception( "Retrieve retrieve_physician_profile Profile Error" + e.message)
+        print profile
         return profile
 
     def add_medical_image(self, medical_image):

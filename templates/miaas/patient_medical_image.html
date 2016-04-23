@@ -71,7 +71,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="col-xs-12 form-group">
                         <label class="col-sm-3 col-md-2 control-label" for="takenDate" >Recorded Date</label>
                         <div class="col-sm-9 col-md-4">
-                            <input type="date" id="takenDate" name="takenDate" class="form-control"
+                            <input type="date" id="takenDate" name="takenDate" class="form-control" min="1800-01-01"
                                    placeholder="YYYY-MM-DD" required readonly value="2016-02-02">
                         </div>
                     </div>

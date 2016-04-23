@@ -138,7 +138,7 @@ function updateProfile() {
         return
     }
     var sleeping = $('#sleeping');
-    if((sleeping.val() <= 0 || sleeping.val() >= 24) && sleeping.val()!="" ){
+    if((sleeping.val() < 0 || sleeping.val() > 24) && sleeping.val()!="" ){
         openUpdateFailModal('Sleeping hours must be larger than 0 and lower than 24.', 'Update Failed');
         sleeping.focus();
         return

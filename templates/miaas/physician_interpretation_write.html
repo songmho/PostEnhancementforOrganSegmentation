@@ -100,6 +100,7 @@
     </section>
 
     {% else %}
+
     <section class="section section-default">
         <div class="row">
             <form id="searchDetailForm" class="col-xs-12 col-table" accept-charset="UTF-8">
@@ -121,16 +122,16 @@
 <!-- Modal -->
 {% include 'miaas/template_modal_patient_profile.html' %}
 {% include 'miaas/template_modal_imageviewer.html' %}
-
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
 <script>
     var profiles;
     var phIntprList = "{% url 'miaas:physician_interpretation' %}";
-    $(document).ready(function() {
-        $.LoadingOverlay('show');
 
+    $(document).ready(function() {
+
+        $.LoadingOverlay('show');
         tinymce.init({
             selector: 'textarea.interpretation-writer',
             menubar: false,
@@ -160,7 +161,7 @@
             dataType: 'json',
             success: function(res) {
                 $.LoadingOverlay('hide');
-                //console.log(JSON.stringify(res));
+                console.log(JSON.stringify(res));
                 if(res['code'] == 'SUCCESS') {
                     profiles = res['profiles'];
 {#                    console.log(profiles);#}
