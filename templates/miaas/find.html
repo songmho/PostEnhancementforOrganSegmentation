@@ -40,11 +40,11 @@
                     <br/>
                     <div class="row" class="row-form-btns">
                         <div id="btn-basic-next" class="col-xs-6 col-md-4 col-md-offset-2">
-                            <button class="btn btn-lg btn-primary btn-block" type="submit">Find</button>
+                            <button class="btn btn-lg btn-success btn-block" type="button"
+                               onclick="javascript: location.href = '{% url 'miaas:signin' %}';">Back</button>
                         </div>
                         <div id="btn-basic-next" class="col-xs-6 col-md-4">
-                            <button class="btn btn-lg btn-primary btn-block" type="button"
-                               onclick="javascript: location.href = '{% url 'miaas:signin' %}';">OK</button>
+                            <button class="btn btn-lg btn-primary btn-block" type="submit">Find</button>
                         </div>
                     </div>
                 </form>

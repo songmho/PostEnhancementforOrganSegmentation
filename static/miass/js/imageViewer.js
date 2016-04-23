@@ -2,14 +2,17 @@
  * Created by hanter on 2016. 3. 12..
  */
 
-var graphColors = ['#D76474', '#ADD764', '#8E64D7', '#64D7C7', '#607D8B', '#FFD600',
-                   '#1493CC', '#3F51B5', '#FF5722', '#2196F3', '#009688', '#795548'];
+var graphColors = ['#D76474', '#ADD764', '#8E64D7', '#64D7C7', '#607D8B',
+                   '#FFD600', '#1493CC', '#3F51B5', '#FF5722', '#2196F3',
+                   '#009688', '#795548', '#512DA8', '#B71C1C', '#FF9800',
+                   '#4CAF50', '#9C27B0', '#FF4081', '#00E5FF', '#CDDC39'];
 
 var imageDirs = null;
 var $imageViewer = null;
 var lastImageData = null;
 var canvasSize = 512;
 var chartWidth = 1100;
+var chartHeight = 1100;
 var bShowGraphView = false;
 var bShowDicomDetail = true;
 
@@ -233,7 +236,7 @@ function csvGrpahLoadAndView(csvURL) {
             data, {
                 //labels: [ "Time", "Direct_1", "Abdomen_1"],
                 width: chartWidth,
-                height: canvasSize,
+                height: chartHeight,
                 //valueRange: [-3, 5.1],
                 axes: {
                     y: {
@@ -367,6 +370,7 @@ function downloadAndView(tagData){
 var dicomSeq = [];
 var dicomPlayingSequenceInterval = null;
 var dicomPlayingLoadWaitingInterval = null;
+var dicomSeqPlayingIntervalTime = 50;
 var dicomSeqCnt = 0;
 var dicomSeqPlaying = false;
 var dicomSeqForward = true;
@@ -395,6 +399,9 @@ function setPlayDicomSequence(images) {
     var canvas = $('#imageViewer canvas')[0];
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    dicomSeqPlayingIntervalTime = 50;
+    $('#seqControllerInterval').val(50);
 
     $('#imageViewerDetailContainer').hide();
     $('#imageViewShowDetail').hide();
@@ -519,7 +526,7 @@ function setPlayDicomSequence(images) {
                                 dicomSeqCnt--;
                                 if(dicomSeqCnt < 0) dicomSeqCnt = dicomSeq.length - 1;
                             }
-                        }, 50);
+                        }, dicomSeqPlayingIntervalTime);
 
                         dicomSeqPlaying = true;
                     });
@@ -577,7 +584,7 @@ function setPlayDicomSequence(images) {
                                     else if(dicomSeqCnt == dicomSeqSegA-1) dicomSeqCnt = dicomSeqSegB;
                                 }
                             }
-                        }, 50);
+                        }, dicomSeqPlayingIntervalTime);
 
                         dicomSeqSegRepeting = true;
                         dicomSeqPlaying = true;
@@ -778,6 +785,18 @@ $(document).ready(function() {
     cornerstone.enable(imageContainer);
 
     setDicomSequenceProgressbar();
+    dicomSeqPlayingIntervalTime = 50;
+    $('#seqControllerInterval').change(function() {
+        var value = $('#seqControllerInterval').val();
+        if(value < 10) {
+            value = 10;
+            $('#seqControllerInterval').val(10);
+        } else if (value > 1000) {
+            value = 1000;
+            $('#seqControllerInterval').val(1000);
+        }
+        dicomSeqPlayingIntervalTime = value;
+    })
 
     //$('.image-view-image').scroll(function(e) {
     //    console.log(e);
@@ -1005,6 +1024,7 @@ function resizeViewer() {
     var windowWidth = $(window).width();
     canvasSize = 512;
     chartWidth = 1100;
+    chartHeight = canvasSize;
     if (windowWidth < 768) {
         canvasSize = 320;
         chartWidth = windowWidth;
@@ -1017,9 +1037,12 @@ function resizeViewer() {
     }
 
     if(bShowGraphView) {
-        var sizeStyle = {width: chartWidth + 'px', height: canvasSize + 'px'};
+        if (windowWidth >= 992) {
+            chartHeight += 64;
+        }
+        var sizeStyle = {width: chartWidth + 'px', height: chartHeight + 'px'};
         $('#graphViewer').css(sizeStyle);
-        $('#graphViewer').attr('width', chartWidth).attr('height', canvasSize);
+        $('#graphViewer').attr('width', chartWidth).attr('height', chartHeight);
     } else {
         var sizeStyle = {width: canvasSize + 'px', height: canvasSize + 'px'};
         //console.log(sizeStyle);
@@ -1030,7 +1053,7 @@ function resizeViewer() {
         $('#imageViewerSequenceLoader').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewer canvas').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewerSequenceController').css({width: canvasSize+'px'});
-        $('#imageViewerSequenceController .progress-text').css({width: canvasSize+'px'});
+        //$('#imageViewerSequenceController .progress-text').css({width: canvasSize+'px'});
 
         if(dicomSeq.length >= 2) {
             $('#seqControllerProgressSegA').css({

@@ -8,11 +8,13 @@ $(document).ready(function() {
     $('#find-change').click(function() {
         if(bFindId) {
             $('#find-header').text('Find Password');
+            $('#find-change').text('Click here to find ID');
             $('#inputId-group').show();
             $('#inputId').attr('required', '');
             bFindId = false;
         } else {
             $('#find-header').text('Find ID');
+            $('#find-change').text('Click here to find password');
             $('#inputId-group').hide();
             $('#inputId').removeAttr('required');
             bFindId = true;
