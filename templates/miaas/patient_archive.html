@@ -27,9 +27,9 @@
                         {% else %}
 
                         <div class="table-nodata" >
-                            <h4 class="text-danger">There is no data</h4>
+                            <h4 class="text-danger">There is no Medical Images</h4>
                             <p>You can upload your FIRST medical image</p>
-                            <a class="btn btn-default" href="{% url 'miaas:archive_upload' %}" type="button">Upload</a>
+                            <a class="btn btn-primary" href="{% url 'miaas:archive_upload' %}" type="button">Upload</a>
                         </div>
                     </div>
                 {% endif %}
@@ -51,6 +51,7 @@
 <script src="{% static 'miass/data_table_js/dataTables.bootstrap.js' %}"></script>
 <!-- custom javascript -->
 <script>
+    {% if dt_list %}
     var dataSet = {{ dt_list |  safe }};
 
     $(document).ready(function() {
@@ -72,6 +73,7 @@
             location.href = '{% url 'miaas:archive' %}/detail/' + index_id;
         });
     });
+    {% endif %}
 </script>
 
 </body>

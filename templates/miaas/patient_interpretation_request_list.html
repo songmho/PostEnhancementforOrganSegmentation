@@ -28,8 +28,8 @@
                 {% else %}
                     <div class="table-nodata">
                         <h4 class="text-danger">There is no requests.</h4>
-                        <p>You can request your FIRST Interpretation of a Medical Image.</p>
-                        <a class="btn btn-default" href="{% url 'miaas:archive' %}" type="button">Go to Archive</a>
+                        <p>You can request your FIRST Interpretation of a Medical Image in the Archive page.</p>
+                        <a class="btn btn-primary" href="{% url 'miaas:archive' %}" type="button">Go to Archive</a>
                     </div>
                 {% endif %}
             </div>
@@ -42,6 +42,7 @@
 <script src="{% static 'miass/data_table_js/dataTables.bootstrap.js' %}"></script>
 <!-- custom javascript -->
 <script>
+    {% if dt_list %}
     var dataSet = {{ dt_list | safe }};
     $(document).ready(function() {
         var table = $('#dataTable').DataTable({
@@ -63,6 +64,7 @@
             location.href = '{% url 'miaas:interpretation_request_list' %}/detail/' +index_id;
         });
     });
+    {% endif %}
 </script>
 
 

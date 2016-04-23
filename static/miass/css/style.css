@@ -227,6 +227,9 @@ a:focus {
         top: 64px;
     }
 }
+.col-title {
+    word-break: break-all;
+}
 
 /* Medical Image */
 .medimage-preview-container {
@@ -247,7 +250,7 @@ a:focus {
 }
 .medimage-preview {
     background-color: white;
-    height: 300px;
+    height: 280px;
 
     border: #ddd 1px solid;
 }
