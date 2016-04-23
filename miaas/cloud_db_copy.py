@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class DbManager:
+    # TABLE COLUMNS
     INTPR_COLUMNS = ["intpr_id", "patient_id", "physician_id", 'image_id', 'level', "fee", "interpret_date",
                      "summary", "request_id", "suspected_disease", "opinion", "recommendation"]
     IMAGE_COLUMNS = ["image_id", "patient_id", "image_subject", "image_type", "taken_from", "physician", "place",
@@ -22,7 +23,13 @@ class DbManager:
                          'phone_number', 'email', 'join_date', 'deactivate_date']
     PATIENT_COLUMNS = ['user_id', 'patient_name', 'gender', 'birthday',
                        'phone_number', 'email', 'join_date', 'deactivate_date']
+    PHYSICIAN_PROFILE_COLUMNS = ["profile_id", "user_id", "aboutMe", "specialism", "medicalSchool", "graduate",
+                         "certifications", "memberships", "fieldsOfMedicine", "hiv", "offices", "languages",
+                         "insuranceProgram", "healthPlans", "hospitalPrivileges", "malpractice", "licenseeActions",
+                         "outOfStateActions", "currentLimits", "hspPrivRestrictions", "hspFRPriv", "criminalConvictions",
+                         "teaching", "serviceActivity", "publications", "statement"]
 
+    # RETRIEVE LIST QUERY
     PATIENT_IMAGE_LIST = "patient_image_list"
     PATIENT_INTPR_LIST = "patient_intpr_list"
     PATIENT_REQUEST_LIST = "patient_request_list"
@@ -32,11 +39,25 @@ class DbManager:
     REQUEST_RESPONSE_LIST = "request_response_list"
     IMAGE_INTPR_LIST = "image_intpr_list"
 
+    # RETRIEVE DETAIL QUERY
+    PATIENT_INFO_ID = "patient_info_id"
+    PATIENT_INFO_ID_PASSWORD = "patient_info_id_password"
     PATIENT_INTPR_DETAIL = "patient_intpr_detail"
     PATIENT_REQUEST_DETAIL = "patient_request_detail"
     PATIENT_IMAGE_DETAIL = "patient_image_detail"
+    PATIENT_PROFILE = "patient_profile"
+
     PHYSICIAN_INTPR_DETAIL = "physician_intpr_detail"
     PHYSICIAN_REQUEST_DETAIL = "physician_request_detail"
+    PHYSICIAN_INFO_ID = "physician_info_id"
+    PHYSICIAN_INFO_ID_PASSWORD = "physician_info_id_password"
+    PHYSICIAN_PROFILE = "physician_profile"
+
+    # RETRIEVE SINGLE COLUMN QUERY
+    USER_TYPE = "user_detail"
+    FIND_ID = "find_id"
+    FIND_PASSWORD = "find_password"
+    FIND_USER = "find_user"
 
     def __init__(self):
         host = 'rainbowdb.czg2t6iatylv.us-west-2.rds.amazonaws.com'
@@ -168,26 +189,101 @@ class DbManager:
                          "WHERE image_id=%s",
                 "columns": [IMAGE_COLUMNS]},
 
+        PHYSICIAN_REQUEST_DETAIL:
+            {"query": "SELECT req.*, pai.*, m.* "
+                      "FROM request req "
+                      "JOIN medical_image m ON m.image_id = req.image_id "
+                      "JOIN patient_info pai ON m.user_id = pai.user_id "
+                      "WHERE req.request_id = %s",
+
+             "columns": [REQUEST_COLUMNS, PATIENT_COLUMNS, IMAGE_COLUMNS]},
+
         PHYSICIAN_INTPR_DETAIL:
-            {"query": "SELECT intpr.*, phi.*, pai.*, req.*, m.* "
+            {"query": "SELECT intpr.*, pai.*, req.*, m.* "
                       "FROM interpretation intpr "
-                      "JOIN physician_info phi ON intpr.physician_id = phi.user_id "
                       "JOIN patient_info pai ON intpr.patient_id = pai.user_id "
                       "JOIN request req ON intpr.request_id = req.request_id "
                       "JOIN medical_image m ON intpr.image_id = m.image_id "
                       "WHERE intpr.intpr_id = %s",
 
-             "columns": [INTPR_COLUMNS, PHYSICIAN_COLUMNS, PATIENT_COLUMNS, REQUEST_COLUMNS, IMAGE_COLUMNS]},
+             "columns": [INTPR_COLUMNS, PATIENT_COLUMNS, REQUEST_COLUMNS, IMAGE_COLUMNS]},
+        PATIENT_INFO_ID:
+            {"query": "SELECT * "
+                      "FROM patient_info "
+                      "WHERE user_id = %s",
 
-        PHYSICIAN_REQUEST_DETAIL:
-            {"query": "SELECT req.*, pai.*, m.* "
-                      "FROM request req "
-                      "JOIN patient_info pai ON req.patient_id = pai.user_id "
-                      "JOIN medical_image m ON m.image_id = req.image_id "
-                      "WHERE req.request_id = %s",
+             "columns": [PATIENT_COLUMNS]},
 
-             "columns": [REQUEST_COLUMNS, PATIENT_COLUMNS, IMAGE_COLUMNS]}
+        PATIENT_INFO_ID_PASSWORD:
+            {"query": "SELECT *  "
+                      "FROM patient_info "
+                      "WHERE user_id = %s and password = %s",
+
+             "columns": [PATIENT_COLUMNS + ["password"]]},
+
+        PHYSICIAN_INFO_ID:
+            {"query": "SELECT *  "
+                      "FROM physician_info "
+                      "WHERE user_id = %s",
+
+             "columns": [PHYSICIAN_COLUMNS]},
+
+        PHYSICIAN_INFO_ID_PASSWORD:
+            {"query": "SELECT *  "
+                      "FROM patient_info "
+                      "WHERE user_id = %s and password = %s",
+
+             "columns": [PHYSICIAN_COLUMNS + ["password"]]},
+
+        PHYSICIAN_PROFILE:
+            {"query": "SELECT *  "
+                      "FROM physician_profile "
+                      "WHERE user_id = %s",
+
+             "columns": [PHYSICIAN_PROFILE_COLUMNS]},
+        PATIENT_PROFILE:
+            {"query": "SELECT pp.type, pp.value, pp.timestamp " \
+                      "From (" \
+                      "  SELECT @row_num := IF(@prev_value=p.type, @row_num+1, 1) as rnd, p.*, @prev_value := p.type " \
+                      "  From patient_profile p, (select @row_num := 1) x, (select @prev_value := '') y " \
+                      "  WHERE p.user_id = %s " \
+                      "  ORDER BY p.type, p.timestamp DESC" \
+                      ") pp " \
+                      "Where pp.rnd = 1"}
     }
+
+    RETRIEVE_SINGLE_COLUMN_QUERY = {
+        USER_TYPE:
+            {"query": "SELECT user_type "
+                      "FROM user "
+                      "WHERE user_id = %s and password = %s"},
+        FIND_USER:
+            {"query": "SELECT IF(count(1), 'True', 'False') "
+                      "FROM user "
+                      "WHERE user_id = %s"},
+        FIND_ID:
+            {"query": "SELECT user_id "
+                      "FROM user "
+                      "WHERE email=%s AND name=%s"},
+
+        FIND_PASSWORD:
+            {"query": "SELECT password "
+                      "FROM user "
+                      "WHERE email=%s AND name=%s"},
+    }
+
+    def retrieve_single_column(self, query_type, *args):
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(self.RETRIEVE_SINGLE_COLUMN_QUERY[query_type]['query'], args)
+                row = cursor.fetchone()
+                if row[0] == "True":
+                    return True
+                else:
+                    return row[0]
+            except Exception as e:
+                logger.exception(e)
+                raise Exception(query_type + " Error :" + e.message)
 
     def retrieve_list(self, query_type, *args):
         result = []
@@ -201,7 +297,6 @@ class DbManager:
                     result.append(temp)
 
             except Exception as e:
-                print self.RETRIEVE_LIST_QUERY[query_type]['query']% args
                 logger.exception(e)
                 raise Exception(query_type + " Error :" + e.message)
 
@@ -212,14 +307,22 @@ class DbManager:
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(self.RETRIEVE_DETAIL_QUERY[query_type]['query'], args)
-                row = cursor.fetchone()
-                row_idx = 0
-                for columns in self.RETRIEVE_DETAIL_QUERY[query_type]['columns']:
-                    temp = {}
-                    for key in columns:
-                        temp[key] = row[row_idx]
-                        row_idx += 1
-                    result.append(temp)
+                if query_type == self.PATIENT_PROFILE:
+                    for row in cursor:
+                        profile = {}
+                        profile['type'] = row[0]
+                        profile['value'] = row[1]
+                        profile['timestamp'] = row[2]
+                        result.append(profile)
+                else:
+                    row = cursor.fetchone()
+                    row_idx = 0
+                    for columns in self.RETRIEVE_DETAIL_QUERY[query_type]['columns']:
+                        temp = {}
+                        for key in columns:
+                            temp[key] = row[row_idx]
+                            row_idx += 1
+                        result.append(temp)
             except Exception as e:
                 logger.exception(e)
                 raise Exception(query_type + " Error :" + e.message)
@@ -230,8 +333,8 @@ class DbManager:
 if __name__ == '__main__':
     db = DbManager()
     # responses = db.retrieve_list(db.REQUEST_RESPONSE_LIST, 211)
-    image, = db.retrieve_detail(db.PATIENT_IMAGE_DETAIL, 211)
-    intprs = db.retrieve_list(db.IMAGE_INTPR_LIST, image['image_id'])
+    # image, = db.retrieve_detail(db.PATIENT_IMAGE_DETAIL, 211)
+    # intprs = db.retrieve_list(db.IMAGE_INTPR_LIST, image['image_id'])
 
-    # print image
-    print len(intprs)
+    res = db.retrieve_detail(db.PATIENT_PROFILE, "hanter")
+    print len(res)
