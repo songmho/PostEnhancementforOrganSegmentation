@@ -283,6 +283,9 @@ div.interpretation-viewer {
 .modal {
     padding-top: 10%;
 }
+.modal .modal-body {
+    word-break: break-all;
+}
 .modal .modal-progress-body {
 
 }
