@@ -17,6 +17,7 @@ $(document).ready(function() {
             //console.log(JSON.stringify(res));
             if(res['code'] == 'SUCCESS') {
                 profiles = res['profiles'];
+                console.log(profiles);
                 resetProfile();
             } else {
                 openUpdateFailModal(res['msg'], 'Getting Profile Failed');
@@ -26,7 +27,6 @@ $(document).ready(function() {
 
     $('#physicianProfileForm').on('submit', function(e) {
         e.preventDefault();
-
         updateProfile();
     });
 });
@@ -45,19 +45,21 @@ function resetProfile() {
 function updateProfile() {
     newProfiles = [];
 
+
     $('#physicianProfileForm input, #physicianProfileForm textarea').each(function() {
         var id = $(this).attr('id');
         var value = $(this).val();
         var nowProf = {};
 
-        if (value == undefined || value == null || value == '' || value == ' ') {
-            return;
-        }
+        //if (value == undefined || value == null || value == '' || value == ' ') {
+        //    return;
+        //}
 
         nowProf['type'] = id;
         nowProf['value'] = value;
         newProfiles.push(nowProf);
     });
+    console.log(newProfiles);
 
     $.LoadingOverlay('show');
     $.ajax("/api/physician_profile", {
@@ -68,9 +70,9 @@ function updateProfile() {
         }),
         dataType: 'json',
         success: function(res) {
-            //console.log(JSON.stringify(res));
+            console.log(JSON.stringify(res));
             $.LoadingOverlay('hide');
-            if(res['code'] = 'SUCCESS') {
+            if(res['code'] == 'SUCCESS') {
                 profiles = newProfiles;
                 openUpdatedModal();
             } else {

@@ -310,8 +310,6 @@ def handle_physician_profile_mgt(request):
             user_id = data['user_id']
             if request.session['user']['user_id'] != user_id:
                 raise Exception(MSG_NOT_MATCHED_USER)
-
-            is_updated = False
             physician_profile = {}
             keys = []
             values = []
@@ -320,13 +318,10 @@ def handle_physician_profile_mgt(request):
                 values.append(prof['value'])
             prof_updated = db.add_physician_profile(user_id, keys, values)
             if prof_updated:
-                is_updated = True
-            if is_updated:
                 return JsonResponse(constants.CODE_SUCCESS)
             else:
                 logger.info('update phsycian profile fail')
                 return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_CHANGE}))
-            return JsonResponse(constants.CODE_SUCCESS)
 
     except Exception as e:
         logger.exception(e)
