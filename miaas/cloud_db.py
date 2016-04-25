@@ -173,7 +173,6 @@ class DbManager():
         db_query = "INSERT INTO patient_profile (user_id, type, value, timestamp) VALUES (%s, %s, %s, %s)"
         items = []
         for prof in profiles:
-            prof['value'] = prof['value']
             items.append((user_id, prof['type'], prof['value'], timestamp))
         with self.connector.cursor() as cursor:
             try:
@@ -337,18 +336,41 @@ class DbManager():
                 raise Exception( "update_physician Error" + e.message)
         return if_updated
 
+    # def add_physician_profile(self, user_id, keys, values):
+    #     if_updated = False
+    #     db_query = "UPDATE physician_profile SET "
+    #     for key in keys:
+    #         if key is keys[-1]:
+    #             db_query = db_query + key + '=%s '
+    #         else:
+    #             db_query = db_query + key + '=%s, '
+    #     db_query = db_query + "WHERE user_id='" + user_id + "'"
+    #     with self.connector.cursor() as cursor:
+    #         try:
+    #             cursor.execute(db_query, tuple(values))
+    #             self.connector.commit()
+    #             row_count = cursor.rowcount
+    #             if row_count > 0:
+    #                 if_updated = True
+    #             return if_updated
+    #         except Exception as e:
+    #             logger.exception(e)
+    #             raise Exception( "add_physician_profile Error" + e.message)
+    #     return if_updated
+
     def add_physician_profile(self, user_id, keys, values):
         if_updated = False
-        db_query = "UPDATE physician_profile SET "
-        for key in keys:
-            if key is keys[-1]:
-                db_query = db_query + key + '=%s '
-            else:
-                db_query = db_query + key + '=%s, '
-        db_query = db_query + "WHERE user_id='" + user_id + "'"
+        db_query = "INSERT INTO physician_profile_copy VALUES (%s, %s, %s) ON  DUPLICATE KEY UPDATE " \
+                   "user_id = VALUES(user_id), " \
+                   "type = values(type)," \
+                   "value = values(VALUE) "
+        temp = []
+        for k in keys:
+            temp.append(user_id)
+        parameters = zip(temp, keys, values)
         with self.connector.cursor() as cursor:
             try:
-                cursor.execute(db_query, tuple(values))
+                cursor.executemany(db_query, parameters)
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
@@ -359,43 +381,56 @@ class DbManager():
                 raise Exception( "add_physician_profile Error" + e.message)
         return if_updated
 
+    # def retrieve_physician_profile(self, physician_id, type=None):
+    #     profile = {}
+    #     with self.connector.cursor() as cursor:
+    #         try:
+    #             db_query = "SELECT * FROM physician_profile WHERE user_id=%s"
+    #             cursor.execute(db_query, physician_id)
+    #             self.connector.commit()
+    #             for row in cursor:
+    #                 profile['user_id'] = row[0]
+    #                 profile['aboutMe'] = row[1]
+    #                 profile['specialism'] = row[2]
+    #                 profile['medicalSchool'] = row[3]
+    #                 profile['graduate'] = row[4]
+    #                 profile['certifications'] = row[5]
+    #                 profile['memberships'] = row[6]
+    #                 profile['fieldsOfMedicine'] = row[7]
+    #                 profile['hiv'] = row[8]
+    #                 profile['offices'] = row[9]
+    #                 profile['languages'] = row[10]
+    #                 profile['insuranceProgram'] = row[11]
+    #                 profile['healthPlans'] = row[12]
+    #                 profile['hospitalPrivileges'] = row[13]
+    #                 profile['malpractice'] = row[14]
+    #                 profile['licenseeActions'] = row[15]
+    #                 profile['outOfStateActions'] = row[16]
+    #                 profile['currentLimits'] = row[17]
+    #                 profile['hspPrivRestrictions'] = row[18]
+    #                 profile['hspFRPriv'] = row[19]
+    #                 profile['criminalConvictions'] = row[20]
+    #                 profile['teaching'] = row[21]
+    #                 profile['serviceActivity'] = row[22]
+    #                 profile['publications'] = row[23]
+    #                 profile['statement'] = row[24]
+    #         except Exception as e:
+    #             logger.exception(e)
+    #             raise Exception( "Retrieve retrieve_physician_profile Profile Error" + e.message)
+    #     return profile
+
     def retrieve_physician_profile(self, physician_id, type=None):
         profile = {}
         with self.connector.cursor() as cursor:
             try:
-                db_query = "SELECT * FROM physician_profile WHERE user_id=%s"
+                db_query = "SELECT * FROM physician_profile_copy WHERE user_id=%s"
                 cursor.execute(db_query, physician_id)
                 self.connector.commit()
                 for row in cursor:
-                    profile['user_id'] = row[1]
-                    profile['aboutMe'] = row[2]
-                    profile['specialism'] = row[3]
-                    profile['medicalSchool'] = row[4]
-                    profile['graduate'] = row[5]
-                    profile['certifications'] = row[6]
-                    profile['memberships'] = row[7]
-                    profile['fieldsOfMedicine'] = row[8]
-                    profile['hiv'] = row[9]
-                    profile['offices'] = row[10]
-                    profile['languages'] = row[11]
-                    profile['insuranceProgram'] = row[12]
-                    profile['healthPlans'] = row[13]
-                    profile['hospitalPrivileges'] = row[14]
-                    profile['malpractice'] = row[15]
-                    profile['licenseeActions'] = row[16]
-                    profile['outOfStateActions'] = row[17]
-                    profile['currentLimits'] = row[18]
-                    profile['hspPrivRestrictions'] = row[19]
-                    profile['hspFRPriv'] = row[20]
-                    profile['criminalConvictions'] = row[21]
-                    profile['teaching'] = row[22]
-                    profile['serviceActivity'] = row[23]
-                    profile['publications'] = row[24]
-                    profile['statement'] = row[25]
+                    profile[row[1]] = row[2]
             except Exception as e:
                 logger.exception(e)
                 raise Exception( "Retrieve retrieve_physician_profile Profile Error" + e.message)
-        print profile
         return profile
 
     def add_medical_image(self, medical_image):
