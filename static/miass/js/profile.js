@@ -2,7 +2,7 @@
  * Created by hanter on 2016. 2. 23..
  */
 
-var profiles = {};
+var profiles = [];
 
 $(document).ready(function() {
     $.LoadingOverlay('show');
@@ -66,7 +66,7 @@ function resetProfile() {
     $('#patientProfileForm input, #patientProfileForm textarea').each(function() {
         $(this).val('');    });
 
-    console.log(profiles);
+    //console.log(profiles);
 
     for (var i in profiles) {
         var profile = profiles[i];
@@ -113,6 +113,8 @@ var newProfiles = [];
 function updateProfile() {
     console.log(profiles);
     newProfiles = [];
+
+    //check form
     var height = $('#height');
     if(height.val() <= 0 && height.val()!=""){
         openUpdateFailModal('Height must be larger than 0', 'Update Failed');
@@ -156,7 +158,7 @@ function updateProfile() {
         return
     }
 
-
+    //add value
     $('#patientProfileForm input, #patientProfileForm textarea').each(function() {
         var id = $(this).attr('id');
         var value = $(this).val();
@@ -175,28 +177,21 @@ function updateProfile() {
             nowProf['value'] = value;
         }
 
-        if(!profiles.length){
-            newProfiles.push(nowProf);
-        }
-        else{
-            var flag = 0;
-            for (var i in profiles) {
-                var profile = profiles[i];
-                if(nowProf.type == profile.type){
-                    flag = 1;
-                    if(nowProf.value != profile.value){
-                        newProfiles.push(nowProf);
-                        profile.value = nowProf.value;
-                    }
-                }
-            }
-            if (flag == 0){
-                newProfiles.push(nowProf);
-                profiles.push(nowProf);
-            }
-        }
+        newProfiles.push(nowProf);
+
     });
-    //console.log(newProfiles);
+    var smoking = $('#smoking');
+    if(smoking.val() != undefined && smoking.val() != null && smoking.val() != "") {
+        newProfiles.push({type: 'smoking', 'value': smoking.val()});
+    }
+
+    if (newProfiles.length == 0) {
+        openModal('No Data in Profiles', 'Profile Update Failure');
+        return;
+    }
+
+    console.log(newProfiles);
+
     $.LoadingOverlay('show');
     $.ajax("/api/patient_profile", {
         method: 'POST',
@@ -210,9 +205,7 @@ function updateProfile() {
             $.LoadingOverlay('hide');
             console.log(JSON.stringify(res));
             if(res['code'] == 'SUCCESS') {
-                if(!profiles.length){
-                    profiles = newProfiles;
-                }
+                profiles = newProfiles;
                 openUpdatedModal();
             } else {
                 openModal(res['msg'], 'Update Failed');
