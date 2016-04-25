@@ -26,10 +26,8 @@
                 {% else %}
                     <div class="table-nodata">
                         <h4 class="text-danger">There is no requests.</h4>
-                        <p>Before you respond, you first should select a patient's request for writing interpretation in
-                            search page.</p>
-                        <a class="btn btn-primary" href="{% url 'miaas:interpretation_search' %}" type="button">Go to
-                            Search Page</a>
+                        <p>Before you respond, you first should select a patient's request for writing interpretation in search page.</p>
+                        <a class="btn btn-primary" href="{% url 'miaas:interpretation_search' %}" type="button">Go to Search Page</a>
                     </div>
                 {% endif %}
                 </div>
@@ -87,6 +85,24 @@
                 }
             });
         }
+    });
+
+    function setStatusColor() {
+        $('#dataTable td.req-table-status').each(function() {
+            var status = $(this).text();
+            switch(status){
+                case 'Finding Physician':
+                    $(this).css({color: '#53B0A5'});
+                    break;
+                case 'Candidate Waiting':
+                    $(this).css({color: '#D76464'});
+                    break;
+                case 'Waiting Interpretation':
+                    $(this).css({color: '#78A52C'});
+                    break;
+            }
+        });
+    }
     {% endif %}
 </script>
 
