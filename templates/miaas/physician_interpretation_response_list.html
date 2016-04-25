@@ -26,8 +26,10 @@
                 {% else %}
                     <div class="table-nodata">
                         <h4 class="text-danger">There is no requests.</h4>
-                        <p>Before you respond, you first should select a patient's request for writing interpretation in search page.</p>
-                        <a class="btn btn-primary" href="{% url 'miaas:interpretation_search' %}" type="button">Go to Search Page</a>
+                        <p>Before you respond, you first should select a patient's request for writing interpretation in
+                            search page.</p>
+                        <a class="btn btn-primary" href="{% url 'miaas:interpretation_search' %}" type="button">Go to
+                            Search Page</a>
                     </div>
                 {% endif %}
                 </div>
@@ -41,29 +43,50 @@
 <!-- custom javascript -->
 <script>
     {% if dt_list %}
-    var dataSet = {{ dt_list | safe }};
-    $(document).ready(function () {
-        var table = $('#dataTable').DataTable({
-            data: dataSet,
-            order: [[0, "desc"]],
-            columns: [
-                {title: "Request Date"},
-                {title: "Response Date"},
-                {title: "Patient ID"},
-                {title: "Request Subject"},
-                {title: "Image Subject"},
-                {title: "Image Type."},
-                {title: "Level"},
-                {title: "Status"}
-            ]
+        var dataSet = {{ dt_list | safe }};
+        $(document).ready(function () {
+            var table = $('#dataTable')
+                    .on('order.dt', setStatusColor)
+                    .on('search.dt', setStatusColor)
+                    .on('page.dt', setStatusColor)
+                    .DataTable({
+                data: dataSet,
+                order: [[8, "desc"]],
+                columns: [
+                    {title: "Request Date"},
+                    {title: "Response Date"},
+                    {title: "Patient ID"},
+                    {title: "Request Subject"},
+                    {title: "Image Subject"},
+                    {title: "Image Type."},
+                    {title: "Level"},
+                    {title: "Status", className: "req-table-status"}
+                ]
+            });
+            $('#dataTable tbody').on('click', 'tr', function () {
+                var data = table.row(this).data();
+                var index_id = data[data.length - 1];
+                $.LoadingOverlay('show');
+                location.href = '{% url 'miaas:physician_interpretation' %}/write/' + index_id;
+            });
         });
-        $('#dataTable tbody').on('click', 'tr', function () {
-            var data = table.row(this).data();
-            var index_id = data[data.length - 1];
-            $.LoadingOverlay('show');
-            location.href = '{% url 'miaas:physician_interpretation' %}/write/' + index_id;
-        });
-    });
+
+        function setStatusColor() {
+            $('#dataTable td.req-table-status').each(function () {
+                var status = $(this).text();
+                switch (status) {
+                    case 'Finding Physician':
+                        $(this).css({color: '#53B0A5'});
+                        break;
+                    case 'Candidate Waiting':
+                        $(this).css({color: '#D76464'});
+                        break;
+                    case 'Waiting Interpretation':
+                        $(this).css({color: '#78A52C'});
+                        break;
+                }
+            });
+        }
     {% endif %}
 </script>
 

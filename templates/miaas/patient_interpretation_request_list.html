@@ -23,7 +23,8 @@
                 {% if dt_list %}
                     <div class="table-container row">
                         <div class="table-title col-xs-12">Interpretation Request List</div>
-                        <table id="dataTable" class="table table-striped table-bordered table-hover" width="100%"></table>
+                        <table id="dataTable" class="table table-striped table-bordered table-hover"
+                               width="100%"></table>
                     </div>
                 {% else %}
                     <div class="table-nodata">
@@ -43,51 +44,53 @@
 <!-- custom javascript -->
 <script>
     {% if dt_list %}
-    var dataSet = {{ dt_list | safe }};
-    $(document).ready(function() {
-        var table = $('#dataTable')
-                .on('order.dt', setStatusColor)
-                .on('search.dt', setStatusColor)
-                .on('page.dt', setStatusColor)
-                .DataTable({
-            data: dataSet,
-            order: [[ 0, "desc" ]],
-            columns: [
-                { title: "Requested Date" },
-                { title: "Request Subject" },
-                { title: "Image Subject" },
-                { title: "Image Type" },
-                { title: "Level" },
-                { title: "Status", className: "req-table-status" }
-            ]/*,
-            fnInitComplete: function() {
-                setStatusColor();
-            }*/
-        });
-        $('#dataTable tbody').on('click', 'tr', function () {
-            $.LoadingOverlay('show');
-            var data = table.row( this ).data();
-            var index_id = data[data.length-1];
-            location.href = '{% url 'miaas:interpretation_request_list' %}/detail/' +index_id;
-        });
-    });
+        var dataSet = {{ dt_list | safe }};
+        $(document).ready(function () {
+            var table = $('#dataTable')
+                    .on('order.dt', setStatusColor)
+                    .on('search.dt', setStatusColor)
+                    .on('page.dt', setStatusColor)
+                    .DataTable({
+                        data: dataSet,
+                        order: [[5, "asc"]],
+                        columns: [
+                            {title: "Requested Date"},
+                            {title: "Request Subject"},
+                            {title: "Image Subject"},
+                            {title: "Image Type"},
+                            {title: "Level"},
+                            {title: "Status", className: "req-table-status"}
+                        ]
 
-    function setStatusColor() {
-        $('#dataTable td.req-table-status').each(function() {
-            var status = $(this).text();
-            switch(status){
-                case 'Finding Physician':
-                    $(this).css({color: '#53B0A5'});
-                    break;
-                case 'Candidate Waiting':
-                    $(this).css({color: '#D76464'});
-                    break;
-                case 'Waiting Interpretation':
-                    $(this).css({color: '#78A52C'});
-                    break;
-            }
+                        /*,
+                         fnInitComplete: function() {
+                         setStatusColor();
+                         }*/
+                    });
+            $('#dataTable tbody').on('click', 'tr', function () {
+                $.LoadingOverlay('show');
+                var data = table.row(this).data();
+                var index_id = data[data.length - 1];
+                location.href = '{% url 'miaas:interpretation_request_list' %}/detail/' + index_id;
+            });
         });
-    }
+
+        function setStatusColor() {
+            $('#dataTable td.req-table-status').each(function () {
+                var status = $(this).text();
+                switch (status) {
+                    case 'Finding Physician':
+                        $(this).css({color: '#53B0A5'});
+                        break;
+                    case 'Candidate Waiting':
+                        $(this).css({color: '#D76464'});
+                        break;
+                    case 'Waiting Interpretation':
+                        $(this).css({color: '#78A52C'});
+                        break;
+                }
+            });
+        }
     {% endif %}
 </script>
 

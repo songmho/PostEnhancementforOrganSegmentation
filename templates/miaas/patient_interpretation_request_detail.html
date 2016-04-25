@@ -231,6 +231,7 @@
         $('.btn-physician-select').click(function() {
             $.LoadingOverlay('show');
             var physician_id = $(this).attr('physician_id');
+            $.LoadingOverlay('show');
             $.ajax("/api/interpretation", {
                 method: 'POST',
                 data: JSON.stringify({

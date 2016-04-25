@@ -71,7 +71,14 @@ $(document).ready(function() {
             inputPw.focus();
             return;
         }
-        var phoneRe = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g;
+        var nameRe = /^[a-zA-Z가-힣 ]{1,200}$/g;
+        var inputName = $('#inputName');
+        if(!inputName.val().match(nameRe)){
+            openSignupFailModal("Please enter valid user name.");
+            inputName.focus();
+            return;
+        }
+        var phoneRe = /^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3,4}[-\s\.]{0,1}[0-9]{4}$/;
         var inputMobile = $('#inputMobile');
         if(!inputMobile.val().match(phoneRe)){
             openSignupFailModal("Please enter valid phone number.");
@@ -151,7 +158,7 @@ function signup(usertype) {
         var currentTime = new Date().getTime() + 3600*9;
         var minBirthday = -5367427200000;
         var inputBirthday = $('#inputBirthday');
-        console.log(minBirthday)
+        console.log(minBirthday);
         if(Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
             openSignupFailModal("Your birthday may be after 1800 year or before now.");
             inputBirthday.focus();
@@ -159,8 +166,15 @@ function signup(usertype) {
         }
         user['birthday'] = Date.parse(inputBirthday.val());
     } else if(usertype == 'physician') {
+         var licenseRe = /^[\-a-zA-Z가-힣]{1,200}$/g;
+        var inputLicense = $('#inputLicence');
+        if(!inputLicense.val().match(licenseRe)){
+            openSignupFailModal("Please enter valid license.");
+            inputLicense.focus();
+            return;
+        }
         user['medicine_field'] = $('#selectField').val();
-        user['license_number'] = $('#inputLicence').val();
+        user['license_number'] = inputLicense.val();
         //user['certificate_dir'] = $('#fileCertification').val();
         user['certificate_dir'] = 'here';
     }
