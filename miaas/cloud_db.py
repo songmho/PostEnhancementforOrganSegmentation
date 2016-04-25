@@ -65,7 +65,6 @@ class DbManager():
                 user_id = row[0]
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "find_id Error" + e.message)
 
         return user_id
 
@@ -80,7 +79,6 @@ class DbManager():
                 passwd = row[0]
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "find_passwd Error" + e.message)
 
         return passwd
 
