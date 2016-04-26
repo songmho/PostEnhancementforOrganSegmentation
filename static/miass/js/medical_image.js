@@ -202,7 +202,7 @@ $(document).ready(function() {
             success: function(res) {
                 //console.log(res);
 
-                console.log(uploadStatus);
+                //console.log(uploadStatus);
                 if (uploadStatus <= 2) {
                     stopFileProgressUpdate(false);
                     setTimeout(function () {
@@ -215,12 +215,19 @@ $(document).ready(function() {
                 uploadStatus=0;
 
                 if (res['code'] == 'SUCCESS') {
-                    imageInfo['image_dir'] = res['new_dir'];
-                    resetViewer();
-                    openModal('The new file is successfully uploaded', 'Update Success');
+                    //imageInfo['image_dir'] = res['new_dir'];
+                    //resetViewer();
+                    openModal('The new file is successfully uploaded', 'Update Success', function() {
+                        $.LoadingOverlay('show');
+                        location.reload();
+                    });
                 } else {
                     openModal(res['msg'], 'Update Failed');
                 }
+            }, error: function(res) {
+                openModal(res['msg'], 'Update Failed');
+            }, timeout: function(res) {
+                openModal(res['msg'], 'Update Failed');
             }
         });
     });

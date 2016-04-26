@@ -29,7 +29,7 @@ function startFileProgressUpdate(upload_id) {
     g_progress_intv = setInterval(function() {
         $.getJSON("/api/get_upload_progress?X-Progress-ID="+upload_id,
             function(data) {
-                console.log(uploadStatus);
+                //console.log(uploadStatus);
                 if(data == null) {
                     if(uploadStatus == 2) {
                         stopFileProgressUpdate()

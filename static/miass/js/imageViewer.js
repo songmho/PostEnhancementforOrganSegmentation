@@ -138,6 +138,7 @@ function dicomloadAndView(dicomURL) {
             //console.log(image);
             var viewport = cornerstone.getDefaultViewportForImage(element, image);
             cornerstone.displayImage(element, image, viewport);
+            cornerstone.updateImage(element);
             if(conerstoneloaded === false) {
                 cornerstoneTools.mouseInput.enable(element);
                 cornerstoneTools.mouseWheelInput.enable(element);
@@ -1010,7 +1011,8 @@ function setOpenImageViewerListener(elem) {
                     $imageViewer.click(function() {
                         openImageViewer();
                     });
-                    showThumbnail();
+                    initThumbnail();
+                    window.addEventListener("resize", showThumbnail);
                 } else {
                     openModal(res['msg'], "Image Loading Failed");
                 }
@@ -1021,7 +1023,10 @@ function setOpenImageViewerListener(elem) {
 
 function resizeViewer() {
     //console.log($(window).width() + ', ' + $(window).height())
+    $('body').css('overflow', 'hidden');
     var windowWidth = $(window).width();
+    $('body').css('overflow', 'auto');
+
     canvasSize = 512;
     chartWidth = 1100;
     chartHeight = canvasSize;
