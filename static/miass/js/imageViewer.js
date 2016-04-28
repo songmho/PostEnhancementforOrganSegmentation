@@ -16,13 +16,18 @@ var chartHeight = 1100;
 var bShowGraphView = false;
 var bShowDicomDetail = true;
 
+var dicomViewerStatus = 'none'; //none, image, graph, dicom, loading, sequence
 
 cornerstoneWADOImageLoader.configure({
     beforeSend: function(xhr) {
         //console.log('beforesend');
         // Add custom headers here (e.g. auth tokens)
         //xhr.setRequestHeader('x-auth-token', 'my auth token');
-        showImageViewerLoader(true);
+
+        if($('#imageViewModal').is(':visible')) {
+            dicomViewerStatus = 'loading';
+            showImageViewerLoader(true);
+        }
     }
 });
 
@@ -127,7 +132,6 @@ function dicomShowDataSet(dataSet) {
 }
 
 function dicomloadAndView(dicomURL) {
-
     // prefix the url with wadouri: so cornerstone can find the image loader
     var wadoURI = "wadouri:" + dicomURL;
 
@@ -168,13 +172,14 @@ function dicomloadAndView(dicomURL) {
                 });
             }
 
-            console.log('dicom loaded');
+            //console.log('dicom loaded');
+            dicomViewerStatus = 'dicom';
             showImageViewerLoader(false);
 
         }, function(err) {
             console.log(err);
             showImageViewerLoader(false);
-            openModal(err, "DICOM Loading Failed");
+            openModal('The dicom file is not existed', "DICOM Loading Failed");
         });
     }
     catch(err) {
@@ -216,6 +221,8 @@ function generalImageLoadAndView(imageURL) {
         drawingWidth *= magni;
         drawingHeight *= magni;
         ctx.drawImage(image, 0, 0, drawingWidth, drawingHeight);
+
+        dicomViewerStatus = 'image';
         showImageViewerLoader(false);
     });
     image.src = imageURL;
@@ -302,6 +309,7 @@ function csvGrpahLoadAndView(csvURL) {
                 //    });
                 //    //g.setVisibility(arrVisibility);
                 //});
+                dicomViewerStatus = 'graph';
             } else {
                 $('#graphLabelChecks').hide();
             }
@@ -445,6 +453,7 @@ function setPlayDicomSequence(images) {
                     return cmpStringsWithNumbers(a.imageId.toString(), b.imageId.toString());
                 });
 
+                dicomViewerStatus = 'sequence';
                 showDicomSequenceLoader(false);
                 showImageViewerLoader(false);
 
@@ -670,6 +679,8 @@ function stopDicomSequence() {
         clearInterval(dicomPlayingSequenceInterval);
         dicomPlayingSequenceInterval = null;
     }
+
+    dicomViewerStatus = 'none';
 }
 
 function setDicomSequenceProgressbar() {
@@ -928,6 +939,7 @@ function openImageViewer() {
         $.LoadingOverlay('hide');
         $('#imageViewModal').off('hidden.bs.modal').on('hidden.bs.modal', function() {
             $('#imageViewShowDetail').hide();
+            dicomViewerStatus = 'none';
             stopDicomSequence();
             showDicomSequenceLoader(false);
         });
@@ -1067,16 +1079,26 @@ function resizeViewer() {
         $('#imageViewerLoader').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewerSequenceLoader').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
         $('#imageViewer canvas').attr('width', canvasSize).attr('height', canvasSize).css(sizeStyle);
-        $('#imageViewerSequenceController').css({width: canvasSize+'px'});
+        $('#imageViewerSequenceController').css({width: canvasSize + 'px'});
         //$('#imageViewerSequenceController .progress-text').css({width: canvasSize+'px'});
 
-        if(dicomSeq.length >= 2) {
+        if (dicomSeq.length >= 2) {
             $('#seqControllerProgressSegA').css({
                 left: (5 + (dicomSeqSegA / (dicomSeq.length - 1) * canvasSize)) + 'px'
             });
             $('#seqControllerProgressSegB').css({
                 left: (5 + (dicomSeqSegB / (dicomSeq.length - 1) * canvasSize)) + 'px'
             });
+
+            if (dicomViewerStatus == 'sequence') {
+                var imageViewer = $('#imageViewer').get(0);
+                displayImageSequence(imageViewer, dicomSeqCnt);
+            }
+        }
+
+        if (dicomViewerStatus == 'dicom' && lastImageData != null) {
+            var url = makeURL(lastImageData['dir']);
+            dicomloadAndView(url);
         }
     }
 }
