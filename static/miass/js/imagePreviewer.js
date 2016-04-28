@@ -89,7 +89,7 @@ function showImageThumbnail(url) {
 }
 
 function showDicomThumbnail(url) {
-    console.log(url);
+    //console.log(url);
     var element = $('#image-previewer-image').get(0);
     //$('#image-previewer-image').empty();
     //cornerstone.enable(element);

@@ -263,7 +263,7 @@ function csvGrpahLoadAndView(csvURL) {
             }
         );
         g.ready(function(g) {
-            console.log(g.getLabels());
+            //console.log(g.getLabels());
             var lables = g.getLabels();
 
             var timeLable = lables[0];
@@ -353,7 +353,7 @@ function downloadAndView(tagData){
     showDicomSequenceLoader(false);
 
     lastImageData = tagData;
-    console.log(tagData['dir']);
+    //console.log(tagData['dir']);
     var url = makeURL(tagData['dir']);
     if(tagData['type'] == 'dcm') {
         // image enable the dicomImage element and activate a few tools
@@ -785,6 +785,7 @@ $(document).ready(function() {
     var imageContainer = $('#imageViewer').get(0);
     cornerstone.enable(imageContainer);
 
+    //set the forms and controllers
     setDicomSequenceProgressbar();
     dicomSeqPlayingIntervalTime = 50;
     $('#seqControllerInterval').change(function() {
@@ -797,7 +798,16 @@ $(document).ready(function() {
             $('#seqControllerInterval').val(1000);
         }
         dicomSeqPlayingIntervalTime = value;
-    })
+    });
+
+    $('#rollPeriod').change(function(e) {
+        var period = $(this).val();
+        if(period < 0) {
+            $(this).val(0)
+        } else if (period > 1000) {
+            $(this.val(1000));
+        }
+    });
 
     //$('.image-view-image').scroll(function(e) {
     //    console.log(e);
@@ -1032,7 +1042,7 @@ function resizeViewer() {
     chartHeight = canvasSize;
     if (windowWidth < 768) {
         canvasSize = 320;
-        chartWidth = windowWidth;
+        chartWidth = $(window).width() - 97;
     } else if (windowWidth < 992) {
         canvasSize = 360;
         chartWidth = 680;
