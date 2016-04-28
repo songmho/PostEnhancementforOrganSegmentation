@@ -2,11 +2,36 @@
  * Created by hanter on 2016. 3. 18..
  */
 
-function showThumbnail() {
-    var imageContainer = $('#image-previewer').get(0);
-    cornerstone.disable(imageContainer);
+var thumbnailWidth = $('#image-previewer').width();
+var thumbnailHeight = $('#image-previewer').height();   //278px
 
-    $('#image-previewer').empty();
+function initThumbnail() {
+    $('#image-previewer-image').empty();
+    var imageContainer = $('#image-previewer-image').get(0);
+    cornerstone.enable(imageContainer);
+    showThumbnail();
+}
+
+function showThumbnail() {
+    //console.log('showThumbnail');
+
+    $('body').css('overflow', 'hidden');
+    var windowWidth = $(window).width();
+    $('body').css('overflow', 'auto');
+
+    //console.log('windowWidth:'+windowWidth);
+    if (windowWidth <= 768) {
+        thumbnailWidth = $('body').width() - 92;
+    } else if (windowWidth < 992) {
+        thumbnailWidth = 486;
+    } else if (windowWidth < 1200) {
+        thumbnailWidth = 394;
+    } else {
+        thumbnailWidth = 492;
+    }
+    var style = {width: thumbnailWidth+'px', height: thumbnailHeight+'px'};
+    $('#image-previewer, #image-previewer .medimage-previewer, #image-previewer .medimage-previewer canvas')
+        .attr('width', thumbnailWidth).attr('height', thumbnailHeight).css(style);
 
     var thumbnail = getThumbnailImage();
     if(thumbnail != null) {
@@ -15,29 +40,32 @@ function showThumbnail() {
         //console.log(thumbnail['type']);
         setTimeout(function() {
             if (thumbnail['type'] == 'dcm') {
-                cornerstone.enable(imageContainer);
-
+                $('#image-previewer-graph').hide();
+                $('#image-previewer-image').show();
                 var wadoUrl = "wadouri:" + url;
                 showDicomThumbnail(wadoUrl);
             } else if (thumbnail['type'] == 'csv') {
+                $('#image-previewer-image').hide();
+                $('#image-previewer-graph').show();
                 showCsvThumbnail(url);
             } else {
-                $('#image-previewer').append('<canvas></canvas>');
+                $('#image-previewer-graph').hide();
+                $('#image-previewer-image').show();
                 showImageThumbnail(url);
             }
-        });
+        }, 10);
     }
 }
 
 function showImageThumbnail(url) {
-    var canvas = $('#image-previewer canvas');
-    canvas.attr('width', $('#image-previewer').width())
-          .attr('height', $('#image-previewer').height());
+    var canvas = $('#image-previewer-image canvas');
+    //canvas.attr('width', $('#image-previewer-image').width())
+    //      .attr('height', $('#image-previewer-image').height());
     canvas = canvas[0];
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    console.log('image');
+    //console.log('image');
 
     var image = new Image();
     image.addEventListener("load", function() {
@@ -61,15 +89,23 @@ function showImageThumbnail(url) {
 }
 
 function showDicomThumbnail(url) {
-    var element = $('#image-previewer').get(0);
+    console.log(url);
+    var element = $('#image-previewer-image').get(0);
+    //$('#image-previewer-image').empty();
+    //cornerstone.enable(element);
     try {
         cornerstone.loadAndCacheImage(url).then(function(image) {
             //console.log(image);
             //console.log(element);
             var viewport = cornerstone.getDefaultViewportForImage(element, image);
             cornerstone.displayImage(element, image, viewport);
-            cornerstoneTools.mouseInput.disable(element);
-            cornerstoneTools.mouseWheelInput.disable(element);
+            cornerstone.updateImage(element);
+            //cornerstoneTools.mouseInput.disable(element);
+            //cornerstoneTools.mouseWheelInput.disable(element);
+            //cornerstoneTools.wwwc.disable(element);
+            //cornerstoneTools.pan.disable(element);
+            //cornerstoneTools.zoom.disable(element);
+            //cornerstoneTools.zoomWheel.disable(element);
         }, function(err) {
             console.log(err);
             openModal(err, "DICOM thumbnail Loading Failed");
@@ -79,18 +115,17 @@ function showDicomThumbnail(url) {
         console.log(err);
         openModal(err, "DICOM thumbnail Loading Failed");
     }
-    showImageViewerLoader(false);
 }
 
 function showCsvThumbnail(url) {
     smoothPlotter.smoothing = 0.2;
-    var elem = document.getElementById("image-previewer");
+    var elem = document.getElementById("image-previewer-graph");
 
     var g = new Dygraph(
         elem,
         url, {
-            width: $('#image-previewer').width(),
-            height: $('#image-previewer').height(),
+            width: thumbnailWidth,
+            height: thumbnailHeight,
             //valueRange: [-3, 5.1],
             axes: {
                 y: {
