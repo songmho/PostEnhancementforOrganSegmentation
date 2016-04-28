@@ -144,13 +144,14 @@ def patient_interpretation_detail_page(request, intpr_id):
         try:
             db = cloud_db_copy.DbManager()
             intpr, physician, request_detail, image = db.retrieve_detail(db.PATIENT_INTPR_DETAIL, intpr_id)
-            if request_detail['status'] == 0 or image['user_id'] != request.session.get('user'):
+            if image['patient_id'] != request.session['user']['user_id']:
                 raise Http404()
             context['intpr'] = intpr
             context['physician'] = physician
             context['request_detail'] = request_detail
             context['image'] = image
-        except Exception:
+        except Exception as e:
+            # print e
             raise Http404()
     logger.info('interpretation_detail_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_detail.html', context)
@@ -164,7 +165,7 @@ def patient_interpretation_request_detail_page(request, request_id):
         try:
             db = cloud_db_copy.DbManager()
             request_detail, image = db.retrieve_detail(db.PATIENT_REQUEST_DETAIL, request_id)
-            if request_detail['status'] == 0 or image['user_id'] != request.session.get('user'):
+            if request_detail['status'] == 0 or image['patient_id'] != request.session['user']['user_id']:
                 raise Http404()
             responses = db.retrieve_list(db.REQUEST_RESPONSE_LIST, request_detail['request_id'])
             context['image'] = image
