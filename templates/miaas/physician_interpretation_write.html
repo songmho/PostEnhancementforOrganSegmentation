@@ -24,8 +24,7 @@
         <section class="section section-default">
             <div class="row">
                 <div class="col-xs-12 col-title">
-                    <h2 class="text-primary" id="titleSubject">Interpreting for
-                        "{{ request_detail.request_subject }}"</h2>
+                    <h2 class="text-primary" id="titleSubject">Interpreting for"{{ request_detail.request_subject }}"</h2>
                 </div>
                 <form id="writeForm" class="col-xs-12 col-form" accept-charset="UTF-8">
                     {% include 'miaas/template_container_request_info.html' %}
@@ -112,7 +111,7 @@
 
     {% else %}
         <div class="col-xs-12 col-title">
-            <h2 class="text-primary" id="titleSubject">{{ request_detail.request_subject }}</h2>
+            <h2 class="text-primary" id="titleSubject">Interpretation Request "{{ request_detail.request_subject }}"</h2>
         </div>
         <section class="section section-default">
             <div class="row">
