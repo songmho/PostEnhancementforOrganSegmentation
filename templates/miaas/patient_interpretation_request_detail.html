@@ -17,6 +17,9 @@
 <div class="container">
     <section class="section section-default">
         <div class="row">
+            <div class="col-xs-12 col-title">
+                <h2 class="text-primary" id="titleSubject">Interpretation Request "{{ request_detail.request_subject }}"</h2>
+            </div>
             {% if request_detail.status == '1' or request_detail.status == 1 %} {# Waiting Interpretation #}
                 <div class="col-xs-12 col-form">
                     <div class="table-container row">
@@ -160,17 +163,17 @@
 <div class="modal fade" id="cancelRequest" tabindex="-1" role="dialog" aria-labelledby="cancelRequestTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="cancelRequestTitle">Confirm Delete</h4>
-        </div>
-        <div class="modal-body">
-        Are you sure to cancel the request?
-        </div>
-        <div class="modal-footer">
-            <button id="btnDeleteConfirm" type="button" class="btn btn-default" data-dismiss="modal">Delete</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        </div>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="cancelRequestTitle">Confirm Delete</h4>
+            </div>
+            <div class="modal-body">
+                Are you sure to cancel the request?
+            </div>
+            <div class="modal-footer">
+                <button id="btnDeleteConfirm" type="button" class="btn btn-default" data-dismiss="modal">Delete</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
         </div>
     </div>
 </div>
