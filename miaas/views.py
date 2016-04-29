@@ -207,12 +207,14 @@ def physician_interpretation_write(request, request_id):
     if request.session.get('user'):
         try:
             db = cloud_db_copy.DbManager()
-            request_detail, patient, image = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
+            request_detail, patient, image, intpr_temp = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
+            print intpr_temp
             if request_detail['status'] == 0:
                 raise Exception()
             context['request_detail'] = request_detail
             context['patient'] = patient
             context['image'] = image
+            context['intpr_temp'] = intpr_temp
         except Exception:
             raise Http404()
     logger.info('interpretation_request_detail_page get: %s' % request.GET)

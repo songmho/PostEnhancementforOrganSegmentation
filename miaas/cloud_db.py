@@ -19,11 +19,12 @@ class DbManager():
         password = 'lovejesus'
         dbName = 'miaas'
         try:
-            self.connector = pymysql.connect(host=host, port=port, user=user, passwd=password, db=dbName, charset='utf8')
+            self.connector = pymysql.connect(host=host, port=port, user=user, passwd=password, db=dbName,
+                                             charset='utf8')
             self.is_connected = True
         except Exception as e:
             logger.exception(e)
-            raise Exception( "DB Connection Error" + e.message)
+            raise Exception("DB Connection Error" + e.message)
             self.is_connected = False
 
     def retrieve_user(self, user_id, password):
@@ -51,7 +52,7 @@ class DbManager():
                     if_exist = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "find_user Error" + e.message)
+                raise Exception("find_user Error" + e.message)
         return if_exist
 
     def find_id(self, email, name):
@@ -108,7 +109,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "add_patient Error" + e.message)
+                raise Exception("add_patient Error" + e.message)
         return if_inserted
 
     def retrieve_patient(self, patient_id, password=None):
@@ -138,7 +139,7 @@ class DbManager():
                         user['password'] = row[8]
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_patient Error" + e.message)
+                raise Exception("retrieve_patient Error" + e.message)
         return user
 
     def update_patient(self, user):
@@ -162,7 +163,7 @@ class DbManager():
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "update_patient Error" + e.message)
+                raise Exception("update_patient Error" + e.message)
         return if_updated
 
     def add_patient_profile(self, user_id, timestamp, profiles):
@@ -181,7 +182,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "add_patient_profile Error" + e.message)
+                raise Exception("add_patient_profile Error" + e.message)
         return if_inserted
 
     # type='None' (performance low)
@@ -209,7 +210,7 @@ class DbManager():
                         profiles.append(profile)
                 except Exception as e:
                     logger.exception(e)
-                    raise Exception( "retrieve_patient_profile Error" + e.message)
+                    raise Exception("retrieve_patient_profile Error" + e.message)
         else:
             db_query = "SELECT pp.type, pp.value, pp.timestamp " \
                        "From (" \
@@ -231,7 +232,7 @@ class DbManager():
                         profiles.append(profile)
                 except Exception as e:
                     logger.exception(e)
-                    raise Exception( "retrieve_patient_profile Error" + e.message)
+                    raise Exception("retrieve_patient_profile Error" + e.message)
         return profiles
 
     def add_physician(self, physician):
@@ -261,7 +262,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "add_physician Error" + e.message)
+                raise Exception("add_physician Error" + e.message)
 
         with self.connector.cursor() as cursor:
             try:
@@ -274,7 +275,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "Add Physician Profile Error" + e.message)
+                raise Exception("Add Physician Profile Error" + e.message)
 
         return if_inserted
 
@@ -306,7 +307,7 @@ class DbManager():
                         user['password'] = row[9]
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_physician Error" + e.message)
+                raise Exception("retrieve_physician Error" + e.message)
         return user
 
     def update_physician(self, user):
@@ -331,7 +332,7 @@ class DbManager():
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "update_physician Error" + e.message)
+                raise Exception("update_physician Error" + e.message)
         return if_updated
 
     # def add_physician_profile(self, user_id, keys, values):
@@ -376,7 +377,7 @@ class DbManager():
                 return if_updated
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "add_physician_profile Error" + e.message)
+                raise Exception("add_physician_profile Error" + e.message)
         return if_updated
 
     # def retrieve_physician_profile(self, physician_id, type=None):
@@ -428,7 +429,7 @@ class DbManager():
                     profile[row[1]] = row[2]
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "Retrieve retrieve_physician_profile Profile Error" + e.message)
+                raise Exception("Retrieve retrieve_physician_profile Profile Error" + e.message)
         return profile
 
     def add_medical_image(self, medical_image):
@@ -451,17 +452,17 @@ class DbManager():
                 medical_department = medical_image['medical_department']
                 db_query = "INSERT INTO medical_image (user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp, taken_date, medical_department) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query, (
-                    user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp, taken_date, medical_department))
+                    user_id, subject, image_type, taken_from, physician, place, description, image_dir, timestamp,
+                    taken_date, medical_department))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "add_medical_image Error" + e.message)
+                raise Exception("add_medical_image Error" + e.message)
 
-        return  if_inserted
-
+        return if_inserted
 
     # To update a medical image information by 'image_id'
     def update_medical_image_by_id(self, medical_image):
@@ -480,7 +481,8 @@ class DbManager():
             try:
                 db_query = "UPDATE medical_image SET subject=%s, image_type=%s, taken_from=%s, physician=%s, place=%s, description=%s, taken_date=%s, medical_department=%s WHERE image_id=%s"
                 cursor.execute(db_query,
-                               (subject, image_type, taken_from, physician, place, description, taken_date, medical_department, image_id))
+                               (subject, image_type, taken_from, physician, place, description, taken_date,
+                                medical_department, image_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 print(row_count)
@@ -488,7 +490,7 @@ class DbManager():
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "update_medical_image_by_id Error" + e.message)
+                raise Exception("update_medical_image_by_id Error" + e.message)
 
         return if_updated
 
@@ -531,7 +533,7 @@ class DbManager():
                     images.append(image)
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_medical_image Error" + e.message)
+                raise Exception("retrieve_medical_image Error" + e.message)
         return images
 
     def retrieve_medical_image_amount(self, patient_id):
@@ -544,7 +546,7 @@ class DbManager():
                 amount = cursor.rowcount
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_medical_image_amount Error" + e.message)
+                raise Exception("retrieve_medical_image_amount Error" + e.message)
         return amount
 
     def retrieve_medical_image_by_id(self, image_id):
@@ -573,12 +575,12 @@ class DbManager():
                 image['medical_department'] = row[13]
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_medical_image_by_id Error" + e.message)
+                raise Exception("retrieve_medical_image_by_id Error" + e.message)
         return image
 
     def update_medical_image_dir(self, medical_image):
         if_updated = False
-        image_dir= medical_image['image_dir']
+        image_dir = medical_image['image_dir']
         image_id = medical_image['image_id']
         with self.connector.cursor() as cursor:
             try:
@@ -591,7 +593,7 @@ class DbManager():
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "update_medical_image_dir Error" + e.message)
+                raise Exception("update_medical_image_dir Error" + e.message)
         return if_updated
 
     def update_medical_image_intprnum(self, image_id):
@@ -606,7 +608,7 @@ class DbManager():
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "update_medical_image_intprnum Error" + e.message)
+                raise Exception("update_medical_image_intprnum Error" + e.message)
         return if_updated
 
     def delte_medical_image_by_id(self, image_id):
@@ -621,7 +623,52 @@ class DbManager():
                     if_deleted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "delte_medical_image_by_id Error" + e.message)
+                raise Exception("delte_medical_image_by_id Error" + e.message)
+        return if_deleted
+
+    def temp_save_intpr(self, intpr):
+        if_inserted = False
+        with self.connector.cursor() as cursor:
+            try:
+                request_id = intpr['request_id']
+                summary = intpr['summary']
+                suspected_disease = intpr['suspected_disease']
+                opinion = intpr['opinion']
+                recommendation = intpr['recommendation']
+
+                db_query = "INSERT INTO interpretation_temp VALUES (%s, %s, %s, %s, %s) " \
+                           "ON  DUPLICATE KEY UPDATE " \
+                           "request_id = values(request_id), " \
+                           "summary = values(summary), " \
+                           "suspected_disease = values(suspected_disease), " \
+                           "opinion = values(opinion), " \
+                           "recommendation = values(recommendation) "
+
+                cursor.execute(db_query, (request_id, summary, suspected_disease, opinion, recommendation))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_inserted = True
+
+            except Exception as e:
+                logger.exception(e)
+                raise Exception("add_intpr Error" + e.message)
+        return if_inserted
+
+    def delete_temp_intpr(self, request_id):
+        if_deleted = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "DELETE FROM interpretation_temp " \
+                           "WHERE request_id = %s"
+                cursor.execute(db_query, request_id)
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_deleted = True
+            except Exception as e:
+                logger.exception(e)
+                raise Exception("delete_temp_intpr Error" + e.message)
         return if_deleted
 
     def add_intpr(self, intpr):
@@ -654,9 +701,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "add_intpr Error" + e.message)
-        return if_inserted
-
+                raise Exception("add_intpr Error" + e.message)
         return if_inserted
 
     def retrieve_intpr_by_id(self, intpr_id):
@@ -685,7 +730,7 @@ class DbManager():
 
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_intpr_by_id Error" + e.message)
+                raise Exception("retrieve_intpr_by_id Error" + e.message)
         return intpr
 
     # To retrieve all interpretation information from 'interpretation' table on 'image_id' arguments with medical image information from 'medical_image'
@@ -698,8 +743,8 @@ class DbManager():
                 intpr_by_image['image'] = self.retrieve_medical_image_by_id(image_id)
                 # To retrieve data from 'interpretation' table
                 db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \
-                   "level, fee, timestamp, summary, request_id, " \
-                   "suspected_disease, opinion, recommendation FROM interpretation WHERE image_id=%s"
+                           "level, fee, timestamp, summary, request_id, " \
+                           "suspected_disease, opinion, recommendation FROM interpretation WHERE image_id=%s"
                 cursor.execute(db_query, (image_id))
                 self.connector.commit()
                 for row in cursor:
@@ -719,7 +764,7 @@ class DbManager():
                 intpr_by_image['intpr'] = intpr_list
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_image_and_intpr Error" + e.message)
+                raise Exception("retrieve_image_and_intpr Error" + e.message)
         return intpr_by_image
 
     def retrieve_image_intpr(self, image_id, time_from=None, offset=None, limit=None):
@@ -730,13 +775,13 @@ class DbManager():
         with self.connector.cursor() as cursor:
             if limit is 0:
                 db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \
-                   "level, fee, timestamp, summary, request_id, " \
-                   "suspected_disease, opinion, recommendation FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC"
+                           "level, fee, timestamp, summary, request_id, " \
+                           "suspected_disease, opinion, recommendation FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC"
                 cursor.execute(db_query, (image_id, time_from))
             else:
                 db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \
-                   "level, fee, timestamp, summary, request_id, " \
-                   "suspected_disease, opinion, recommendation FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC LIMIT %s OFFSET %s"
+                           "level, fee, timestamp, summary, request_id, " \
+                           "suspected_disease, opinion, recommendation FROM interpretation WHERE image_id=%s and timestamp>%s ORDER BY timestamp DESC LIMIT %s OFFSET %s"
                 cursor.execute(db_query, (image_id, time_from, limit, offset))
             try:
                 self.connector.commit()
@@ -758,7 +803,7 @@ class DbManager():
                     intprs.append(intpr)
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_image_intpr Error" + e.message)
+                raise Exception("retrieve_image_intpr Error" + e.message)
         return intprs
 
     def retrieve_physician_intpr(self, physician_id, time_from=None):
@@ -789,7 +834,7 @@ class DbManager():
                     intprs.append(intpr)
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_physician_intpr Error" + e.message)
+                raise Exception("retrieve_physician_intpr Error" + e.message)
         return intprs
 
     def retrieve_physician_intpr_amount(self, physician_id):
@@ -802,7 +847,7 @@ class DbManager():
                 amount = cursor.rowcount
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_physician_intpr_amount Error" + e.message)
+                raise Exception("retrieve_physician_intpr_amount Error" + e.message)
         return amount
 
     def retrieve_patient_intpr(self, patient_id, time_from=None):
@@ -833,7 +878,7 @@ class DbManager():
                     intprs.append(intpr)
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_patient_intpr Error" + e.message)
+                raise Exception("retrieve_patient_intpr Error" + e.message)
         return intprs
 
     def retrieve_patient_intpr_amount(self, patient_id):
@@ -846,7 +891,7 @@ class DbManager():
                 amount = cursor.rowcount
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_patient_intpr_amount Error" + e.message)
+                raise Exception("retrieve_patient_intpr_amount Error" + e.message)
         return amount
 
     def add_patient_intpr_request(self, request):
@@ -868,7 +913,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "add_patient_intpr_request Error" + e.message)
+                raise Exception("add_patient_intpr_request Error" + e.message)
         return if_inserted
 
     def update_patient_request_by_selection(self, request_id, physician_id, status):
@@ -888,7 +933,7 @@ class DbManager():
                         if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "update_patient_request_by_selection Error" + e.message)
+                raise Exception("update_patient_request_by_selection Error" + e.message)
         return if_updated
 
     def update_patient_request(self, request_id, subject, message, timestamp):
@@ -925,7 +970,7 @@ class DbManager():
                         if_deleted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "delete_patient_request Error" + e.message)
+                raise Exception("delete_patient_request Error" + e.message)
         return if_deleted
 
     def add_physician_intpr_resp(self, response):
@@ -953,7 +998,7 @@ class DbManager():
                         if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( Exception("add_physician_intpr_resp Error" + e.message))
+                raise Exception(Exception("add_physician_intpr_resp Error" + e.message))
         return if_inserted
 
     def update_req_and_resp(self, request_id, status, timestamp):
@@ -968,9 +1013,8 @@ class DbManager():
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "Update_Patient_Request_by_Selection Error" + e.message)
+                raise Exception("Update_Patient_Request_by_Selection Error" + e.message)
         return if_updated
-
 
     # KH
     def retrieve_patient_request_list(self, patient_id, time_from=None):
@@ -999,7 +1043,7 @@ class DbManager():
                     requests.append(request)
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_patient_request_list Error" + e.message)
+                raise Exception("retrieve_patient_request_list Error" + e.message)
         return requests
 
     # KH
@@ -1047,12 +1091,13 @@ class DbManager():
                     responses.append(response)
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_patient_request_detail Error" + e.message)
+                raise Exception("retrieve_patient_request_detail Error" + e.message)
 
         return request_detail, responses
 
     # KH
-    def retrieve_requested_intpr_list(self, query_type=None, request_subject=None, image_type=None, physician_id=None, time_from=None):
+    def retrieve_requested_intpr_list(self, query_type=None, request_subject=None, image_type=None, physician_id=None,
+                                      time_from=None):
         requests = []
         time_from = int(time_from) if time_from is not None else 0
         if query_type == "Image Type" and image_type is not None:
@@ -1092,9 +1137,8 @@ class DbManager():
                     requests.append(request)
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_requested_intpr_list Error" + e.message)
+                raise Exception("retrieve_requested_intpr_list Error" + e.message)
         return requests
-
 
     # KH
     def retrieve_physician_response_list(self, physician_id):
@@ -1110,7 +1154,7 @@ class DbManager():
                    "WHEN req.status = 1 Then 3 " \
                    "WHEN req.status = 2 Then 2 " \
                    "WHEN req.status = 0 Then 0 " \
-                   "END DESC"%physician_id
+                   "END DESC" % physician_id
 
         with self.connector.cursor() as cursor:
             try:
@@ -1131,7 +1175,7 @@ class DbManager():
                     responses.append(response)
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_physician_response_list Error" + e.message)
+                raise Exception("retrieve_physician_response_list Error" + e.message)
         return responses
 
     # KH
@@ -1170,7 +1214,7 @@ class DbManager():
 
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_request_info Error" + e.message)
+                raise Exception("retrieve_request_info Error" + e.message)
 
         return request_detail
 
@@ -1186,7 +1230,7 @@ class DbManager():
                    "JOIN user u ON ph.user_id = u.user_id " \
                    "JOIN request req ON intpr.request_id = req.request_id " \
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
-                   "WHERE intpr.intpr_id =%s"%intpr_id
+                   "WHERE intpr.intpr_id =%s" % intpr_id
 
         with self.connector.cursor() as cursor:
             try:
@@ -1214,7 +1258,7 @@ class DbManager():
                     intpr_detail['image_id'] = row[18]
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_interpretation_detail Error" + e.message)
+                raise Exception("retrieve_interpretation_detail Error" + e.message)
 
         return intpr_detail
 
@@ -1232,7 +1276,7 @@ class DbManager():
                    "JOIN request req ON intpr.request_id = req.request_id " \
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
                    "JOIN user pa ON pa.user_id = m.user_id " \
-                   "WHERE intpr.intpr_id =%s"%intpr_id
+                   "WHERE intpr.intpr_id =%s" % intpr_id
 
         with self.connector.cursor() as cursor:
             try:
@@ -1280,7 +1324,7 @@ class DbManager():
                    "JOIN request req ON intpr.request_id = req.request_id " \
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
                    "WHERE intpr.patient_id='%s' and intpr.timestamp>%s " \
-                   "ORDER BY intpr.timestamp DESC"%(patient_id, time_from)
+                   "ORDER BY intpr.timestamp DESC" % (patient_id, time_from)
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query)
@@ -1317,7 +1361,7 @@ class DbManager():
                    "JOIN request req ON intpr.request_id = req.request_id " \
                    "JOIN medical_image m ON intpr.image_id = m.image_id " \
                    "WHERE intpr.physician_id='%s' and intpr.timestamp>%s " \
-                   "ORDER BY intpr.timestamp DESC"%(physician_id, time_from)
+                   "ORDER BY intpr.timestamp DESC" % (physician_id, time_from)
 
         with self.connector.cursor() as cursor:
             try:
@@ -1340,5 +1384,5 @@ class DbManager():
                     intprs.append(intpr)
             except Exception as e:
                 logger.exception(e)
-                raise Exception( "retrieve_physician_intpr_list Error" + e.message)
+                raise Exception("retrieve_physician_intpr_list Error" + e.message)
         return intprs
