@@ -216,8 +216,8 @@ a:focus {
         position: relative;
     }
     .form-container.form-boxed .col-md-overlay {
-        /*top: 24px;*/
-        top: 15px;
+        top: 24px;
+        /*top: 15px;*/
     }
     .form-container.form-boxed .col-md-overlay.col-md-overlay-right {
         left: inherit;
@@ -332,3 +332,9 @@ div.interpretation-viewer {
 .pad-7-bot { padding-bottom: 7px !important; }
 .text-black { color: black !important;}
 .loadingoverlay { z-index: 6; !important; }
+
+@media (min-width: 768px) {
+    .no-pad-left-sm {
+        padding-left: 0 !important;
+    }
+}
