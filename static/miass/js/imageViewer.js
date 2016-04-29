@@ -883,6 +883,9 @@ function openImageViewer() {
                         }
                     }
                 } else {
+                    console.log('rootImageInfo:' + imageInfo['subject']);
+                    console.log(rootImgInfo);
+
                     listExplorer.append('<span><a data-dir="' + rootImgInfo['dir']
                         + '" data-type="' + rootImgInfo['type'] + '">'
                         + imageInfo['subject'] + '<a/></span>');
@@ -992,6 +995,9 @@ function generateExplorer(dirs, name) {
         }
         return htmlString;
     } else {
+        console.log('imageInfo:');
+        console.log(dirs);
+
         return '<a class="image-explorer-list-item" data-dir="'+dirs['dir']
             + '" data-type="'+dirs['type']+'">'+name+'</a>';
     }
