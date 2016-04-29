@@ -814,7 +814,7 @@ $(document).ready(function() {
 
     $('.image-view-image').on('mousewheel', function(e, delta) {
         if(dicomViewerStatus == 'dicom' || dicomViewerStatus == 'sequence') {
-            if (/*check mouse position is in canvas*/ false) {
+            if (isHovered('imageViewer')) {
                 if (e.preventDefault)
                     e.preventDefault();
                 return false;
@@ -836,6 +836,10 @@ $(document).ready(function() {
     //    console.log(e);
     //});
 });
+
+function isHovered(id){
+    return $("#" + id + ":hover").length > 0;
+}
 
 function openImageViewer() {
     $.LoadingOverlay('show');
