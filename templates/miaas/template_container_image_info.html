@@ -16,10 +16,13 @@
     </div>
 
     <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right
-                col-md-overlay-2 form-group medimage-preview-container">
+                form-group medimage-preview-container">
         <div class="medimage-preview-wrapper">
             <div id="image-previewer" class="medimage-preview">
-                <div class="text-center text-warning" style="margin-top:136px;">Image Preview</div>
+                <div id="image-previewer-image" class="medimage-previewer">
+                    <div class="text-center text-warning" style="margin-top:136px;">Image Preview</div>
+                </div>
+                <div id="image-previewer-graph" class="medimage-previewer" style="display: none;"></div>
             </div>
         </div>
     </div>
@@ -32,14 +35,14 @@
     </div>
 
     <div class="col-xs-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Recording Place</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label no-pad-left-sm" >Recording Place</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span id="taken" class="control-value">{{ image.taken_from }}</span>
         </div>
     </div>
 
     <div class="col-xs-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Doctor in Charge</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label no-pad-left-sm" >Doctor in Charge</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span id="physician" class="control-value">{{ image.physician }}</span>
         </div>
@@ -68,3 +71,7 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    imageInfo = JSON.parse("{{ image | jsonstr }}");
+</script>

@@ -80,7 +80,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label no-pad-left" for="takenFrom" >Recording Place</label>
+                        <label class="col-sm-3 col-md-2 control-label no-pad-left-sm" for="takenFrom" >Recording Place</label>
                         <div class="col-sm-9 col-md-4">
                             <select class="form-control" id="takenFrom" name="takenFrom" required disabled>
                                 <option>Medical Clinic</option>
@@ -90,7 +90,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div id="physicianGroup" class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label no-pad-left" for="takenPhysicianName" >Doctor in Charge</label>
+                        <label class="col-sm-3 col-md-2 control-label no-pad-left-sm" for="takenPhysicianName" >Doctor in Charge</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="text" maxlength="100" id="takenPhysicianName" name="takenPhysicianName" class="form-control"
                                    placeholder="Examining Physician" required readonly value="{{ image.physician }}">
