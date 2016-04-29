@@ -824,10 +824,18 @@ $(document).ready(function() {
     $('#imageViewModal').on('show.bs.modal', function(e) {
         resizeViewer();
 
-        /*if (lastImageData != null) {
-            downloadAndView(lastImageData);
-        }*/
-        $('#image-view-list .image-explorer-list-item:first').trigger('click');
+
+        if(lastImageData)
+
+        if (lastImageData != null) {
+            if(lastImageData['type'] == 'dcm') {
+                $('#image-view-list .image-explorer-list-item:first').trigger('click');
+            } else {
+                downloadAndView(lastImageData);
+            }
+        } else {
+            $('#image-view-list .image-explorer-list-item:first').trigger('click');
+        }
     });
 
     var imageContainer = $('#imageViewer').get(0);
