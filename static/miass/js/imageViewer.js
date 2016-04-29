@@ -788,9 +788,10 @@ $(document).ready(function() {
     $('#imageViewModal').on('show.bs.modal', function(e) {
         resizeViewer();
 
-        if (lastImageData != null) {
+        /*if (lastImageData != null) {
             downloadAndView(lastImageData);
-        }
+        }*/
+        $('#image-view-list .image-explorer-list-item:first').trigger('click');
     });
 
     var imageContainer = $('#imageViewer').get(0);
@@ -853,7 +854,7 @@ function openImageViewer() {
                         dir: rootImgInfo['dir'],
                         name: imageInfo['subject']
                     };
-                    console.log(lastImageData);
+                    //console.log(lastImageData);
                 }
                 break;
             }
