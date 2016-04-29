@@ -186,7 +186,7 @@ def physician_request_search_detail_page(request, request_id):
     if request.session.get('user'):
         try:
             db = cloud_db_copy.DbManager()
-            request_detail, patient, image = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
+            request_detail, patient, image, intpr_temp = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
             if request_detail['status'] == 0:
                 raise Exception()
             context['request_detail'] = request_detail
