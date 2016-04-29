@@ -811,6 +811,16 @@ $(document).ready(function() {
         dicomSeqPlayingIntervalTime = value;
     });
 
+    $('.image-view-image').on('mousewheel', function(e, delta) {
+        if(dicomViewerStatus == 'dicom' || dicomViewerStatus == 'sequence') {
+            if (/*check mouse position is in canvas*/ false) {
+                if (e.preventDefault)
+                    e.preventDefault();
+                return false;
+            }
+        }
+    });
+
     $('#rollPeriod').change(function(e) {
         var period = $(this).val();
         if(period < 0) {
@@ -891,7 +901,7 @@ function openImageViewer() {
                         subject = imageInfo['image_subject'];
                     }
 
-                    listExplorer.append('<span><a data-dir="' + rootImgInfo['dir']
+                    listExplorer.append('<span><a class="image-explorer-list-item" data-dir="' + rootImgInfo['dir']
                         + '" data-type="' + rootImgInfo['type'] + '">'
                         + subject + '<a/></span>');
                     lastImageData = {
@@ -909,6 +919,16 @@ function openImageViewer() {
                     //console.log($(this).data());
                     var imageData = $(this).data();
                     imageData['name'] = $(this).text();
+
+                    $('#image-view-list .image-explorer-list-group.activate, ' +
+                        '#image-view-list .image-explorer-list-item.activate').removeClass('activate');
+                    $(this).addClass('activate');
+                    $(this).parents().each(function() {
+                        if($(this).prop("tagName").toLowerCase() == 'li') {
+                            $(this).find(' > span > span.image-explorer-list-group').addClass('activate');
+                        }
+                    });
+
                     stopDicomSequence();
                     downloadAndView(imageData);
                 });
@@ -981,7 +1001,7 @@ function generateExplorer(dirs, name) {
             htmlString = '<span>' + '<a aria-hidden="true" class="image-view-list-expander glyphicon ';
             if (bHasFile) htmlString += 'glyphicon-expand" data-expanded="false';
             else htmlString += 'glyphicon-collapse-down" data-expanded="true';
-            htmlString += '"></a>&nbsp;' + name;
+            htmlString += '"></a>&nbsp;' + '<span class="image-explorer-list-group">' + name + '</span>';
             if (bHasFile && fileList.length >= 2) {
                 //console.log(fileList.join(':'));
                 htmlString += '&nbsp;<a class="image-explorer-list-play" '
@@ -1000,9 +1020,6 @@ function generateExplorer(dirs, name) {
         }
         return htmlString;
     } else {
-        console.log('imageInfo:');
-        console.log(dirs);
-
         return '<a class="image-explorer-list-item" data-dir="'+dirs['dir']
             + '" data-type="'+dirs['type']+'">'+name+'</a>';
     }

@@ -123,6 +123,11 @@
     padding-left: 12px;
 }
 
+#image-view-list .image-explorer-list-group.activate,
+#image-view-list .image-explorer-list-item.activate {
+    font-weight: 700;
+}
+
 .image-view-image #imageViewerDetail strong {
     color: #7A7677;
 }

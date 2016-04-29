@@ -34,9 +34,12 @@ function showThumbnail() {
         .attr('width', thumbnailWidth).attr('height', thumbnailHeight).css(style);
 
     var thumbnail = getThumbnailImage();
+    //lastImageData = thumbnail;
+
+    console.log(thumbnail);
     if(thumbnail != null) {
         var url = makeURL(thumbnail['dir']);
-        //console.log(url);
+        console.log(url);
         //console.log(thumbnail['type']);
         setTimeout(function() {
             if (thumbnail['type'] == 'dcm') {
@@ -151,16 +154,29 @@ function getThumbnailImage() {
         var rootImgInfo = imageDirs[rootName];
 
         if (rootImgInfo['type'] == 'folder') {
-            for (var dirName in rootImgInfo['file_list']) {
-                var dirs = rootImgInfo['file_list'][dirName];
-                var firstImage = nextImageNotFolder(dirs, dirName);
+            var rootDirKeys = [];
+            for (var rootdirkey in rootImgInfo['file_list']) {
+                rootDirKeys.push(rootdirkey);
+            }
+            rootDirKeys.sort(cmpStringsWithNumbers);
+            //console.log(rootDirKeys);
+
+            for (var i = 0; i < rootDirKeys.length; i++) {
+                var dirs = rootImgInfo['file_list'][rootDirKeys[i]];
+                var firstImage = nextImageNotFolder(dirs, rootDirKeys[i]);
                 if (firstImage != null) return firstImage;
             }
+
         } else {
+            var subject = imageInfo['subject'];
+            if (subject == undefined) {
+                subject = imageInfo['image_subject'];
+            }
+
             return {
                 type: rootImgInfo['type'],
                 dir: rootImgInfo['dir'],
-                name: imageInfo['subject']
+                name: subject
             };
         }
         return null;
@@ -168,19 +184,23 @@ function getThumbnailImage() {
 }
 
 function nextImageNotFolder(dirs, name) {
+    //console.log(dirs);
+
     if (dirs['type'] == 'folder') {
         var firstImage = null;
         var dirKeys = [];
         for (var dirkey in dirs['file_list']) {
             dirKeys.push(dirkey);
         }
+        dirKeys.sort(cmpStringsWithNumbers);
+
         //if (dirKeys.length <= 0) return null;
         for (var i=0; i<dirKeys.length; i++) {
             var dirName = dirKeys[i];
             var childDirs = dirs['file_list'][dirName];
-            firstImage = nextImageNotFolder(childDirs, dirName)
+            firstImage = nextImageNotFolder(childDirs, dirName);
+            if (firstImage != null) return firstImage;
         }
-        return firstImage;
     } else {
         return {
             type: dirs['type'],

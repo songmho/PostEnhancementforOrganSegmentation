@@ -279,7 +279,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             </div>
             <div class="modal-body">
                 <div class="form-group col-xs-12">
-                    <label class="col-sm-3 control-label" for="image_file">Medical Image</label>
+                    <label class="col-sm-3 control-label no-pad-right" for="image_file">Medical Image</label>
                     {% csrf_token %}
                     <div class="col-sm-9">
                         <input type="file" id="image_file" multiple="multiple" name="attachments" class="form-control"
