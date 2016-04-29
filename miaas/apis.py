@@ -571,6 +571,21 @@ def handle_interpretation_mgt(request):
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
                     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
+
+            elif action == 'tempSaveIntpr':
+                intpr = {
+                    'summary': data['summary'],
+                    'request_id': data['request_id'],
+                    'suspected_disease': data['suspected_disease'],
+                    'opinion': data['opinion'],
+                    'recommendation': data['recommendation']
+                }
+                if_inserted = db.temp_save_intpr(intpr)
+                if if_inserted:
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
+
             # To create an interpretation and update request and response
             elif action == 'finishIntpr':
                 fee = 20
@@ -594,7 +609,8 @@ def handle_interpretation_mgt(request):
                 if if_inserted:
                     status = 0
                     if_updated = db.update_req_and_resp(request_id, status, timestamp)
-                    if if_updated:
+                    if_deleted = db.delete_temp_intpr(request_id)
+                    if if_updated and if_deleted:
                         return JsonResponse(constants.CODE_SUCCESS)
                     else:
                         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))

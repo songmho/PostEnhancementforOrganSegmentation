@@ -24,7 +24,8 @@
         <section class="section section-default">
             <div class="row">
                 <div class="col-xs-12 col-title">
-                    <h2 class="text-primary" id="titleSubject">Interpreting for"{{ request_detail.request_subject }}"</h2>
+                    <h2 class="text-primary" id="titleSubject">Interpreting
+                        for"{{ request_detail.request_subject }}"</h2>
                 </div>
                 <form id="writeForm" class="col-xs-12 col-form" accept-charset="UTF-8">
                     {% include 'miaas/template_container_request_info.html' %}
@@ -46,8 +47,13 @@
                                       class="form-control interpretation-writer"
                                       placeholder="Write suspected diseases. &#10; Example) Diabetes, Osteoporosis, …"
                                       rows="3">
-                                <p style="color: #999;">Write suspected diseases.<br/>Example) Diabetes, Osteoporosis, …
-                                </p>
+                                {% if intpr_temp.suspected_disease %}
+                                    <p>{{ intpr_temp.suspected_disease }}</p>
+                                {% else %}
+                                    <p style="color: #999;">Write suspected diseases.<br/>Example) Diabetes,
+                                        Osteoporosis, …
+                                    </p>
+                                {% endif %}
                             </textarea>
                             </div>
                         </div>
@@ -59,8 +65,13 @@
                                       class="form-control interpretation-writer"
                                       placeholder="Write your opinions about the medical image.&#10;Example) Look closely at the third CT image, there is a tumor in right side of lung …"
                                       rows="7">
-                                <p style="color: #999;">Write your opinions about the medical image.<br/>Example) Look
-                                    closely at the third CT image, there is a tumor in right side of lung …</p>
+                                {% if intpr_temp.opinion %}
+                                    <p>{{ intpr_temp.opinion }}</p>
+                                {% else %}
+                                    <p style="color: #999;">Write your opinions about the medical image.<br/>Example)
+                                        Look
+                                        closely at the third CT image, there is a tumor in right side of lung …</p>
+                                {% endif %}
                             </textarea>
                             </div>
                         </div>
@@ -72,8 +83,13 @@
                                       class="form-control interpretation-writer"
                                       placeholder="Write recommended actions or treatments.&#10;Example) In this case, you’d better to take an operation as soon as possible…"
                                       rows="7">
-                                <p style="color: #999;">Write recommended actions or treatments.<br/>Example) In this
-                                    case, you’d better to take an operation as soon as possible…</p>
+                                {% if intpr_temp.recommendation %}
+                                    <p>{{ intpr_temp.recommendation }}</p>
+                                {% else %}
+                                    <p style="color: #999;">Write recommended actions or treatments.<br/>Example) In
+                                        this
+                                        case, you’d better to take an operation as soon as possible…</p>
+                                {% endif %}
                             </textarea>
                             </div>
                         </div>
@@ -85,9 +101,13 @@
                                       class="form-control interpretation-writer"
                                       placeholder="Write summary of your interpretation.&#10;Example) There is possibility of lung cancer, so you’d better to take an operation as soon as possible …"
                                       rows="3">
-                                <p style="color: #999;">Write summary of your interpretation.<br/>Example) There is
-                                    possibility of lung cancer, so you’d better to take an operation as soon as possible
-                                    …</p>
+                                {% if intpr_temp.summary %}
+                                    <p>{{ intpr_temp.summary }}</p>
+                                {% else %}
+                                    <p style="color: #999;">Write summary of your interpretation.<br/>Example) There is
+                                        possibility of lung cancer, so you’d better to take an operation as soon as
+                                        possible…</p>
+                                {% endif %}
                             </textarea>
                             </div>
 
@@ -95,17 +115,19 @@
 
                     </div>
                     <div class="form-btns-container row">
-                        <div class="col-xs-12 col-sm-4 col-sm-offset-4 col-md-offset-3 col-md-3  form-button">
+                        <div class="col-xs-12 col-sm-4 col-sm-offset-4 col-md-offset-2 col-md-3  form-button">
                             <a class="btn btn-lg btn-primary btn-block" onclick="$('#patientProfileModal').modal();">
                                 View Profile</a>
                         </div>
 
                         <div class="col-xs-12 col-sm-4 col-md-3 form-button">
-                            <button id="btnWrite" class="btn btn-lg btn-primary btn-block" type="submit">Write</button>
+                            <button id="btnSave" class="btn btn-lg btn-primary btn-block" type="button"
+                                    onclick="tempSave()">Save
+                            </button>
                         </div>
 
                         <div class="col-xs-12 col-sm-4 col-md-3 form-button">
-                            <button id="btnWrite" class="btn btn-lg btn-primary btn-block" type="submit">Write</button>
+                            <button id="btnWrite" class="btn btn-lg btn-success btn-block" type="submit">Write</button>
                         </div>
 
                     </div>
@@ -116,7 +138,8 @@
 
     {% else %}
         <div class="col-xs-12 col-title">
-            <h2 class="text-primary" id="titleSubject">Interpretation Request "{{ request_detail.request_subject }}"</h2>
+            <h2 class="text-primary" id="titleSubject">Interpretation Request
+                "{{ request_detail.request_subject }}"</h2>
         </div>
         <section class="section section-default">
             <div class="row">
@@ -148,7 +171,6 @@
     var phIntprList = "{% url 'miaas:physician_interpretation' %}";
 
     $(document).ready(function () {
-
         $.LoadingOverlay('show');
         tinymce.init({
             selector: 'textarea.interpretation-writer',
@@ -244,6 +266,48 @@
 
         setOpenImageViewerListener($('#image-previewer'));
     });
+
+    function tempSave() {
+        var summary = tinymce.get('summary').getContent();
+        var suspectedDisease = tinymce.get('suspectedDisease').getContent();
+        var opinion = tinymce.get('opinion').getContent();
+        var recommendation = tinymce.get('recommendation').getContent();
+
+        if (/\S/.test(summary) && /\S/.test(suspectedDisease) &&
+                /\S/.test(opinion) && /\S/.test(recommendation)) {
+
+            var matchstring = '^<p style="color: #999;">Write';
+            if (summary.match(matchstring) || suspectedDisease.match(matchstring) ||
+                    opinion.match(matchstring) || recommendation.match(matchstring)) {
+                openModal('Fields are not filled! Please fill all the fields.', 'Writing Failed');
+                return;
+            }
+
+            $.LoadingOverlay('show');
+            $.ajax("/api/interpretation", {
+                method: 'PUT',
+                data: JSON.stringify({
+                    action: 'tempSaveIntpr',
+                    request_id: '{{ request_detail.request_id }}',
+                    summary: tinymce.get('summary').getContent(),
+                    suspected_disease: tinymce.get('suspectedDisease').getContent(),
+                    opinion: tinymce.get('opinion').getContent(),
+                    recommendation: tinymce.get('recommendation').getContent()
+                }),
+                dataType: 'json',
+                success: function (res) {
+                    $.LoadingOverlay('hide');
+                    if (res['code'] == 'SUCCESS') {
+                        openModal("Success", "Interpretation is Saved.")
+                    } else {
+                        openModal(res['msg'], "Save is Failed.")
+                    }
+                }
+            });
+        } else {
+            openModal('Fields are not filled! Please fill all the fields.', 'Writing Failed')
+        }
+    }
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");
     archiveURL = "{% url 'miaas:archive' %}";

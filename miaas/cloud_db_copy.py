@@ -14,6 +14,7 @@ class DbManager:
     # TABLE COLUMNS
     INTPR_COLUMNS = ["intpr_id", "patient_id", "physician_id", 'image_id', 'level', "fee", "interpret_date",
                      "summary", "request_id", "suspected_disease", "opinion", "recommendation"]
+    INTPR_TEMP_COLUMNS = ["request_id", "summary", "suspected_disease", "opinion", "recommendation"]
     IMAGE_COLUMNS = ["image_id", "patient_id", "image_subject", "image_type", "taken_from", "physician", "place",
                      "description", "image_dir", "size", "upload_date", "intpr_num", "taken_date", "medical_department"]
     REQUEST_COLUMNS = ["request_id", "image_id", "status", "request_subject", "request_message", "request_date",
@@ -28,6 +29,8 @@ class DbManager:
                          "insuranceProgram", "healthPlans", "hospitalPrivileges", "malpractice", "licenseeActions",
                          "outOfStateActions", "currentLimits", "hspPrivRestrictions", "hspFRPriv", "criminalConvictions",
                          "teaching", "serviceActivity", "publications", "statement"]
+
+
 
     # RETRIEVE LIST QUERY
     PATIENT_IMAGE_LIST = "patient_image_list"
@@ -190,13 +193,14 @@ class DbManager:
                 "columns": [IMAGE_COLUMNS]},
 
         PHYSICIAN_REQUEST_DETAIL:
-            {"query": "SELECT req.*, pai.*, m.* "
+            {"query": "SELECT req.*, pai.*, m.*, intpr_temp.* "
                       "FROM request req "
                       "JOIN medical_image m ON m.image_id = req.image_id "
                       "JOIN patient_info pai ON m.user_id = pai.user_id "
+                      "LEFT JOIN interpretation_temp intpr_temp ON req.request_id = intpr_temp.request_id "
                       "WHERE req.request_id = %s",
 
-             "columns": [REQUEST_COLUMNS, PATIENT_COLUMNS+["password"], IMAGE_COLUMNS]},
+             "columns": [REQUEST_COLUMNS, PATIENT_COLUMNS+["password"], IMAGE_COLUMNS, INTPR_TEMP_COLUMNS]},
 
         PHYSICIAN_INTPR_DETAIL:
             {"query": "SELECT intpr.*, pai.*, req.*, m.* "
