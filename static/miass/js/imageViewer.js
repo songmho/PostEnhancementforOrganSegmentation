@@ -457,12 +457,17 @@ function setPlayDicomSequence(images) {
                 showDicomSequenceLoader(false);
                 showImageViewerLoader(false);
 
+                dicomSeqSegRepeting = false;
                 dicomSeqSegA = 0;
                 dicomSeqSegB = dicomSeq.length-1;
                 $('#seqControllerProgress .progress-bar-primary').attr('aria-valuemax', dicomSeq.length-1)
                     .attr('aria-valuenow', 0).css({width: '0%'});
-
                 $('#imageViewerSequenceController').show();
+                $('.seq-controller-buttons .btn.btn-state').removeClass('activate');
+                $('#seqControllerPlay').addClass('activate');
+                $('#seqControllerProgressSegA').hide();
+                $('#seqControllerProgressSegB').hide();
+
                 try {
                     dicomSeqPlaying = true;
                     dicomPlayingSequenceInterval = setInterval(function () {
@@ -498,6 +503,9 @@ function setPlayDicomSequence(images) {
                             clearInterval(dicomPlayingSequenceInterval);
                             dicomSeqPlaying = false;
 
+                            $('.seq-controller-buttons .btn.btn-state').removeClass('activate');
+                            $(this).addClass('activate');
+
                             $('#seqControllerStepBackward').removeClass('disabled').click(function() {
                                 dicomSeqCnt--;
                                 if(dicomSeqCnt < 0) dicomSeqCnt = dicomSeq.length - 1;
@@ -518,6 +526,9 @@ function setPlayDicomSequence(images) {
 
                         $('#seqControllerStepBackward').off('click').unbind('click').addClass('disabled');
                         $('#seqControllerStepForward').off('click').unbind('click').addClass('disabled');
+
+                        $('.seq-controller-buttons .btn.btn-state').removeClass('activate');
+                        $(this).addClass('activate');
 
                         if($(this).attr('id') == 'seqControllerPlay') {
                             dicomSeqForward = true;
@@ -565,6 +576,9 @@ function setPlayDicomSequence(images) {
 
                         $('#seqControllerStepBackward').off('click').unbind('click').addClass('disabled');
                         $('#seqControllerStepForward').off('click').unbind('click').addClass('disabled');
+
+                        $('.seq-controller-buttons .btn.btn-state').removeClass('activate');
+                        $(this).addClass('activate');
 
                         if($(this).attr('id') == 'seqControllerSegmentRepetitionAB') {
                             dicomSeqSegRepetingAB = true;
@@ -820,6 +834,12 @@ $(document).ready(function() {
                 return false;
             }
         }
+    });
+
+    $('.seq-controller-buttons .btn.btn-state').click(function() {
+        console.log('status change');
+        $('.seq-controller-buttons .btn.btn-state').removeClass('activate');
+        $(this).addClass('activate');
     });
 
     $('#rollPeriod').change(function(e) {

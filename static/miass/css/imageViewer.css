@@ -203,6 +203,12 @@
     width: 60px;
     padding: 6px;
 }
+.seq-controller-buttons .btn.activate {
+    /*background: #9d2839;*/
+    background: #8d2433;
+    /*border-color: #7e202d;*/
+    border-color: #6e1c28;
+}
 .seq-controller-buttons#seqControllerSegmentButtons .btn {
     /*width: 76px;*/
 }
