@@ -1,20 +1,32 @@
 {% load staticfiles %}
 {% load my_filters %}
+<footer class="page-footer">
+    <div class="container footer-container">
+        <div class="footer-contents pull-left">
+            <span>Smartylab Corporation, Seoul, Korea</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span>Tel. 02-826-0909</span>&nbsp;&nbsp;&nbsp;
+            <span><a href="http://smartylab.co.kr" target="_blank">http://smartylab.co.kr</a></span>
+        </div>
+        <a href="http://smartylab.co.kr" target="_blank" class="pull-right">
+            <image src="{% static 'miass/image/main/logo.png' %}"  class="copyright-logo"></image>
+        </a>
+    </div>
+</footer>
 
 <!-- default alert modal -->
 <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close modal-alert-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="alertModalTitle">Request Failed</h4>
-        </div>
-        <div class="modal-body">
-        Request failed
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default modal-alert-close" data-dismiss="modal">Close</button>
-        </div>
+            <div class="modal-header">
+                <button type="button" class="close modal-alert-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="alertModalTitle">Request Failed</h4>
+            </div>
+            <div class="modal-body">
+                Request failed
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default modal-alert-close" data-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
@@ -29,21 +41,21 @@
 <script src="{% static 'miass/js/init.js' %}"></script>
 
 <script type="text/javascript">
-function signout() {
-    $.LoadingOverlay('show');
-    $.ajax("/api/sessions", {
-        method: 'DELETE',
-        dataType: 'json',
-        success: function(res) {
-            $.LoadingOverlay('hide');
-            if(res['code'] == 'SUCCESS') {
-                location.href = "{% url 'miaas:signin' %}";
-            } else {
-                console.log(res);
+    function signout() {
+        $.LoadingOverlay('show');
+        $.ajax("/api/sessions", {
+            method: 'DELETE',
+            dataType: 'json',
+            success: function(res) {
+                $.LoadingOverlay('hide');
+                if(res['code'] == 'SUCCESS') {
+                    location.href = "{% url 'miaas:signin' %}";
+                } else {
+                    console.log(res);
+                }
             }
-        }
-    });
-}
+        });
+    }
 
-var user = JSON.parse("{{ user_session | jsonstr }}");
+    var user = JSON.parse("{{ user_session | jsonstr }}");
 </script>

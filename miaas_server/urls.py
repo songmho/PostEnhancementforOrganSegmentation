@@ -13,6 +13,9 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
+from miaas_server import settings
 
 __author__ = 'hanter'
 
@@ -24,3 +27,7 @@ urlpatterns = [
     url(r'^', include('miaas.urls')),
     url(r'^admin/', admin.site.urls),
 ]
+
+if settings.DEBUG and not urlpatterns:
+    urlpatterns += staticfiles_urlpatterns()
+

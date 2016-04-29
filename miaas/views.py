@@ -121,18 +121,18 @@ def medical_image_page(request, image_id):
             image, = db.retrieve_detail(db.PATIENT_IMAGE_DETAIL, image_id)
             intpr_list = db.retrieve_list(db.IMAGE_INTPR_LIST, image_id)
             if image['user_id'] != request.session.get('user'):
-                raise Http404()
+                return render(request, 'miaas/404.html', context="")
             context['image'] = image
             context['intpr_list'] = intpr_list
         except Exception:
-            raise Http404()
+            return render(request, 'miaas/404.html', context="")
 
-        # if result.get('image') and isinstance(result.get('intpr'), list):
-        #     context['image'] = result['image']
-        #     context['intpr_list'] = result['intpr']
-        # request.session['medical_image'][str(result['image']['image_id'])] = result['image']
-        # logger.info('image page(%s): %s' % (result['image']['image_id'], request.session['medical_image']))
-        # request.session['curr_image'] = result['image']
+            # if result.get('image') and isinstance(result.get('intpr'), list):
+            #     context['image'] = result['image']
+            #     context['intpr_list'] = result['intpr']
+            # request.session['medical_image'][str(result['image']['image_id'])] = result['image']
+            # logger.info('image page(%s): %s' % (result['image']['image_id'], request.session['medical_image']))
+            # request.session['curr_image'] = result['image']
     return render(request, 'miaas/patient_medical_image.html', context)
 
 
@@ -145,14 +145,14 @@ def patient_interpretation_detail_page(request, intpr_id):
             db = cloud_db_copy.DbManager()
             intpr, physician, request_detail, image = db.retrieve_detail(db.PATIENT_INTPR_DETAIL, intpr_id)
             if image['patient_id'] != request.session['user']['user_id']:
-                raise Http404()
+                return render(request, 'miaas/404.html', context="")
             context['intpr'] = intpr
             context['physician'] = physician
             context['request_detail'] = request_detail
             context['image'] = image
         except Exception as e:
             # print e
-            raise Http404()
+            return render(request, 'miaas/404.html', context="")
     logger.info('interpretation_detail_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_detail.html', context)
 
@@ -166,13 +166,13 @@ def patient_interpretation_request_detail_page(request, request_id):
             db = cloud_db_copy.DbManager()
             request_detail, image = db.retrieve_detail(db.PATIENT_REQUEST_DETAIL, request_id)
             if request_detail['status'] == 0 or image['patient_id'] != request.session['user']['user_id']:
-                raise Http404()
+                return render(request, 'miaas/404.html', context="")
             responses = db.retrieve_list(db.REQUEST_RESPONSE_LIST, request_detail['request_id'])
             context['image'] = image
             context['request_detail'] = request_detail
             context['responses'] = responses
         except Exception:
-            raise Http404()
+            return render(request, 'miaas/404.html', context="")
 
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_request_detail.html', context)
@@ -186,7 +186,7 @@ def physician_request_search_detail_page(request, request_id):
     if request.session.get('user'):
         try:
             db = cloud_db_copy.DbManager()
-            request_detail, patient, image = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
+            request_detail, patient, image, intpr_temp = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
             if request_detail['status'] == 0:
                 raise Exception()
             context['request_detail'] = request_detail
@@ -194,7 +194,7 @@ def physician_request_search_detail_page(request, request_id):
             context['image'] = image
             print image
         except Exception:
-            raise Http404()
+            return render(request, 'miaas/404.html', context="")
 
     logger.info('physician_request_search_detail_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_search_detail.html', context)
@@ -216,7 +216,7 @@ def physician_interpretation_write(request, request_id):
             context['image'] = image
             context['intpr_temp'] = intpr_temp
         except Exception:
-            raise Http404()
+            return render(request, 'miaas/404.html', context="")
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_write.html', context)
 
@@ -234,7 +234,7 @@ def physician_interpretation_detail_page(request, intpr_id):
             context['request_detail'] = request_detail
             context['image'] = image
         except Exception:
-            raise Http404()
+            return render(request, 'miaas/404.html', context="")
     logger.info('physician_interpretation_detail_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_detail.html', context)
 
@@ -267,7 +267,7 @@ def patient_interpretation_list_page(request):
             if len(dt_list):
                 context['dt_list'] = json.dumps(dt_list)
         except Exception:
-            raise Http404()
+            return render(request, 'miaas/404.html', context="")
     logger.info('interpret get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_list.html', context)
 
@@ -296,7 +296,7 @@ def patient_request_list_page(request):
             if len(dt_list):
                 context['dt_list'] = json.dumps(dt_list)
         except Exception:
-            raise Http404()
+            return render(request, 'miaas/404.html', context="")
 
     logger.info('patient_request_list_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_request_list.html', context)
@@ -325,7 +325,7 @@ def archive_page(request):
             if len(dt_list):
                 context['dt_list'] = json.dumps(dt_list)
         except Exception:
-            raise Http404()
+            return render(request, 'miaas/404.html', context="")
 
     logger.info('archive get: %s' % request.GET)
     return render(request, 'miaas/patient_archive.html', context)
@@ -352,7 +352,7 @@ def physician_interpretation_search(request):
                 if len(temp):
                     dt_list.append(temp)
         except Exception:
-            raise Http404()
+            return render(request, 'miaas/404.html', context="")
 
         # Render the page
         if len(dt_list):
@@ -383,7 +383,7 @@ def physician_interpretation_response_page(request):
                 if len(temp):
                     dt_list.append(temp)
         except Exception:
-            raise Http404()
+            return render(request, 'miaas/404.html', context="")
 
         # Render the page
         if len(dt_list):
@@ -412,12 +412,16 @@ def physician_interpretation_page(request):
                 if len(temp):
                     dt_list.append(temp)
         except Exception:
-            raise Http404()
+            return render(request, 'miaas/404.html', context="")
         # Render the page
         if len(dt_list):
             context['dt_list'] = json.dumps(dt_list)
     logger.info('physician_interpretation_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_list.html', context)
+
+
+def page_not_found_view(request):
+    return render(request, 'miaas/404.html', context="")
 
 
 class ArchiveUploadView(FormView):

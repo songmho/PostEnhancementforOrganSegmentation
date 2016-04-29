@@ -60,4 +60,6 @@ urlpatterns = [
 
     url(r'^api/test$', apis.handle_test),
     url(r'^json_res/success$', views.json_response_success),
+
+    url(r'^', views.page_not_found_view)
 ]
