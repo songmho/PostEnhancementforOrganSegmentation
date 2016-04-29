@@ -410,7 +410,8 @@ function setPlayDicomSequence(images) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     dicomSeqPlayingIntervalTime = 50;
-    $('#seqControllerInterval').val(50);
+    //$('#seqControllerInterval').val(50);
+    $('#seqControllerIntervalControlWrapper').css('left', '50%');
 
     $('#imageViewerDetailContainer').hide();
     $('#imageViewShowDetail').hide();
@@ -552,6 +553,26 @@ function setPlayDicomSequence(images) {
                         dicomSeqPlaying = true;
                     });
 
+                    $('#seqControllerIntervalProgress').click(function(e) {
+                        if($('#seqControllerPause').hasClass('activate')) {
+                            var x = e.pageX - $(this).offset().left;    //0~120
+                            x = x - 10;   //10~110;
+                            if (x < 0) x = 0;
+                            if (x > 100) x = 100;
+
+                            if (x < 50) {
+                                dicomSeqPlayingIntervalTime = 2000 - 40*x;
+                            } else if (x == 50) {
+                                dicomSeqPlayingIntervalTime = 50;
+                            } else {    // x > 50
+                                dicomSeqPlayingIntervalTime = -0.8*x + 90;
+                            }
+
+                            console.log(x + '->' + dicomSeqPlayingIntervalTime);
+                            $('#seqControllerIntervalControlWrapper').css('left', (x+10)+'px');
+                        }
+                    });
+
                     $('#seqControllerSegmentA').click(function() {
                         dicomSeqSegA = dicomSeqCnt;
                         $('#seqControllerProgressSegA').show().css({
@@ -684,6 +705,7 @@ function stopDicomSequence() {
     $('#seqControllerPause').off('click').unbind('click');
     $('#seqControllerPlay').off('click').unbind('click');
     $('#seqControllerStepForward').off('click').unbind('click').addClass('disabled');
+    //$('#seqControllerIntervalProgress').off('click').unbind('click');
 
     if(dicomPlayingLoadWaitingInterval != null) {
         clearInterval(dicomPlayingLoadWaitingInterval);
@@ -814,7 +836,7 @@ $(document).ready(function() {
     //set the forms and controllers
     setDicomSequenceProgressbar();
     dicomSeqPlayingIntervalTime = 50;
-    $('#seqControllerInterval').change(function() {
+    /*$('#seqControllerInterval').change(function() {
         var value = $('#seqControllerInterval').val();
         if(value < 10) {
             value = 10;
@@ -824,7 +846,7 @@ $(document).ready(function() {
             $('#seqControllerInterval').val(1000);
         }
         dicomSeqPlayingIntervalTime = value;
-    });
+    });*/
 
     $('.image-view-image').on('mousewheel', function(e, delta) {
         if(dicomViewerStatus == 'dicom' || dicomViewerStatus == 'sequence') {

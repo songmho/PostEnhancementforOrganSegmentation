@@ -325,10 +325,17 @@
                                 <div id="seqControllerProgressSegB" class="progress-segment" style="display: none;">B</div>
                             </div>
                             <div class="seq-controller-progress-info">
-                                <div id="seqControllerIntervalForm" class="form-group">
-                                    <label class="control-label">Play Interval: </label>&nbsp;
-                                    <input id="seqControllerInterval" class="form-control form-control-inline"
-                                           type="number" size="3" maxlength="3" value="50" min="10" max="1000" /> ms
+                                <div id="seqControllerIntervalContainer">
+{#                                <div id="seqControllerIntervalForm" class="form-group">#}
+{#                                    <div class="seq-controller-interval-text">Playback Speed: </div>#}
+{#                                    <input id="seqControllerInterval" class="form-control form-control-inline"#}
+{#                                           type="number" size="3" maxlength="3" value="50" min="10" max="1000" /> ms#}
+                                    <div class="seq-controller-interval-text">Slow&nbsp;</div>
+                                    <div id="seqControllerIntervalProgress">
+                                        <div id="seqControllerIntervalControlWrapper">
+                                            <div id="seqControllerIntervalControl"></div>
+                                        </div>
+                                    </div><div class="seq-controller-interval-text">&nbsp;Fast</div>
                                 </div>
                                 <div id="seqControllerProgressText" class="pull-right progress-text">
                                     45 / 719
