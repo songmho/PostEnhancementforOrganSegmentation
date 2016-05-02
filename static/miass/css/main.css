@@ -210,7 +210,21 @@ footer.page-footer .footer-container a {
 }
 
 footer.page-footer .copyright-logo {
-    width: 50px;
+    height: 30px;
+}
+
+@media (max-width: 767px) {
+    footer.page-footer .footer-container {
+        height: 90px;
+    }
+
+    footer.page-footer .copyright-logo {
+        display: none;
+    }
+
+    footer.page-footer .footer-contents span:first-of-type {
+        display: block;
+    }
 }
 
 /*signin form*/

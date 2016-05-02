@@ -1,10 +1,37 @@
 {% load staticfiles %}
 {% load my_filters %}
 
-{% include 'miaas/template_header.html' %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="template of MIAAS">
+    <meta name="author" content="Hanter Jung">
+{#    <link rel="icon" href="../../favicon.ico">#}
+    <title>MIAAS: Medical Image Archive & Analytics Service</title>
 
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/css/bootstrap.css' %}">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/assets/css/ie10-viewport-bug-workaround.css' %}">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="{% static 'lib/bootstrap/assets/js/ie8-responsive-file-warning.js' %}"></script><![endif]-->
+    <script src="{% static 'lib/bootstrap/assets/js/ie-emulation-modes-warning.js' %}"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+{#    <link rel="stylesheet" type="text/css" href="{% static 'miass/css/style.css' %}">#}
     <link rel="stylesheet" type="text/css" href="{% static 'miass/css/main.css' %}">
-
 </head>
 
 <body>
@@ -88,8 +115,8 @@
     <footer class="page-footer">
         <div class="container footer-container">
             <div class="footer-contents pull-left">
-                <span>Smartylab Corporation, Seoul, Korea</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span>Tel. 02-826-0909</span>&nbsp;&nbsp;&nbsp;
+                <span>Smartylab Corporation, Seoul, Korea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span>Tel. 02-826-0909&nbsp;&nbsp;&nbsp;</span>
                 <span><a href="http://smartylab.co.kr" target="_blank">http://smartylab.co.kr</a></span>
             </div>
             <a href="http://smartylab.co.kr" target="_blank" class="pull-right">
