@@ -16,12 +16,13 @@
                         <div class="row image-view-header">
                             <h4 class="col-xs-12 col-md-10">Image View&nbsp;&nbsp;&nbsp;<span id="imageViewModalTitleName" class="text-primary"></span></h4>
                             <div id="imageViewHeaderHelper" class="pull-right">
-{#                                <button id="btnImageControlHelp" type="button" class="btn btn-default"#}
+{#                                <a id="btnImageControlHelp" class="btn btn-default"#}
+{#                                        tabindex="0" role="button" data-trigger="focus"#}
 {#                                        data-toggle="popover" data-placement="left" data-html="true"#}
-{#                                        title="How to Adjust an Image?" data-container="body"#}
+{#                                        title="How to Adjust an Image?"#}
 {#                                        data-content="An image is adjusted using mouse click and drag.<br/><strong>LB+U/D</strong>: Adjust Brightness<br/><strong>LB+L/R</strong>: Adjust Contrast<br/><strong>MB+MOVE</strong>: Move Image</br><strong>RB+U/D</strong>: Change Zoom<br/><strong>WHEEL</strong>: Change Zoom<br/><br/><div style='font-size: 13px;'>* <b>LB</b>=Left Button, <b>RB</b>=Right Button<br/>&nbsp;&nbsp;<b>MB</b>=Middle Button<br/>&nbsp;&nbsp;<b>U/D</b>=Up/Down, <b>L/R</b>=Left/Right</div>">#}
 {#                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Help#}
-{#                                </button>#}
+{#                                </a>#}
                                 <button id="btnImageControlHelp" type="button" class="btn btn-default"
                                         data-toggle="popover" data-placement="left" data-html="true"
                                         title="How to Adjust an Image?" data-container="body"
@@ -325,10 +326,17 @@
                                 <div id="seqControllerProgressSegB" class="progress-segment" style="display: none;">B</div>
                             </div>
                             <div class="seq-controller-progress-info">
-                                <div id="seqControllerIntervalForm" class="form-group">
-                                    <label class="control-label">Play Interval: </label>&nbsp;
-                                    <input id="seqControllerInterval" class="form-control form-control-inline"
-                                           type="number" size="3" maxlength="3" value="50" min="10" max="1000" /> ms
+                                <div id="seqControllerIntervalContainer">
+{#                                <div id="seqControllerIntervalForm" class="form-group">#}
+{#                                    <div class="seq-controller-interval-text">Playback Speed: </div>#}
+{#                                    <input id="seqControllerInterval" class="form-control form-control-inline"#}
+{#                                           type="number" size="3" maxlength="3" value="50" min="10" max="1000" /> ms#}
+                                    <div class="seq-controller-interval-text">Slow&nbsp;</div>
+                                    <div id="seqControllerIntervalProgress">
+                                        <div id="seqControllerIntervalControlWrapper">
+                                            <div id="seqControllerIntervalControl"></div>
+                                        </div>
+                                    </div><div class="seq-controller-interval-text">&nbsp;Fast</div>
                                 </div>
                                 <div id="seqControllerProgressText" class="pull-right progress-text">
                                     45 / 719

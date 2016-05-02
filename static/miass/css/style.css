@@ -90,12 +90,12 @@ body {
 
 footer.page-footer {
     position: fixed;
-    height: 60px;
+    height: 70px;
     right: 0;
     left: 0;
     bottom: 0;
     margin-top: 20px;
-    z-index: 2;
+    z-index: 4;
     /*background-color: #ee6e73;*/
     background-color: #5c5757;
     color: #fff;
@@ -106,6 +106,11 @@ footer.page-footer .footer-container {
     padding-bottom: 20px;
     font-size: 14px;
 }
+
+footer.page-footer .footer-container .footer-contents {
+    margin-top: 4px;
+}
+
 
 footer.page-footer .footer-container a {
     color: #fff;
@@ -122,6 +127,22 @@ footer.page-footer .footer-copyright {
 
 footer.page-footer .copyright-logo {
     height: 30px;
+}
+
+@media (max-width: 767px) {
+    footer.page-footer .footer-container {
+        margin-bottom: 0px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    footer.page-footer .copyright-logo {
+        display: none;
+    }
+
+    footer.page-footer .footer-contents span:first-of-type {
+        display: block;
+    }
 }
 
 /* Navigation bar */
@@ -327,6 +348,16 @@ a:focus {
     word-break: break-all;
 }
 
+.form-container .form-group.deactivate {
+    visibility: hidden;
+}
+
+@media (max-width: 991px) {
+    .form-container .form-group.deactivate {
+        display: none;
+    }
+}
+
 /* Column */
 @media (min-width: 992px) {
     .col-md-overlay-enable-container {
@@ -346,7 +377,7 @@ a:focus {
     }
 
     .form-container.form-boxed .col-md-overlay {
-        top: 24px;
+        /*top: 24px;*/
         /*top: 15px;*/
     }
 
@@ -419,6 +450,10 @@ div.interpretation-viewer {
 }
 
 /* Modal */
+body.modal-open {
+    overflow: hidden !important;
+}
+
 .modal {
     padding-top: 10%;
 }
@@ -461,6 +496,10 @@ div.interpretation-viewer {
     .modal.modal-profile .modal-dialog {
         width: 1170px;
     }
+}
+
+.popover {
+    z-index: 1200 !important;
 }
 
 /* Button */

@@ -212,12 +212,16 @@ function generalImageLoadAndView(imageURL) {
         //var canvasSize = canvas.width;
         var drawingWidth = image.width;
         var drawingHeight = image.height;
+        console.log('imageSize: ' + image.width + ', ' + image.height);
         var magni = 1;
-        if (canvasSize >= image.height) {
-            var magni = canvasSize/image.width;
-        } else {
-            var magni = canvasSize/image.height;
-        }
+        var widthMagni = 1, heightMagni = 1;
+
+        widthMagni = canvas.width / image.width;
+        heightMagni = canvas.height / image.height;
+
+        if (widthMagni > heightMagni) magni = heightMagni;
+        else magni = widthMagni;
+
         drawingWidth *= magni;
         drawingHeight *= magni;
         ctx.drawImage(image, 0, 0, drawingWidth, drawingHeight);
@@ -248,39 +252,47 @@ function csvGrpahLoadAndView(csvURL) {
                 //valueRange: [-3, 5.1],
                 axes: {
                     y: {
-                        drawAxis: true
+                        drawAxis: true,
+                        axisLabelWidth: 80
                     }, x: {
                         drawAxis: true,
-                        drawGrid: true
+                        drawGrid: true,
+                        axisLabelWidth: 60 //default
+                        //valueFormatter: Dygraph.dateString_,
+                        //parser: function(x) {return parseFloat(x);},
+                        //ticker: Dygraph.dateTicker,
                     }
                 },
+                xAxisHeight: 34,
                 animatedZooms: true,
                 strokeWidth: 2,
                 //color: '#D76474',
                 colors: graphColors,
                 plotter: smoothPlotter,
                 ylabel: 'Micro Volt (μV)',
-                xlabel: 'Time (ms)'
-
+                xlabel: 'Time',
 
                 //visibility: [true, true, true, false, false, false],
                 //drawCallback: function(g) {
                 //    console.log(g.getLabels());
                 //}
+                xValueParser: function(x) {return parseFloat(x);}
             }
         );
         g.ready(function(g) {
             //console.log(g.getLabels());
             var lables = g.getLabels();
+            console.log(lables);
 
             var timeLable = lables[0];
-            if(timeLable.length != 0 && !/^[\s]*$/.test(timeLable) && timeLable.trim().toLowerCase() != 'time') {
+            if (timeLable.length != 0 && !/^[\s]*$/.test(timeLable) && timeLable.trim().toLowerCase() != 'time') {
                 $('#graphView .dygraph-xlabel').text(timeLable);
             }
+            //$('#graphView .dygraph-label.dygraph-xlabel').text(timeLable);
 
             if (lables.length > 2) {
                 var startLabel = 1;
-                if (lables.length > 3 && lables[1].trim().toLowerCase().startsWith('time')) {
+                if (lables.length >= 3 && lables[1].trim().toLowerCase().startsWith('time')) {
                     startLabel = 2;
                     g.setVisibility(0, false);
                 }
@@ -410,7 +422,8 @@ function setPlayDicomSequence(images) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     dicomSeqPlayingIntervalTime = 50;
-    $('#seqControllerInterval').val(50);
+    //$('#seqControllerInterval').val(50);
+    $('#seqControllerIntervalControlWrapper').css('left', '50%');
 
     $('#imageViewerDetailContainer').hide();
     $('#imageViewShowDetail').hide();
@@ -552,6 +565,26 @@ function setPlayDicomSequence(images) {
                         dicomSeqPlaying = true;
                     });
 
+                    $('#seqControllerIntervalProgress').click(function(e) {
+                        if($('#seqControllerPause').hasClass('activate')) {
+                            var x = e.pageX - $(this).offset().left;    //0~120
+                            x = x - 10;   //10~110;
+                            if (x < 0) x = 0;
+                            if (x > 100) x = 100;
+
+                            if (x < 50) {
+                                dicomSeqPlayingIntervalTime = 2000 - 40*x;
+                            } else if (x == 50) {
+                                dicomSeqPlayingIntervalTime = 50;
+                            } else {    // x > 50
+                                dicomSeqPlayingIntervalTime = -0.8*x + 90;
+                            }
+
+                            console.log(x + '->' + dicomSeqPlayingIntervalTime);
+                            $('#seqControllerIntervalControlWrapper').css('left', (x+10)+'px');
+                        }
+                    });
+
                     $('#seqControllerSegmentA').click(function() {
                         dicomSeqSegA = dicomSeqCnt;
                         $('#seqControllerProgressSegA').show().css({
@@ -684,6 +717,7 @@ function stopDicomSequence() {
     $('#seqControllerPause').off('click').unbind('click');
     $('#seqControllerPlay').off('click').unbind('click');
     $('#seqControllerStepForward').off('click').unbind('click').addClass('disabled');
+    //$('#seqControllerIntervalProgress').off('click').unbind('click');
 
     if(dicomPlayingLoadWaitingInterval != null) {
         clearInterval(dicomPlayingLoadWaitingInterval);
@@ -694,6 +728,7 @@ function stopDicomSequence() {
         dicomPlayingSequenceInterval = null;
     }
 
+    dicomSeq = [];
     dicomViewerStatus = 'none';
 }
 
@@ -793,19 +828,30 @@ $(cornerstone).bind('CornerstoneImageLoadProgress', function(eventData) {
 
 $(document).ready(function() {
     $('#rollPeriodLabel').popover();
-    $('#btnImageControlHelp').popover();
+    $('#btnImageControlHelp').on('click', function(e) {
+        $(this).popover('show');
+    });
+    $('#btnImageControlHelp').on('focusout', function(e) {
+        $(this).popover('hide');
+    });
 
     resizeViewer();
     window.addEventListener("resize", resizeViewer);
 
     showImageViewerLoader(false);
     $('#imageViewModal').on('show.bs.modal', function(e) {
+        $('body').css('overflow', 'hidden');
         resizeViewer();
 
-        /*if (lastImageData != null) {
-            downloadAndView(lastImageData);
-        }*/
-        $('#image-view-list .image-explorer-list-item:first').trigger('click');
+        if (lastImageData != null) {
+            if(lastImageData['type'] == 'dcm') {
+                $('#image-view-list .image-explorer-list-item:first').trigger('click');
+            } else {
+                downloadAndView(lastImageData);
+            }
+        } else {
+            $('#image-view-list .image-explorer-list-item:first').trigger('click');
+        }
     });
 
     var imageContainer = $('#imageViewer').get(0);
@@ -814,7 +860,7 @@ $(document).ready(function() {
     //set the forms and controllers
     setDicomSequenceProgressbar();
     dicomSeqPlayingIntervalTime = 50;
-    $('#seqControllerInterval').change(function() {
+    /*$('#seqControllerInterval').change(function() {
         var value = $('#seqControllerInterval').val();
         if(value < 10) {
             value = 10;
@@ -824,10 +870,13 @@ $(document).ready(function() {
             $('#seqControllerInterval').val(1000);
         }
         dicomSeqPlayingIntervalTime = value;
-    });
+    });*/
 
     $('.image-view-image').on('mousewheel', function(e, delta) {
         if(dicomViewerStatus == 'dicom' || dicomViewerStatus == 'sequence') {
+            //$('#btnImageControlHelp').popover('hide');
+            $('#btnImageControlHelp').trigger('focusout');
+
             if (isHovered('imageViewer')) {
                 if (e.preventDefault)
                     e.preventDefault();
@@ -962,6 +1011,10 @@ function openImageViewer() {
             $('#image-view-list a.image-explorer-list-play').each(function (elem) {
                 $(this).off('click').unbind('click');
                 $(this).click(function () {
+                    $('#image-view-list .image-explorer-list-group.activate, ' +
+                        '#image-view-list .image-explorer-list-item.activate').removeClass('activate');
+                    $(this).parent().find(' > span.image-explorer-list-group').addClass('activate');
+
                     var images = $(this).data();
                     stopDicomSequence();
                     setPlayDicomSequence(images);
@@ -991,6 +1044,7 @@ function openImageViewer() {
         console.log('image view modal opened');
         $.LoadingOverlay('hide');
         $('#imageViewModal').off('hidden.bs.modal').on('hidden.bs.modal', function() {
+            $('body').css('overflow', 'auto');
             $('#imageViewShowDetail').hide();
             dicomViewerStatus = 'none';
             stopDicomSequence();
@@ -1149,9 +1203,13 @@ function resizeViewer() {
             }
         }
 
-        if (dicomViewerStatus == 'dicom' && lastImageData != null) {
+        if (lastImageData != null) {
             var url = makeURL(lastImageData['dir']);
-            dicomloadAndView(url);
+            if (dicomViewerStatus == 'dicom') {
+                dicomloadAndView(url);
+            } else if (dicomViewerStatus == 'image') {
+                generalImageLoadAndView(url);
+            }
         }
     }
 }

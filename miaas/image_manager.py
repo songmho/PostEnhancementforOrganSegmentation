@@ -44,6 +44,9 @@ class ImageManager():
                 temp_path_ext = self._get_file_extension(temp_path)
                 if temp_path_ext == 'dcm':
                     self.decompose(self._temp_file_path)
+                if temp_path_ext == 'csv':
+                    pass
+                    # temp_path = self.csv_reorganize(self._temp_file_path)
                 elif temp_path_ext == 'edf':
                     temp_path = edf_to_csv.edf_to_csv(temp_path)
 
@@ -161,6 +164,81 @@ class ImageManager():
         except Exception as e:
             logger.exception(e)
             pass
+
+    # reorganize csv table structure for header, time, and etc
+    def csv_reorganize(self, filepath):
+        import csv
+
+        dirname, filename = os.path.split(filepath)
+        # name_n_ext = filename.split(".")
+        newpath = dirname + '/n_' + filename
+
+        print ('filename %s -> %s' % (filepath, newpath))
+
+        with open(filepath, 'rb') as orifile, open(newpath, 'wb') as newfile:
+            csv_reader = csv.reader(orifile, delimiter=',', quotechar='|')
+            csv_writer = csv.writer(newfile, delimiter=',', quotechar='|')
+
+            header_row = csv_reader.next()
+            if not header_row:
+                raise Exception('There are no row.')
+
+            header_len = len(header_row)
+            if header_len <= 1:
+                raise Exception('Too less column. There is no time or value column.')
+            if header_len == 2 and header_row[1].strip().lower().startswith('time'):
+                raise Exception('There is no value column.')
+
+            time_column_pos = -1
+            for i in range(0, 2):
+                if header_row[i].strip().lower().startswith('time'):
+                    time_column_pos = i
+                    break
+
+            if time_column_pos == -1:
+                time_column_pos = 0
+                header_row[0] = 'Time'
+
+            first_row = csv_reader.next()
+            if not first_row:
+                raise Exception('There are no data rows.')
+            second_row = csv_reader.next()
+            if not first_row:
+                raise Exception('There are too few data rows.')
+
+            # if header_row[time_column_pos].strip().lower() == 'time':
+            if header_row[time_column_pos].strip().lower().startswith('time'):
+                first_time = float(first_row[time_column_pos])
+                second_time = float(second_row[time_column_pos])
+                print ('first: %s, second: %s' % (first_time, second_time))
+
+                if (first_time == 0 or first_time == 1) and (first_time+1 == second_time):
+                    header_row[time_column_pos] = 'Time (count)'
+                elif (first_time < 1) and (second_time-first_time < 1):
+                    header_row[time_column_pos] = 'Time (second)'
+                elif (first_time > 0) and (first_time < 1000):
+                    header_row[time_column_pos] = 'Time (ms)'
+                elif first_time >= 100000:     # timestamp
+                    header_row[time_column_pos] = 'Time (datetime)'
+                elif first_time < -1:
+                    header_row[time_column_pos] = 'Time (datetime)'
+                else:
+                    header_row[time_column_pos] = 'Time'
+
+            csv_writer.writerow(header_row[time_column_pos:])
+            csv_writer.writerow(first_row[time_column_pos:])
+            csv_writer.writerow(second_row[time_column_pos:])
+            print ', '.join(header_row[time_column_pos:])
+            print '------------------'
+            print ', '.join(first_row[time_column_pos:])
+            print ', '.join(second_row[time_column_pos:])
+            for row in csv_reader:
+                print ', '.join(row[time_column_pos:])
+                csv_writer.writerow(row[time_column_pos:])
+
+        # return newpath
+        return newpath
+
 
     def _is_zipfile(self, filename):
         return zipfile.is_zipfile(filename)

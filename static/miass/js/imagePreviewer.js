@@ -36,11 +36,9 @@ function showThumbnail() {
     var thumbnail = getThumbnailImage();
     //lastImageData = thumbnail;
 
-    console.log(thumbnail);
     if(thumbnail != null) {
         var url = makeURL(thumbnail['dir']);
-        console.log(url);
-        //console.log(thumbnail['type']);
+
         setTimeout(function() {
             if (thumbnail['type'] == 'dcm') {
                 $('#image-previewer-graph').hide();
@@ -147,6 +145,16 @@ function showCsvThumbnail(url) {
             interactionModel: {}
         }
     );
+    g.ready(function(g) {
+            //console.log(g.getLabels());
+            var lables = g.getLabels();
+
+            if (lables.length > 2) {
+                if (lables.length >= 3 && lables[1].trim().toLowerCase().startsWith('time')) {
+                    g.setVisibility(0, false);
+                }
+            }
+        });
 }
 
 function getThumbnailImage() {

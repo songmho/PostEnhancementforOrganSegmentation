@@ -131,10 +131,10 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
                             {% if intpr_list|is_empty %}
                                 <div id="btnFormDelete" class="col-xs-6 col-sm-4 col-sm-offset-3 col-md-3 col-md-offset-2 form-button">
-                                    <button class="btn btn-lg btn-info btn-block" type="button">Delete</button>
+                                    <button class="btn btn-lg btn-danger btn-block" type="button">Delete</button>
                                 </div>
                                 <div id="btnFormCancel" class="col-xs-6 col-sm-4 col-sm-offset-3 col-md-3 col-md-offset-2 form-button" style="display: none;">
-                                    <button class="btn btn-lg btn-info btn-block" type="button">Cancel</button>
+                                    <button class="btn btn-lg btn-primary btn-block" type="button">Cancel</button>
                                 </div>
                                 <div id="btnFormEdit" class="col-xs-6 col-sm-5 col-md-3 form-button">
                                     <button class="btn btn-lg btn-primary btn-block" type="button">Edit</button>
@@ -185,7 +185,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <div class="col-xs-12 form-btns-innerbox">
                         <div class="form-btns-container row">
                             <div id="btnFormReset" class="col-xs-6 col-sm-4 col-sm-offset-3 col-md-3 col-md-offset-6 form-button">
-                                <button class="btn btn-lg btn-info btn-block" type="reset">Reset</button>
+                                <button class="btn btn-lg btn-danger btn-block" type="reset">Reset</button>
                             </div>
                             <div id="btnFormConfirm" class="col-xs-6 col-sm-5 col-md-3 form-button">
                                 <button class="btn btn-lg btn-primary btn-block" type="submit">Request</button>
@@ -204,42 +204,17 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     <h3 class="text-success">Interpretation #{{ intpr_num|plus:1 }}</h3>
                 </div>
                 <div class="col-xs-12 col-form">
-{#                    <div class="form-container form-boxed form-horizontal row">#}
-{#                        <div class="col-sm-12 form-group">#}
-{#                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician ID</label>#}
-{#                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">#}
-{#                                <span ><!--a href="#"-->{{ intpr.physician_id }}<!--/a--></span>#}
-{#                            </div>#}
-{##}
-{#                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Physician Name</label>#}
-{#                            <div class="col-xs-12 col-sm-9 col-md-4 control-text">#}
-{#                                <span >{{ intpr.intpr_id }}</span>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                        <div class="col-sm-12 form-group">#}
-{#                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Level</label>#}
-{#                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">#}
-{#                                <span >{{ intpr.level|intpr_level_string }}</span>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                        <div class="col-sm-12 form-group">#}
-{#                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Summary</label>#}
-{#                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">#}
-{#                                <span >{{ intpr.summary }}</span>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                        <div class="col-sm-12 form-group">#}
-{#                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Interpretation</label>#}
-{#                            <div class="col-xs-12 col-sm-9 col-md-10 control-text">#}
-{#                                <div >{{ intpr.interpretation }}</div>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
                     {% include 'miaas/template_container_intpr_info.html' %}
                 </div>
             </div>
         {% endwith %}
         {% endfor %}
+
+        <div class="form-btns-container row">
+            <div id="btnFormCancel" class="col-xs-12 col-md-4 col-md-offset-4 form-button">
+                <a class="btn btn-lg btn-success btn-block"  onclick="javascript:history.back();">Back</a>
+            </div>
+        </div>
 
     {% else %}
         <script type="text/javascript">
