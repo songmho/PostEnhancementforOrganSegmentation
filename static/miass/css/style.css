@@ -450,6 +450,10 @@ div.interpretation-viewer {
 }
 
 /* Modal */
+body.modal-open {
+    overflow: hidden !important;
+}
+
 .modal {
     padding-top: 10%;
 }
