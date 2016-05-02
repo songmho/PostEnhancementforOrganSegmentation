@@ -29,29 +29,29 @@
                     <div class="form-group">
                         <label for="inputId" >User ID</label>
                         <input type="text" id="inputId" name="id" maxlength="20" class="form-control valid"
-                               placeholder="Enter your ID with the length 4 ~ 20" required>
+                               placeholder="Enter your ID with the length 4 ~ 20"   onblur="checkID()">
                     </div>
                     <div class="form-group">
                         <label for="inputPw">Password</label>
                         <input type="password" id="inputPw" name="pw" maxlength="20" class="form-control invalid"
-                               placeholder="Password" required>
+                               placeholder="Password"  onblur="checkPassword()">
                         <input type="password" id="inputPwConfirm" maxlength="20" name="pwConfirm" class="form-control"
-                               placeholder="Password Confirm" required>
+                               placeholder="Password Confirm"  onblur="checkPasswordConfirm()">
                     </div>
                     <div class="form-group">
                         <label for="inputName" >User Name</label>
                         <input type="text" id="inputName" name="name" maxlength="100" class="form-control valid"
-                               placeholder="Name" required>
+                               placeholder="Name"  onblur="checkName()">
                     </div>
                     <div class="form-group">
                         <label for="inputMobile">Phone Number</label>
-                        <input type="tel" id="inputMobile" name="mobile" maxlength="20" class="form-control"
-                               placeholder="Mobile" required>
+                        <input type="tel" id="inputMobile" name="mobile" maxlength="17" class="form-control"
+                               placeholder="Mobile"  onblur="checkPhone()">
                     </div>
                     <div class="form-group">
                         <label for="inputEmail">Email Address</label>
                         <input type="email" id="inputEmail" name="email" maxlength="100" class="form-control"
-                               placeholder="Email" required>
+                               placeholder="Email"  onblur="checkEmail()">
                     </div>
                     <br/>
                     <div class="row" class="row-form-btns">
@@ -68,7 +68,7 @@
                     <h4>Step3: Write Your Personal Information</h4>
                     <div class="form-group">
                         <label for="selectGender" >Gender</label>
-                        <select class="form-control" id="selectGender" name="gender" required>
+                        <select class="form-control" id="selectGender" name="gender" >
                             <option>Male</option>
                             <option>Female</option>
                         </select>
@@ -76,7 +76,7 @@
                     <div class="form-group">
                         <label for="inputBirthday">Birthday</label>
                         <input type="date" id="inputBirthday" name="birthday" class="form-control" min="1800-01-01"
-                               placeholder="Birthday" required>
+                               placeholder="Birthday"  onblur="checkBirth()">
                     </div>
                     <br/>
                     <div class="row" class="row-form-btns">
@@ -93,7 +93,7 @@
                     <h4>Step3: Write Your Physician Information</h4>
                     <div class="form-group">
                         <label for="selectField" >Field of Medicine</label>
-                        <select class="form-control" id="selectField" name="field" required>
+                        <select class="form-control" id="selectField" name="field" >
                             <option>Heart Specialist</option>
                             <option>Brain Specialist</option>
                             <option>Thoracic Specialist</option>
@@ -109,12 +109,12 @@
                     <div class="form-group">
                         <label for="inputLicence" >Licence ID</label>
                         <input type="text" maxlength="255" id="inputLicence" name="licence" class="form-control valid"
-                               placeholder="Licence number" required>
+                               placeholder="Licence number"  onblur="checkLicense()">
                     </div>
                     <div class="form-group">
                         <label for="fileCertification">Certification</label>
                         <input type="file" id="fileCertification" name="certification" class="form-control"
-                               placeholder="Certification" required>
+                               placeholder="Certification" >
                         <p class="help-block">Please upload your authenticatable thing (e.g. doctor's licence and etc.)</p>
                     </div>
                     <br/>
