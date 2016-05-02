@@ -8,10 +8,11 @@ urlpatterns = [
     # url(r'^$', views.main_page, name='main'),
     url(r'^$', views.index_page, name='index'),
     url(r'^main$', views.main_page, name='main'),
-    url(r'^main2$', views.main2_page, name='main2'),
+    # url(r'^main2$', views.main2_page, name='main2'),
     # url(r'^$', views.IndexView.as_view(), name='index'),
 
-    url(r'^signin$', views.signin_page, name='signin'),
+    url(r'^signin$', views.main_page, name='signin'),
+    # url(r'^signin$', views.signin_page, name='signin'),
     url(r'^signup$', views.signup_page, name='signup'),
     url(r'^find$', views.find_page, name='find'),
     url(r'^profile$', views.profile_page, name='profile'),
