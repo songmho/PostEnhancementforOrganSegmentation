@@ -171,11 +171,12 @@
 
 #imageViewHeaderHelper .popover {
     overflow: visible !important;
-    z-index: 2;
+    z-index: 1200;
+
 }
 
 #imageViewerSequenceLoader {
-    z-index: 3;
+    z-index: 5;
     background-color: white;
     color: black;
     padding-top: calc(50% - 18px);

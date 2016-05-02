@@ -828,7 +828,12 @@ $(cornerstone).bind('CornerstoneImageLoadProgress', function(eventData) {
 
 $(document).ready(function() {
     $('#rollPeriodLabel').popover();
-    $('#btnImageControlHelp').popover();
+    $('#btnImageControlHelp').on('click', function(e) {
+        $(this).popover('show');
+    });
+    $('#btnImageControlHelp').on('focusout', function(e) {
+        $(this).popover('hide');
+    });
 
     resizeViewer();
     window.addEventListener("resize", resizeViewer);
@@ -869,6 +874,9 @@ $(document).ready(function() {
 
     $('.image-view-image').on('mousewheel', function(e, delta) {
         if(dicomViewerStatus == 'dicom' || dicomViewerStatus == 'sequence') {
+            //$('#btnImageControlHelp').popover('hide');
+            $('#btnImageControlHelp').trigger('focusout');
+
             if (isHovered('imageViewer')) {
                 if (e.preventDefault)
                     e.preventDefault();

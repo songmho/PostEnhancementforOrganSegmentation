@@ -498,6 +498,10 @@ body.modal-open {
     }
 }
 
+.popover {
+    z-index: 1200 !important;
+}
+
 /* Button */
 .btn.btn-size-120 {
     width: 120px;
