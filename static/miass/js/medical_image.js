@@ -368,17 +368,23 @@ function resetTakenLayout() {
     if(tf == 'Home') {
         $('#takenPhysicianName').removeAttr('required').val('');
         $('#clinicName').removeAttr('required').val('');
-        $('#medicalDepartmentGroup').removeAttr('required').val('');
-        $('#physicianGroup').css('visibility', 'hidden');
-        $('#clinicNameGroup').css('visibility', 'hidden');
-        $('#medicalDepartmentGroup').css('visibility', 'hidden');
+        $('#medicalDepartment').removeAttr('required').val('');
+        $('#physicianGroup').addClass('deactivate');
+        $('#clinicNameGroup').addClass('deactivate');
+        $('#medicalDepartmentGroup').addClass('deactivate');
+        //$('#physicianGroup').css('visibility', 'hidden');
+        //$('#clinicNameGroup').css('visibility', 'hidden');
+        //$('#medicalDepartmentGroup').css('visibility', 'hidden');
     } else {
         $('#takenPhysicianName').attr('required', '');
         $('#clinicName').attr('required', '');
-        $('#medicalDepartmentGroup').attr('required', '');
-        $('#physicianGroup').css('visibility', 'visible');
-        $('#clinicNameGroup').css('visibility', 'visible');
-        $('#medicalDepartmentGroup').css('visibility', 'visible');
+        $('#medicalDepartment').attr('required', '');
+        $('#physicianGroup').removeClass('deactivate');
+        $('#clinicNameGroup').removeClass('deactivate');
+        $('#medicalDepartmentGroup').removeClass('deactivate');
+        //$('#physicianGroup').css('visibility', 'visible');
+        //$('#clinicNameGroup').css('visibility', 'visible');
+        //$('#medicalDepartmentGroup').css('visibility', 'visible');
     }
 }
 
