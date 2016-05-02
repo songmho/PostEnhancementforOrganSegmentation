@@ -36,11 +36,9 @@ function showThumbnail() {
     var thumbnail = getThumbnailImage();
     //lastImageData = thumbnail;
 
-    console.log(thumbnail);
     if(thumbnail != null) {
         var url = makeURL(thumbnail['dir']);
-        console.log(url);
-        //console.log(thumbnail['type']);
+
         setTimeout(function() {
             if (thumbnail['type'] == 'dcm') {
                 $('#image-previewer-graph').hide();

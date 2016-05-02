@@ -212,12 +212,16 @@ function generalImageLoadAndView(imageURL) {
         //var canvasSize = canvas.width;
         var drawingWidth = image.width;
         var drawingHeight = image.height;
+        console.log('imageSize: ' + image.width + ', ' + image.height);
         var magni = 1;
-        if (canvasSize >= image.height) {
-            var magni = canvasSize/image.width;
-        } else {
-            var magni = canvasSize/image.height;
-        }
+        var widthMagni = 1, heightMagni = 1;
+
+        widthMagni = canvas.width / image.width;
+        heightMagni = canvas.height / image.height;
+
+        if (widthMagni > heightMagni) magni = heightMagni;
+        else magni = widthMagni;
+
         drawingWidth *= magni;
         drawingHeight *= magni;
         ctx.drawImage(image, 0, 0, drawingWidth, drawingHeight);
@@ -721,6 +725,7 @@ function stopDicomSequence() {
         dicomPlayingSequenceInterval = null;
     }
 
+    dicomSeq = [];
     dicomViewerStatus = 'none';
 }
 
@@ -828,9 +833,6 @@ $(document).ready(function() {
     showImageViewerLoader(false);
     $('#imageViewModal').on('show.bs.modal', function(e) {
         resizeViewer();
-
-
-        if(lastImageData)
 
         if (lastImageData != null) {
             if(lastImageData['type'] == 'dcm') {
@@ -996,9 +998,11 @@ function openImageViewer() {
 
             $('#image-view-list a.image-explorer-list-play').each(function (elem) {
                 $(this).off('click').unbind('click');
-                $('#image-view-list .image-explorer-list-group.activate, ' +
-                    '#image-view-list .image-explorer-list-item.activate').removeClass('activate');
                 $(this).click(function () {
+                    $('#image-view-list .image-explorer-list-group.activate, ' +
+                        '#image-view-list .image-explorer-list-item.activate').removeClass('activate');
+                    $(this).parent().find(' > span.image-explorer-list-group').addClass('activate');
+
                     var images = $(this).data();
                     stopDicomSequence();
                     setPlayDicomSequence(images);
@@ -1186,9 +1190,13 @@ function resizeViewer() {
             }
         }
 
-        if (dicomViewerStatus == 'dicom' && lastImageData != null) {
+        if (lastImageData != null) {
             var url = makeURL(lastImageData['dir']);
-            dicomloadAndView(url);
+            if (dicomViewerStatus == 'dicom') {
+                dicomloadAndView(url);
+            } else if (dicomViewerStatus == 'image') {
+                generalImageLoadAndView(url);
+            }
         }
     }
 }
