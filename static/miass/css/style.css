@@ -348,6 +348,16 @@ a:focus {
     word-break: break-all;
 }
 
+.form-container .form-group.deactivate {
+    visibility: hidden;
+}
+
+@media (max-width: 991px) {
+    .form-container .form-group.deactivate {
+        display: none;
+    }
+}
+
 /* Column */
 @media (min-width: 992px) {
     .col-md-overlay-enable-container {
@@ -367,7 +377,7 @@ a:focus {
     }
 
     .form-container.form-boxed .col-md-overlay {
-        top: 24px;
+        /*top: 24px;*/
         /*top: 15px;*/
     }
 
