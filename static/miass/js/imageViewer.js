@@ -252,15 +252,18 @@ function csvGrpahLoadAndView(csvURL) {
                 //valueRange: [-3, 5.1],
                 axes: {
                     y: {
-                        drawAxis: true
+                        drawAxis: true,
+                        axisLabelWidth: 80
                     }, x: {
                         drawAxis: true,
                         drawGrid: true,
+                        axisLabelWidth: 60 //default
                         //valueFormatter: Dygraph.dateString_,
                         //parser: function(x) {return parseFloat(x);},
                         //ticker: Dygraph.dateTicker,
                     }
                 },
+                xAxisHeight: 34,
                 animatedZooms: true,
                 strokeWidth: 2,
                 //color: '#D76474',
@@ -832,6 +835,7 @@ $(document).ready(function() {
 
     showImageViewerLoader(false);
     $('#imageViewModal').on('show.bs.modal', function(e) {
+        $('body').css('overflow', 'hidden');
         resizeViewer();
 
         if (lastImageData != null) {
@@ -1032,6 +1036,7 @@ function openImageViewer() {
         console.log('image view modal opened');
         $.LoadingOverlay('hide');
         $('#imageViewModal').off('hidden.bs.modal').on('hidden.bs.modal', function() {
+            $('body').css('overflow', 'auto');
             $('#imageViewShowDetail').hide();
             dicomViewerStatus = 'none';
             stopDicomSequence();
