@@ -251,7 +251,10 @@ function csvGrpahLoadAndView(csvURL) {
                         drawAxis: true
                     }, x: {
                         drawAxis: true,
-                        drawGrid: true
+                        drawGrid: true,
+                        //valueFormatter: Dygraph.dateString_,
+                        //parser: function(x) {return parseFloat(x);},
+                        //ticker: Dygraph.dateTicker,
                     }
                 },
                 animatedZooms: true,
@@ -260,27 +263,29 @@ function csvGrpahLoadAndView(csvURL) {
                 colors: graphColors,
                 plotter: smoothPlotter,
                 ylabel: 'Micro Volt (μV)',
-                xlabel: 'Time (ms)'
-
+                xlabel: 'Time',
 
                 //visibility: [true, true, true, false, false, false],
                 //drawCallback: function(g) {
                 //    console.log(g.getLabels());
                 //}
+                xValueParser: function(x) {return parseFloat(x);}
             }
         );
         g.ready(function(g) {
             //console.log(g.getLabels());
             var lables = g.getLabels();
+            console.log(lables);
 
             var timeLable = lables[0];
-            if(timeLable.length != 0 && !/^[\s]*$/.test(timeLable) && timeLable.trim().toLowerCase() != 'time') {
+            if (timeLable.length != 0 && !/^[\s]*$/.test(timeLable) && timeLable.trim().toLowerCase() != 'time') {
                 $('#graphView .dygraph-xlabel').text(timeLable);
             }
+            //$('#graphView .dygraph-label.dygraph-xlabel').text(timeLable);
 
             if (lables.length > 2) {
                 var startLabel = 1;
-                if (lables.length > 3 && lables[1].trim().toLowerCase().startsWith('time')) {
+                if (lables.length >= 3 && lables[1].trim().toLowerCase().startsWith('time')) {
                     startLabel = 2;
                     g.setVisibility(0, false);
                 }
@@ -991,6 +996,8 @@ function openImageViewer() {
 
             $('#image-view-list a.image-explorer-list-play').each(function (elem) {
                 $(this).off('click').unbind('click');
+                $('#image-view-list .image-explorer-list-group.activate, ' +
+                    '#image-view-list .image-explorer-list-item.activate').removeClass('activate');
                 $(this).click(function () {
                     var images = $(this).data();
                     stopDicomSequence();

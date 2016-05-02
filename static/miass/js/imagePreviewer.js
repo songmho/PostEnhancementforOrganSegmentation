@@ -152,7 +152,7 @@ function showCsvThumbnail(url) {
             var lables = g.getLabels();
 
             if (lables.length > 2) {
-                if (lables.length > 3 && lables[1].trim().toLowerCase().startsWith('time')) {
+                if (lables.length >= 3 && lables[1].trim().toLowerCase().startsWith('time')) {
                     g.setVisibility(0, false);
                 }
             }
