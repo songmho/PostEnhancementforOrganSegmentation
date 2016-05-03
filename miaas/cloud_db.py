@@ -94,9 +94,10 @@ class DbManager():
                 phone_number = patient['phone_number']
                 email = patient['email']
                 join_date = patient['join_date']
+                nationality = patient['nationality']
                 user_type = patient['user_type']
-                db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, user_type) values (%s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, user_type))
+                db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, nationality, user_type) values (%s, %s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, nationality, user_type))
                 self.connector.commit()
                 # Add patient information to 'user' table
                 gender = patient['gender']
@@ -117,10 +118,10 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 if password is None:
-                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
+                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.nationality, u.user_type, p.gender, p.birthday FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
                     cursor.execute(db_query, (patient_id))
                 else:
-                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.gender, p.birthday, u.password FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
+                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.nationality, u.user_type, p.gender, p.birthday, u.password FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
                     cursor.execute(db_query, (patient_id, password))
                 self.connector.commit()
                 for row in cursor:
@@ -130,9 +131,10 @@ class DbManager():
                     user['email'] = row[2]
                     user['join_date'] = row[3]
                     user['deactivate_date'] = row[4]
-                    user['user_type'] = row[5]
-                    user['gender'] = row[6]
-                    user['birthday'] = row[7]
+                    user['nationality'] = row[5]
+                    user['user_type'] = row[6]
+                    user['gender'] = row[7]
+                    user['birthday'] = row[8]
                     if password is None:
                         user['password'] = None
                     else:
@@ -149,13 +151,14 @@ class DbManager():
         name = user['name']
         phone_number = user['phone_number']
         email = user['email']
+        nationality = user['nationality']
         gender = user['gender']
         birthday = user['birthday']
         with self.connector.cursor() as cursor:
             try:
-                db_query = "UPDATE user as u INNER JOIN patient as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.gender=%s, p.birthday=%s WHERE u.user_id=%s"
+                db_query = "UPDATE user as u INNER JOIN patient as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, u.nationality=%s , p.gender=%s, p.birthday=%s WHERE u.user_id=%s"
                 print(db_query)
-                cursor.execute(db_query, (password, name, phone_number, email, gender, birthday, user_id))
+                cursor.execute(db_query, (password, name, phone_number, email, nationality, gender, birthday, user_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 print(row_count)
@@ -246,9 +249,10 @@ class DbManager():
                 phone_number = physician['phone_number']
                 email = physician['email']
                 join_date = physician['join_date']
+                nationality = physician['nationality']
                 user_type = physician['user_type']
-                db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, user_type) values (%s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, user_type))
+                db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, nationality, user_type) values (%s, %s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, nationality, user_type))
                 self.connector.commit()
                 # Add physician information to 'physician' table
                 license_number = physician['license_number']
@@ -284,10 +288,10 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 if password is None:
-                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
+                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.nationality, u.user_type, p.license_number, p.medicine_field, p.certificate_dir FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
                     cursor.execute(db_query, (physician_id))
                 else:
-                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.user_type, p.license_number, p.medicine_field, p.certificate_dir, u.password FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
+                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.nationality, u.user_type, p.license_number, p.medicine_field, p.certificate_dir, u.password FROM physician as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
                     cursor.execute(db_query, (physician_id, password))
                 self.connector.commit()
                 for row in cursor:
@@ -297,10 +301,11 @@ class DbManager():
                     user['email'] = row[2]
                     user['join_date'] = row[3]
                     user['deactivate_date'] = row[4]
-                    user['user_type'] = row[5]
-                    user['license_number'] = row[6]
-                    user['medicine_field'] = row[7]
-                    user['certificate_dir'] = row[8]
+                    user['nationality'] = row[5]
+                    user['user_type'] = row[6]
+                    user['license_number'] = row[7]
+                    user['medicine_field'] = row[8]
+                    user['certificate_dir'] = row[9]
                     if password is None:
                         user['password'] = None
                     else:
@@ -317,14 +322,15 @@ class DbManager():
         name = user['name']
         phone_number = user['phone_number']
         email = user['email']
+        nationality = user['nationality']
         license_number = user['license_number']
         medicine_field = user['medicine_field']
         certificate_dir = user['certificate_dir']
         with self.connector.cursor() as cursor:
             try:
-                db_query = "UPDATE user as u INNER JOIN physician as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, p.license_number=%s, p.medicine_field=%s, p.certificate_dir=%s WHERE u.user_id=%s"
+                db_query = "UPDATE user as u INNER JOIN physician as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, u.nationality=%s, p.license_number=%s, p.medicine_field=%s, p.certificate_dir=%s WHERE u.user_id=%s"
                 cursor.execute(db_query, (
-                    password, name, phone_number, email, license_number, medicine_field, certificate_dir, user_id))
+                    password, name, phone_number, email, nationality, license_number, medicine_field, certificate_dir, user_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 print(row_count)

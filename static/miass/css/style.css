@@ -550,3 +550,11 @@ body.modal-open {
         padding-left: 0 !important;
     }
 }
+.popover-title {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+.popover-content {
+    font-weight: bold;
+}

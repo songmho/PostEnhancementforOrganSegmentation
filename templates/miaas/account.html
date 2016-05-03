@@ -1,7 +1,7 @@
 {% if not user_session %}
-<script type="text/javascript">
-location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
-</script>
+    <script type="text/javascript">
+        location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
+    </script>
 {% endif %}
 
 {% load staticfiles %}
@@ -32,105 +32,120 @@ location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
             <form id="accountForm" class="col-xs-12 col-form" accept-charset="UTF-8">
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputId" >ID</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputId">ID</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
                             <input type="text" id="inputId" maxlength="20" name="id" class="form-control" readonly
-                                value="{{ user_session.user_id }}"/>
+                                   value="{{ user_session.user_id }}"/>
                         </div>
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputName" >Name</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputName">Name</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
                             <input type="text" id="inputName" maxlength="100" name="name" class="form-control" required
-                                value="{{ user_session.name }}" />
+                                   value="{{ user_session.name }}" />
                         </div>
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPw" >Password</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPw">Password</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
                             <input type="password" id="inputPw" maxlength="20" name="pw" class="form-control" required
-                                placeholder="Input Password" />
+                                   placeholder="Input Password" />
                         </div>
                     </div>
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPwConfirm" >Password Confirm</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPwConfirm">Password
+                            Confirm</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="password" id="inputPwConfirm" maxlength="20" name="confirm" class="form-control" required
-                                placeholder="Input Password Confirm" />
+                            <input type="password" id="inputPwConfirm" maxlength="20" name="confirm"
+                                   class="form-control" required
+                                   placeholder="Input Password Confirm" />
                         </div>
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputMobile" >Phone Number</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputMobile">Phone Number</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="tel" maxlength="20" id="inputMobile" name="mobile" class="form-control" required
-                                value="{{ user_session.phone_number }}" />
+                            <input type="tel" maxlength="20" id="inputMobile" name="mobile" class="form-control"
+                                   required
+                                   value="{{ user_session.phone_number }}" />
                         </div>
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputEmail" >Email Address</label>
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputEmail">Email Address</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="email" id="inputEmail" maxlength="100" name="email" class="form-control" required
-                                value="{{ user_session.email }}" />
+                            <input type="email" id="inputEmail" maxlength="100" name="email" class="form-control"
+                                   required
+                                   value="{{ user_session.email }}" />
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label"
+                               for="selectNationality">Country</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <select id="selectNationality" name="nationality" class="form-control"></select>
                         </div>
                     </div>
 
-                {% if user_session.user_type == 'patient' %}
-                    <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="selectGender" >Gender</label>
-                        <div class="col-xs-12 col-sm-9 col-md-7">
-                            <select class="form-control" id="selectGender" name="gender" required>
-                                <option>Male</option>
-                                <option>Female</option>
-                            </select>
+                    {% if user_session.user_type == 'patient' %}
+                        <div class="col-xs-12 col-md-6 form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="selectGender">Gender</label>
+                            <div class="col-xs-12 col-sm-9 col-md-7">
+                                <select class="form-control" id="selectGender" name="gender" required>
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPw" >Birthday</label>
-                        <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="date" id="inputBirthday" name="birthday" min="1800-01-01" class="form-control" required />
+                        <div class="col-xs-12 col-md-6 form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputPw">Birthday</label>
+                            <div class="col-xs-12 col-sm-9 col-md-7">
+                                <input type="date" id="inputBirthday" name="birthday" min="1800-01-01"
+                                       class="form-control" required/>
+                            </div>
                         </div>
-                    </div>
 
-                {% elif user_session.user_type == 'physician' %}
-                    <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="selectField" >Field of Medicine</label>
-                        <div class="col-xs-12 col-sm-9 col-md-7">
-                            <select class="form-control" id="selectField" name="field" required >
-                                <option>Heart Specialist</option>
-                                <option>Brain Specialist</option>
-                                <option>Thoracic Specialist</option>
-                                <option>Orthopedic Specialist</option>
-                                <option>Pediatrics</option>
-                                <option>Psychiatry</option>
-                                <option>Internal Medicine</option>
-                                <option>Family Practice</option>
-                                <option>Emergency Medicine</option>
-                                <option>Interventional Cardiology</option>
-                            </select>
+                    {% elif user_session.user_type == 'physician' %}
+                        <div class="col-xs-12 col-md-6 form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="selectField">Field of
+                                Medicine</label>
+                            <div class="col-xs-12 col-sm-9 col-md-7">
+                                <select class="form-control" id="selectField" name="field" required>
+                                    <option>Heart Specialist</option>
+                                    <option>Brain Specialist</option>
+                                    <option>Thoracic Specialist</option>
+                                    <option>Orthopedic Specialist</option>
+                                    <option>Pediatrics</option>
+                                    <option>Psychiatry</option>
+                                    <option>Internal Medicine</option>
+                                    <option>Family Practice</option>
+                                    <option>Emergency Medicine</option>
+                                    <option>Interventional Cardiology</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputLicence" >Licence ID</label>
-                        <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="text" id="inputLicence" maxlength="40" name="licence" class="form-control" required
-                                value="{{ user_session.license_number }}" />
+                        <div class="col-xs-12 col-md-6 form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputLicence">Licence
+                                ID</label>
+                            <div class="col-xs-12 col-sm-9 col-md-7">
+                                <input type="text" id="inputLicence" maxlength="40" name="licence" class="form-control"
+                                       required
+                                       value="{{ user_session.license_number }}" />
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="fileCertification" >Certification</label>
-                        <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="file" id="fileCertification" name="certification" class="form-control"
-                                value="{{ user_session.certificate_dir }}" />
+                        <div class="col-xs-12 col-md-6 form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="fileCertification">Certification</label>
+                            <div class="col-xs-12 col-sm-9 col-md-7">
+                                <input type="file" id="fileCertification" name="certification" class="form-control"
+                                       value="{{ user_session.certificate_dir }}"/>
+                            </div>
                         </div>
-                    </div>
-                {% endif %}
+                    {% endif %}
 
                 </div>
 
@@ -153,6 +168,8 @@ location.replace({{ "'" }}{% url 'miaas:signin' %}{{ "'" }});
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
+<script src="{% static 'miass/js/country.js' %}"></script>
+<script src="{% static 'miass/js/userInfoValidation.js' %}"></script>
 <script src="{% static 'miass/js/account.js' %}"></script>
 
 </body>
