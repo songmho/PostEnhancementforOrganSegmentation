@@ -29,7 +29,7 @@ function checkID() {
         inputId.css("border-color", "red");
         inputId.popover({
             title: "Warning",
-            content: "ID must be started with small letters, and only small letters, digits, and special letters ('-','_') are allowed.",
+            content: "ID must be started with small letters, and only small letters, digits, and special letters ('-','_','.') are allowed.",
             placement: "bottom",
             trigger: "manual"
         });
