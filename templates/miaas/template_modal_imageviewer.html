@@ -376,12 +376,12 @@
                                     <a id="rollPeriodLabel" data-toggle="popover" data-placement="top"
                                        herf="#" data-trigger="focus" role="button" tabindex="0"
                                        title="Rolling Average"
-                                       data-content="Rolling average (moving average) is a calculation to analyze data points by creating series of averages of different subsets of the full data set. So rolling period is a period of rolling average.">
-                                        Rolling Period:</a>
+                                       data-content="Rolling average (moving average) is a calculation to analyze data points by creating series of averages of different subsets of the full data set. If the period of rolling average increases, the graph is more smooth.">
+                                        Rolling Average:</a>
                                 </label>
                                 <input id="rollPeriod" type="number" name="rollPeriod" class="form-control form-control-inline"
                                        placeholder="period" size="1" maxlength="3"
-                                       min="0" max="1000">
+                                       min="1" max="1000" value="1">
                                 <button id="rollPeriodConfirm" class="btn btn-primary">Change</button>
                             </div>
                         </div>
