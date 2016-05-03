@@ -315,7 +315,7 @@ def archive_page(request):
                 temp.append(timestamp_to_date_string(r['uploaded_date']))
                 temp.append(r['image_subject'])
                 temp.append(r['image_type'])
-                temp.append(timestamp_to_date_string(r['recorded_date']))
+                temp.append(timestamp_to_date_string(r['recorded_date'],time=False))
                 temp.append(r['intpr_num'])
                 temp.append(r['image_id'])
                 if len(temp):

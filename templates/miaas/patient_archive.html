@@ -23,10 +23,11 @@
                 {% if dt_list %}
                     <div class="table-container row">
                         <div class="table-title col-xs-12 col-md-4">Medical Image List</div>
-                        <table id="dataTable" class="table table-striped table-bordered table-hover display" width="100%"></table>
+                        <table id="dataTable" class="table table-striped table-bordered table-hover display"
+                               width="100%"></table>
                         {% else %}
 
-                        <div class="table-nodata" >
+                        <div class="table-nodata">
                             <h4 class="text-danger">There is no Medical Images</h4>
                             <p>You can upload your FIRST medical image</p>
                             <a class="btn btn-primary" href="{% url 'miaas:archive_upload' %}" type="button">Upload</a>
@@ -52,28 +53,49 @@
 <!-- custom javascript -->
 <script>
     {% if dt_list %}
-    var dataSet = {{ dt_list |  safe }};
+        var dataSet = {{ dt_list |  safe }};
 
-    $(document).ready(function() {
-        var table = $('#dataTable').DataTable({
-            data: dataSet,
-            order: [[ 0, "desc" ]],
-            columns: [
-                { title: "Upload Date" },
-                { title: "Image Subject" },
-                { title: "Image Type" },
-                { title: "Recorded Date" },
-                { title: "Interpretation Count" }
-            ]
+        $(document).ready(function () {
+            var table = $('#dataTable')
+                    .on('order.dt', applyFilter)
+                    .on('search.dt', applyFilter)
+                    .on('page.dt', applyFilter)
+                    .DataTable({
+                        data: dataSet,
+                        order: [[0, "desc"]],
+                        columns: [
+                            {title: "Upload Date", className: "upload-date"},
+                            {title: "Image Subject"},
+                            {title: "Image Type"},
+                            {title: "Recorded Date"},
+                            {title: "Interpretation Count"}
+                        ]
+                    });
+            $('#dataTable tbody').on('click', 'tr', function () {
+                $.LoadingOverlay('show');
+                var data = table.row(this).data();
+                var index_id = data[data.length - 1];
+                location.href = '{% url 'miaas:archive' %}/detail/' + index_id;
+            });
         });
-        $('#dataTable tbody').on('click', 'tr', function () {
-            $.LoadingOverlay('show');
-            var data = table.row( this ).data();
-            var index_id = data[data.length-1];
-            location.href = '{% url 'miaas:archive' %}/detail/' + index_id;
-        });
-    });
+
+        function applyFilter() {
+            $('#dataTable td.upload-date').each(function () {
+                
+            });
+
+        }
     {% endif %}
+    function dateToString(timestamp) {
+        var date = new Date(parseInt(timestamp));
+        var year = date.getFullYear();
+        var month = (1 + date.getMonth()).toString();
+        month = month.length > 1 ? month : '0' + month;
+        var day = date.getDate().toString();
+        day = day.length > 1 ? day : '0' + day;
+        return(month + '/' + day + '/' + year)
+    }
+
 </script>
 
 </body>
