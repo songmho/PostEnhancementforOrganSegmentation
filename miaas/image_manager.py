@@ -45,10 +45,10 @@ class ImageManager():
                 if temp_path_ext == 'dcm':
                     self.decompose(self._temp_file_path)
                 if temp_path_ext == 'csv':
-                    pass
-                    # temp_path = self.csv_reorganize(self._temp_file_path)
+                    temp_path = self.csv_reorganize(temp_path)
                 elif temp_path_ext == 'edf':
                     temp_path = edf_to_csv.edf_to_csv(temp_path)
+                    temp_path = self.csv_reorganize(temp_path)
 
         logger.info('uploaded temp file: %s' % temp_path)
         archive_path = self._upload_to_archive(temp_path)
@@ -206,12 +206,12 @@ class ImageManager():
             if not first_row:
                 raise Exception('There are too few data rows.')
 
+            first_time = float(first_row[time_column_pos])
+            second_time = float(second_row[time_column_pos])
+            print ('first: %s, second: %s' % (first_time, second_time))
+
             # if header_row[time_column_pos].strip().lower() == 'time':
             if header_row[time_column_pos].strip().lower().startswith('time'):
-                first_time = float(first_row[time_column_pos])
-                second_time = float(second_row[time_column_pos])
-                print ('first: %s, second: %s' % (first_time, second_time))
-
                 if (first_time == 0 or first_time == 1) and (first_time+1 == second_time):
                     header_row[time_column_pos] = 'Time (count)'
                 elif (first_time < 1) and (second_time-first_time < 1):
@@ -225,16 +225,28 @@ class ImageManager():
                 else:
                     header_row[time_column_pos] = 'Time'
 
-            csv_writer.writerow(header_row[time_column_pos:])
-            csv_writer.writerow(first_row[time_column_pos:])
-            csv_writer.writerow(second_row[time_column_pos:])
-            print ', '.join(header_row[time_column_pos:])
-            print '------------------'
-            print ', '.join(first_row[time_column_pos:])
-            print ', '.join(second_row[time_column_pos:])
-            for row in csv_reader:
-                print ', '.join(row[time_column_pos:])
-                csv_writer.writerow(row[time_column_pos:])
+            # translate millisecond datetime to time ms
+            if header_row[time_column_pos] == 'Time (datetime)':
+                header_row[time_column_pos] = 'Time (ms)'
+                first_row[time_column_pos] = 0
+                second_row[time_column_pos] = second_time - first_time
+                csv_writer.writerow(header_row[time_column_pos:])
+                csv_writer.writerow(first_row[time_column_pos:])
+                csv_writer.writerow(second_row[time_column_pos:])
+                for row in csv_reader:
+                    row[time_column_pos] = float(row[time_column_pos]) - first_time
+                    csv_writer.writerow(row[time_column_pos:])
+            else:
+                csv_writer.writerow(header_row[time_column_pos:])
+                csv_writer.writerow(first_row[time_column_pos:])
+                csv_writer.writerow(second_row[time_column_pos:])
+                # print ', '.join(header_row[time_column_pos:])
+                # print '------------------'
+                # print ', '.join(first_row[time_column_pos:])
+                # print ', '.join(second_row[time_column_pos:])
+                for row in csv_reader:
+                    # print ', '.join(row[time_column_pos:])
+                    csv_writer.writerow(row[time_column_pos:])
 
         # return newpath
         return newpath
