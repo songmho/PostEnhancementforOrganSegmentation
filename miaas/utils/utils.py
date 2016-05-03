@@ -25,15 +25,25 @@ def standardDeviation(values, option):
 timezone_kr = pytz.timezone('Asia/Seoul')
 
 
-def timestamp_to_date_string(timestamp):
-    try:
-        return datetime.datetime.fromtimestamp(int(timestamp) // 1000) \
-            .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
-            .strftime('%m/%d/%y')
-    except ValueError as e:
-        return (datetime.datetime(1970, 1, 1) + datetime.timedelta(int(timestamp) // 1000))\
-            .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
-            .strftime('%m/%d/%y')
+def timestamp_to_date_string(timestamp, time=True):
+    if time:
+        try:
+            return datetime.datetime.fromtimestamp(int(timestamp) // 1000) \
+                .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
+                .strftime('%m/%d/%y %H:%M')
+        except ValueError as e:
+            return (datetime.datetime(1970, 1, 1) + datetime.timedelta(int(timestamp) // 1000))\
+                .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
+                .strftime('%m/%d/%y  %H:%M')
+    else:
+        try:
+            return datetime.datetime.fromtimestamp(int(timestamp) // 1000) \
+                .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
+                .strftime('%m/%d/%y')
+        except ValueError as e:
+            return (datetime.datetime(1970, 1, 1) + datetime.timedelta(int(timestamp) // 1000))\
+                .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \
+                .strftime('%m/%d/%y')
 
 
 def get_interpretation_status(status):

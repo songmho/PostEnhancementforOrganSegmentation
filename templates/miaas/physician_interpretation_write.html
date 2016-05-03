@@ -271,41 +271,27 @@
         var suspectedDisease = tinymce.get('suspectedDisease').getContent();
         var opinion = tinymce.get('opinion').getContent();
         var recommendation = tinymce.get('recommendation').getContent();
-
-        if (/\S/.test(summary) && /\S/.test(suspectedDisease) &&
-                /\S/.test(opinion) && /\S/.test(recommendation)) {
-
-            var matchstring = '^<p style="color: #999;">Write';
-            if (summary.match(matchstring) || suspectedDisease.match(matchstring) ||
-                    opinion.match(matchstring) || recommendation.match(matchstring)) {
-                openModal('Fields are not filled! Please fill all the fields.', 'Writing Failed');
-                return;
-            }
-
-            $.LoadingOverlay('show');
-            $.ajax("/api/interpretation", {
-                method: 'PUT',
-                data: JSON.stringify({
-                    action: 'tempSaveIntpr',
-                    request_id: '{{ request_detail.request_id }}',
-                    summary: tinymce.get('summary').getContent(),
-                    suspected_disease: tinymce.get('suspectedDisease').getContent(),
-                    opinion: tinymce.get('opinion').getContent(),
-                    recommendation: tinymce.get('recommendation').getContent()
-                }),
-                dataType: 'json',
-                success: function (res) {
-                    $.LoadingOverlay('hide');
-                    if (res['code'] == 'SUCCESS') {
-                        openModal("Success", "Interpretation is Saved.")
-                    } else {
-                        openModal(res['msg'], "Save is Failed.")
-                    }
+        $.LoadingOverlay('show');
+        $.ajax("/api/interpretation", {
+            method: 'PUT',
+            data: JSON.stringify({
+                action: 'tempSaveIntpr',
+                request_id: '{{ request_detail.request_id }}',
+                summary: tinymce.get('summary').getContent(),
+                suspected_disease: tinymce.get('suspectedDisease').getContent(),
+                opinion: tinymce.get('opinion').getContent(),
+                recommendation: tinymce.get('recommendation').getContent()
+            }),
+            dataType: 'json',
+            success: function (res) {
+                $.LoadingOverlay('hide');
+                if (res['code'] == 'SUCCESS') {
+                    openModal("Success", "Interpretation is Saved.")
+                } else {
+                    openModal(res['msg'], "Save is Failed.")
                 }
-            });
-        } else {
-            openModal('Fields are not filled! Please fill all the fields.', 'Writing Failed')
-        }
+            }
+        });
     }
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");
