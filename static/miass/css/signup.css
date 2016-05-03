@@ -55,3 +55,12 @@ body {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
+.form-group .popover-title {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+.form-group .popover-content {
+    font-weight: bold;
+}
