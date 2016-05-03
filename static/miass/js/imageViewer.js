@@ -238,6 +238,7 @@ function csvGrpahLoadAndView(csvURL) {
     setTimeout(function() {
         var data = csvURL;
         smoothPlotter.smoothing = 0.333;
+        var graphXAxisLabel = null;
 
         var elem = null;
         if(bShowGraphView) elem = document.getElementById("graphViewer");
@@ -263,7 +264,7 @@ function csvGrpahLoadAndView(csvURL) {
                         //ticker: Dygraph.dateTicker,
                     }
                 },
-                xAxisHeight: 34,
+                xAxisHeight: 48,
                 animatedZooms: true,
                 strokeWidth: 2,
                 //color: '#D76474',
@@ -273,10 +274,12 @@ function csvGrpahLoadAndView(csvURL) {
                 xlabel: 'Time',
 
                 //visibility: [true, true, true, false, false, false],
-                //drawCallback: function(g) {
-                //    console.log(g.getLabels());
-                //}
-                xValueParser: function(x) {return parseFloat(x);}
+                drawCallback: function(g) {
+                    var lables = g.getLabels();
+                    var timeLable = lables[0];
+                    $('#graphView .dygraph-label.dygraph-xlabel').text(timeLable);
+                }
+                //xValueParser: function(x) {return parseFloat(x);}
             }
         );
         g.ready(function(g) {
@@ -285,17 +288,17 @@ function csvGrpahLoadAndView(csvURL) {
             console.log(lables);
 
             var timeLable = lables[0];
-            if (timeLable.length != 0 && !/^[\s]*$/.test(timeLable) && timeLable.trim().toLowerCase() != 'time') {
+            /***if (timeLable.length != 0 && !/^[\s]*$/.test(timeLable) && timeLable.trim().toLowerCase() != 'time') {
                 $('#graphView .dygraph-xlabel').text(timeLable);
-            }
-            //$('#graphView .dygraph-label.dygraph-xlabel').text(timeLable);
+            }*/
+            $('#graphView .dygraph-label.dygraph-xlabel').text(timeLable);
 
             if (lables.length > 2) {
                 var startLabel = 1;
-                if (lables.length >= 3 && lables[1].trim().toLowerCase().startsWith('time')) {
+                /***if (lables.length >= 3 && lables[1].trim().toLowerCase().startsWith('time')) {
                     startLabel = 2;
                     g.setVisibility(0, false);
-                }
+                }*/
 
                 $('#graphLabelChecks').show();
                 var checkboxesHTMLString = "";

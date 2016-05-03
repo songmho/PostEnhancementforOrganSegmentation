@@ -61,7 +61,7 @@ def edf_to_csv(filepath):
         p4.start()
         p4.join(timeout=30)
     except Exception as e:
-        return filepath
+        raise Exception("The edf file is not supported format.")
 
     return path + name + file_suffixes[0] + ".csv"
 
