@@ -132,6 +132,7 @@ function dicomShowDataSet(dataSet) {
 }
 
 function dicomloadAndView(dicomURL) {
+    $('#btnImageControlHelp').show();
     // prefix the url with wadouri: so cornerstone can find the image loader
     var wadoURI = "wadouri:" + dicomURL;
 
@@ -200,6 +201,7 @@ function generalImageLoadAndView(imageURL) {
         cornerstoneTools.zoomWheel.disable(element);
         conerstoneloaded = false;
     }
+    $('#btnImageControlHelp').hide();
 
     var canvas = $('#imageViewer canvas')[0];
     var ctx = canvas.getContext('2d');
