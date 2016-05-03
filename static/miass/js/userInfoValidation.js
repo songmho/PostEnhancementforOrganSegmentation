@@ -1,7 +1,7 @@
 var checkIDFlag = false;
 var tempID = "";
 function checkID() {
-    var idRe = /^[a-z]+[a-z0-9]{3,19}$/g;
+    var idRe = /^[a-z]+[a-z0-9_.\-]{3,19}$/g;
     var inputId = $('#inputId');
     if ((tempID == inputId.val() || inputId.val().length == 0) && checkIDFlag) {
         return
@@ -29,7 +29,7 @@ function checkID() {
         inputId.css("border-color", "red");
         inputId.popover({
             title: "Warning",
-            content: "ID must be started with small letters, and only small letters and numbers are allowed.",
+            content: "ID must be started with small letters, and only small letters, digits, and special letters ('-','_') are allowed.",
             placement: "bottom",
             trigger: "manual"
         });
