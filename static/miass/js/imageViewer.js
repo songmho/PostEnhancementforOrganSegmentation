@@ -269,12 +269,10 @@ function csvGrpahLoadAndView(csvURL) {
                 xAxisHeight: 48,
                 animatedZooms: true,
                 strokeWidth: 2,
-                //color: '#D76474',
                 colors: graphColors,
                 plotter: smoothPlotter,
                 ylabel: 'Millivolt (mV)',
                 xlabel: 'Time',
-
                 //visibility: [true, true, true, false, false, false],
                 drawCallback: function(g) {
                     var lables = g.getLabels();
