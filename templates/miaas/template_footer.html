@@ -1,17 +1,5 @@
 {% load staticfiles %}
 {% load my_filters %}
-<footer class="page-footer">
-    <div class="container footer-container">
-        <div class="footer-contents pull-left">
-            <span>Smartylab Corporation, Seoul, Korea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <span>Tel. +82-2-826-0909&nbsp;&nbsp;&nbsp;</span>
-            <span><a href="http://smartylab.co.kr" target="_blank">http://smartylab.co.kr</a></span>
-        </div>
-        <a href="http://smartylab.co.kr" target="_blank" class="pull-right">
-            <image src="{% static 'miass/image/main/logo.png' %}"  class="copyright-logo"></image>
-        </a>
-    </div>
-</footer>
 
 <!-- default alert modal -->
 <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle">
@@ -30,6 +18,19 @@
         </div>
     </div>
 </div>
+
+<footer class="page-footer">
+    <div class="container footer-container">
+        <div class="footer-contents pull-left">
+            <span>Smartylab Corporation, Seoul, Korea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span>Tel. +82-2-826-0909&nbsp;&nbsp;&nbsp;</span>
+            <span><a href="http://smartylab.co.kr" target="_blank">http://smartylab.co.kr</a></span>
+        </div>
+        <a href="http://smartylab.co.kr" target="_blank" class="pull-right">
+            <image src="{% static 'miass/image/main/logo.png' %}"  class="copyright-logo"></image>
+        </a>
+    </div>
+</footer>
 
 <!-- scripts -->
 <script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>

@@ -126,7 +126,7 @@
                         </div>
 
                         <div class="col-xs-12 col-sm-4 col-md-3 form-button">
-                            <button id="btnWrite" class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+                            <button id="btnWrite" class="btn btn-lg btn-primary btn-block" type="button">Submit</button>
                         </div>
 
                     </div>
@@ -160,6 +160,24 @@
 </div>
 
 <!-- Modal -->
+<div class="modal fade" id="writeSubmitConfirmModal" tabindex="-1" role="dialog" aria-labelledby="writeSubmitConfirmModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close modal-alert-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="writeSubmitConfirmModalTitle">Interpretation Submit Confirm</h4>
+            </div>
+            <div class="modal-body">
+                If you submit, you cannot modify your writing.<br/> Are you really sure to submit?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary modal-alert-close" data-dismiss="modal">Not yet</button>
+                <button type="button" id="writeSubmitBtn" class="btn btn-primary" >Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% include 'miaas/template_modal_patient_profile.html' %}
 {% include 'miaas/template_modal_imageviewer.html' %}
 {% include 'miaas/template_footer.html' %}
@@ -218,6 +236,18 @@
                     openModal(res['msg'], 'Getting Profile Failed');
                 }
             }
+        });
+
+        $('#btnWrite').click(function () {
+            $('#writeSubmitConfirmModal').modal();
+        });
+
+        $('#writeSubmitBtn').click(function() {
+            $('#writeSubmitConfirmModal').off('hidden.bs.modal').on('hidden.bs.modal', function() {
+                $('#writeSubmitConfirmModal').off('hidden.bs.modal');
+                $('#writeForm').submit();
+            });
+            $('#writeSubmitConfirmModal').modal('hide');
         });
 
         $('#writeForm').on('submit', function (e) {
