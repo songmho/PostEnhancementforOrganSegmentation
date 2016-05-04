@@ -669,8 +669,7 @@ class DbManager():
                 if row_count > 0:
                     if_deleted = True
             except Exception as e:
-                logger.exception(e)
-                raise Exception("Unknown error occurs while committing the interpretation")
+                pass
         return if_deleted
 
     def add_intpr(self, intpr):

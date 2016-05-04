@@ -609,8 +609,8 @@ def handle_interpretation_mgt(request):
                 if if_inserted:
                     status = 0
                     if_updated = db.update_req_and_resp(request_id, status, timestamp)
-                    if_deleted = db.delete_temp_intpr(request_id)
-                    if if_updated and if_deleted:
+                    db.delete_temp_intpr(request_id)
+                    if if_updated:
                         return JsonResponse(constants.CODE_SUCCESS)
                     else:
                         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))

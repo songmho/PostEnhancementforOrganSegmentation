@@ -343,6 +343,30 @@ class DbManager:
 
         return result
 
+    def add_session(self):
+        with self.connector.cursor() as cursor:
+            db_query = "INSERT INTO intpr_session (request_id, patient_id, physician_id, session_type, timestamp)" \
+                       "VALUES (%s, %s, %s, %s, %s)"
+
+    def retrieve_session(self, user_type='patient'):
+        with self.connector.cursor() as cursor:
+            if user_type == 'patient':
+                db_query = "SELECT * " \
+                           "FROM intpr_session s " \
+                           "JOIN request req ON s.request_id = req.request_id " \
+                           "JOIN physician_info phi ON s.physician_id = phi.user_id " \
+                           "WHERE patient_id = %s " \
+                           "ORDER BY status DESC, timestamp DESC"
+
+            elif user_type == 'physician':
+                db_query = "SELECT * " \
+                           "FROM intpr_session s " \
+                           "JOIN request req ON s.request_id = req.request_id " \
+                           "JOIN patient_info pai ON s.patient_id = pai.user_id " \
+                           "WHERE physician_id = %s " \
+                           "ORDER BY status DESC, timestamp DESC"
+        pass
+
 
 if __name__ == '__main__':
     db = DbManager()
