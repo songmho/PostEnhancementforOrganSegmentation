@@ -1074,7 +1074,6 @@ function generateExplorer(dirs, name) {
                 if (file['type'] == 'dcm') {
                     bHasFile = true;
                     fileList.push(file['dir']);
-                    fileList.push(file['dir']);
                 }
             }
 
