@@ -54,7 +54,20 @@
                         data: dataSet,
                         order: [[5, "asc"]],
                         columns: [
-                            {title: "Requested Date"},
+                            {
+                                title: "Requested Date",
+                                render: {
+                                    "display": function (data) {
+                                        var date = new Date(data);
+                                        var year = date.getFullYear();
+                                        var month = (1 + date.getMonth()).toString();
+                                        month = month.length > 1 ? month : '0' + month;
+                                        var day = date.getDate().toString();
+                                        day = day.length > 1 ? day : '0' + day;
+                                        return (month + '/' + day + '/' + year.toString().substr(2))
+                                    }
+                                }
+                            },
                             {title: "Request Subject"},
                             {title: "Image Subject"},
                             {title: "Image Type"},

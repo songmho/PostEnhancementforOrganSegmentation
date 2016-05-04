@@ -1,4 +1,5 @@
 import logging
+from _mysql import DataError, IntegrityError, NotSupportedError, OperationalError, ProgrammingError
 
 import pymysql
 
@@ -25,12 +26,12 @@ class DbManager:
     PATIENT_COLUMNS = ['user_id', 'patient_name', 'gender', 'birthday',
                        'phone_number', 'email', 'join_date', 'deactivate_date']
     PHYSICIAN_PROFILE_COLUMNS = ["profile_id", "user_id", "aboutMe", "specialism", "medicalSchool", "graduate",
-                         "certifications", "memberships", "fieldsOfMedicine", "hiv", "offices", "languages",
-                         "insuranceProgram", "healthPlans", "hospitalPrivileges", "malpractice", "licenseeActions",
-                         "outOfStateActions", "currentLimits", "hspPrivRestrictions", "hspFRPriv", "criminalConvictions",
-                         "teaching", "serviceActivity", "publications", "statement"]
-
-
+                                 "certifications", "memberships", "fieldsOfMedicine", "hiv", "offices", "languages",
+                                 "insuranceProgram", "healthPlans", "hospitalPrivileges", "malpractice",
+                                 "licenseeActions",
+                                 "outOfStateActions", "currentLimits", "hspPrivRestrictions", "hspFRPriv",
+                                 "criminalConvictions",
+                                 "teaching", "serviceActivity", "publications", "statement"]
 
     # RETRIEVE LIST QUERY
     PATIENT_IMAGE_LIST = "patient_image_list"
@@ -84,7 +85,16 @@ class DbManager:
                          "FROM miaas.medical_image "
                          "WHERE user_id = %s;",
                 "columns": ["uploaded_date", "image_subject", "image_type", "recorded_date", "intpr_num",
-                            "image_id"]},
+                            "image_id"],
+                "error": {
+                    IndexError: "",
+                    DataError: "",
+                    IntegrityError: "",
+                    NotSupportedError: "",
+                    OperationalError: "",
+                    ProgrammingError: "",
+                }
+            },
 
         PATIENT_INTPR_LIST:
             {
@@ -174,7 +184,7 @@ class DbManager:
                          "JOIN medical_image m ON intpr.image_id = m.image_id "
                          "WHERE intpr.intpr_id = %s",
 
-                "columns": [INTPR_COLUMNS, PHYSICIAN_COLUMNS+["password"], REQUEST_COLUMNS, IMAGE_COLUMNS]},
+                "columns": [INTPR_COLUMNS, PHYSICIAN_COLUMNS + ["password"], REQUEST_COLUMNS, IMAGE_COLUMNS]},
 
         PATIENT_REQUEST_DETAIL:
             {
@@ -200,7 +210,7 @@ class DbManager:
                       "LEFT JOIN interpretation_temp intpr_temp ON req.request_id = intpr_temp.request_id "
                       "WHERE req.request_id = %s",
 
-             "columns": [REQUEST_COLUMNS, PATIENT_COLUMNS+["password"], IMAGE_COLUMNS, INTPR_TEMP_COLUMNS]},
+             "columns": [REQUEST_COLUMNS, PATIENT_COLUMNS + ["password"], IMAGE_COLUMNS, INTPR_TEMP_COLUMNS]},
 
         PHYSICIAN_INTPR_DETAIL:
             {"query": "SELECT intpr.*, pai.*, req.*, m.* "
@@ -210,7 +220,7 @@ class DbManager:
                       "JOIN medical_image m ON intpr.image_id = m.image_id "
                       "WHERE intpr.intpr_id = %s",
 
-             "columns": [INTPR_COLUMNS, PATIENT_COLUMNS+["password"], REQUEST_COLUMNS, IMAGE_COLUMNS]},
+             "columns": [INTPR_COLUMNS, PATIENT_COLUMNS + ["password"], REQUEST_COLUMNS, IMAGE_COLUMNS]},
         PATIENT_INFO_ID:
             {"query": "SELECT * "
                       "FROM patient_info "

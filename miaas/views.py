@@ -254,8 +254,8 @@ def patient_interpretation_list_page(request):
             results = db.retrieve_list(db.PATIENT_INTPR_LIST, request.session['user']['user_id'])
             for r in results:
                 temp = []
-                temp.append(timestamp_to_date_string(r['request_date']))
-                temp.append(timestamp_to_date_string(r['interpret_date']))
+                temp.append(r['request_date'])
+                temp.append(r['interpret_date'])
                 temp.append(r['request_subject'])
                 temp.append(r['image_subject'])
                 temp.append(r['image_type'])
@@ -282,7 +282,7 @@ def patient_request_list_page(request):
             results = db.retrieve_list(db.PATIENT_REQUEST_LIST, request.session['user']['user_id'])
             for r in results:
                 temp = []
-                temp.append(timestamp_to_date_string(r['request_date']))
+                temp.append(r['request_date'])
                 temp.append(r['request_subject'])
                 temp.append(r['image_subject'])
                 temp.append(r['image_type'])
@@ -312,10 +312,10 @@ def archive_page(request):
             results = db.retrieve_list(db.PATIENT_IMAGE_LIST, request.session['user']['user_id'])
             for r in results:
                 temp = []
-                temp.append(timestamp_to_date_string(r['uploaded_date']))
+                temp.append(r['uploaded_date'])
                 temp.append(r['image_subject'])
                 temp.append(r['image_type'])
-                temp.append(timestamp_to_date_string(r['recorded_date'],time=False))
+                temp.append(r['recorded_date'])
                 temp.append(r['intpr_num'])
                 temp.append(r['image_id'])
                 if len(temp):
@@ -342,7 +342,7 @@ def physician_interpretation_search(request):
             results = db.retrieve_list(db.PHYSICIAN_SEARCH_REQUEST_LIST, request.session['user']['user_id'])
             for r in results:
                 temp = []
-                temp.append(timestamp_to_date_string(r['request_date']))
+                temp.append(r['request_date'])
                 temp.append(r['patient_id'])
                 temp.append(r['request_subject'])
                 temp.append(r['image_subject'])
@@ -371,8 +371,8 @@ def physician_interpretation_response_page(request):
             results = db.retrieve_list(db.PHYSICIAN_RESPONSE_LIST, request.session['user']['user_id'])
             for r in results:
                 temp = []
-                temp.append(timestamp_to_date_string(r['request_date']))
-                temp.append(timestamp_to_date_string(r['response_date']))
+                temp.append(r['request_date'])
+                temp.append(r['response_date'])
                 temp.append(r['patient_id'])
                 temp.append(r['request_subject'])
                 temp.append(r['image_subject'])
@@ -402,8 +402,8 @@ def physician_interpretation_page(request):
             results = db.retrieve_list(db.PHYSICIAN_INTPR_LIST, request.session['user']['user_id'])
             for r in results:
                 temp = []
-                temp.append(timestamp_to_date_string(r['request_date']))
-                temp.append(timestamp_to_date_string(r['interpret_date']))
+                temp.append(r['request_date'])
+                temp.append(r['interpret_date'])
                 temp.append(r['patient_id'])
                 temp.append(r['image_subject'])
                 temp.append(r['image_type'])

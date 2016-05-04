@@ -52,7 +52,7 @@ class DbManager():
                     if_exist = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("find_user Error" + e.message)
+                raise Exception("Finding existing user is failed.")
         return if_exist
 
     def find_id(self, email, name):
@@ -66,7 +66,7 @@ class DbManager():
                 user_id = row[0]
             except Exception as e:
                 logger.exception(e)
-
+                raise Exception("Finding ID is failed.")
         return user_id
 
     def find_passwd(self, user_id, email, name):
@@ -80,6 +80,7 @@ class DbManager():
                 passwd = row[0]
             except Exception as e:
                 logger.exception(e)
+                raise Exception("Finding Password is failed.")
 
         return passwd
 
@@ -110,7 +111,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("add_patient Error" + e.message)
+                raise Exception("Registering a patient is failed.")
         return if_inserted
 
     def retrieve_patient(self, patient_id, password=None):
@@ -141,7 +142,7 @@ class DbManager():
                         user['password'] = row[8]
             except Exception as e:
                 logger.exception(e)
-                raise Exception("retrieve_patient Error" + e.message)
+                raise Exception("Login is Failed.")
         return user
 
     def update_patient(self, user):
@@ -157,16 +158,14 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 db_query = "UPDATE user as u INNER JOIN patient as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, u.nationality=%s , p.gender=%s, p.birthday=%s WHERE u.user_id=%s"
-                print(db_query)
                 cursor.execute(db_query, (password, name, phone_number, email, nationality, gender, birthday, user_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
-                print(row_count)
                 if row_count > 0:
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("update_patient Error" + e.message)
+                raise Exception("Updating user information is failed.")
         return if_updated
 
     def add_patient_profile(self, user_id, timestamp, profiles):
@@ -185,7 +184,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("add_patient_profile Error" + e.message)
+                raise Exception("Updating patient profile is failed.")
         return if_inserted
 
     # type='None' (performance low)
@@ -213,7 +212,7 @@ class DbManager():
                         profiles.append(profile)
                 except Exception as e:
                     logger.exception(e)
-                    raise Exception("retrieve_patient_profile Error" + e.message)
+                    raise Exception("Unknown error occurs while getting the profile information.")
         else:
             db_query = "SELECT pp.type, pp.value, pp.timestamp " \
                        "From (" \
@@ -235,7 +234,7 @@ class DbManager():
                         profiles.append(profile)
                 except Exception as e:
                     logger.exception(e)
-                    raise Exception("retrieve_patient_profile Error" + e.message)
+                    raise Exception("Unknown error occurs while getting the profile information.")
         return profiles
 
     def add_physician(self, physician):
@@ -266,7 +265,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("add_physician Error" + e.message)
+                raise Exception("Registering a physician is failed.")
 
         with self.connector.cursor() as cursor:
             try:
@@ -279,7 +278,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("Add Physician Profile Error" + e.message)
+                raise Exception("Registering a physician is failed.")
 
         return if_inserted
 
@@ -312,7 +311,7 @@ class DbManager():
                         user['password'] = row[9]
             except Exception as e:
                 logger.exception(e)
-                raise Exception("retrieve_physician Error" + e.message)
+                raise Exception("Login is failed.")
         return user
 
     def update_physician(self, user):
@@ -333,12 +332,11 @@ class DbManager():
                     password, name, phone_number, email, nationality, license_number, medicine_field, certificate_dir, user_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
-                print(row_count)
                 if row_count > 0:
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("update_physician Error" + e.message)
+                raise Exception("Updating user information is failed.")
         return if_updated
 
     # def add_physician_profile(self, user_id, keys, values):
@@ -383,7 +381,7 @@ class DbManager():
                 return if_updated
             except Exception as e:
                 logger.exception(e)
-                raise Exception("add_physician_profile Error" + e.message)
+                raise Exception("Updating physician profile is failed.")
         return if_updated
 
     # def retrieve_physician_profile(self, physician_id, type=None):
@@ -435,7 +433,7 @@ class DbManager():
                     profile[row[1]] = row[2]
             except Exception as e:
                 logger.exception(e)
-                raise Exception("Retrieve retrieve_physician_profile Profile Error" + e.message)
+                raise Exception("Unknown error occurs while getting the physician profile information.")
         return profile
 
     def add_medical_image(self, medical_image):
@@ -466,7 +464,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("add_medical_image Error" + e.message)
+                raise Exception("Uploading a medical image is failed.")
 
         return if_inserted
 
@@ -491,12 +489,11 @@ class DbManager():
                                 medical_department, image_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
-                print(row_count)
                 if row_count > 0:
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("update_medical_image_by_id Error" + e.message)
+                raise Exception("Updating medical image information is failed.")
 
         return if_updated
 
@@ -539,7 +536,7 @@ class DbManager():
                     images.append(image)
             except Exception as e:
                 logger.exception(e)
-                raise Exception("retrieve_medical_image Error" + e.message)
+                raise Exception("Unknown error occurs while collectting your medical images")
         return images
 
     def retrieve_medical_image_amount(self, patient_id):
@@ -581,7 +578,7 @@ class DbManager():
                 image['medical_department'] = row[13]
             except Exception as e:
                 logger.exception(e)
-                raise Exception("retrieve_medical_image_by_id Error" + e.message)
+                raise Exception("Unknown error occurs while getting the medical image information.")
         return image
 
     def update_medical_image_dir(self, medical_image):
@@ -594,12 +591,11 @@ class DbManager():
                 cursor.execute(db_query, (image_dir, image_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
-                print(row_count)
                 if row_count > 0:
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("update_medical_image_dir Error" + e.message)
+                raise Exception("Updating medical image is failed")
         return if_updated
 
     def update_medical_image_intprnum(self, image_id):
@@ -614,10 +610,10 @@ class DbManager():
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("update_medical_image_intprnum Error" + e.message)
+                raise Exception("Updating interpretation is failed.")
         return if_updated
 
-    def delte_medical_image_by_id(self, image_id):
+    def delete_medical_image_by_id(self, image_id):
         if_deleted = False
         with self.connector.cursor() as cursor:
             try:
@@ -629,7 +625,7 @@ class DbManager():
                     if_deleted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("delte_medical_image_by_id Error" + e.message)
+                raise Exception("Deleting a medical image is failed")
         return if_deleted
 
     def temp_save_intpr(self, intpr):
@@ -658,7 +654,7 @@ class DbManager():
 
             except Exception as e:
                 logger.exception(e)
-                raise Exception("add_intpr Error" + e.message)
+                raise Exception("The interpretation is not saved.")
         return if_inserted
 
     def delete_temp_intpr(self, request_id):
@@ -674,7 +670,7 @@ class DbManager():
                     if_deleted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("delete_temp_intpr Error" + e.message)
+                raise Exception("Unknown error occurs while committing the interpretation")
         return if_deleted
 
     def add_intpr(self, intpr):
@@ -707,7 +703,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("add_intpr Error" + e.message)
+                raise Exception("Unknown error occurs while committing the interpretation")
         return if_inserted
 
     def retrieve_intpr_by_id(self, intpr_id):
@@ -736,7 +732,7 @@ class DbManager():
 
             except Exception as e:
                 logger.exception(e)
-                raise Exception("retrieve_intpr_by_id Error" + e.message)
+                raise Exception("Unknown error occurs while getting the information of the interpretation")
         return intpr
 
     # To retrieve all interpretation information from 'interpretation' table on 'image_id' arguments with medical image information from 'medical_image'
@@ -770,7 +766,7 @@ class DbManager():
                 intpr_by_image['intpr'] = intpr_list
             except Exception as e:
                 logger.exception(e)
-                raise Exception("retrieve_image_and_intpr Error" + e.message)
+                raise Exception("Unknown error occurs while the information of interpretation related to the medical image.")
         return intpr_by_image
 
     def retrieve_image_intpr(self, image_id, time_from=None, offset=None, limit=None):
@@ -809,7 +805,7 @@ class DbManager():
                     intprs.append(intpr)
             except Exception as e:
                 logger.exception(e)
-                raise Exception("retrieve_image_intpr Error" + e.message)
+                raise Exception("Unknown error occurs while the information of interpretation related to the medical image.")
         return intprs
 
     def retrieve_physician_intpr(self, physician_id, time_from=None):
@@ -840,7 +836,7 @@ class DbManager():
                     intprs.append(intpr)
             except Exception as e:
                 logger.exception(e)
-                raise Exception("retrieve_physician_intpr Error" + e.message)
+                raise Exception("Unknown error occurs while your interpretations.")
         return intprs
 
     def retrieve_physician_intpr_amount(self, physician_id):
@@ -884,7 +880,7 @@ class DbManager():
                     intprs.append(intpr)
             except Exception as e:
                 logger.exception(e)
-                raise Exception("retrieve_patient_intpr Error" + e.message)
+                raise Exception("Unknown error occurs while your interpretations.")
         return intprs
 
     def retrieve_patient_intpr_amount(self, patient_id):
@@ -919,7 +915,7 @@ class DbManager():
                     if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("add_patient_intpr_request Error" + e.message)
+                raise Exception("Unknown error occurs while your requests.")
         return if_inserted
 
     def update_patient_request_by_selection(self, request_id, physician_id, status):
@@ -939,7 +935,7 @@ class DbManager():
                         if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("update_patient_request_by_selection Error" + e.message)
+                raise Exception("Selection a physician is failed.")
         return if_updated
 
     def update_patient_request(self, request_id, subject, message, timestamp):
@@ -956,7 +952,7 @@ class DbManager():
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("update_patient_request Error" + e.message)
+                raise Exception("Unknown error occurs during the request-response transaction.")
         return if_updated
 
     def delete_patient_request(self, request_id):
@@ -976,7 +972,7 @@ class DbManager():
                         if_deleted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("delete_patient_request Error" + e.message)
+                raise Exception("Canceling the request is failed.")
         return if_deleted
 
     def add_physician_intpr_resp(self, response):
@@ -990,7 +986,6 @@ class DbManager():
                 # message = respo.encode('utf-8').decode('latin-1')nse['message']
                 timestamp = response['timestamp']
                 status = response['status']
-                print(request_id, physician_id, message, timestamp, status)
                 db_query = "INSERT INTO response (request_id, physician_id, message, timestamp) VALUES (%s, %s, %s, %s)"
                 cursor.execute(db_query, (request_id, physician_id, message, timestamp))
                 self.connector.commit()
@@ -1004,7 +999,7 @@ class DbManager():
                         if_inserted = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception(Exception("add_physician_intpr_resp Error" + e.message))
+                raise Exception(Exception("Responsing the request is failed."))
         return if_inserted
 
     def update_req_and_resp(self, request_id, status, timestamp):
@@ -1019,7 +1014,7 @@ class DbManager():
                     if_updated = True
             except Exception as e:
                 logger.exception(e)
-                raise Exception("Update_Patient_Request_by_Selection Error" + e.message)
+                raise Exception("Unknown error occurs during the request-response transaction.")
         return if_updated
 
     # KH
