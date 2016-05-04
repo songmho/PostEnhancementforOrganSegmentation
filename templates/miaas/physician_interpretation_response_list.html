@@ -26,8 +26,10 @@
                 {% else %}
                     <div class="table-nodata">
                         <h4 class="text-danger">There is no requests.</h4>
-                        <p>Before you respond, you first should select a patient's request for writing interpretation in search page.</p>
-                        <a class="btn btn-primary" href="{% url 'miaas:interpretation_search' %}" type="button">Go to Search Page</a>
+                        <p>Before you respond, you first should select a patient's request for writing interpretation in
+                            search page.</p>
+                        <a class="btn btn-primary" href="{% url 'miaas:interpretation_search' %}" type="button">Go to
+                            Search Page</a>
                     </div>
                 {% endif %}
                 </div>
@@ -41,50 +43,76 @@
 <!-- custom javascript -->
 <script>
     {% if dt_list %}
-    var dataSet = {{ dt_list | safe }};
-    $(document).ready(function () {
-        var table = $('#dataTable')
-                .on('order.dt', setStatusColor)
-                .on('search.dt', setStatusColor)
-                .on('page.dt', setStatusColor)
-                .DataTable({
-            data: dataSet,
-            order: [[7, "desc"]],
-            columns: [
-                {title: "Request Date"},
-                {title: "Response Date"},
-                {title: "Patient ID"},
-                {title: "Request Subject"},
-                {title: "Image Subject"},
-                {title: "Image Type."},
-                {title: "Level"},
-                {title: "Status", className: "req-table-status" }
-            ]
+        var dataSet = {{ dt_list | safe }};
+        $(document).ready(function () {
+            var table = $('#dataTable')
+                    .on('order.dt', setStatusColor)
+                    .on('search.dt', setStatusColor)
+                    .on('page.dt', setStatusColor)
+                    .DataTable({
+                        data: dataSet,
+                        order: [[7, "desc"]],
+                        columns: [
+                            {
+                                title: "Request Date",
+                                render: {
+                                    "display": function (data) {
+                                        var date = new Date(data);
+                                        var year = date.getFullYear();
+                                        var month = (1 + date.getMonth()).toString();
+                                        month = month.length > 1 ? month : '0' + month;
+                                        var day = date.getDate().toString();
+                                        day = day.length > 1 ? day : '0' + day;
+                                        return (month + '/' + day + '/' + year.toString().substr(2))
+                                    }
+                                }
+                            },
+                            {
+                                title: "Response Date",
+                                render: {
+                                    "display": function (data) {
+                                        var date = new Date(data);
+                                        var year = date.getFullYear();
+                                        var month = (1 + date.getMonth()).toString();
+                                        month = month.length > 1 ? month : '0' + month;
+                                        var day = date.getDate().toString();
+                                        day = day.length > 1 ? day : '0' + day;
+                                        return (month + '/' + day + '/' + year.toString().substr(2))
+                                    }
+                                }
+                            },
+                            {title: "Patient ID"},
+                            {title: "Request Subject"},
+                            {title: "Image Subject"},
+                            {title: "Image Type."},
+                            {title: "Level"},
+                            {title: "Status", className: "req-table-status"}
+                        ]
+                    });
+            $('#dataTable tbody').on('click', 'tr', function () {
+                var data = table.row(this).data();
+                var index_id = data[data.length - 1];
+                $.LoadingOverlay('show');
+                location.href = '{% url 'miaas:physician_interpretation' %}/write/' + index_id;
+            });
         });
-        $('#dataTable tbody').on('click', 'tr', function () {
-            var data = table.row(this).data();
-            var index_id = data[data.length - 1];
-            $.LoadingOverlay('show');
-            location.href = '{% url 'miaas:physician_interpretation' %}/write/' + index_id;
-        });
-    });
 
-    function setStatusColor() {
-        $('#dataTable td.req-table-status').each(function() {
-            var status = $(this).text();
-            switch(status){
-                case 'Finding Physician':
-                    $(this).css({color: '#53B0A5'});
-                    break;
-                case 'Candidate Waiting':
-                    $(this).css({color: '#D76464'});
-                    break;
-                case 'Waiting Interpretation':
-                    $(this).css({color: '#78A52C'});
-                    break;
-            }
-        });
-    }
+        function setStatusColor() {
+            $('#dataTable td.req-table-status').each(function () {
+                var status = $(this).text();
+                switch (status) {
+                    case 'Finding Physician':
+                        $(this).css({color: '#53B0A5'});
+                        break;
+                    case 'Candidate Waiting':
+                        $(this).css({color: '#D76464'});
+                        break;
+                    case 'Waiting Interpretation':
+                        $(this).css({color: '#78A52C'});
+                        break;
+                }
+            });
+        }
     {% endif %}
 </script>
 
