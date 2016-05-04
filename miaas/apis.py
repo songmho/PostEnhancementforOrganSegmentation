@@ -428,7 +428,7 @@ def handle_medical_image_mgt(request):
                 raise Exception(MSG_INVALID_PARAMS)
             if request.session['user']['user_id'] != user_id:
                 raise Exception(MSG_NOT_MATCHED_USER)
-            db.delte_medical_image_by_id(image_id)
+            db.delete_medical_image_by_id(image_id)
             try:
                 ImageManager.delete_file(image_dir)
                 # ImageManager.delete_uploaded_archive_file(image_dir)
