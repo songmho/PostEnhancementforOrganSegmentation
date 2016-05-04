@@ -173,6 +173,10 @@ footer.page-footer .copyright-logo {
     color: #BE3144;
 }
 
+.navbar-default .glyphicon.glyphicon-triangle-bottom {
+    font-size: 11px;
+}
+
 /* Tabs */
 .nav.nav-tabs.nav-tabs-for-boxed > li > a {
     font-size: 16px;
