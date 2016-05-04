@@ -47,7 +47,7 @@
                                       placeholder="Write suspected diseases. &#10; Example) Diabetes, Osteoporosis, …"
                                       rows="3">
                                 {% if intpr_temp.suspected_disease %}
-                                    <p>{{ intpr_temp.suspected_disease }}</p>
+                                    {{ intpr_temp.suspected_disease }}
                                 {% else %}
                                     <p style="color: #999;">Write suspected diseases.<br/>Example) Diabetes,
                                         Osteoporosis, …
@@ -65,7 +65,7 @@
                                       placeholder="Write your opinions about the medical image.&#10;Example) Look closely at the third CT image, there is a tumor in right side of lung …"
                                       rows="7">
                                 {% if intpr_temp.opinion %}
-                                    <p>{{ intpr_temp.opinion }}</p>
+                                    {{ intpr_temp.opinion }}
                                 {% else %}
                                     <p style="color: #999;">Write your opinions about the medical image.<br/>Example)
                                         Look
@@ -83,7 +83,7 @@
                                       placeholder="Write recommended actions or treatments.&#10;Example) In this case, you’d better to take an operation as soon as possible…"
                                       rows="7">
                                 {% if intpr_temp.recommendation %}
-                                    <p>{{ intpr_temp.recommendation }}</p>
+                                    {{ intpr_temp.recommendation }}
                                 {% else %}
                                     <p style="color: #999;">Write recommended actions or treatments.<br/>Example) In
                                         this
@@ -101,7 +101,7 @@
                                       placeholder="Write summary of your interpretation.&#10;Example) There is possibility of lung cancer, so you’d better to take an operation as soon as possible …"
                                       rows="3">
                                 {% if intpr_temp.summary %}
-                                    <p>{{ intpr_temp.summary }}</p>
+                                    {{ intpr_temp.summary }}
                                 {% else %}
                                     <p style="color: #999;">Write summary of your interpretation.<br/>Example) There is
                                         possibility of lung cancer, so you’d better to take an operation as soon as
@@ -126,7 +126,7 @@
                         </div>
 
                         <div class="col-xs-12 col-sm-4 col-md-3 form-button">
-                            <button id="btnWrite" class="btn btn-lg btn-primary btn-block" type="submit">Write</button>
+                            <button id="btnWrite" class="btn btn-lg btn-primary btn-block" type="button">Submit</button>
                         </div>
 
                     </div>
@@ -160,6 +160,24 @@
 </div>
 
 <!-- Modal -->
+<div class="modal fade" id="writeSubmitConfirmModal" tabindex="-1" role="dialog" aria-labelledby="writeSubmitConfirmModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close modal-alert-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="writeSubmitConfirmModalTitle">Interpretation Submit Confirm</h4>
+            </div>
+            <div class="modal-body">
+                If you submit, you cannot modify your writing.<br/> Are you really sure to submit?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary modal-alert-close" data-dismiss="modal">Not yet</button>
+                <button type="button" id="writeSubmitBtn" class="btn btn-primary" >Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% include 'miaas/template_modal_patient_profile.html' %}
 {% include 'miaas/template_modal_imageviewer.html' %}
 {% include 'miaas/template_footer.html' %}
@@ -175,15 +193,20 @@
             selector: 'textarea.interpretation-writer',
             menubar: false,
             plugins: 'table link textcolor autolink autoresize',
+            autoresize_bottom_margin: 0,
+            autoresize_min_height: 160,
             toolbar: 'undo redo | styleselect | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table | link',
             {# max_chars: "3000", #}
             {# max_chars_indicator : "lengthBox",#}
-            init_instance_callback: function (ed) {
+            init_instance_callback: function (editor) {
                 {#            }, setup: function(ed) {#}
-                ed.on('click', function () {
-                    ed.off('click');
-                    ed.setContent('');
-                    ed.undoManager.clear();
+                editor.on('focus', function () {
+                    var content = editor.getContent();
+                    if(content.match('^<p style="color: #999;">Write')) {
+                        editor.off('focus');
+                        editor.setContent('');
+                        editor.undoManager.clear();
+                    }
                 });
             }
         });
@@ -200,7 +223,7 @@
             dataType: 'json',
             success: function (res) {
                 $.LoadingOverlay('hide');
-                console.log(JSON.stringify(res));
+{#                console.log(JSON.stringify(res));#}
                 if (res['code'] == 'SUCCESS') {
                     profiles = res['profiles'];
                     {#                    console.log(profiles);#}
@@ -213,6 +236,18 @@
                     openModal(res['msg'], 'Getting Profile Failed');
                 }
             }
+        });
+
+        $('#btnWrite').click(function () {
+            $('#writeSubmitConfirmModal').modal();
+        });
+
+        $('#writeSubmitBtn').click(function() {
+            $('#writeSubmitConfirmModal').off('hidden.bs.modal').on('hidden.bs.modal', function() {
+                $('#writeSubmitConfirmModal').off('hidden.bs.modal');
+                $('#writeForm').submit();
+            });
+            $('#writeSubmitConfirmModal').modal('hide');
         });
 
         $('#writeForm').on('submit', function (e) {

@@ -21,6 +21,17 @@ $(document).ready(function () {
 
         var imageType = $('#imageType').val();
         var filenames = getFiles($('#image_file'));
+
+        if (filenames.length > POSSIBLE_MULTIPLE_IMAGE_UPLOAD_NUM) {
+            openModal("The maximum number of files uploaded at once is 300. Please less then 300 files. <br/>" +
+                "If you want to upload more files, please compress them as zip file format.", "Too many files are selected");
+            return;
+        }
+
+        console.log(filenames);
+        console.log(filenames.length);
+        return;
+
         for (var i=0; i<filenames.length; i++) {
             var ext = getFileExtension(filenames[i]);
             if (!checkImageTypeAndExtension(imageType, ext)) {
