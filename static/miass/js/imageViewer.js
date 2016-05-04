@@ -272,7 +272,7 @@ function csvGrpahLoadAndView(csvURL) {
                 //color: '#D76474',
                 colors: graphColors,
                 plotter: smoothPlotter,
-                ylabel: 'Micro Volt (μV)',
+                ylabel: 'Millivolt (mV)',
                 xlabel: 'Time',
 
                 //visibility: [true, true, true, false, false, false],
