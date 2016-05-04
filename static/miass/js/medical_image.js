@@ -89,6 +89,13 @@ $(document).ready(function() {
                 //if file is changed, image type must be corresponded
                 var imageType = $('#imageType').val();
                 var filenames = getFiles($('#image_file'));
+
+                if (filenames.length > POSSIBLE_MULTIPLE_IMAGE_UPLOAD_NUM) {
+                    openModal("The maximum number of files uploaded at once is 300. Please less then 300 files. <br/>" +
+                        "If you want to upload more files, please compress them as zip file format.", "Too many files are selected");
+                    return;
+                }
+
                 for (var i=0; i<filenames.length; i++) {
                     var ext = getFileExtension(filenames[i]);
                     if (!checkImageTypeAndExtension(imageType, ext)) {
@@ -99,7 +106,7 @@ $(document).ready(function() {
                     }
                 }
             } else {
-                //if also file is not changed, image type must be corresponded
+                //if also file is not changed, image type also must be corresponded
                 if (checkImageTypeIsGraphic($('#imageType').val())
                         != checkImageTypeIsGraphic(imageInfo.image_type)) {
                     $('#imageUploadModal').modal('hide');
@@ -153,6 +160,14 @@ $(document).ready(function() {
                 }
             });
         } else if (fileChanged && $('#image_file').val()!="") {
+            var filenames = getFiles($('#image_file'));
+
+            if (filenames.length > POSSIBLE_MULTIPLE_IMAGE_UPLOAD_NUM) {
+                openModal("The maximum number of files uploaded at once is 300. Please less then 300 files. <br/>" +
+                    "If you want to upload more files, please compress them as zip file format.", "Too many files are selected");
+                return;
+            }
+
             $('#formUpdateFile').submit();
         }
     });

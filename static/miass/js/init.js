@@ -34,7 +34,9 @@ function openModal(msg, title, action) {
         msg = 'Alert.';
     }
     $('#alertModalTitle').text(title);
-    $('#alertModal .modal-body').text(msg);
+    //$('#alertModal .modal-body').text(msg);
+    $('#alertModal .modal-body').empty();
+    $('#alertModal .modal-body').html(msg);
 
     if (action != undefined && action != null && jQuery.isFunction(action)) {
         $('#alertModal .modal-alert-close').off('click');
