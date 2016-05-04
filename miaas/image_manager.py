@@ -4,6 +4,7 @@ import logging
 import subprocess
 import zipfile, codecs
 import dicom
+import csv
 from miaas.utils import edf_to_csv
 from . import cloud_db, constants, dicom_reader
 
@@ -167,8 +168,6 @@ class ImageManager():
 
     # reorganize csv table structure for header, time, and etc
     def csv_reorganize(self, filepath):
-        import csv
-
         dirname, filename = os.path.split(filepath)
         # name_n_ext = filename.split(".")
         newpath = dirname + '/n_' + filename
