@@ -43,7 +43,11 @@
     {% if dt_list %}
         var dataSet = {{ dt_list | safe }};
         $(document).ready(function () {
+            $.LoadingOverlay('show');
             var table = $('#dataTable').DataTable({
+                "fnInitComplete": function(oSettings){
+                            $.LoadingOverlay('hide')
+                        },
                 data: dataSet,
                 order: [[0, "desc"]],
                 columns: [

@@ -45,11 +45,15 @@
     {% if dt_list %}
         var dataSet = {{ dt_list | safe }};
         $(document).ready(function () {
+            $.LoadingOverlay('show');
             var table = $('#dataTable')
                     .on('order.dt', setStatusColor)
                     .on('search.dt', setStatusColor)
                     .on('page.dt', setStatusColor)
                     .DataTable({
+                        "fnInitComplete": function(oSettings){
+                            $.LoadingOverlay('hide')
+                        },
                         data: dataSet,
                         order: [[7, "desc"]],
                         columns: [

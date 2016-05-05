@@ -56,11 +56,12 @@
         var dataSet = {{ dt_list |  safe }};
 
         $(document).ready(function () {
+            $.LoadingOverlay('show');
             var table = $('#dataTable')
-                    .on('order.dt', applyFilter)
-                    .on('search.dt', applyFilter)
-                    .on('page.dt', applyFilter)
                     .DataTable({
+                        "fnInitComplete": function(oSettings){
+                            $.LoadingOverlay('hide')
+                        },
                         data: dataSet,
                         order: [[0, "desc"]],
                         columns: [
@@ -109,22 +110,7 @@
             });
         });
 
-        function applyFilter() {
-            $('#dataTable td.upload-date').each(function () {
-                this.text()
-            });
-
-        }
     {% endif %}
-    function dateToString(timestamp) {
-        var date = new Date(parseInt(timestamp));
-        var year = date.getFullYear();
-        var month = (1 + date.getMonth()).toString();
-        month = month.length > 1 ? month : '0' + month;
-        var day = date.getDate().toString();
-        day = day.length > 1 ? day : '0' + day;
-        return (month + '/' + day + '/' + year)
-    }
 
 </script>
 

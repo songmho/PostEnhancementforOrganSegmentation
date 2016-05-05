@@ -1,4 +1,6 @@
 {% load staticfiles %}
+{% load my_filters %}
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/notification.css' %}">
 </head>
 
 <body>
@@ -31,6 +33,39 @@
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
+
+                 <li class="dropdown notify-dropdown">
+                    <a class="dropdown notify-dropdown" role="button">
+                        <i class="glyphicon glyphicon-bell"></i>
+                    </a>
+                    <ul class="dropdown-menu notifications" role="menu">
+                        <div class="notification-heading">
+                            <h4 class="menu-title">Notifications</h4>
+                        </div>
+                        <li class="divider"></li>
+                        <div class="notifications-wrapper">
+                            <div class="content" href="#">
+                                <div class="alert alert-custom fade in">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    <h4 class="item-title">CANCEL <span class="item-time">04/23/16 17:43:23</span>
+                                    </h4>
+                                    <p class="item-info"> The request, "{{ "request_subject"| less_string }}", that you respond is canceled.</p>
+                                </div>
+                            </div>
+                            <div class="content" href="#">
+                                <div class="alert alert-custom fade in">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    <h4 class="item-title">SELECT <span class="item-time">04/23/16 17:43:23</span>
+                                    </h4>
+                                    <p class="item-info"> The patient, <a class="item-link"> {{ "patient_id" }}</a>, selected you to get interpretation for the request, "<a class="item-link"> {{ "request_subject"|less_string }}</a>".</p>
+                                </div>
+                            </div>
+                        </div>
+                        <li class="divider"></li>
+                        <div class="btn btn-primary col-xs-offset-4 col-xs-4">Refresh</div>
+                    </ul>
+                </li>
+
                 <li class="dropdown">
                     <a id="nav_account" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false"><span id="navbar-logined-text">
@@ -45,3 +80,21 @@
         </div>
     </div>
 </nav>
+
+<!-- scripts -->
+<script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
+
+<script type="text/javascript">
+    $('.notify-dropdown').on("click", function(event){
+        $(this).parent().toggleClass('open');
+    });
+    $('body').on('click', function (e) {
+    if (!$('.notify-dropdown').is(e.target)
+        && $('.notify-dropdown').has(e.target).length === 0
+        && $('.open').has(e.target).length === 0
+    ) {
+        $('.notify-dropdown').removeClass('open');
+    }
+});
+
+</script>
