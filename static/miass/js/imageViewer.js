@@ -930,7 +930,7 @@ $(document).ready(function() {
         if(period < 0) {
             $(this).val(0)
         } else if (period > 1000) {
-            $(this.val(1000));
+            $(this).val(1000);
         }
     });
 
