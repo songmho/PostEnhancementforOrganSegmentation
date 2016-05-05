@@ -28,10 +28,6 @@ $(document).ready(function () {
             return;
         }
 
-        console.log(filenames);
-        console.log(filenames.length);
-        return;
-
         for (var i=0; i<filenames.length; i++) {
             var ext = getFileExtension(filenames[i]);
             if (!checkImageTypeAndExtension(imageType, ext)) {

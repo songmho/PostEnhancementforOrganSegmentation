@@ -273,6 +273,10 @@ function csvGrpahLoadAndView(csvURL) {
                 plotter: smoothPlotter,
                 ylabel: 'Millivolt (mV)',
                 xlabel: 'Time',
+                labelsDiv: document.getElementById('graphViewerLegends'),
+                //labelsSeparateLines: true,
+                //labelWidth: 400,
+                //labels: "[\"X\", \"Y1\", \"Y2\", ...]*",
                 //visibility: [true, true, true, false, false, false],
                 drawCallback: function(g) {
                     var lables = g.getLabels();
@@ -926,7 +930,7 @@ $(document).ready(function() {
         if(period < 0) {
             $(this).val(0)
         } else if (period > 1000) {
-            $(this.val(1000));
+            $(this).val(1000);
         }
     });
 
