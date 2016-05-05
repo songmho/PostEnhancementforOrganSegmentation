@@ -6,6 +6,7 @@ from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
 
+from miaas import cloud_db_copy
 from .forms import UploadForm
 
 import constants, cloud_db
@@ -31,6 +32,7 @@ MSG_UPDATE_ERROR = "To update data failed."
 MSG_DELETE_ERROR = "To delete data failed."
 MSG_NO_CHANGE = "There is no change."
 MSG_NO_MEDICAL_IMAGE = "There is not the requested medical image."
+MSG_SESSION_ERROR = "Updating interpretation session is failed."
 
 logging.basicConfig(
     format="[%(name)s][%(asctime)s] %(message)s",
@@ -96,6 +98,7 @@ def handle_session_mgt(request):
 
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
+
 @csrf_exempt
 def handle_user_mgt(request):
     """
@@ -105,7 +108,7 @@ def handle_user_mgt(request):
     """
     db = cloud_db.DbManager()
     try:
-        if(request.method) == 'GET':
+        if (request.method) == 'GET':
             # logger.info(request.GET)
             user_id = request.GET.get('user_id')
             if not user_id:
@@ -121,12 +124,12 @@ def handle_user_mgt(request):
                 user = db.retrieve_physician(user_id)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
             elif action == 'checkId':
-                #retrieve user_id ...
+                # retrieve user_id ...
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'existedId': db.find_user(user_id)}))
             else:
                 return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
 
-        if(request.method) == 'POST':
+        if (request.method) == 'POST':
             # signup (register)
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
@@ -216,6 +219,7 @@ def handle_user_mgt(request):
 
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
+
 @csrf_exempt
 def handle_patient_profile_mgt(request):
     db = cloud_db.DbManager()
@@ -223,7 +227,7 @@ def handle_patient_profile_mgt(request):
         if not request.session.get('user'):
             raise Exception(MSG_NO_USER_LOGGEDIN)
 
-        if(request.method) == 'GET':
+        if (request.method) == 'GET':
             # retrieve patient profile
             logger.info(request.GET)
             user_id = request.GET.get('user_id')
@@ -278,6 +282,7 @@ def handle_patient_profile_mgt(request):
 
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
+
 @csrf_exempt
 def handle_physician_profile_mgt(request):
     db = cloud_db.DbManager()
@@ -285,7 +290,7 @@ def handle_physician_profile_mgt(request):
         if not request.session.get('user'):
             raise Exception(MSG_NO_USER_LOGGEDIN)
 
-        if(request.method) == 'GET':
+        if (request.method) == 'GET':
             # retrieve physician profile
             logger.info(request.GET)
             user_id = request.GET.get('user_id')
@@ -348,6 +353,7 @@ def handle_image_uploading_progress(request):
         return JsonResponse(dict(constants.CODE_FAILURE,
                                  **{'msg': 'Server Error: You must provide X-Progress-ID header or query param.'}))
 
+
 @csrf_exempt
 def handle_medical_image_mgt(request):
     db = cloud_db.DbManager()
@@ -356,7 +362,7 @@ def handle_medical_image_mgt(request):
             raise Exception(MSG_NO_USER_LOGGEDIN)
 
         if request.method == 'GET':
-            #retrieve medical images
+            # retrieve medical images
             logger.info(request.GET)
             action = request.GET.get('action')
             if not action:
@@ -375,7 +381,7 @@ def handle_medical_image_mgt(request):
                 image_list = db.retrieve_medical_image(user_id)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'image_list': image_list}))
 
-            elif action =='getImageDirs':
+            elif action == 'getImageDirs':
                 user_id = request.GET.get('user_id')
                 if request.session['user']['user_type'] == 'patient' \
                         and request.session['user']['user_id'] != user_id:
@@ -399,7 +405,7 @@ def handle_medical_image_mgt(request):
                 raise Exception(MSG_INVALID_PARAMS)
 
         elif request.method == 'PUT':
-            #update medical image
+            # update medical image
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
             data = json.loads(request.body)
@@ -420,7 +426,7 @@ def handle_medical_image_mgt(request):
                 raise Exception(MSG_INVALID_PARAMS)
 
         elif request.method == 'DELETE':
-            #delete medical image
+            # delete medical image
             user_id = request.GET.get('user_id')
             image_id = request.GET.get('image_id')
             image_dir = request.GET.get('image_dir')
@@ -432,13 +438,14 @@ def handle_medical_image_mgt(request):
             try:
                 ImageManager.delete_file(image_dir)
                 # ImageManager.delete_uploaded_archive_file(image_dir)
-            except: pass
+            except:
+                pass
             if request.session.get('image_cnt'):
                 request.session['image_cnt'] -= 1
             return JsonResponse(dict(constants.CODE_SUCCESS))
 
         elif request.method == 'POST':
-            #add medical iamge and upload medical image
+            # add medical iamge and upload medical image
             if 'image_file' in request.FILES and 'image_info' in request.POST:
                 action = request.POST['action']
 
@@ -486,7 +493,7 @@ def handle_medical_image_mgt(request):
                         # db.update_medical_image_dir(image_info)
                         ImageManager.delete_file(uploaded_path)
                         raise e
-                    #remove here!
+                    # remove here!
                     image_id = int(image_info['image_id'])
                     # request.session['image'][image_id] = dict()
                     # request.session['medical_image'][image_id]['timestamp'] = image_info['timestamp']
@@ -509,6 +516,7 @@ def handle_medical_image_mgt(request):
 
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
+
 @csrf_exempt
 def handle_multple_image_upload(request):
     try:
@@ -529,6 +537,7 @@ def handle_multple_image_upload(request):
 @csrf_exempt
 def handle_interpretation_mgt(request):
     db = cloud_db.DbManager()
+    db2 = cloud_db_copy.DbManager()
     try:
         # To handle patient and physician interpretation request
         if request.method == 'PUT':
@@ -568,7 +577,12 @@ def handle_interpretation_mgt(request):
                 }
                 if_inserted = db.add_physician_intpr_resp(response)
                 if if_inserted:
-                    return JsonResponse(constants.CODE_SUCCESS)
+                    res_session = db2.add_session(data['request_id'], data['patient_id'], data['physician_id'],
+                                                  'response', timestamp)
+                    if res_session:
+                        return JsonResponse(constants.CODE_SUCCESS)
+                    else:
+                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SESSION_ERROR}))
                 else:
                     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
 
@@ -609,9 +623,14 @@ def handle_interpretation_mgt(request):
                 if if_inserted:
                     status = 0
                     if_updated = db.update_req_and_resp(request_id, status, timestamp)
-                    if_deleted = db.delete_temp_intpr(request_id)
-                    if if_updated and if_deleted:
-                        return JsonResponse(constants.CODE_SUCCESS)
+                    db.delete_temp_intpr(request_id)
+                    if if_updated:
+                        res_session = db2.add_session(data['request_id'], data['patient_id'], data['physician_id'],
+                                                      'write', timestamp)
+                        if res_session:
+                            return JsonResponse(constants.CODE_SUCCESS)
+                        else:
+                            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SESSION_ERROR}))
                     else:
                         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
                 else:
@@ -671,7 +690,12 @@ def handle_interpretation_mgt(request):
                 timestamp = int(round(time.time() * 1000))
                 if_updated = db.update_patient_request_by_selection(request_id, physician_id, status)
                 if if_updated:
-                    return JsonResponse(constants.CODE_SUCCESS)
+                    res_session = db2.add_session(data['request_id'], data['patient_id'], data['physician_id'],
+                                                  'select', timestamp)
+                    if res_session:
+                        return JsonResponse(constants.CODE_SUCCESS)
+                    else:
+                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SESSION_ERROR}))
                 else:
                     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
             # To update subject and message of a patient request
@@ -704,6 +728,7 @@ def handle_interpretation_mgt(request):
         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
+
 @csrf_exempt
 def handle_analytics_mgt(request):
     db = cloud_db.DbManager()
@@ -731,7 +756,7 @@ def handle_analytics_mgt(request):
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
                     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
-        if(request.method) == 'POST':
+        if (request.method) == 'POST':
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
             data = json.loads(request.body)
@@ -765,6 +790,7 @@ def handle_analytics_mgt(request):
 
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
+
 @csrf_exempt
 def handle_archive(request):
     logger.info(request.GET)
@@ -777,7 +803,7 @@ def handle_archive(request):
         logger.info("Image DIR: %s" % image_dir)
 
         with open(image_dir, "rb") as image_file:
-            response = HttpResponse(image_file, content_type='application/dicom',)
+            response = HttpResponse(image_file, content_type='application/dicom', )
             response['Content-Disposition'] = 'attachment; filename=' + image_name
         return response
         # return HttpResponse('');
@@ -785,11 +811,12 @@ def handle_archive(request):
 
         return HttpResponseNotFound()
 
+
 @csrf_exempt
 def handle_payment_mgt(request):
     db = cloud_db.DbManager()
     try:
-        if(request.method) == 'GET':
+        if (request.method) == 'GET':
             pass
 
     except Exception as e:
@@ -797,6 +824,7 @@ def handle_payment_mgt(request):
         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
 
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
+
 
 def update_session(old_user, updated_user):
     for key, value in updated_user.items():

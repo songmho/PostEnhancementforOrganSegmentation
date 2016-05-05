@@ -240,6 +240,7 @@
                 data: JSON.stringify({
                     action: 'patientSelReq',
                     request_id: {{ request_detail.request_id }},
+                    patient_id: '{{ user_session.user_id }}',
                     physician_id: physician_id
                 }),
                 dataType: 'json',

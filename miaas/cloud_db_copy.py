@@ -1,7 +1,9 @@
 import logging
 from _mysql import DataError, IntegrityError, NotSupportedError, OperationalError, ProgrammingError
+from pprint import pprint
 
 import pymysql
+import time
 
 logging.basicConfig(
     format="[%(name)s][%(asctime)s] %(message)s",
@@ -32,6 +34,7 @@ class DbManager:
                                  "outOfStateActions", "currentLimits", "hspPrivRestrictions", "hspFRPriv",
                                  "criminalConvictions",
                                  "teaching", "serviceActivity", "publications", "statement"]
+    SESSION_COLUMNS = ['session_id', "request_id", "patient_id", "physician_id", "session_type", "timestamp", "status"]
 
     # RETRIEVE LIST QUERY
     PATIENT_IMAGE_LIST = "patient_image_list"
@@ -50,12 +53,14 @@ class DbManager:
     PATIENT_REQUEST_DETAIL = "patient_request_detail"
     PATIENT_IMAGE_DETAIL = "patient_image_detail"
     PATIENT_PROFILE = "patient_profile"
+    PATIENT_INTPR_SESSION = "patient_intpr_session"
 
     PHYSICIAN_INTPR_DETAIL = "physician_intpr_detail"
     PHYSICIAN_REQUEST_DETAIL = "physician_request_detail"
     PHYSICIAN_INFO_ID = "physician_info_id"
     PHYSICIAN_INFO_ID_PASSWORD = "physician_info_id_password"
     PHYSICIAN_PROFILE = "physician_profile"
+    PHYSICIAN_INTPR_SESSION = "physician_intpr_session"
 
     # RETRIEVE SINGLE COLUMN QUERY
     USER_TYPE = "user_detail"
@@ -255,6 +260,7 @@ class DbManager:
                       "WHERE user_id = %s",
 
              "columns": [PHYSICIAN_PROFILE_COLUMNS]},
+
         PATIENT_PROFILE:
             {"query": "SELECT pp.type, pp.value, pp.timestamp " \
                       "From (" \
@@ -263,7 +269,32 @@ class DbManager:
                       "  WHERE p.user_id = %s " \
                       "  ORDER BY p.type, p.timestamp DESC" \
                       ") pp " \
-                      "Where pp.rnd = 1"}
+                      "Where pp.rnd = 1"},
+
+        PATIENT_INTPR_SESSION:
+            {
+                "query": "SELECT * " \
+                         "FROM intpr_session s " \
+                         "JOIN request req ON s.request_id = req.request_id " \
+                         "JOIN physician_info phi ON s.physician_id = phi.user_id " \
+                         "WHERE patient_id = %s " \
+                         "ORDER BY s.status DESC, s.timestamp DESC",
+
+                "columns": [SESSION_COLUMNS, REQUEST_COLUMNS, PHYSICIAN_COLUMNS]
+            },
+
+        PHYSICIAN_INTPR_SESSION:
+            {
+                "query": "SELECT * " \
+                         "FROM intpr_session s " \
+                         "JOIN request req ON s.request_id = req.request_id " \
+                         "JOIN patient_info pai ON s.patient_id = pai.user_id " \
+                         "WHERE physician_id = %s " \
+                         "ORDER BY s.status DESC, s.timestamp DESC",
+
+                "columns": [SESSION_COLUMNS, REQUEST_COLUMNS, PATIENT_COLUMNS]
+            },
+
     }
 
     RETRIEVE_SINGLE_COLUMN_QUERY = {
@@ -343,12 +374,73 @@ class DbManager:
 
         return result
 
+    def add_session(self, *args):
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "INSERT INTO intpr_session (request_id, patient_id, physician_id, session_type, timestamp)" \
+                           "VALUES (%s, %s, %s, %s, %s)"
+                cursor.execute(db_query, args)
+                self.connector.commit()
+
+                if cursor.rowcount:
+                    return True
+                else:
+                    return False
+            except Exception as e:
+                logger.exception(e)
+                return False
+
+    def add_cancel_session(self, *args):
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "INSERT INTO intpr_session (patient_id, physician_id, session_type, timestamp)" \
+                           "VALUES (%s, %s, %s, %s)"
+                cursor.execute(db_query, args)
+                self.connector.commit()
+
+                if cursor.rowcount:
+                    return True
+                else:
+                    return False
+            except Exception as e:
+                logger.exception(e)
+                return False
+
+    def update_session(self, session_id):
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE intpr_session SET status = 1 " \
+                           "WHERE session_id = %s"
+                cursor.execute(db_query, session_id)
+                self.connector.commit()
+
+                if cursor.rowcount:
+                    return True
+                else:
+                    return False
+            except Exception as e:
+                logger.exception(e)
+                return False
+
+    def delete_session(self, session_id):
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "DELETE FROM intpr_session " \
+                           "WHERE session_id = %s"
+                cursor.execute(db_query, session_id)
+                self.connector.commit()
+
+                if cursor.rowcount:
+                    return True
+                else:
+                    return False
+            except Exception as e:
+                logger.exception(e)
+                return False
+
 
 if __name__ == '__main__':
     db = DbManager()
-    # responses = db.retrieve_list(db.REQUEST_RESPONSE_LIST, 211)
-    # image, = db.retrieve_detail(db.PATIENT_IMAGE_DETAIL, 211)
-    # intprs = db.retrieve_list(db.IMAGE_INTPR_LIST, image['image_id'])
-
-    request_detail, patient, image = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, 23)
-    print image
+    timestamp = int(round(time.time() * 1000))
+    result = db.add_session(2, 'demopa', 'demoph', 'response', timestamp)
+    pprint(result)
