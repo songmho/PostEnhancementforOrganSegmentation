@@ -168,140 +168,147 @@ class ImageManager():
 
     # reorganize csv table structure for header, time, and etc
     def csv_reorganize(self, filepath):
-        dirname, filename = os.path.split(filepath)
-        # name_n_ext = filename.split(".")
-        newpath = dirname + '/n_' + filename
+        try:
+            dirname, filename = os.path.split(filepath)
+            # name_n_ext = filename.split(".")
+            newpath = dirname + '/n_' + filename
 
-        print ('filename %s -> %s' % (filepath, newpath))
+            print ('filename %s -> %s' % (filepath, newpath))
 
-        with open(filepath, 'rb') as orifile, open(newpath, 'wb') as newfile:
-            csv_reader = csv.reader(orifile, delimiter=',', quotechar='|')
-            csv_writer = csv.writer(newfile, delimiter=',', quotechar='|')
+            with open(filepath, 'rb') as orifile, open(newpath, 'wb') as newfile:
+                csv_reader = csv.reader(orifile, delimiter=',', quotechar='|')
+                csv_writer = csv.writer(newfile, delimiter=',', quotechar='|')
 
-            header_row = csv_reader.next()
-            if not header_row:
-                raise Exception('There are no row.')
+                header_row = csv_reader.next()
+                if not header_row:
+                    raise Exception('There are no row.<br/><br/>haha')
 
-            header_len = len(header_row)
-            if header_len <= 1:
-                raise Exception('Too less column. There is no time or value column.')
-            # if header_len == 2 and header_row[1].strip().lower().startswith('time'):
-            if header_len == 2 and 'time' in header_row[1].strip().lower():
-                raise Exception('There is no value column.')
+                header_len = len(header_row)
+                if header_len <= 1:
+                    raise Exception('Too less column. There is no time or value column.')
+                # if header_len == 2 and header_row[1].strip().lower().startswith('time'):
+                if header_len == 2 and 'time' in header_row[1].strip().lower():
+                    raise Exception('There is no value column.')
 
-            # remove quote and doublequote
-            for i in range(0, header_len):
-                if header_row[i].startswith("'") or header_row[i].startswith('"'):
-                    header_row[i] = header_row[i][1:-1]
+                # remove quote and doublequote
+                for i in range(0, header_len):
+                    if header_row[i].startswith("'") or header_row[i].startswith('"'):
+                        header_row[i] = header_row[i][1:-1]
 
-            time_column_pos = -1
-            for i in range(0, 2):
-                if 'time' in header_row[i].strip().lower():
-                    time_column_pos = i
-                    break
+                time_column_pos = -1
+                for i in range(0, 2):
+                    if 'time' in header_row[i].strip().lower():
+                        time_column_pos = i
+                        break
 
-            if time_column_pos == -1:
-                time_column_pos = 0
-                header_row[0] = 'Time'
+                if time_column_pos == -1:
+                    time_column_pos = 0
+                    header_row[0] = 'Time'
 
-            first_row = csv_reader.next()
-            if not first_row:
-                raise Exception('There are no data rows.')
-            second_row = csv_reader.next()
-            if not first_row:
-                raise Exception('There are too few data rows.')
+                first_row = None
+                second_row = None
+                try:
+                    first_row = csv_reader.next()
+                except:
+                    raise Exception('There are no data rows.')
+                try:
+                    second_row = csv_reader.next()
+                except:
+                    raise Exception('There are too few data rows.')
 
-            first_time = 0
-            second_time = 0
-            is_need_formatting = False
-            formatting_func = None
-            try:
-                first_time = float(first_row[time_column_pos])
-                second_time = float(second_row[time_column_pos])
-                print ('first: %s, second: %s' % (first_time, second_time))
+                first_time = 0
+                second_time = 0
+                is_need_formatting = False
+                formatting_func = None
+                try:
+                    first_time = float(first_row[time_column_pos])
+                    second_time = float(second_row[time_column_pos])
+                    print ('first: %s, second: %s' % (first_time, second_time))
 
-                # if header_row[time_column_pos].strip().lower() == 'time':
-                if 'time' in header_row[time_column_pos].strip().lower():
-                    if (first_time == 0 or first_time == 1) and (first_time+1 == second_time):
-                        header_row[time_column_pos] = 'Time (count)'
-                    elif (first_time < 1) and (second_time-first_time < 1):
-                        header_row[time_column_pos] = 'Time (second)'
-                    elif (first_time > 0) and (first_time < 1000):
-                        header_row[time_column_pos] = 'Time (ms)'
-                    elif first_time >= 100000:     # timestamp
-                        header_row[time_column_pos] = 'Time (datetime)'
-                    elif first_time < -1:
-                        header_row[time_column_pos] = 'Time (datetime)'
+                    # if header_row[time_column_pos].strip().lower() == 'time':
+                    if 'time' in header_row[time_column_pos].strip().lower():
+                        if (first_time == 0 or first_time == 1) and (first_time+1 == second_time):
+                            header_row[time_column_pos] = 'Time (count)'
+                        elif (first_time < 1) and (second_time-first_time < 1):
+                            header_row[time_column_pos] = 'Time (second)'
+                        elif (first_time > 0) and (first_time < 1000):
+                            header_row[time_column_pos] = 'Time (ms)'
+                        elif first_time >= 100000:     # timestamp
+                            header_row[time_column_pos] = 'Time (datetime)'
+                        elif first_time < -1:
+                            header_row[time_column_pos] = 'Time (datetime)'
+                        else:
+                            header_row[time_column_pos] = 'Time'
                     else:
-                        header_row[time_column_pos] = 'Time'
-                else:
-                    raise Exception('There are no time column.')
-            except ValueError as ve:
-                is_need_formatting = True
-                time_format = first_row[time_column_pos]
-                if time_format.startswith("'") or time_format.startswith('"'):
-                    time_format = time_format[1:-1]
-                print ('Time format is %s' % time_format)
-                if time_format == 'hh:mm:ss.mmm' or time_format == u'hh:mm:ss.mmm':
-                    header_row[time_column_pos] = 'Time (ms)'
-                    def func(str_val):
-                        if str_val.startswith("'") or str_val.startswith('"'):
-                            str_val = str_val[1:-1]
-                        a = str_val.split('.')  # hh:mm:ss and mmm
-                        if len(a) != 2:
-                            raise Exception('Format Error. The time format in each row is not same.')
-                        b = a[0].split(':')
-                        if len(b) <= 0 or len(b) > 3:
-                            raise Exception('Format Error. The time format in each row is not same.')
+                        raise Exception('There are no time column.')
+                except ValueError as ve:
+                    is_need_formatting = True
+                    time_format = first_row[time_column_pos]
+                    if time_format.startswith("'") or time_format.startswith('"'):
+                        time_format = time_format[1:-1]
+                    print ('Time format is %s' % time_format)
+                    if time_format == 'hh:mm:ss.mmm' or time_format == u'hh:mm:ss.mmm':
+                        header_row[time_column_pos] = 'Time (ms)'
+                        def func(str_val):
+                            if str_val.startswith("'") or str_val.startswith('"'):
+                                str_val = str_val[1:-1]
+                            a = str_val.split('.')  # hh:mm:ss and mmm
+                            if len(a) != 2:
+                                raise Exception('Format Error. The time format in each row is not same.')
+                            b = a[0].split(':')
+                            if len(b) <= 0 or len(b) > 3:
+                                raise Exception('Format Error. The time format in each row is not same.')
 
-                        ms_time = int(a[1])
-                        if len(b) == 1:
-                            ms_time += int(b[0])*1000
-                        elif len(b) == 2:
-                            ms_time += (int(b[1])*1000) + (int(b[0])*60*1000)
-                        elif len(b) == 3:
-                            ms_time += (int(b[2])*1000) + (int(b[1])*60*1000) + (int(b[0])*3600*1000)
-                        return ms_time
-                    formatting_func = func
-                    pass
-                else:
-                    raise Exception('The file is not supported CSV format.')
-            except Exception as e:
-                raise e
+                            ms_time = int(a[1])
+                            if len(b) == 1:
+                                ms_time += int(b[0])*1000
+                            elif len(b) == 2:
+                                ms_time += (int(b[1])*1000) + (int(b[0])*60*1000)
+                            elif len(b) == 3:
+                                ms_time += (int(b[2])*1000) + (int(b[1])*60*1000) + (int(b[0])*3600*1000)
+                            return ms_time
+                        formatting_func = func
+                        pass
+                    else:
+                        raise Exception('The file is not supported CSV format.')
+                except Exception as e:
+                    raise Exception('The file format error.')
 
-            if not is_need_formatting:
-                # translate millisecond datetime to time ms
-                if header_row[time_column_pos] == 'Time (datetime)':
-                    header_row[time_column_pos] = 'Time (ms)'
-                    first_row[time_column_pos] = 0
-                    second_row[time_column_pos] = second_time - first_time
+                if not is_need_formatting:
+                    # translate millisecond datetime to time ms
+                    if header_row[time_column_pos] == 'Time (datetime)':
+                        header_row[time_column_pos] = 'Time (ms)'
+                        first_row[time_column_pos] = 0
+                        second_row[time_column_pos] = second_time - first_time
+                        csv_writer.writerow(header_row[time_column_pos:])
+                        csv_writer.writerow(first_row[time_column_pos:])
+                        csv_writer.writerow(second_row[time_column_pos:])
+                        for row in csv_reader:
+                            row[time_column_pos] = float(row[time_column_pos]) - first_time
+                            csv_writer.writerow(row[time_column_pos:])
+                    else:
+                        csv_writer.writerow(header_row[time_column_pos:])
+                        csv_writer.writerow(first_row[time_column_pos:])
+                        csv_writer.writerow(second_row[time_column_pos:])
+                        # print ', '.join(header_row[time_column_pos:])
+                        # print '------------------'
+                        # print ', '.join(first_row[time_column_pos:])
+                        # print ', '.join(second_row[time_column_pos:])
+                        for row in csv_reader:
+                            # print ', '.join(row[time_column_pos:])
+                            csv_writer.writerow(row[time_column_pos:])
+                else:
+                    second_row[time_column_pos] = formatting_func(second_row[time_column_pos])
                     csv_writer.writerow(header_row[time_column_pos:])
-                    csv_writer.writerow(first_row[time_column_pos:])
                     csv_writer.writerow(second_row[time_column_pos:])
                     for row in csv_reader:
-                        row[time_column_pos] = float(row[time_column_pos]) - first_time
+                        row[time_column_pos] = formatting_func(row[time_column_pos])
                         csv_writer.writerow(row[time_column_pos:])
-                else:
-                    csv_writer.writerow(header_row[time_column_pos:])
-                    csv_writer.writerow(first_row[time_column_pos:])
-                    csv_writer.writerow(second_row[time_column_pos:])
-                    # print ', '.join(header_row[time_column_pos:])
-                    # print '------------------'
-                    # print ', '.join(first_row[time_column_pos:])
-                    # print ', '.join(second_row[time_column_pos:])
-                    for row in csv_reader:
-                        # print ', '.join(row[time_column_pos:])
-                        csv_writer.writerow(row[time_column_pos:])
-            else:
-                second_row[time_column_pos] = formatting_func(second_row[time_column_pos])
-                csv_writer.writerow(header_row[time_column_pos:])
-                csv_writer.writerow(second_row[time_column_pos:])
-                for row in csv_reader:
-                    row[time_column_pos] = formatting_func(row[time_column_pos])
-                    csv_writer.writerow(row[time_column_pos:])
 
-        # return newpath
-        return newpath
+            # return newpath
+            return newpath
+        except Exception as e:
+            raise Exception(e.message + constants.CSV_ERROR_FORMAT_STRING)
 
 
     def _is_zipfile(self, filename):

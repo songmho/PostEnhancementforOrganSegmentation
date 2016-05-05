@@ -21,6 +21,12 @@ ARCHIVE_BASE_PATH = './medical_images/archive/'
 TEMP_UPLOAD_DIR = './medical_images/temp/upload/'
 TEMP_EXTRACT_DIR = './medical_images/temp/extract/'
 
+CSV_ERROR_FORMAT_STRING = '<br/><br/><strong>Note. </strong>MIAAS supports various format of csv files. Nonetheless, our recommending csv file\'s row format likes: <br/>' \
+                          '&nbsp;&nbsp;&nbsp;- <i><strong>Header(first) row</strong>: "(countLabel,) timeLabel, valueLabel1, valueLabel2, ..."</i> <br/>' \
+                          '&nbsp;&nbsp;&nbsp;- <i><strong>Value rows</strong>: "(countValue,) time, value1, value2, ..."</i> <br/>' \
+                          'In case of different format, on some occasions, MIAAS may not support a different formatted file. ' \
+                          'If you can\'t upload your csv file, please check the format of the csv file.'
+
 class PatientProfile:
     pass
 
