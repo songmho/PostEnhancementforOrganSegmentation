@@ -64,6 +64,7 @@
                 data: JSON.stringify({
                     action: 'physicianResp',
                     request_id: '{{ request_detail.request_id }}',
+                    patient_id: '{{ patient.user_id }}',
                     physician_id: '{{ user_session.user_id }}',
                     message: $('#taMessage').val()
                 }),

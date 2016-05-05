@@ -1,3 +1,9 @@
+from bsddb import db
+
+import time
+
+from miaas import cloud_db_copy
+
 __author__ = 'Jincheul'
 
 import pymysql
@@ -98,7 +104,8 @@ class DbManager():
                 nationality = patient['nationality']
                 user_type = patient['user_type']
                 db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, nationality, user_type) values (%s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, nationality, user_type))
+                cursor.execute(db_query,
+                               (user_id, password, name, phone_number, email, join_date, nationality, user_type))
                 self.connector.commit()
                 # Add patient information to 'user' table
                 gender = patient['gender']
@@ -251,7 +258,8 @@ class DbManager():
                 nationality = physician['nationality']
                 user_type = physician['user_type']
                 db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, nationality, user_type) values (%s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(db_query, (user_id, password, name, phone_number, email, join_date, nationality, user_type))
+                cursor.execute(db_query,
+                               (user_id, password, name, phone_number, email, join_date, nationality, user_type))
                 self.connector.commit()
                 # Add physician information to 'physician' table
                 license_number = physician['license_number']
@@ -329,7 +337,8 @@ class DbManager():
             try:
                 db_query = "UPDATE user as u INNER JOIN physician as p ON u.user_id=p.user_id SET u.password=%s, u.name=%s, u.phone_number=%s, u.email=%s, u.nationality=%s, p.license_number=%s, p.medicine_field=%s, p.certificate_dir=%s WHERE u.user_id=%s"
                 cursor.execute(db_query, (
-                    password, name, phone_number, email, nationality, license_number, medicine_field, certificate_dir, user_id))
+                    password, name, phone_number, email, nationality, license_number, medicine_field, certificate_dir,
+                    user_id))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
@@ -765,7 +774,8 @@ class DbManager():
                 intpr_by_image['intpr'] = intpr_list
             except Exception as e:
                 logger.exception(e)
-                raise Exception("Unknown error occurs while the information of interpretation related to the medical image.")
+                raise Exception(
+                    "Unknown error occurs while the information of interpretation related to the medical image.")
         return intpr_by_image
 
     def retrieve_image_intpr(self, image_id, time_from=None, offset=None, limit=None):
@@ -804,7 +814,8 @@ class DbManager():
                     intprs.append(intpr)
             except Exception as e:
                 logger.exception(e)
-                raise Exception("Unknown error occurs while the information of interpretation related to the medical image.")
+                raise Exception(
+                    "Unknown error occurs while the information of interpretation related to the medical image.")
         return intprs
 
     def retrieve_physician_intpr(self, physician_id, time_from=None):
@@ -926,12 +937,7 @@ class DbManager():
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
-                    db_query = "DELETE from response WHERE request_id=%s AND physician_id!=%s"
-                    cursor.execute(db_query, (request_id, physician_id))
-                    self.connector.commit()
-                    row_count = cursor.rowcount
-                    if row_count > -1:
-                        if_updated = True
+                    if_updated = True
             except Exception as e:
                 logger.exception(e)
                 raise Exception("Selection a physician is failed.")
@@ -958,17 +964,24 @@ class DbManager():
         if_deleted = False
         with self.connector.cursor() as cursor:
             try:
+                db_query = "SELECT req.request_id, m.user_id, res.physician_id " \
+                           "FROM request req " \
+                           "JOIN response res ON req.request_id = res.request_id " \
+                           "JOIN medical_image m ON req.image_id = m.image_id " \
+                           "WHERE req.request_id = %s"
+
+                cursor.execute(db_query, request_id)
+                for row in cursor:
+                    db2 = cloud_db_copy.DbManager()
+                    db2.add_cancel_session(row[1], row[2], 'cancel', int(round(time.time() * 1000)))
+
                 db_query = "DELETE FROM request WHERE request_id=%s"
-                cursor.execute(db_query, (request_id))
+                cursor.execute(db_query, request_id)
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
-                    db_query = "DELETE FROM response WHERE request_id=%s"
-                    cursor.execute(db_query, (request_id))
-                    self.connector.commit()
-                    row_count = cursor.rowcount
-                    if row_count > -1:
-                        if_deleted = True
+                    if_deleted = True
+
             except Exception as e:
                 logger.exception(e)
                 raise Exception("Canceling the request is failed.")
