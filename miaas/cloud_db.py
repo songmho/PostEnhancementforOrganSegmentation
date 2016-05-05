@@ -1,5 +1,3 @@
-from bsddb import db
-
 import time
 
 from miaas import cloud_db_copy
