@@ -937,7 +937,13 @@ class DbManager():
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
-                    if_updated = True
+                    db_query = "DELETE from response WHERE request_id=%s AND physician_id!=%s"
+                    cursor.execute(db_query, (request_id, physician_id))
+                    self.connector.commit()
+                    row_count = cursor.rowcount
+                    if row_count > -1:
+                        if_updated = True
+
             except Exception as e:
                 logger.exception(e)
                 raise Exception("Selection a physician is failed.")
