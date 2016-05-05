@@ -149,11 +149,11 @@ function showCsvThumbnail(url) {
             //console.log(g.getLabels());
             var lables = g.getLabels();
 
-            if (lables.length > 2) {
+            /*if (lables.length > 2) {
                 if (lables.length >= 3 && lables[1].trim().toLowerCase().startsWith('time')) {
                     g.setVisibility(0, false);
                 }
-            }
+            }*/
         });
 }
 
