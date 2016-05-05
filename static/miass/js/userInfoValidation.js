@@ -43,7 +43,7 @@ function checkID() {
         checkIDFlag = true;
         inputId.css("border-color", "");
     }
-    $.LoadingOverlay('show');
+
     $.ajax("api/user", {
         method: 'GET',
         data: {
@@ -52,7 +52,6 @@ function checkID() {
         },
         dataType: 'json',
         success: function (res) {
-            $.LoadingOverlay('hide');
             if (res['code'] == 'SUCCESS') {
                 if (!res['existedId'] == false) {
                     checkIDFlag = false;
@@ -133,7 +132,7 @@ function checkPasswordConfirm() {
             inputPwConfrim.popover('destroy');
         }, 2000);
     }
-    else {
+    else if($('#inputPw').val() != inputPwConfrim.val() && inputPwConfrim.val()!="") {
         checkPasswordFlag = true;
         inputPwConfrim.css("border-color", "");
     }
@@ -282,7 +281,7 @@ var checkLicenseFlag = true;
 var tempLicense = "";
 function checkLicense() {
     var inputLicense = $('#inputLicence');
-    var licenseRe = /^[\-0-9]{1,200}$/g;
+    var licenseRe = /^[\-0-9A-Z]{1,200}$/g;
     if ((tempLicense == inputLicense.val() || inputLicense.val().length == 0) && checkLicenseFlag)
         return;
 
@@ -294,7 +293,7 @@ function checkLicense() {
         inputLicense.css("border-color", "red");
         inputLicense.popover({
             title: "Warning",
-            content: "Please enter only digits.",
+            content: "Please enter only digits and upper case alphabets.",
             placement: "bottom",
             trigger: "manual"
         });
