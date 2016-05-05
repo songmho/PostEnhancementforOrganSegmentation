@@ -169,6 +169,23 @@
     font-weight: 700;
 }
 
+.image-view-image .dygraph-legend {
+    position: absolute;
+    z-index: 10;
+    top: 0px;
+    right: 26px;
+    width: 320px;
+    padding: 4px 6px;
+    background-color: #FFFFFF;
+    border: 1px solid #99979c;
+    border-radius: 6px;
+}
+
+.image-view-image .dygraph-legend:before {
+    content: 'Time: ';
+    font-weight: bold;
+}
+
 #btnImageControlHelp {
     margin-bottom: 10px;
     margin-right: 20px;
