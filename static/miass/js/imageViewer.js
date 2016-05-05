@@ -402,6 +402,7 @@ var dicomSeqDragging = false;
 var dicomSeqSegRepeting = false;
 var dicomSeqSegRepetingAB = true;
 var dicomSeqSegA = 0,  dicomSeqSegB = 0;
+var dicomIntervalDragging = false;
 
 function setPlayDicomSequence(images) {
     dicomSeq = [];
@@ -415,6 +416,7 @@ function setPlayDicomSequence(images) {
     dicomSeqSegRepetingAB = true;
     dicomSeqSegA = 0;
     dicomSeqSegB = 0;
+    dicomIntervalDragging = false;
 
     $('#imageViewModalTitleName').text(images['title']);
     var files = images.files.split(':');
@@ -483,6 +485,13 @@ function setPlayDicomSequence(images) {
                 $('#seqControllerPlay').addClass('activate');
                 $('#seqControllerProgressSegA').hide();
                 $('#seqControllerProgressSegB').hide();
+                $('#seqControllerIntervalProgress').addClass('disabled');
+
+                if (fileCnt <= 20) {
+                    dicomSeqPlayingIntervalTime = 100;
+                    //$('#seqControllerInterval').val(50);
+                    $('#seqControllerIntervalControlWrapper').css('left', '54.5px'); //10 + 44.5px
+                }
 
                 try {
                     dicomSeqPlaying = true;
@@ -512,7 +521,7 @@ function setPlayDicomSequence(images) {
 
                         dicomSeqCnt++;
                         if(dicomSeqCnt >= dicomSeq.length) dicomSeqCnt = 0;
-                    }, 50);
+                    }, dicomSeqPlayingIntervalTime);
 
                     $('#seqControllerPause').click(function() {
                         if(dicomSeqPlaying) {
@@ -521,6 +530,8 @@ function setPlayDicomSequence(images) {
 
                             $('.seq-controller-buttons .btn.btn-state').removeClass('activate');
                             $(this).addClass('activate');
+
+                            $('#seqControllerIntervalProgress').removeClass('disabled');
 
                             $('#seqControllerStepBackward').removeClass('disabled').click(function() {
                                 dicomSeqCnt--;
@@ -546,6 +557,8 @@ function setPlayDicomSequence(images) {
                         $('.seq-controller-buttons .btn.btn-state').removeClass('activate');
                         $(this).addClass('activate');
 
+                        $('#seqControllerIntervalProgress').addClass('disabled');
+
                         if($(this).attr('id') == 'seqControllerPlay') {
                             dicomSeqForward = true;
                         } else if ($(this).attr('id') == 'seqControllerBackward') {
@@ -554,7 +567,6 @@ function setPlayDicomSequence(images) {
 
                         dicomPlayingSequenceInterval = setInterval(function() {
                             if(dicomSeqDragging) return;
-                            displayImageSequence(imageViewer, dicomSeqCnt);
 
                             if(dicomSeqForward) {
                                 dicomSeqCnt++;
@@ -563,28 +575,43 @@ function setPlayDicomSequence(images) {
                                 dicomSeqCnt--;
                                 if(dicomSeqCnt < 0) dicomSeqCnt = dicomSeq.length - 1;
                             }
+
+                            displayImageSequence(imageViewer, dicomSeqCnt);
                         }, dicomSeqPlayingIntervalTime);
 
                         dicomSeqPlaying = true;
                     });
 
-                    $('#seqControllerIntervalProgress').click(function(e) {
+                    var intervalControlFunc = function(e) {
                         if($('#seqControllerPause').hasClass('activate')) {
-                            var x = e.pageX - $(this).offset().left;    //0~120
+                            var x = e.pageX - $('#seqControllerIntervalProgress').offset().left;    //0~120
                             x = x - 10;   //10~110;
                             if (x < 0) x = 0;
                             if (x > 100) x = 100;
 
-                            if (x < 50) {
-                                dicomSeqPlayingIntervalTime = 2000 - 40*x;
-                            } else if (x == 50) {
+                            if (x < 48) {
+                                //dicomSeqPlayingIntervalTime = 2000 - 40*x;
+                                dicomSeqPlayingIntervalTime = (35256.41026 / (x+14.10256)) - 500;
+                            } else if (x >= 48 && x <= 52) {
                                 dicomSeqPlayingIntervalTime = 50;
-                            } else {    // x > 50
+                            } else {    // x > 52
                                 dicomSeqPlayingIntervalTime = -0.8*x + 90;
                             }
 
-                            console.log(x + '->' + dicomSeqPlayingIntervalTime);
+                            //console.log(x + '->' + dicomSeqPlayingIntervalTime);
                             $('#seqControllerIntervalControlWrapper').css('left', (x+10)+'px');
+                        }
+                    };
+                    $('#seqControllerIntervalProgress').off('mousedown').off('mouseup').off('mousemove')
+                        .unbind('mousedown').unbind('mouseup').unbind('mousemove');
+                    $('#seqControllerIntervalProgress').mousedown(function() {
+                        dicomIntervalDragging = true;
+                    }).mouseup(function(e) {
+                        dicomIntervalDragging = false;
+                        intervalControlFunc(e);
+                    }).mousemove(function(e) {
+                        if(dicomIntervalDragging) {
+                            intervalControlFunc(e);
                         }
                     });
 
@@ -616,6 +643,8 @@ function setPlayDicomSequence(images) {
                         $('.seq-controller-buttons .btn.btn-state').removeClass('activate');
                         $(this).addClass('activate');
 
+                        $('#seqControllerIntervalProgress').addClass('disabled');
+
                         if($(this).attr('id') == 'seqControllerSegmentRepetitionAB') {
                             dicomSeqSegRepetingAB = true;
                         } else if ($(this).attr('id') == 'seqControllerSegmentRepetitionBA') {
@@ -624,7 +653,6 @@ function setPlayDicomSequence(images) {
 
                         dicomPlayingSequenceInterval = setInterval(function() {
                             if(dicomSeqDragging) return;
-                            displayImageSequence(imageViewer, dicomSeqCnt, true);
 
                             if(dicomSeqSegRepetingAB) { //A->B
                                 dicomSeqCnt++;
@@ -644,6 +672,8 @@ function setPlayDicomSequence(images) {
                                     else if(dicomSeqCnt == dicomSeqSegA-1) dicomSeqCnt = dicomSeqSegB;
                                 }
                             }
+
+                            displayImageSequence(imageViewer, dicomSeqCnt, true);
                         }, dicomSeqPlayingIntervalTime);
 
                         dicomSeqSegRepeting = true;
@@ -764,6 +794,7 @@ function setDicomSequenceProgressbar() {
 
     $('body').mouseup(function(e) {
         dicomSeqDragging = false;
+        dicomIntervalDragging = false;
     });
 
 }
@@ -857,7 +888,6 @@ $(document).ready(function() {
 
     //set the forms and controllers
     setDicomSequenceProgressbar();
-    dicomSeqPlayingIntervalTime = 50;
     /*$('#seqControllerInterval').change(function() {
         var value = $('#seqControllerInterval').val();
         if(value < 10) {

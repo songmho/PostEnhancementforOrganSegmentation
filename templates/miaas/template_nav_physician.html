@@ -20,7 +20,9 @@
                 <li ><a id="nav_physician_profile" class="onloading" href="{% url 'miaas:physician_profile' %}">Physician Profile</a></li>
                 <li class="dropdown">
                     <a id="nav_interpretations" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">Interpretations</a>
+                            aria-expanded="false">Interpretations
+                        <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                    </a>
                     <ul class="dropdown-menu">
                         <li><a class="onloading" href="{% url 'miaas:interpretation_response' %}">Respond Requests</a></li>
                         <li><a class="onloading"href="{% url 'miaas:physician_interpretation' %}">My Interpretations</a></li>
