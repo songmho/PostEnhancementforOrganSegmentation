@@ -211,7 +211,7 @@ def handle_user_mgt(request):
                 else:
                     raise Exception(MSG_NO_USER_FOUND)
 
-            elif action == 'reset_password':
+            elif action == 'resetPassword':
                 result = db.reset_passwd(data.get('user_id'), data['password'])
                 if result:
                     return JsonResponse(dict(constants.CODE_SUCCESS, **{'msg': 'success'}))
