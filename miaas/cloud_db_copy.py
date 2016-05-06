@@ -45,6 +45,8 @@ class DbManager:
     PHYSICIAN_INTPR_LIST = "physician_intpr_list"
     REQUEST_RESPONSE_LIST = "request_response_list"
     IMAGE_INTPR_LIST = "image_intpr_list"
+    PATIENT_INTPR_SESSION = "patient_intpr_session"
+    PHYSICIAN_INTPR_DETAIL = "physician_intpr_detail"
 
     # RETRIEVE DETAIL QUERY
     PATIENT_INFO_ID = "patient_info_id"
@@ -53,9 +55,7 @@ class DbManager:
     PATIENT_REQUEST_DETAIL = "patient_request_detail"
     PATIENT_IMAGE_DETAIL = "patient_image_detail"
     PATIENT_PROFILE = "patient_profile"
-    PATIENT_INTPR_SESSION = "patient_intpr_session"
 
-    PHYSICIAN_INTPR_DETAIL = "physician_intpr_detail"
     PHYSICIAN_REQUEST_DETAIL = "physician_request_detail"
     PHYSICIAN_INFO_ID = "physician_info_id"
     PHYSICIAN_INFO_ID_PASSWORD = "physician_info_id_password"
@@ -176,7 +176,31 @@ class DbManager:
                          "FROM interpretation intpr " \
                          "WHERE image_id=%s",
 
-                "columns": INTPR_COLUMNS}
+                "columns": INTPR_COLUMNS},
+
+        PATIENT_INTPR_SESSION:
+            {
+                "query": "SELECT * " \
+                         "FROM intpr_session s " \
+                         "JOIN request req ON s.request_id = req.request_id " \
+                         "JOIN physician_info phi ON s.physician_id = phi.user_id " \
+                         "WHERE patient_id = %s " \
+                         "ORDER BY s.status DESC, s.timestamp DESC",
+
+                "columns": [SESSION_COLUMNS, REQUEST_COLUMNS, PHYSICIAN_COLUMNS]
+            },
+
+        PHYSICIAN_INTPR_SESSION:
+            {
+                "query": "SELECT * " \
+                         "FROM intpr_session s " \
+                         "JOIN request req ON s.request_id = req.request_id " \
+                         "JOIN patient_info pai ON s.patient_id = pai.user_id " \
+                         "WHERE physician_id = %s " \
+                         "ORDER BY s.status DESC, s.timestamp DESC",
+
+                "columns": [SESSION_COLUMNS, REQUEST_COLUMNS, PATIENT_COLUMNS]
+            }
     }
 
     RETRIEVE_DETAIL_QUERY = {
@@ -271,29 +295,7 @@ class DbManager:
                       ") pp " \
                       "Where pp.rnd = 1"},
 
-        PATIENT_INTPR_SESSION:
-            {
-                "query": "SELECT * " \
-                         "FROM intpr_session s " \
-                         "JOIN request req ON s.request_id = req.request_id " \
-                         "JOIN physician_info phi ON s.physician_id = phi.user_id " \
-                         "WHERE patient_id = %s " \
-                         "ORDER BY s.status DESC, s.timestamp DESC",
 
-                "columns": [SESSION_COLUMNS, REQUEST_COLUMNS, PHYSICIAN_COLUMNS]
-            },
-
-        PHYSICIAN_INTPR_SESSION:
-            {
-                "query": "SELECT * " \
-                         "FROM intpr_session s " \
-                         "JOIN request req ON s.request_id = req.request_id " \
-                         "JOIN patient_info pai ON s.patient_id = pai.user_id " \
-                         "WHERE physician_id = %s " \
-                         "ORDER BY s.status DESC, s.timestamp DESC",
-
-                "columns": [SESSION_COLUMNS, REQUEST_COLUMNS, PATIENT_COLUMNS]
-            },
 
     }
 
@@ -442,5 +444,5 @@ class DbManager:
 if __name__ == '__main__':
     db = DbManager()
     timestamp = int(round(time.time() * 1000))
-    result = db.add_session(2, 'demopa', 'demoph', 'response', timestamp)
+    result = db.retrieve_detail(2, 'demopa', 'demoph', 'response', timestamp)
     pprint(result)

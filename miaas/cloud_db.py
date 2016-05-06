@@ -93,7 +93,7 @@ class DbManager():
             try:
                 db_query = "UPDATE user SET password = %s " \
                            "WHERE user_id = %s"
-                cursor.execute(db_query, (user_id, password))
+                cursor.execute(db_query, (password, user_id))
                 self.connector.commit()
                 return True
             except Exception as e:
