@@ -708,6 +708,7 @@ def handle_interpretation_mgt(request):
                 if_updated = db.update_patient_request_by_selection(request_id, physician_id, status)
                 if if_updated:
                     value = {
+                        "request_id": data['request_id'],
                         "request_subject": data['request_subject'],
                     }
                     res_session = db2.add_session(data['patient_id'], data['physician_id'], 'select',

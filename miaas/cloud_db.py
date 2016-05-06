@@ -981,7 +981,7 @@ class DbManager():
         if_deleted = False
         with self.connector.cursor() as cursor:
             try:
-                db_query = "SELECT req.request_id, m.user_id, res.physician_id. req.subject " \
+                db_query = "SELECT req.request_id, m.user_id, res.physician_id, req.subject " \
                            "FROM request req " \
                            "JOIN response res ON req.request_id = res.request_id " \
                            "JOIN medical_image m ON req.image_id = m.image_id " \
