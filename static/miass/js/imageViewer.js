@@ -395,6 +395,32 @@ function downloadAndView(tagData){
     }
 }
 
+function setDicomViewerAdjusting(allowAjdusting) {
+    var element = $('#imageViewer').get(0);
+    if(allowAjdusting) {
+        if (conerstoneloaded === false) {
+            var element = $('#imageViewer').get(0);
+            cornerstoneTools.mouseInput.enable(element);
+            cornerstoneTools.mouseWheelInput.enable(element);
+            cornerstoneTools.wwwc.activate(element, 1);
+            cornerstoneTools.pan.activate(element, 2);
+            cornerstoneTools.zoom.activate(element, 4);
+            cornerstoneTools.zoomWheel.activate(element);
+            conerstoneloaded = true;
+        }
+    } else {
+        if (conerstoneloaded === true) {
+            cornerstoneTools.mouseInput.disable(element);
+            cornerstoneTools.mouseWheelInput.disable(element);
+            cornerstoneTools.wwwc.disable(element);
+            cornerstoneTools.pan.disable(element);
+            cornerstoneTools.zoom.disable(element);
+            cornerstoneTools.zoomWheel.disable(element);
+            conerstoneloaded = false;
+        }
+    }
+}
+
 var dicomSeq = [];
 var dicomPlayingSequenceInterval = null;
 var dicomPlayingLoadWaitingInterval = null;
@@ -531,6 +557,7 @@ function setPlayDicomSequence(images) {
                         if(dicomSeqPlaying) {
                             clearInterval(dicomPlayingSequenceInterval);
                             dicomSeqPlaying = false;
+                            setDicomViewerAdjusting(true);
 
                             $('.seq-controller-buttons .btn.btn-state').removeClass('activate');
                             $(this).addClass('activate');
@@ -555,6 +582,7 @@ function setPlayDicomSequence(images) {
                     $('.btn-seq-play').click(function() {
                         if(dicomSeqPlaying) clearInterval(dicomPlayingSequenceInterval);
 
+                        setDicomViewerAdjusting(false);
                         $('#seqControllerStepBackward').off('click').unbind('click').addClass('disabled');
                         $('#seqControllerStepForward').off('click').unbind('click').addClass('disabled');
 
@@ -641,6 +669,7 @@ function setPlayDicomSequence(images) {
                     $('.btn-seq-seg-play').click(function() {
                         if(dicomSeqPlaying) clearInterval(dicomPlayingSequenceInterval);
 
+                        setDicomViewerAdjusting(false);
                         $('#seqControllerStepBackward').off('click').unbind('click').addClass('disabled');
                         $('#seqControllerStepForward').off('click').unbind('click').addClass('disabled');
 
