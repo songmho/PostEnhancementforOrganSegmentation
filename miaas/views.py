@@ -166,13 +166,13 @@ def patient_interpretation_request_detail_page(request, request_id):
             db = cloud_db_copy.DbManager()
             request_detail, image = db.retrieve_detail(db.PATIENT_REQUEST_DETAIL, request_id)
             if request_detail['status'] == 0 or image['patient_id'] != request.session['user']['user_id']:
-                return render(request, 'miaas/404.html', context="")
+                return patient_request_list_page(request)
             responses = db.retrieve_list(db.REQUEST_RESPONSE_LIST, request_detail['request_id'])
             context['image'] = image
             context['request_detail'] = request_detail
             context['responses'] = responses
         except Exception:
-            return patient_request_list_page(request)
+            return render(request, 'miaas/404.html', context="")
 
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_request_detail.html', context)
