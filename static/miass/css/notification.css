@@ -59,7 +59,6 @@
 }
 .item-acceptance-msg{
     margin-top: 5px;
-    background: #DEDEDE;
     padding: 5px;
 }
 
@@ -80,4 +79,10 @@
     margin: 5px;
     background: #e7e7e7;
 }
+.alert.alert-custom-new{
+    padding: 10px;
+    margin: 5px;
+    background: #FAF1F2;
+}
+
 

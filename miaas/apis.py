@@ -70,13 +70,17 @@ def handle_session_mgt(request):
                 raise Exception(MSG_INVALID_IDPW)
             elif user_type == 'patient':
                 user = db.retrieve_patient(user_id, password)
+                intpr_session = db.retrieve_patient_session(user_id)
             elif user_type == 'physician':
                 user = db.retrieve_physician(user_id, password)
+                intpr_session = db.retrieve_physician_session(user_id)
             else:
                 raise Exception(MSG_INVALID_IDPW)
             if not user.get('user_id'):
                 raise Exception(MSG_INVALID_IDPW)
             request.session['user'] = user
+            # pprint(intpr_session)
+            request.session['intpr_session'] = intpr_session
             # request.session['medical_image'] = {}
             # request.session.create('medical_image')
             logger.info('user %s logged in.' % user['user_id'])
@@ -544,7 +548,6 @@ def handle_multple_image_upload(request):
 @csrf_exempt
 def handle_interpretation_mgt(request):
     db = cloud_db.DbManager()
-    db2 = cloud_db_copy.DbManager()
     try:
         # To handle patient and physician interpretation request
         if request.method == 'PUT':
@@ -589,7 +592,7 @@ def handle_interpretation_mgt(request):
                         "request_subject": data['request_subject'],
                         "acceptance_message": data['message']
                     }
-                    res_session = db2.add_session(data['patient_id'], data['physician_id'], 'response',
+                    res_session = db.add_session(data['patient_id'], data['physician_id'], 'response',
                                                   json.dumps(value), timestamp)
                     if res_session:
                         return JsonResponse(constants.CODE_SUCCESS)
@@ -642,7 +645,7 @@ def handle_interpretation_mgt(request):
                             "request_subject": data['request_subject'],
                             "summary": data['summary']
                         }
-                        res_session = db2.add_session(data['patient_id'], data['physician_id'], 'write',
+                        res_session = db.add_session(data['patient_id'], data['physician_id'], 'write',
                                                       json.dumps(value), timestamp)
                         if res_session:
                             return JsonResponse(constants.CODE_SUCCESS)
@@ -711,7 +714,7 @@ def handle_interpretation_mgt(request):
                         "request_id": data['request_id'],
                         "request_subject": data['request_subject'],
                     }
-                    res_session = db2.add_session(data['patient_id'], data['physician_id'], 'select',
+                    res_session = db.add_session(data['patient_id'], data['physician_id'], 'select',
                                                   json.dumps(value), timestamp)
                     if res_session:
                         return JsonResponse(constants.CODE_SUCCESS)

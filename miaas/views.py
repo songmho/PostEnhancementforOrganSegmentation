@@ -103,6 +103,9 @@ def _get_session_context(request):
         context['user_session'] = request.session['user']
         if context.get('user_session'):
             context['user_session'].pop('password', None)
+    if 'intpr_session' in request.session.keys():
+        context['intpr_session'] = request.session['intpr_session']
+        
     return context
 
 

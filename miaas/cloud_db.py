@@ -989,11 +989,10 @@ class DbManager():
 
                 cursor.execute(db_query, request_id)
                 for row in cursor:
-                    db2 = cloud_db_copy.DbManager()
                     value = {
                         "request_subject": row[3]
                     }
-                    db2.add_session(row[1], row[2], 'cancel', json.dumps(value), int(round(time.time() * 1000)))
+                    self.add_session(row[1], row[2], 'cancel', json.dumps(value), int(round(time.time() * 1000)))
 
                 db_query = "DELETE FROM request WHERE request_id=%s"
                 cursor.execute(db_query, request_id)
@@ -1419,3 +1418,109 @@ class DbManager():
                 logger.exception(e)
                 raise Exception("retrieve_physician_intpr_list Error" + e.message)
         return intprs
+
+    ### Session
+    def add_session(self, *args):
+        """
+        :param args: patient_id, physician_id, type, value, timestamp
+                value: a json string
+        :return: boolean
+        """
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "INSERT INTO session (patient_id, physician_id, type, value, timestamp) " \
+                           "VALUES (%s, %s, %s, %s, %s)"
+                cursor.execute(db_query, args)
+                self.connector.commit()
+
+                if cursor.rowcount:
+                    return True
+                else:
+                    return False
+            except Exception as e:
+                logger.exception(e)
+                return False
+
+    def retrieve_patient_session(self, user_id):
+        result = []
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT s.*, phi.name " \
+                           "FROM session s " \
+                           "JOIN physician_info phi ON s.physician_id = phi.user_id " \
+                           "WHERE patient_id = %s " \
+                           "ORDER BY s.status asc, s.timestamp desc;"
+                cursor.execute(db_query, user_id)
+                for row in cursor:
+                    session = {}
+                    session['session_id'] = row[0]
+                    session['patinet_id'] = row[1]
+                    session['physician_id'] = row[2]
+                    session['type'] = row[3]
+                    session['value'] = json.loads(row[4])
+                    session['timestamp'] = row[5]
+                    session['status'] = row[6]
+                    session['name'] = row[7]
+                    result.append(session)
+            except Exception as e:
+                logger.exception(e)
+                raise Exception("Unknown error occurs in session retrieval.")
+        return result
+
+    def retrieve_physician_session(self, user_id):
+        result = []
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT s.*, pai.name " \
+                           "FROM session s " \
+                           "JOIN patient_info pai ON s.patient_id = pai.user_id " \
+                           "WHERE physician_id = %s " \
+                           "ORDER BY s.status asc, s.timestamp desc;"
+                cursor.execute(db_query, user_id)
+                for row in cursor:
+                    session = {}
+                    session['session_id'] = row[0]
+                    session['patinet_id'] = row[1]
+                    session['physician_id'] = row[2]
+                    session['type'] = row[3]
+                    session['value'] = json.loads(row[4])
+                    session['timestamp'] = row[5]
+                    session['status'] = row[6]
+                    session['name'] = row[7]
+                    result.append(session)
+            except Exception as e:
+                logger.exception(e)
+                raise Exception("Unknown error occurs in session retrieval.")
+        return result
+
+    def update_session(self, session_id):
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE intpr_session SET status = 1 " \
+                           "WHERE session_id = %s"
+                cursor.execute(db_query, session_id)
+                self.connector.commit()
+
+                if cursor.rowcount:
+                    return True
+                else:
+                    return False
+            except Exception as e:
+                logger.exception(e)
+                return False
+
+    def delete_session(self, session_id):
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "DELETE FROM intpr_session " \
+                           "WHERE session_id = %s"
+                cursor.execute(db_query, session_id)
+                self.connector.commit()
+
+                if cursor.rowcount:
+                    return True
+                else:
+                    return False
+            except Exception as e:
+                logger.exception(e)
+                return False
