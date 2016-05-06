@@ -584,8 +584,13 @@ def handle_interpretation_mgt(request):
                 }
                 if_inserted = db.add_physician_intpr_resp(response)
                 if if_inserted:
-                    res_session = db2.add_session(data['request_id'], data['patient_id'], data['physician_id'],
-                                                  'response', timestamp)
+                    value = {
+                        "request_id": data['request_id'],
+                        "request_subject": data['request_subject'],
+                        "acceptance_message": data['message']
+                    }
+                    res_session = db2.add_session(data['patient_id'], data['physician_id'], 'response',
+                                                  json.dumps(value), timestamp)
                     if res_session:
                         return JsonResponse(constants.CODE_SUCCESS)
                     else:
@@ -632,8 +637,13 @@ def handle_interpretation_mgt(request):
                     if_updated = db.update_req_and_resp(request_id, status, timestamp)
                     db.delete_temp_intpr(request_id)
                     if if_updated:
-                        res_session = db2.add_session(data['request_id'], data['patient_id'], data['physician_id'],
-                                                      'write', timestamp)
+                        value = {
+                            "request_id": data['request_id'],
+                            "request_subject": data['request_subject'],
+                            "summary": data['summary']
+                        }
+                        res_session = db2.add_session(data['patient_id'], data['physician_id'], 'write',
+                                                      json.dumps(value), timestamp)
                         if res_session:
                             return JsonResponse(constants.CODE_SUCCESS)
                         else:
@@ -697,8 +707,11 @@ def handle_interpretation_mgt(request):
                 timestamp = int(round(time.time() * 1000))
                 if_updated = db.update_patient_request_by_selection(request_id, physician_id, status)
                 if if_updated:
-                    res_session = db2.add_session(data['request_id'], data['patient_id'], data['physician_id'],
-                                                  'select', timestamp)
+                    value = {
+                        "request_subject": data['request_subject'],
+                    }
+                    res_session = db2.add_session(data['patient_id'], data['physician_id'], 'select',
+                                                  json.dumps(value), timestamp)
                     if res_session:
                         return JsonResponse(constants.CODE_SUCCESS)
                     else:
