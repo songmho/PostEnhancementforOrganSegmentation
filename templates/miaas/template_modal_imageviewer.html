@@ -4,7 +4,34 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="imageViewModalTitle">Medical Image Viewer</h4>
+                <h3 class="modal-title" id="imageViewModalTitle">Medical Image Viewer</h3>
+                <div id="imageViewHeaderHelper" class="pull-right">
+                    <button id="btnImageControlHelp" type="button" class="btn btn-default" style="display: none"
+                            data-toggle="popover" data-placement="bottom" data-html="true"
+                            title="How to Adjust an Image?" data-container="body"
+                            data-content="An image is adjusted using mouse click and drag.<br/>
+                                    <strong>LB+U/D</strong>: Adjust Brightness<br/>
+                                    <strong>LB+L/R</strong>: Adjust Contrast<br/>
+                                    <strong>MB+MOVE</strong>: Move Image</br>
+                                    <strong>RB+U/D</strong>: Change Zoom<br/>
+                                    <strong>WHEEL</strong>: Change Zoom<br/><br/>
+                                    <div style='font-size: 13px;'>* <b>LB</b>=Left Button,
+                                        <b>RB</b>=Right Button<br/>&nbsp;&nbsp;<b>MB</b>=Middle Button<br/>
+                                        &nbsp;&nbsp;<b>U/D</b>=Up/Down, <b>L/R</b>=Left/Right</div>">
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Help
+                    </button>
+
+                    <button id="btnGraphControlHelp" type="button" class="btn btn-default" style="display: none"
+                            data-toggle="popover" data-placement="bottom" data-html="true"
+                            title="How to Control a Graph??" data-container="body"
+                            data-content="You can control a graph using mouse click and drag.<br/>
+                                <strong>Drag</strong>: Panning<br/>
+                                <strong>Shift+Drag</strong>: Zomming In/Out<br/>
+                                <strong>Scroll Wheel</strong>: Zooming In/Out<br/>
+                                <strong>Double Click</strong>: Reset Zoom</br>">
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Help
+                    </button>
+                </div>
             </div>
             <div class="modal-body">
                 <div id="imageView" class="image-view">
@@ -14,22 +41,7 @@
                     </div>
                     <div class="image-view-image col-sm-7 col-md-8">
                         <div class="row image-view-header">
-                            <h4 class="col-xs-12 col-md-10">Image View&nbsp;&nbsp;&nbsp;<span id="imageViewModalTitleName" class="text-primary"></span></h4>
-                            <div id="imageViewHeaderHelper" class="pull-right">
-{#                                <a id="btnImageControlHelp" class="btn btn-default"#}
-{#                                        tabindex="0" role="button" data-trigger="focus"#}
-{#                                        data-toggle="popover" data-placement="left" data-html="true"#}
-{#                                        title="How to Adjust an Image?"#}
-{#                                        data-content="An image is adjusted using mouse click and drag.<br/><strong>LB+U/D</strong>: Adjust Brightness<br/><strong>LB+L/R</strong>: Adjust Contrast<br/><strong>MB+MOVE</strong>: Move Image</br><strong>RB+U/D</strong>: Change Zoom<br/><strong>WHEEL</strong>: Change Zoom<br/><br/><div style='font-size: 13px;'>* <b>LB</b>=Left Button, <b>RB</b>=Right Button<br/>&nbsp;&nbsp;<b>MB</b>=Middle Button<br/>&nbsp;&nbsp;<b>U/D</b>=Up/Down, <b>L/R</b>=Left/Right</div>">#}
-{#                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Help#}
-{#                                </a>#}
-                                <button id="btnImageControlHelp" type="button" class="btn btn-default"
-                                        data-toggle="popover" data-placement="left" data-html="true"
-                                        title="How to Adjust an Image?" data-container="body"
-                                        data-content="An image is adjusted using mouse click and drag.<br/><strong>LB+U/D</strong>: Adjust Brightness<br/><strong>LB+L/R</strong>: Adjust Contrast<br/><strong>MB+MOVE</strong>: Move Image</br><strong>RB+U/D</strong>: Change Zoom<br/><strong>WHEEL</strong>: Change Zoom<br/><br/><div style='font-size: 13px;'>* <b>LB</b>=Left Button, <b>RB</b>=Right Button<br/>&nbsp;&nbsp;<b>MB</b>=Middle Button<br/>&nbsp;&nbsp;<b>U/D</b>=Up/Down, <b>L/R</b>=Left/Right</div>">
-                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Help
-                                </button>
-                            </div>
+                            <h4 class="col-xs-12 col-md-12">Image View&nbsp;&nbsp;&nbsp;<span id="imageViewModalTitleName" class="text-primary"></span></h4>
                         </div>
                         <div id="imageViewerWrapper" style="width:320px; height:320px; position:relative;color:white;"
                              oncontextmenu="return false"
@@ -365,6 +377,7 @@
                     <div class="image-view-image col-xs-12 col-md-12">
                         <div id="graphViewer" class="image-view-viewer">
                         </div>
+
                         <div id="graphViewerLegends" class="image-view-legend dygraph-legend">
                         </div>
                     </div>
