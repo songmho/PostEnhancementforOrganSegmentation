@@ -70,6 +70,7 @@ timezone_kr = pytz.timezone('Asia/Seoul')
 
 @register.filter(name='datetime_string')
 def timestamp_to_datetime_string(timestamp):
+    print timestamp
     try:
         return datetime.datetime.fromtimestamp(int(timestamp) // 1000) \
             .replace(tzinfo=pytz.utc).astimezone(timezone_kr) \

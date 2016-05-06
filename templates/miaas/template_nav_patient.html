@@ -28,7 +28,6 @@
 
             </ul>
             <ul class="nav navbar-nav navbar-right">
-
                 <li class="dropdown notify-dropdown">
                     <a class="dropdown notify-dropdown" role="button">
                         <i class="glyphicon glyphicon-bell"></i>
@@ -39,32 +38,82 @@
                         </div>
                         <li class="divider"></li>
                         <div class="notifications-wrapper">
-                            <div class="content" href="#">
-                                <div class="alert alert-custom fade in">
-                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                    <h4 class="item-title">RESPONSE <span class="item-time">04/23/16 17:43:23</span>
-                                    </h4>
-                                    <p class="item-info">A physician respond the request, <a
-                                            class="item-link">"{{ "request_subject"| less_string }}</a>"</p>
-                                    <div class="item-acceptance-msg">
-                                        <p class="item-info">{{ "Acceptance message"| less_string }} </p>
-                                        <a class="item-link pull-right">-{{ 'demoph' }}-</a>.
+                            {% for session in intpr_session %}
+                                {% if session.type == 'response' %}
+                                    <div class="content" href="#">
+                                        {% if session.status == 0 %}
+                                            <div class="alert alert-custom-new fade in">
+                                                <a href="#" class="close" data-dismiss="alert"
+                                                   aria-label="close">&times;</a>
+                                                <h4 class="item-title">RESPONSE <span
+                                                        class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                </h4>
+                                                <p class="item-info">A physician respond the request, <a
+                                                        class="item-link">"{{ session.value.request_subject| less_string }}</a>"
+                                                </p>
+                                                <li class="divider"></li>
+                                                <div class="item-acceptance-msg">
+                                                    <p class="item-info">{{ session.value.acceptance_message| less_string }} </p>
+                                                    <a class="item-link pull-right">-{{ session.name }}-</a>.
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="alert alert-custom fade in">
+                                                <a href="#" class="close" data-dismiss="alert"
+                                                   aria-label="close">&times;</a>
+                                                <h4 class="item-title">RESPONSE <span
+                                                        class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                </h4>
+                                                <p class="item-info">A physician respond the request, <a
+                                                        class="item-link">"{{ session.value.request_subject| less_string }}</a>"
+                                                </p>
+                                                <li class="divider"></li>
+                                                <div class="item-acceptance-msg">
+                                                    <p class="item-info">{{ session.value.acceptance_message| less_string }} </p>
+                                                    <a class="item-link pull-right">-{{ session.name }}-</a>.
+                                                </div>
+                                            </div>
+                                        {% endif %}
                                     </div>
-                                </div>
-                            </div>
-                            <div class="content" href="#">
-                                <div class="alert alert-custom fade in">
-                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                    <h4 class="item-title">WRITE <span class="item-time">04/23/16 17:43:23</span>
-                                    </h4>
-                                    <p class="item-info">A physician interpreted for the request, <a
-                                            class="item-link">"{{ "request_subject"| less_string }}</a>"</p>
-                                    <div class="item-acceptance-msg">
-                                        <p class="item-info">{{ "Summary"| less_string }} </p>
-                                        <a class="item-link pull-right">-{{ 'demoph' }}-</a>.
+                                {% endif %}
+                                {% if session.type == 'write' %}
+                                    <div class="content" href="#">
+                                        {% if session.status == 0 %}
+                                            <div class="alert alert-custom-new fade in">
+                                                <a href="#" class="close" data-dismiss="alert"
+                                                   aria-label="close">&times;</a>
+                                                <h4 class="item-title">WRITE <span
+                                                        class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                </h4>
+                                                <p class="item-info">A physician interpreted for the request, <a
+                                                        class="item-link">"{{ session.value.request_subject| less_string }}</a>"
+                                                </p>
+                                                <li class="divider"></li>
+                                                <div class="item-acceptance-msg">
+                                                    <p class="item-info">{{ session.value.summary| less_string }} </p>
+                                                    <a class="item-link pull-right">-{{ session.name }}-</a>.
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="alert alert-custom fade in">
+                                                <a href="#" class="close" data-dismiss="alert"
+                                                   aria-label="close">&times;</a>
+                                                <h4 class="item-title">WRITE <span
+                                                        class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                </h4>
+                                                <p class="item-info">A physician interpreted for the request, <a
+                                                        class="item-link">"{{ session.value.request_subject| less_string }}</a>"
+                                                </p>
+                                                <li class="divider"></li>
+                                                <div class="item-acceptance-msg">
+                                                    <p class="item-info">{{ session.value.summary| less_string }} </p>
+                                                    <a class="item-link pull-right">-{{ session.name }}-</a>.
+                                                </div>
+                                            </div>
+                                        {% endif %}
                                     </div>
-                                </div>
-                            </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                         <li class="divider"></li>
                         <div class="btn btn-primary col-xs-offset-4 col-xs-4">Refresh</div>
@@ -90,16 +139,16 @@
 <script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
 
 <script type="text/javascript">
-    $('.notify-dropdown').on("click", function(event){
+    $('.notify-dropdown').on("click", function (event) {
         $(this).parent().toggleClass('open');
     });
     $('body').on('click', function (e) {
-    if (!$('.notify-dropdown').is(e.target)
-        && $('.notify-dropdown').has(e.target).length === 0
-        && $('.open').has(e.target).length === 0
-    ) {
-        $('.notify-dropdown').removeClass('open');
-    }
-});
+        if (!$('.notify-dropdown').is(e.target)
+                && $('.notify-dropdown').has(e.target).length === 0
+                && $('.open').has(e.target).length === 0
+        ) {
+            $('.notify-dropdown').removeClass('open');
+        }
+    });
 
 </script>
