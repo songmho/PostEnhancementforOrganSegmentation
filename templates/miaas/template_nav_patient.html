@@ -42,7 +42,8 @@
                                 {% if session.type == 'response' %}
                                     <div class="content" href="#">
                                         {% if session.status == 0 %}
-                                            <div class="alert alert-custom-new fade in">
+                                            <div class="alert alert-custom-new fade in"
+                                                 session_id= {{ session.session_id }}>
                                                 <a href="#" class="close" data-dismiss="alert"
                                                    aria-label="close">&times;</a>
                                                 <h4 class="item-title">RESPONSE <span
@@ -57,8 +58,9 @@
                                                     <a class="item-link pull-right">-{{ session.name }}-</a>.
                                                 </div>
                                             </div>
-                                        {% else %}
-                                            <div class="alert alert-custom fade in">
+                                        {% elif session.status == 1 %}
+                                            <div class="alert alert-custom fade in"
+                                                 session_id= {{ session.session_id }}>
                                                 <a href="#" class="close" data-dismiss="alert"
                                                    aria-label="close">&times;</a>
                                                 <h4 class="item-title">RESPONSE <span
@@ -79,7 +81,8 @@
                                 {% if session.type == 'write' %}
                                     <div class="content" href="#">
                                         {% if session.status == 0 %}
-                                            <div class="alert alert-custom-new fade in">
+                                            <div class="alert alert-custom-new fade in"
+                                                 session_id= {{ session.session_id }}>
                                                 <a href="#" class="close" data-dismiss="alert"
                                                    aria-label="close">&times;</a>
                                                 <h4 class="item-title">WRITE <span
@@ -94,8 +97,9 @@
                                                     <a class="item-link pull-right">-{{ session.name }}-</a>.
                                                 </div>
                                             </div>
-                                        {% else %}
-                                            <div class="alert alert-custom fade in">
+                                        {% elif session.status == 1 %}
+                                            <div class="alert alert-custom fade in"
+                                                 session_id= {{ session.session_id }}>
                                                 <a href="#" class="close" data-dismiss="alert"
                                                    aria-label="close">&times;</a>
                                                 <h4 class="item-title">WRITE <span
@@ -150,5 +154,21 @@
             $('.notify-dropdown').removeClass('open');
         }
     });
-
+    $('.alert-custom-new').click(function () {
+        var session_id = $(this).attr('session_id');
+        var alert = $(this);
+        $.ajax("/api/intpr_session", {
+            method: 'PUT',
+            data: JSON.stringify({
+                action: 'read',
+                session_id: session_id
+            }),
+            dataType: 'json',
+            success: function (res) {
+                if (res['code'] == 'SUCCESS') {
+                    alert.attr('class', 'alert alert-custom fade in')
+                }
+            }
+        });
+    })
 </script>

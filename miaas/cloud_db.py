@@ -1448,7 +1448,7 @@ class DbManager():
                 db_query = "SELECT s.*, phi.name " \
                            "FROM session s " \
                            "JOIN physician_info phi ON s.physician_id = phi.user_id " \
-                           "WHERE patient_id = %s " \
+                           "WHERE patient_id = %s and status < 2 " \
                            "ORDER BY s.status asc, s.timestamp desc;"
                 cursor.execute(db_query, user_id)
                 for row in cursor:
@@ -1474,7 +1474,7 @@ class DbManager():
                 db_query = "SELECT s.*, pai.name " \
                            "FROM session s " \
                            "JOIN patient_info pai ON s.patient_id = pai.user_id " \
-                           "WHERE physician_id = %s " \
+                           "WHERE physician_id = %s and status < 2 " \
                            "ORDER BY s.status asc, s.timestamp desc;"
                 cursor.execute(db_query, user_id)
                 for row in cursor:
@@ -1496,31 +1496,24 @@ class DbManager():
     def update_session(self, session_id):
         with self.connector.cursor() as cursor:
             try:
-                db_query = "UPDATE intpr_session SET status = 1 " \
+                db_query = "UPDATE session SET status = 1 " \
                            "WHERE session_id = %s"
                 cursor.execute(db_query, session_id)
                 self.connector.commit()
-
-                if cursor.rowcount:
-                    return True
-                else:
-                    return False
             except Exception as e:
                 logger.exception(e)
                 return False
+        return True
 
     def delete_session(self, session_id):
         with self.connector.cursor() as cursor:
             try:
-                db_query = "DELETE FROM intpr_session " \
+                db_query = "UPDATE session SET status = 2 " \
                            "WHERE session_id = %s"
                 cursor.execute(db_query, session_id)
                 self.connector.commit()
 
-                if cursor.rowcount:
-                    return True
-                else:
-                    return False
             except Exception as e:
                 logger.exception(e)
                 return False
+        return True

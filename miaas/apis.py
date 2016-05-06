@@ -1,6 +1,7 @@
 import json
 import logging
 import time
+from pprint import pprint
 
 from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
@@ -40,6 +41,50 @@ logging.basicConfig(
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+
+
+@csrf_exempt
+def handle_intpr_session_mgt(request):
+    db = cloud_db.DbManager()
+    try:
+        if request.method == 'PUT':
+            if len(request.body) == 0:
+                raise Exception(MSG_NODATA)
+            data = json.loads(request.body)
+            action = data['action']
+            if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+
+            elif action == 'read':
+                res = db.update_session(data['session_id'])
+                if res:
+                    intpr_session = request.session['intpr_session']
+                    for i in range(0, len(intpr_session)):
+                        if intpr_session[i]['session_id'] == int(data['session_id']):
+                            intpr_session[i]['status'] = 1
+                            break
+                    request.session['intpr_session'] = intpr_session
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
+            elif action == 'delete':
+                res = db.delete_session(data['session_id'])
+                if res:
+                    intpr_session = request.session['intpr_session']
+                    for i in range(0, len(intpr_session)):
+                        if intpr_session[i]['session_id'] == int(data['session_id']):
+                            intpr_session[i]['status'] = 2
+                            break
+                    request.session['intpr_session'] = intpr_session
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
+
+    except Exception as e:
+        logger.info(e)
+        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
+
+    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 
 @csrf_exempt
@@ -593,7 +638,7 @@ def handle_interpretation_mgt(request):
                         "acceptance_message": data['message']
                     }
                     res_session = db.add_session(data['patient_id'], data['physician_id'], 'response',
-                                                  json.dumps(value), timestamp)
+                                                 json.dumps(value), timestamp)
                     if res_session:
                         return JsonResponse(constants.CODE_SUCCESS)
                     else:
@@ -646,7 +691,7 @@ def handle_interpretation_mgt(request):
                             "summary": data['summary']
                         }
                         res_session = db.add_session(data['patient_id'], data['physician_id'], 'write',
-                                                      json.dumps(value), timestamp)
+                                                     json.dumps(value), timestamp)
                         if res_session:
                             return JsonResponse(constants.CODE_SUCCESS)
                         else:
@@ -715,7 +760,7 @@ def handle_interpretation_mgt(request):
                         "request_subject": data['request_subject'],
                     }
                     res_session = db.add_session(data['patient_id'], data['physician_id'], 'select',
-                                                  json.dumps(value), timestamp)
+                                                 json.dumps(value), timestamp)
                     if res_session:
                         return JsonResponse(constants.CODE_SUCCESS)
                     else:

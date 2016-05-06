@@ -52,7 +52,7 @@
                                 {% if session.type == 'cancel' %}
                                     <div class="content" href="#">
                                         {% if session.status == 0 %}
-                                            <div class="alert alert-custom-new fade in">
+                                            <div class="alert alert-custom-new fade in" session_id = {{ session.session_id }}>
                                                 <a href="#" class="close" data-dismiss="alert"
                                                    aria-label="close">&times;</a>
                                                 <h4 class="item-title">CANCEL <span
@@ -63,7 +63,7 @@
                                                     respond is canceled.</p>
                                             </div>
                                         {% else %}
-                                            <div class="alert alert-custom fade in">
+                                            <div class="alert alert-custom fade in" session_id = {{ session.session_id }}>
                                                 <a href="#" class="close" data-dismiss="alert"
                                                    aria-label="close">&times;</a>
                                                 <h4 class="item-title">CANCEL <span
@@ -79,7 +79,7 @@
                                 {% if session.type == 'select' %}
                                     <div class="content" href="#">
                                         {% if session.status == 0 %}
-                                            <div class="alert alert-custom-new fade in">
+                                            <div class="alert alert-custom-new fade in" session_id = {{ session.session_id }}>
                                                 <a href="#" class="close" data-dismiss="alert"
                                                    aria-label="close">&times;</a>
                                                 <h4 class="item-title">SELECT <span
@@ -92,7 +92,7 @@
                                                 </p>
                                             </div>
                                         {% else %}
-                                            <div class="alert alert-custom fade in">
+                                            <div class="alert alert-custom fade in" session_id = {{ session.session_id }}>
                                                 <a href="#" class="close" data-dismiss="alert"
                                                    aria-label="close">&times;</a>
                                                 <h4 class="item-title">SELECT <span
@@ -145,5 +145,6 @@
             $('.notify-dropdown').removeClass('open');
         }
     });
+
 
 </script>
