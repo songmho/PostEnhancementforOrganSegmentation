@@ -115,11 +115,11 @@ function checkPassword() {
         inputPw.css("border-color", "");
     }
 }
-
+var checkPasswordConfirmFlag = false;
 function checkPasswordConfirm() {
     var inputPwConfrim = $('#inputPwConfirm');
     if ($('#inputPw').val() != inputPwConfrim.val()) {
-        checkPasswordFlag = false;
+        checkPasswordConfirmFlag = false;
         inputPwConfrim.css("border-color", "red");
         inputPwConfrim.popover({
             title: "Warning",
@@ -132,8 +132,8 @@ function checkPasswordConfirm() {
             inputPwConfrim.popover('destroy');
         }, 2000);
     }
-    else if($('#inputPw').val() != inputPwConfrim.val() && inputPwConfrim.val()!="") {
-        checkPasswordFlag = true;
+    else if($('#inputPw').val() == inputPwConfrim.val() && inputPwConfrim.val()!="") {
+        checkPasswordConfirmFlag = true;
         inputPwConfrim.css("border-color", "");
     }
 }

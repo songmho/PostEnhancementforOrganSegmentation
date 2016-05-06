@@ -3,8 +3,41 @@
  */
 
 var bFindId = true;
-
 $(document).ready(function() {
+
+    $('#inputPw').blur(function (){
+        checkPassword();
+    });
+    $('#inputPwConfirm').blur(function (){
+        checkPasswordConfirm();
+    });
+    $('#btnConfirmReset').click(function(){
+        if (!checkPasswordFlag || !checkPasswordConfirmFlag) {
+            openModal("Please check your password");
+        }
+        else{
+            $.LoadingOverlay('show');
+             $.ajax("/api/user", {
+                method: 'POST',
+                data: JSON.stringify({
+                    action: 'reset_password',
+                    user_id: user_id,
+                    password: $('#inputPw').val()
+                }),
+                dataType: 'json',
+                success: function(res) {
+                    $.LoadingOverlay('hide');
+                    if (res['code'] == 'SUCCESS') {
+                        location.replace(mainURL)
+                    } else {
+                        openFindFailedModal(res['msg']);
+                    }
+                }
+            });
+        }
+
+    });
+
     $('#find-change').click(function() {
         if(bFindId) {
             $('#find-header').text('Find Password');
@@ -63,7 +96,7 @@ $(document).ready(function() {
                     $.LoadingOverlay('hide');
 
                     if (res['code'] == 'SUCCESS') {
-                        openFindModal('You password is "'+ res['password'] +'"', 'Find PW')
+                        openResetPasswordModal('You password is "'+ res['password'] +'"', 'Find PW')
                     } else {
                         openFindFailedModal(res['msg']);
                     }
@@ -75,11 +108,21 @@ $(document).ready(function() {
 });
 
 function openFindFailedModal(msg) {
-    if (msg==undefined || msg==null || msg=='') {
+    if (msg == undefined || msg == null || msg == '') {
         msg = 'Finding ID or PW is failed.'
     }
     $('#findFailedModal .modal-body').text(msg);
     $('#findFailedModal').modal();
+
+}
+function openResetPasswordModal(msg){
+    if (msg == undefined || msg == null || msg == '') {
+        msg = 'Finding ID or PW is failed.'
+    }
+    $('#inputPwConfirm').css("border-color", "");
+    $('#inputPw').css("border-color", "");
+    checkPasswordFlag = false;
+    $('#resetPasswordModal').modal();
 }
 
 function openFindModal(msg, title) {
@@ -92,3 +135,4 @@ function openFindModal(msg, title) {
     $('#findModal .modal-body').text(msg);
     $('#findModal').modal();
 }
+

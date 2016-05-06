@@ -172,7 +172,7 @@ def patient_interpretation_request_detail_page(request, request_id):
             context['request_detail'] = request_detail
             context['responses'] = responses
         except Exception:
-            return render(request, 'miaas/404.html', context="")
+            return patient_request_list_page(request)
 
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_request_detail.html', context)

@@ -2,14 +2,14 @@
 
 <div class="form-container form-boxed form-horizontal row">
     <div class="col-xs-12 form-group">
-        <label class="col-sm-3 col-md-2 control-label" >Image Subject</label>
+        <label class="col-sm-3 col-md-2 control-label">Image Subject</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span id="imgSubject" class="control-value">{{ image.image_subject }}</span>
         </div>
     </div>
 
     <div class="col-xs-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Image Type</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">Image Type</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span id="type" class="control-value">{{ image.image_type }}</span>
         </div>
@@ -28,44 +28,44 @@
     </div>
 
     <div class="col-xs-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Recorded Date</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">Recorded Date</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-            <span id="date" class="control-value">{{ image.taken_date|datetime_string }}</span>
+            <span id="takenDate" class="control-value">1992-07-06</span>
         </div>
     </div>
 
     <div class="col-xs-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label no-pad-left-sm" >Recording Place</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label no-pad-left-sm">Recording Place</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span id="taken" class="control-value">{{ image.taken_from }}</span>
         </div>
     </div>
 
     <div class="col-xs-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label no-pad-left-sm" >Doctor in Charge</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label no-pad-left-sm">Doctor in Charge</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span id="physician" class="control-value">{{ image.physician }}</span>
         </div>
     </div>
 
     <div class="col-xs-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Clinic Name</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">Clinic Name</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span id="place" class="control-value">{{ image.place }}</span>
         </div>
     </div>
 
     <div class="col-xs-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Medical Department</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">Medical Department</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
             <span id="place" class="control-value">{{ image.medical_department }}</span>
         </div>
     </div>
 
     <div class="col-sm-12 form-group">
-        <label class="col-xs-12 col-sm-3 col-md-2 control-label" >Notice</label>
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">Notice</label>
         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
-            <div id="description" class="control-value" >
+            <div id="description" class="control-value">
                 <p>{{ image.description }}</p>
             </div>
         </div>
@@ -74,4 +74,18 @@
 
 <script type="text/javascript">
     imageInfo = JSON.parse("{{ image | jsonstr }}");
+    $(document).ready(function() {
+        $('#takenDate').text(dateToString({{ image.taken_date }}));
+    });
+
+    function dateToString(data) {
+        var date = new Date(data);
+        var year = date.getFullYear();
+        var month = (1 + date.getMonth()).toString();
+        month = month.length > 1 ? month : '0' + month;
+        var day = date.getDate().toString();
+        day = day.length > 1 ? day : '0' + day;
+        return (year+"-"+month + '-' + day )
+    }
+
 </script>

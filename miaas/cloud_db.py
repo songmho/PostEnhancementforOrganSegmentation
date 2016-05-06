@@ -88,6 +88,18 @@ class DbManager():
 
         return passwd
 
+    def reset_passwd(self, user_id, password):
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE user SET password = %s " \
+                           "WHERE user_id = %s"
+                cursor.execute(db_query, (user_id, password))
+                self.connector.commit()
+                return True
+            except Exception as e:
+                logger.exception(e)
+                return False
+
     def add_patient(self, patient):
         if_inserted = False
         with self.connector.cursor() as cursor:
