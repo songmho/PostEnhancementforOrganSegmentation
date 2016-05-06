@@ -70,11 +70,11 @@ $(document).ready(function () {
     $('#col-signup-basic').on('submit', function (e) {
         e.preventDefault();
         var invalidElements = "";
-        if (!(checkIDFlag && checkPasswordFlag && checkNameFlag && checkPhoneFlag && checkEmailFlag && checkEmailFlag)) {
+        if (!(checkIDFlag && checkPasswordFlag && checkPasswordConfirmFlag && checkNameFlag && checkPhoneFlag && checkEmailFlag && checkEmailFlag)) {
             if (!checkIDFlag) {
                 invalidElements += "ID"
             }
-            if (!checkPasswordFlag) {
+            if (!checkPasswordFlag || !checkPasswordConfirmFlag) {
                 if (invalidElements == "")
                     invalidElements += "Password";
                 else

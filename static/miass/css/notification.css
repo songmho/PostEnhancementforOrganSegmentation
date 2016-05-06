@@ -1,6 +1,7 @@
 .dropdown .notify-dropdown {
     display: inline-block;
     padding-top: 18px;
+    height: 50px;
 }
 
 .glyphicon-bell {

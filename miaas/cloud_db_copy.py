@@ -1,5 +1,6 @@
 import logging
 from _mysql import DataError, IntegrityError, NotSupportedError, OperationalError, ProgrammingError
+from pandas import json
 from pprint import pprint
 
 import pymysql
@@ -45,6 +46,8 @@ class DbManager:
     PHYSICIAN_INTPR_LIST = "physician_intpr_list"
     REQUEST_RESPONSE_LIST = "request_response_list"
     IMAGE_INTPR_LIST = "image_intpr_list"
+    PATIENT_INTPR_SESSION = "patient_intpr_session"
+    PHYSICIAN_INTPR_DETAIL = "physician_intpr_detail"
 
     # RETRIEVE DETAIL QUERY
     PATIENT_INFO_ID = "patient_info_id"
@@ -53,9 +56,7 @@ class DbManager:
     PATIENT_REQUEST_DETAIL = "patient_request_detail"
     PATIENT_IMAGE_DETAIL = "patient_image_detail"
     PATIENT_PROFILE = "patient_profile"
-    PATIENT_INTPR_SESSION = "patient_intpr_session"
 
-    PHYSICIAN_INTPR_DETAIL = "physician_intpr_detail"
     PHYSICIAN_REQUEST_DETAIL = "physician_request_detail"
     PHYSICIAN_INFO_ID = "physician_info_id"
     PHYSICIAN_INFO_ID_PASSWORD = "physician_info_id_password"
@@ -176,7 +177,34 @@ class DbManager:
                          "FROM interpretation intpr " \
                          "WHERE image_id=%s",
 
-                "columns": INTPR_COLUMNS}
+                "columns": INTPR_COLUMNS},
+
+        PATIENT_INTPR_SESSION:
+            {
+                "query": "SELECT s.*, req.subject, phi.name, res.message, intpr.summary " \
+                         "FROM intpr_session s " \
+                         "JOIN request req ON s.request_id = req.request_id " \
+                         "LEFT JOIN response res ON s.request_id = res.request_id "
+                         "LEFT JOIN interpretation intpr ON s.request_id = intpr.request_id "
+                         "JOIN physician_info phi ON s.physician_id = phi.user_id " \
+                         "WHERE patient_id = %s " \
+                         "ORDER BY s.status DESC, s.timestamp DESC",
+
+                "columns": ["session_id", "request_id", "patient_id", "physician_id", "session_type", "timestamp",
+                            "status", "request_subject", "physician_name", "acceptance_message", "summary"]
+            },
+
+        PHYSICIAN_INTPR_SESSION:
+            {
+                "query": "SELECT * " \
+                         "FROM intpr_session s " \
+                         "JOIN request req ON s.request_id = req.request_id " \
+                         "JOIN patient_info pai ON s.patient_id = pai.user_id " \
+                         "WHERE physician_id = %s " \
+                         "ORDER BY s.status DESC, s.timestamp DESC",
+
+                "columns": [SESSION_COLUMNS, REQUEST_COLUMNS, PATIENT_COLUMNS]
+            }
     }
 
     RETRIEVE_DETAIL_QUERY = {
@@ -271,30 +299,6 @@ class DbManager:
                       ") pp " \
                       "Where pp.rnd = 1"},
 
-        PATIENT_INTPR_SESSION:
-            {
-                "query": "SELECT * " \
-                         "FROM intpr_session s " \
-                         "JOIN request req ON s.request_id = req.request_id " \
-                         "JOIN physician_info phi ON s.physician_id = phi.user_id " \
-                         "WHERE patient_id = %s " \
-                         "ORDER BY s.status DESC, s.timestamp DESC",
-
-                "columns": [SESSION_COLUMNS, REQUEST_COLUMNS, PHYSICIAN_COLUMNS]
-            },
-
-        PHYSICIAN_INTPR_SESSION:
-            {
-                "query": "SELECT * " \
-                         "FROM intpr_session s " \
-                         "JOIN request req ON s.request_id = req.request_id " \
-                         "JOIN patient_info pai ON s.patient_id = pai.user_id " \
-                         "WHERE physician_id = %s " \
-                         "ORDER BY s.status DESC, s.timestamp DESC",
-
-                "columns": [SESSION_COLUMNS, REQUEST_COLUMNS, PATIENT_COLUMNS]
-            },
-
     }
 
     RETRIEVE_SINGLE_COLUMN_QUERY = {
@@ -375,26 +379,15 @@ class DbManager:
         return result
 
     def add_session(self, *args):
+        """
+        :param args: patient_id, physician_id, type, value, timestamp
+                value: a json string
+        :return: boolean
+        """
         with self.connector.cursor() as cursor:
             try:
-                db_query = "INSERT INTO intpr_session (request_id, patient_id, physician_id, session_type, timestamp)" \
+                db_query = "INSERT INTO session (patient_id, physician_id, type, value, timestamp) " \
                            "VALUES (%s, %s, %s, %s, %s)"
-                cursor.execute(db_query, args)
-                self.connector.commit()
-
-                if cursor.rowcount:
-                    return True
-                else:
-                    return False
-            except Exception as e:
-                logger.exception(e)
-                return False
-
-    def add_cancel_session(self, *args):
-        with self.connector.cursor() as cursor:
-            try:
-                db_query = "INSERT INTO intpr_session (patient_id, physician_id, session_type, timestamp)" \
-                           "VALUES (%s, %s, %s, %s)"
                 cursor.execute(db_query, args)
                 self.connector.commit()
 
@@ -441,6 +434,14 @@ class DbManager:
 
 if __name__ == '__main__':
     db = DbManager()
+    patient_id = "demopa"
+    physician_id = "demoph"
+    session_type = "cancel"
+    value = {"request_subject": "Please interpret my chest CT image"}
     timestamp = int(round(time.time() * 1000))
-    result = db.add_session(2, 'demopa', 'demoph', 'response', timestamp)
-    pprint(result)
+    result = db.add_session("demopa", "demoph", "cancel", json.dumps(value), timestamp)
+
+
+    #
+    # pprint(json.dumps(value))
+    # print json.loads(json.dumps(value))['request_subject']

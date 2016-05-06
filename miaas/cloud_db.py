@@ -1,4 +1,5 @@
 import time
+from pandas import json
 
 from miaas import cloud_db_copy
 
@@ -87,6 +88,18 @@ class DbManager():
                 raise Exception("Finding Password is failed.")
 
         return passwd
+
+    def reset_passwd(self, user_id, password):
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE user SET password = %s " \
+                           "WHERE user_id = %s"
+                cursor.execute(db_query, (password, user_id))
+                self.connector.commit()
+                return True
+            except Exception as e:
+                logger.exception(e)
+                return False
 
     def add_patient(self, patient):
         if_inserted = False
@@ -968,7 +981,7 @@ class DbManager():
         if_deleted = False
         with self.connector.cursor() as cursor:
             try:
-                db_query = "SELECT req.request_id, m.user_id, res.physician_id " \
+                db_query = "SELECT req.request_id, m.user_id, res.physician_id, req.subject " \
                            "FROM request req " \
                            "JOIN response res ON req.request_id = res.request_id " \
                            "JOIN medical_image m ON req.image_id = m.image_id " \
@@ -977,7 +990,10 @@ class DbManager():
                 cursor.execute(db_query, request_id)
                 for row in cursor:
                     db2 = cloud_db_copy.DbManager()
-                    db2.add_cancel_session(row[1], row[2], 'cancel', int(round(time.time() * 1000)))
+                    value = {
+                        "request_subject": row[3]
+                    }
+                    db2.add_session(row[1], row[2], 'cancel', json.dumps(value), int(round(time.time() * 1000)))
 
                 db_query = "DELETE FROM request WHERE request_id=%s"
                 cursor.execute(db_query, request_id)

@@ -58,8 +58,8 @@ $(document).ready(function () {
     $('#accountForm').on('submit', function (e) {
             e.preventDefault();
             var invalidElements = "";
-            if (!(checkPasswordFlag && checkNameFlag && checkPhoneFlag && checkEmailFlag && checkEmailFlag)) {
-                if (!checkPasswordFlag) {
+            if (!(checkPasswordFlag && !checkPasswordConfirmFlag && checkNameFlag && checkPhoneFlag && checkEmailFlag && checkEmailFlag)) {
+                if (!checkPasswordFlag || !checkPasswordConfirmFlag) {
                     if (invalidElements == "")
                         invalidElements += "Password";
                     else
