@@ -5,6 +5,7 @@ import subprocess
 import zipfile, codecs
 import dicom
 import csv
+import re
 from miaas.utils import edf_to_csv
 from . import cloud_db, constants, dicom_reader
 
@@ -219,6 +220,7 @@ class ImageManager():
                 first_time = 0
                 second_time = 0
                 is_need_formatting = False
+                is_double_header_row = False
                 formatting_func = None
                 try:
                     first_time = float(first_row[time_column_pos])
@@ -246,7 +248,9 @@ class ImageManager():
                     time_format = first_row[time_column_pos]
                     if time_format.startswith("'") or time_format.startswith('"'):
                         time_format = time_format[1:-1]
+
                     print ('Time format is %s' % time_format)
+                    is_double_header_row = True
                     if time_format == 'hh:mm:ss.mmm' or time_format == u'hh:mm:ss.mmm':
                         header_row[time_column_pos] = 'Time (ms)'
                         def func(str_val):
@@ -261,18 +265,29 @@ class ImageManager():
 
                             ms_time = int(a[1])
                             if len(b) == 1:
-                                ms_time += int(b[0])*1000
+                                ms_time += long(b[0])*1000
                             elif len(b) == 2:
-                                ms_time += (int(b[1])*1000) + (int(b[0])*60*1000)
+                                ms_time += (long(b[1])*1000) + (long(b[0])*60*1000)
                             elif len(b) == 3:
-                                ms_time += (int(b[2])*1000) + (int(b[1])*60*1000) + (int(b[0])*3600*1000)
+                                ms_time += (long(b[2])*1000) + (long(b[1])*60*1000) + (long(b[0])*3600*1000)
                             return ms_time
                         formatting_func = func
                         pass
                     else:
-                        raise Exception('The file is not supported CSV format.')
+                        # no time format
+                        is_double_header_row = False
+                        if bool(re.match('[0-9]+[ ][+][0-9]+[.][0-9]+', time_format)):
+                            header_row[time_column_pos] = 'Time (ms)'
+                            def func(str_val):
+                                time_split = str_val.split(' +')
+                                ms_time = long(long(time_split[0]) + (float(time_split[1])*1000))
+                                return ms_time
+                            formatting_func = func
+                            pass
+                        else:
+                            raise Exception('The file is not supported CSV format.')
                 except Exception as e:
-                    raise Exception('The file format error.')
+                    raise Exception('The file is not supported CSV format.')
 
                 if not is_need_formatting:
                     # translate millisecond datetime to time ms
@@ -290,20 +305,29 @@ class ImageManager():
                         csv_writer.writerow(header_row[time_column_pos:])
                         csv_writer.writerow(first_row[time_column_pos:])
                         csv_writer.writerow(second_row[time_column_pos:])
-                        # print ', '.join(header_row[time_column_pos:])
-                        # print '------------------'
-                        # print ', '.join(first_row[time_column_pos:])
-                        # print ', '.join(second_row[time_column_pos:])
                         for row in csv_reader:
-                            # print ', '.join(row[time_column_pos:])
                             csv_writer.writerow(row[time_column_pos:])
                 else:
-                    second_row[time_column_pos] = formatting_func(second_row[time_column_pos])
-                    csv_writer.writerow(header_row[time_column_pos:])
-                    csv_writer.writerow(second_row[time_column_pos:])
-                    for row in csv_reader:
-                        row[time_column_pos] = formatting_func(row[time_column_pos])
-                        csv_writer.writerow(row[time_column_pos:])
+                    if is_double_header_row:
+                        first_time = formatting_func(second_row[time_column_pos])
+                        second_row[time_column_pos] = 0
+                        # second_row[time_column_pos] = formatting_func(second_row[time_column_pos])
+                        csv_writer.writerow(header_row[time_column_pos:])
+                        csv_writer.writerow(second_row[time_column_pos:])
+                        for row in csv_reader:
+                            # row[time_column_pos] = formatting_func(row[time_column_pos])
+                            row[time_column_pos] = formatting_func(row[time_column_pos]) - first_time
+                            csv_writer.writerow(row[time_column_pos:])
+                    else:
+                        first_time = formatting_func(first_row[time_column_pos])
+                        first_row[time_column_pos] = 0
+                        second_row[time_column_pos] = formatting_func(second_row[time_column_pos]) - first_time
+                        csv_writer.writerow(header_row[time_column_pos:])
+                        csv_writer.writerow(first_row[time_column_pos:])
+                        csv_writer.writerow(second_row[time_column_pos:])
+                        for row in csv_reader:
+                            row[time_column_pos] = formatting_func(row[time_column_pos]) - first_time
+                            csv_writer.writerow(row[time_column_pos:])
 
             # return newpath
             return newpath
