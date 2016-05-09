@@ -1517,3 +1517,20 @@ class DbManager():
                 logger.exception(e)
                 return False
         return True
+
+    def check_email(self, user_type, email):
+        res = 0
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT user_type " \
+                           "FROM user " \
+                           "WHERE email = %s"
+                if cursor.rowcount == 0:
+                    res = 1
+                else:
+                    for row in cursor:
+                        if row[0] == user_type:
+                            res = -1
+
+            except Exception as e:
+                return -2
