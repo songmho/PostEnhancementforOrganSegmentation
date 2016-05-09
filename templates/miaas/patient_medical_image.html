@@ -233,7 +233,11 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             <h4 class="modal-title" id="deleteImageConfirmTitle">Confirm Delete</h4>
         </div>
         <div class="modal-body">
-        Are you sure to delete this image?
+        {% if intpr_list|list_size %}
+            There are 1 or more <i>interpretations</i> for this medical image. <br/>
+            If you delete the image, all the interpretations about the image will be deleted. <br/><br/>
+        {% endif %}
+            Are you sure to delete this image?
         </div>
         <div class="modal-footer">
             <button id="btnDeleteCofirm" type="button" class="btn btn-default" data-dismiss="modal">Delete</button>
@@ -264,7 +268,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             </div>
             <div class="modal-footer" style="border-top: none;">
                 <button id="imageUploadModalCancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Upload</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Select</button>
             </div>
         </div>
     </form>
@@ -282,6 +286,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     $('#takenDate').val(new Date(parseInt("{{ image.taken_date }}")).format("yyyy-MM-dd"));
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");
+    intprSize = {{ intpr_list|list_size }};
 
     archiveURL = "{% url 'miaas:archive' %}";
     requestListURL = "{% url 'miaas:interpretation_request_list' %}";
@@ -309,6 +314,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 <script src="{% static 'lib/dygraph/smooth-plotter.js' %}"></script>
 
 <script src="{% static 'miass/js/imageUploader.js' %}"></script>
+<script src="{% static 'miass/js/dygraphsInteraction.js' %}"></script>
 <script src="{% static 'miass/js/imageViewer.js' %}"></script>
 <script src="{% static 'miass/js/imagePreviewer.js' %}"></script>
 <script src="{% static 'miass/js/medical_image.js' %}"></script>

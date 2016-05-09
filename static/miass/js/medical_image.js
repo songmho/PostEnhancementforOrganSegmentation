@@ -7,6 +7,42 @@ var reqLevel = 2;
 var fileChanged = false;
 var imageInfoFormChanged = false;
 
+function setEditableMode(editable, resetfile) {
+    if (resetfile == undefined || resetfile == null)
+        resetfile = true;
+    if (editable) {
+        $('#btnFormEdit').hide();
+        $('#btnFormDelete').hide();
+        $('#btnFormEditConfirm').show();
+        $('#btnFormCancel').show();
+        $('#subject').removeAttr('readonly');
+        $('#imageType').removeAttr('disabled');
+        $('#btnImageFile').removeAttr('disabled');
+        $('#takenDate').removeAttr('readonly');
+        $('#takenFrom').removeAttr('disabled');
+        $('#takenPhysicianName').removeAttr('readonly');
+        $('#medicalDepartment').removeAttr('readonly');
+        $('#clinicName').removeAttr('readonly');
+        $('#imageDescription').removeAttr('readonly');
+        if(resetfile)
+            $('#image_file').val('');
+    } else {
+        $('#btnFormEditConfirm').hide();
+        $('#btnFormCancel').hide();
+        $('#btnFormEdit').show();
+        $('#btnFormDelete').show();
+        $('#subject').attr('readonly', '');
+        $('#imageType').attr('disabled', '');
+        $('#btnImageFile').attr('disabled', '');
+        $('#takenDate').attr('readonly', '');
+        $('#takenFrom').attr('disabled', '');
+        $('#takenPhysicianName').attr('readonly', '');
+        $('#clinicName').attr('readonly', '');
+        $('#medicalDepartment').attr('readonly', '');
+        $('#imageDescription').attr('readonly', '');
+    }
+}
+
 $(document).ready(function() {
     /*** for file selection ***/
     var imageDate = $('#takenDate');
@@ -41,48 +77,22 @@ $(document).ready(function() {
     $('#btnFormEdit').click(function() {
         fileChanged = false;
         imageInfoFormChanged = false;
-
-        $('#btnFormEdit').hide();
-        $('#btnFormDelete').hide();
-        $('#btnFormEditConfirm').show();
-        $('#btnFormCancel').show();
-        $('#subject').removeAttr('readonly');
-        $('#imageType').removeAttr('disabled');
-        $('#btnImageFile').removeAttr('disabled');
-        $('#image_file').val('');
-        $('#takenDate').removeAttr('readonly');
-        $('#takenFrom').removeAttr('disabled');
-        $('#takenPhysicianName').removeAttr('readonly');
-        $('#medicalDepartment').removeAttr('readonly');
-        $('#clinicName').removeAttr('readonly');
-        $('#imageDescription').removeAttr('readonly');
+        setEditableMode(true);
     });
 
     $('#imageInfoForm').on('submit', function(e) {
         e.preventDefault();
         var currentTime = new Date().getTime() + 3600 * 9;
         var minDate = -5367427200000;
-        console.log(currentTime);
-        console.log(Date.parse(imageDate.val()));
+        //console.log(currentTime);
+        //console.log(Date.parse(imageDate.val()));
         if (Date.parse(imageDate.val()) > currentTime || Date.parse(imageDate.val()) < minDate) {
             openModal("Recorded date must be after 1800 and before now.", "Upload Failed");
             imageDate.focus();
             return;
         }
 
-        $('#btnFormEditConfirm').hide();
-        $('#btnFormCancel').hide();
-        $('#btnFormEdit').show();
-        $('#btnFormDelete').show();
-        $('#subject').attr('readonly', '');
-        $('#imageType').attr('disabled', '');
-        $('#btnImageFile').attr('disabled', '');
-        $('#takenDate').attr('readonly', '');
-        $('#takenFrom').attr('disabled', '');
-        $('#takenPhysicianName').attr('readonly', '');
-        $('#clinicName').attr('readonly', '');
-        $('#medicalDepartment').attr('readonly', '');
-        $('#imageDescription').attr('readonly', '');
+        setEditableMode(false);
         
         if (imageInfoFormChanged) {
             if (fileChanged) {
@@ -93,6 +103,7 @@ $(document).ready(function() {
                 if (filenames.length > POSSIBLE_MULTIPLE_IMAGE_UPLOAD_NUM) {
                     openModal("The maximum number of files uploaded at once is 300. Please less then 300 files. <br/>" +
                         "If you want to upload more files, please compress them as zip file format.", "Too many files are selected");
+                    setEditableMode(true, false);
                     return;
                 }
 
@@ -102,6 +113,7 @@ $(document).ready(function() {
                         console.log(ext);
                         $('#imageUploadModal').modal('hide');
                         openModal('Please upload correct image files for image type.', 'Image Type Check');
+                        setEditableMode(true, false);
                         return;
                     }
                 }
@@ -111,6 +123,7 @@ $(document).ready(function() {
                         != checkImageTypeIsGraphic(imageInfo.image_type)) {
                     $('#imageUploadModal').modal('hide');
                     openModal('Please select correct image type for uploaded image files.', 'Image Type Check');
+                    setEditableMode(true, false);
                     return;
                 }
             }
@@ -154,8 +167,9 @@ $(document).ready(function() {
                         }
                         //resetViewer();
                     } else {
-                        openModal(res['msg'], "Updating Image Failed");
-                        resetImageInfo();
+                        openModal('Updating image information is failed. <br/>'+res['msg'], "Updating Image Failed");
+                        //resetImageInfo();
+                        setEditableMode(true, false);
                     }
                 }
             });
@@ -165,6 +179,7 @@ $(document).ready(function() {
             if (filenames.length > POSSIBLE_MULTIPLE_IMAGE_UPLOAD_NUM) {
                 openModal("The maximum number of files uploaded at once is 300. Please less then 300 files. <br/>" +
                     "If you want to upload more files, please compress them as zip file format.", "Too many files are selected");
+                setEditableMode(true, false);
                 return;
             }
 
@@ -185,6 +200,7 @@ $(document).ready(function() {
                 console.log(ext);
                 $('#imageUploadModal').modal('hide');
                 openModal('Please upload correct image files for image type.', 'Image Type Check');
+                setEditableMode(true, false);
                 return;
             }
         }
@@ -237,7 +253,10 @@ $(document).ready(function() {
                         location.reload();
                     });
                 } else {
-                    openModal(res['msg'], 'Update Failed');
+                    if (imageInfoFormChanged)
+                        openModal('Image information is successfully update. However, file uploading is failed. <br/>' + res['msg'], 'Upload Failed');
+                    else
+                        openModal('File uploading failed. <br/>' + res['msg'], 'Update Failed');
                 }
             }, error: function(res) {
                 openModal(res['msg'], 'Update Failed');

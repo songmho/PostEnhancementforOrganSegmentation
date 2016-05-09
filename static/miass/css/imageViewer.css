@@ -17,6 +17,10 @@
     }
 }
 
+#imageViewModalTitle {
+    display: inline-block;
+}
+
 .modal#imageViewModal .modal-content {
 
 }
@@ -171,7 +175,7 @@
 
 .image-view-image .dygraph-legend {
     position: absolute;
-    z-index: 10;
+    z-index: 11;
     top: 0px;
     right: 26px;
     width: 320px;
@@ -186,21 +190,16 @@
     font-weight: bold;
 }
 
-#btnImageControlHelp {
-    margin-bottom: 10px;
+#imageViewHeaderHelper {
+    /*margin-bottom: 10px;*/
     margin-right: 20px;
 }
-@media (min-width: 992px) {
+/*@media (min-width: 992px) {
     #btnImageControlHelp {
         margin-top: 4px;
     }
-}
+}*/
 
-#imageViewHeaderHelper .popover {
-    overflow: visible !important;
-    z-index: 1200;
-
-}
 
 #imageViewerSequenceLoader {
     z-index: 5;

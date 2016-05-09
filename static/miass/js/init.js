@@ -14,8 +14,24 @@ $(document).ready(function() {
 
     $('textarea.form-control').keyup(function(event) {
         if($(this).val().length > 1000) {
-            openModal("Max Textarea Length is 1000", "Alert");
-            $(this).val($(this).val().substring(0, 1000));
+            var textarea = $(this);
+            //openModal("Max Textarea Length is 1000", "Alert");
+            if (!textarea.hasClass('has_popover')) {
+                textarea.addClass('has_popover');
+                textarea.popover({
+                    title: "Alert",
+                    content: "Max text length is 1000.",
+                    placement: "bottom",
+                    trigger: "manual"
+                });
+                textarea.popover("show");
+                setTimeout(function () {
+                    textarea.popover('destroy');
+                    textarea.removeClass('has_popover');
+                }, 2000);
+            }
+            textarea.val(textarea.val().substring(0, 1000));
+            textarea.trigger('change');
         }
     });
 

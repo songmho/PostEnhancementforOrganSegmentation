@@ -132,6 +132,7 @@ function dicomShowDataSet(dataSet) {
 }
 
 function dicomloadAndView(dicomURL) {
+    $('#btnGraphControlHelp').hide();
     $('#btnImageControlHelp').show();
     // prefix the url with wadouri: so cornerstone can find the image loader
     var wadoURI = "wadouri:" + dicomURL;
@@ -202,6 +203,7 @@ function generalImageLoadAndView(imageURL) {
         conerstoneloaded = false;
     }
     $('#btnImageControlHelp').hide();
+    $('#btnGraphControlHelp').hide();
 
     var canvas = $('#imageViewer canvas')[0];
     var ctx = canvas.getContext('2d');
@@ -236,6 +238,9 @@ function generalImageLoadAndView(imageURL) {
 
 var graph = null;
 function csvGrpahLoadAndView(csvURL) {
+    $('#btnImageControlHelp').hide();
+    $('#btnGraphControlHelp').show();
+
     showImageViewerLoader(true);
     setTimeout(function() {
         var data = csvURL;
@@ -278,6 +283,14 @@ function csvGrpahLoadAndView(csvURL) {
                 //labelWidth: 400,
                 //labels: "[\"X\", \"Y1\", \"Y2\", ...]*",
                 //visibility: [true, true, true, false, false, false],
+                interactionModel: {
+                    'mousedown' : downV3,
+                    'mousemove' : moveV3,
+                    'mouseup' : upV3,
+                    'click' : clickV3,
+                    'dblclick' : dblClickV4,
+                    'mousewheel' : scrollV3
+                },
                 drawCallback: function(g) {
                     var lables = g.getLabels();
                     var timeLable = lables[0];
@@ -332,6 +345,8 @@ function csvGrpahLoadAndView(csvURL) {
             } else {
                 $('#graphLabelChecks').hide();
             }
+            $('#graphViewer').trigger('focus');
+            $('#graphViewer').focus();
         });
 
         $('#rollPeriodConfirm').off('click');
@@ -392,6 +407,32 @@ function downloadAndView(tagData){
     } else {
         generalImageLoadAndView(url);
         $('#imageViewModalTitleName').text(tagData['name']);
+    }
+}
+
+function setDicomViewerAdjusting(allowAjdusting) {
+    var element = $('#imageViewer').get(0);
+    if(allowAjdusting) {
+        if (conerstoneloaded === false) {
+            var element = $('#imageViewer').get(0);
+            cornerstoneTools.mouseInput.enable(element);
+            cornerstoneTools.mouseWheelInput.enable(element);
+            cornerstoneTools.wwwc.activate(element, 1);
+            cornerstoneTools.pan.activate(element, 2);
+            cornerstoneTools.zoom.activate(element, 4);
+            cornerstoneTools.zoomWheel.activate(element);
+            conerstoneloaded = true;
+        }
+    } else {
+        if (conerstoneloaded === true) {
+            cornerstoneTools.mouseInput.disable(element);
+            cornerstoneTools.mouseWheelInput.disable(element);
+            cornerstoneTools.wwwc.disable(element);
+            cornerstoneTools.pan.disable(element);
+            cornerstoneTools.zoom.disable(element);
+            cornerstoneTools.zoomWheel.disable(element);
+            conerstoneloaded = false;
+        }
     }
 }
 
@@ -531,6 +572,7 @@ function setPlayDicomSequence(images) {
                         if(dicomSeqPlaying) {
                             clearInterval(dicomPlayingSequenceInterval);
                             dicomSeqPlaying = false;
+                            setDicomViewerAdjusting(true);
 
                             $('.seq-controller-buttons .btn.btn-state').removeClass('activate');
                             $(this).addClass('activate');
@@ -555,6 +597,7 @@ function setPlayDicomSequence(images) {
                     $('.btn-seq-play').click(function() {
                         if(dicomSeqPlaying) clearInterval(dicomPlayingSequenceInterval);
 
+                        setDicomViewerAdjusting(false);
                         $('#seqControllerStepBackward').off('click').unbind('click').addClass('disabled');
                         $('#seqControllerStepForward').off('click').unbind('click').addClass('disabled');
 
@@ -641,6 +684,7 @@ function setPlayDicomSequence(images) {
                     $('.btn-seq-seg-play').click(function() {
                         if(dicomSeqPlaying) clearInterval(dicomPlayingSequenceInterval);
 
+                        setDicomViewerAdjusting(false);
                         $('#seqControllerStepBackward').off('click').unbind('click').addClass('disabled');
                         $('#seqControllerStepForward').off('click').unbind('click').addClass('disabled');
 
@@ -867,6 +911,7 @@ $(cornerstone).bind('CornerstoneImageLoadProgress', function(eventData) {
 $(document).ready(function() {
     $('#rollPeriodLabel').popover({ trigger: "hover" });
     $('#btnImageControlHelp').popover({ trigger: "hover" });
+    $('#btnGraphControlHelp').popover({ trigger: "hover" })
 
     resizeViewer();
     window.addEventListener("resize", resizeViewer);
@@ -906,10 +951,7 @@ $(document).ready(function() {
 
     $('.image-view-image').on('mousewheel', function(e, delta) {
         if(dicomViewerStatus == 'dicom' || dicomViewerStatus == 'sequence') {
-            //$('#btnImageControlHelp').popover('hide');
-            //$('#btnImageControlHelp').trigger('focusout');
             $('#btnImageControlHelp').blur();
-            //$('#btnImageControlHelp').trigger('focusout');
 
             if (isHovered('imageViewer')) {
                 if (e.preventDefault)
