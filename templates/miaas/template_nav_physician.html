@@ -37,80 +37,98 @@
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-
                 <li class="dropdown notify-dropdown">
                     <a class="dropdown notify-dropdown" role="button">
-                        <i class="glyphicon glyphicon-bell"></i>
+                        <div id='bell'>
+                            <i class="glyphicon glyphicon-bell"
+                                    {% if intpr_session.new == 0 %}
+                               style="color: #777777"
+                                    {% endif %}
+                            ></i>
+                        </div>
                     </a>
                     <ul class="dropdown-menu notifications" role="menu">
                         <div class="notification-heading">
                             <h4 class="menu-title">Notifications</h4>
                         </div>
                         <li class="divider"></li>
-                        <div class="notifications-wrapper">
-                            {% for session in intpr_session %}
-                                {% if session.type == 'cancel' %}
-                                    <div class="content" href="#">
-                                        {% if session.status == 0 %}
-                                            <div class="alert alert-custom-new fade in" session_id = {{ session.session_id }}>
-                                                <a href="#" class="close" data-dismiss="alert"
-                                                   aria-label="close">&times;</a>
-                                                <h4 class="item-title">CANCEL <span
-                                                        class="item-time">{{ session.timestamp|datetime_string }}</span>
-                                                </h4>
-                                                <p class="item-info"> The request,
-                                                    "{{ session.value.request_subject| less_string }}", that you
-                                                    respond is canceled.</p>
-                                            </div>
-                                        {% else %}
-                                            <div class="alert alert-custom fade in" session_id = {{ session.session_id }}>
-                                                <a href="#" class="close" data-dismiss="alert"
-                                                   aria-label="close">&times;</a>
-                                                <h4 class="item-title">CANCEL <span
-                                                        class="item-time">{{ session.timestamp|datetime_string }}</span>
-                                                </h4>
-                                                <p class="item-info"> The request,
-                                                    "{{ session.value.request_subject| less_string }}", that you
-                                                    respond is canceled.</p>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                                {% if session.type == 'select' %}
-                                    <div class="content" href="#">
-                                        {% if session.status == 0 %}
-                                            <div class="alert alert-custom-new fade in" session_id = {{ session.session_id }}>
-                                                <a href="#" class="close" data-dismiss="alert"
-                                                   aria-label="close">&times;</a>
-                                                <h4 class="item-title">SELECT <span
-                                                        class="item-time">{{ session.timestamp|datetime_string }}</span>
-                                                </h4>
-                                                <p class="item-info"> The patient, <a
-                                                        class="item-link"> {{ session.name }}</a>,
-                                                    selected you to get interpretation for the request, "<a
-                                                            class="item-link"> {{ session.value.request_subject| less_string }}</a>".
-                                                </p>
-                                            </div>
-                                        {% else %}
-                                            <div class="alert alert-custom fade in" session_id = {{ session.session_id }}>
-                                                <a href="#" class="close" data-dismiss="alert"
-                                                   aria-label="close">&times;</a>
-                                                <h4 class="item-title">SELECT <span
-                                                        class="item-time">{{ session.timestamp|datetime_string }}</span>
-                                                </h4>
-                                                <p class="item-info"> The patient, <a
-                                                        class="item-link"> {{ session.name }}</a>,
-                                                    selected you to get interpretation for the request, "<a
-                                                            class="item-link"> {{ session.value.request_subject| less_string }}</a>".
-                                                </p>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
+                        <div id='notifications-wrapper' class="notifications-wrapper">
+                            {% if intpr_session.sessions %}
+                                {% for session in intpr_session.sessions %}
+                                    {% if session.type == 'cancel' %}
+                                        <div class="content" href="#">
+                                            {% if session.status == 0 %}
+                                                <div class="alert alert-custom-new fade in"
+                                                     session_id= {{ session.session_id }}>
+                                                    <a href="#" class="close" data-dismiss="alert"
+                                                       aria-label="close"
+                                                       session_id= {{ session.session_id }}>&times;</a>
+                                                    <h4 class="item-title">CANCEL <span
+                                                            class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                    </h4>
+                                                    <p class="item-info"> The request,
+                                                        "{{ session.value.request_subject| less_string }}", that you
+                                                        respond is canceled.</p>
+                                                </div>
+                                            {% elif session.status == 1 %}
+                                                <div class="alert alert-custom fade in"
+                                                     session_id= {{ session.session_id }}>
+                                                    <a href="#" class="close" data-dismiss="alert"
+                                                       aria-label="close"
+                                                       session_id= {{ session.session_id }}>&times;</a>
+                                                    <h4 class="item-title">CANCEL <span
+                                                            class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                    </h4>
+                                                    <p class="item-info"> The request,
+                                                        "{{ session.value.request_subject| less_string }}", that you
+                                                        respond is canceled.</p>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                    {% if session.type == 'select' %}
+                                        <div class="content" href="#">
+                                            {% if session.status == 0 %}
+                                                <div class="alert alert-custom-new fade in"
+                                                     session_id= {{ session.session_id }}>
+                                                    <a href="#" class="close" data-dismiss="alert"
+                                                       aria-label="close"
+                                                       session_id= {{ session.session_id }}>&times;</a>
+                                                    <h4 class="item-title">SELECT <span
+                                                            class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                    </h4>
+                                                    <p class="item-info"> The patient, <a
+                                                            class="item-link"> {{ session.name }}</a>,
+                                                        selected you to get interpretation for the request, "<a
+                                                                class="item-link"> {{ session.value.request_subject| less_string }}</a>".
+                                                    </p>
+                                                </div>
+                                            {% elif session.status == 1 %}
+                                                <div class="alert alert-custom fade in"
+                                                     session_id= {{ session.session_id }}>
+                                                    <a href="#" class="close" data-dismiss="alert"
+                                                       aria-label="close"
+                                                       session_id= {{ session.session_id }}>&times;</a>
+                                                    <h4 class="item-title">SELECT <span
+                                                            class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                    </h4>
+                                                    <p class="item-info"> The patient, <a
+                                                            class="item-link"> {{ session.name }}</a>,
+                                                        selected you to get interpretation for the request, "<a
+                                                                class="item-link"> {{ session.value.request_subject| less_string }}</a>".
+                                                    </p>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <h3></h3>
+                            {% endif %}
+
                         </div>
                         <li class="divider"></li>
-                        <div class="btn btn-primary col-xs-offset-4 col-xs-4">Refresh</div>
+                        <div id="btnRefresh" class="btn btn-primary col-xs-offset-4 col-xs-4">Refresh</div>
                     </ul>
                 </li>
 
@@ -131,20 +149,10 @@
 </nav>
 
 <!-- scripts -->
-<script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
-
-<script type="text/javascript">
-    $('.notify-dropdown').on("click", function (event) {
-        $(this).parent().toggleClass('open');
-    });
-    $('body').on('click', function (e) {
-        if (!$('.notify-dropdown').is(e.target)
-                && $('.notify-dropdown').has(e.target).length === 0
-                && $('.open').has(e.target).length === 0
-        ) {
-            $('.notify-dropdown').removeClass('open');
-        }
-    });
-
-
+<script>
+    var intpr_session = '{{ intpr_session }}';
+    var userId = '{{ user_session.user_id }}';
+    var userType = '{{ user_session.user_type }}';
 </script>
+<script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
+<script src="{% static 'miass/js/notification.js' %}"></script>

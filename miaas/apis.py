@@ -46,11 +46,40 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 def handle_intpr_session_mgt(request):
     db = cloud_db.DbManager()
-    try:
-        if request.method == 'PUT':
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
-            data = json.loads(request.body)
+    if len(request.body) == 0:
+        raise Exception(MSG_NODATA)
+
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            user_type = data['user_type']
+            if not user_type:
+                raise Exception(MSG_INVALID_PARAMS)
+            intpr_session = {}
+            if user_type == 'patient':
+                intpr_session['sessions'] = db.retrieve_patient_session(data['user_id'])
+                new_flag = 0
+                for session in intpr_session['sessions']:
+                    if session['status'] == 0:
+                        new_flag = 1
+                intpr_session['new'] = new_flag
+            elif user_type == 'physician':
+                intpr_session['sessions'] = db.retrieve_physician_session(data['user_id'])
+                new_flag = 0
+                for session in intpr_session['sessions']:
+                    if session['status'] == 0:
+                        new_flag = 1
+                intpr_session['new'] = new_flag
+            request.session['intpr_session'] = intpr_session
+            return JsonResponse(constants.CODE_SUCCESS)
+        except TypeError:
+            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
+        except Exception:
+            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_DB_FAILED}))
+
+    elif request.method == 'PUT':
+        data = json.loads(request.body)
+        try:
             action = data['action']
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
@@ -59,10 +88,18 @@ def handle_intpr_session_mgt(request):
                 res = db.update_session(data['session_id'])
                 if res:
                     intpr_session = request.session['intpr_session']
-                    for i in range(0, len(intpr_session)):
-                        if intpr_session[i]['session_id'] == int(data['session_id']):
-                            intpr_session[i]['status'] = 1
+                    sessions = intpr_session['sessions']
+                    for i in range(0, len(sessions)):
+                        if sessions[i]['session_id'] == int(data['session_id']):
+                            sessions[i]['status'] = 1
                             break
+                    new_flag = 0
+                    for session in intpr_session['sessions']:
+                        if session['status'] == 0:
+                            new_flag = 1
+
+                    intpr_session['sessions'] = sessions
+                    intpr_session['new'] = new_flag
                     request.session['intpr_session'] = intpr_session
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
@@ -71,18 +108,27 @@ def handle_intpr_session_mgt(request):
                 res = db.delete_session(data['session_id'])
                 if res:
                     intpr_session = request.session['intpr_session']
-                    for i in range(0, len(intpr_session)):
-                        if intpr_session[i]['session_id'] == int(data['session_id']):
-                            intpr_session[i]['status'] = 2
+                    sessions = intpr_session['sessions']
+                    for i in range(0, len(sessions)):
+                        if sessions[i]['session_id'] == int(data['session_id']):
+                            sessions[i]['status'] = 2
                             break
+
+                    new_flag = 0
+                    for session in intpr_session['sessions']:
+                        if session['status'] == 0:
+                            new_flag = 1
+
+                    intpr_session['sessions'] = sessions
+                    intpr_session['new'] = new_flag
                     request.session['intpr_session'] = intpr_session
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
                     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
-
-    except Exception as e:
-        logger.info(e)
-        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
+        except TypeError:
+            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
+        except Exception:
+            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_DB_FAILED}))
 
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
@@ -110,15 +156,26 @@ def handle_session_mgt(request):
             password = data['password']
 
             user = {}
+            intpr_session = {}
             user_type = db.retrieve_user(user_id, password)
             if user_type is None:
                 raise Exception(MSG_INVALID_IDPW)
             elif user_type == 'patient':
                 user = db.retrieve_patient(user_id, password)
-                intpr_session = db.retrieve_patient_session(user_id)
+                intpr_session['sessions'] = db.retrieve_patient_session(data['user_id'])
+                new_flag = 0
+                for session in intpr_session['sessions']:
+                    if session['status'] == 0:
+                        new_flag = 1
+                intpr_session['new'] = new_flag
             elif user_type == 'physician':
                 user = db.retrieve_physician(user_id, password)
-                intpr_session = db.retrieve_physician_session(user_id)
+                intpr_session['sessions'] = db.retrieve_physician_session(data['user_id'])
+                new_flag = 0
+                for session in intpr_session['sessions']:
+                    if session['status'] == 0:
+                        new_flag = 1
+                intpr_session['new'] = new_flag
             else:
                 raise Exception(MSG_INVALID_IDPW)
             if not user.get('user_id'):
