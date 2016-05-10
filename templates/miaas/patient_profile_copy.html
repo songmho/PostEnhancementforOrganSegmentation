@@ -1,0 +1,478 @@
+{% if not user_session or user_session.user_type != 'patient' %}
+    <script type="text/javascript">
+        location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
+    </script>
+{% endif %}
+
+{% load staticfiles %}
+{% load my_filters %}
+
+{% include 'miaas/template_header.html' %}
+
+<!-- custom css -->
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/profile.css' %}">
+
+{% include 'miaas/template_nav_patient.html' %}
+
+<div class="container">
+    <section class="section section-default">
+        <div class="row">
+            <div class="col-xs-12 col-title">
+                <h2 class="text-primary">Personal Profile</h2>
+            </div>
+            <form id="patientProfileForm" class="col-xs-12 col-form" accept-charset="UTF-8">
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="height">Height</label>
+                        <div class="col-xs-5 col-sm-4 col-md-3">
+                            <input type="number" id="height" name="height" maxlength="10" step="0.01"
+                                   class="form-control" min="60" max="300">
+                        </div>
+                        <div class="col-xs-7 col-sm-5 col-md-4">
+                            <select class="form-control" id="heightType" name="heightType">
+                                <option value="Centimeters">Centimeters</option>
+                                <option value="Inch">Inch</option>
+                                <option value="Feet">Feet</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="weight">Weight</label>
+                        <div class="col-xs-5 col-sm-4 col-md-3">
+                            <input type="number" id="weight" name="weight" maxlength="10" step="0.01"
+                                   class="form-control" min="30" max="500">
+                        </div>
+                        <div class="col-xs-7 col-sm-5 col-md-4">
+                            <select class="form-control" id="weightType" name="weightType">
+                                <option value="Kilogram">Kilogram</option>
+                                <option value="Pound">Pound</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingCapacity">Drinking
+                            Capacity</label>
+                        <div class="col-xs-5 col-sm-4 col-md-3">
+                            <input type="number" id="drinkingCapacity" name="drinkingCapacity" maxlength="10"
+                                   class="form-control" min="0" max="100">
+                        </div>
+                        <div class="col-xs-7 col-sm-5 col-md-4 control-text">
+                            <span>glasses</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingFrequency">Drinking
+                            Frequency</label>
+                        <div class="col-xs-5 col-sm-4 col-md-3">
+                            <input type="number" id="drinkingFrequency" name="drinkingFrequency" maxlength="10"
+                                   step="0.1" class="form-control" min="0" max="7">
+                        </div>
+                        <div class="col-xs-7 col-sm-5 col-md-4 control-text no-pad-right">
+                            <span>times per a week</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="sleeping">Sleeping Hours</label>
+                        <div class="col-xs-5 col-sm-4 col-md-3">
+                            <input type="number" id="sleeping" name="sleeping" maxlength="10" step="0.1"
+                                   class="form-control" min="0" max="24">
+                        </div>
+                        <div class="col-xs-7 col-sm-5 col-md-4 control-text">
+                            <span>hours per a day</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="exercise">Exercise Time</label>
+                        <div class="col-xs-5 col-sm-4 col-md-3">
+                            <input type="number" id="exercise" name="exercise" maxlength="10" class="form-control"
+                                   min="0" max="1440">
+                        </div>
+                        <div class="col-xs-7 col-sm-5 col-md-4 control-text no-pad-right">
+                            <span>minutes per a day</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="smoking">Smoking Status</label>
+                        <div class="col-sm-9 col-md-7">
+                            <select class="form-control" id="smoking" name="smoking">
+                                <option value="" selected disabled>Select</option>
+                                <option>Nonsmoker</option>
+                                <option>Scarcely</option>
+                                <option>Sometimes</option>
+                                <option>A pack per two weeks</option>
+                                <option>A pack per week</option>
+                                <option>2 packs per week</option>
+                                <option>3 packs per week</option>
+                                <option>5 packs per week</option>
+                                <option>1 pack per a day</option>
+                                <option>2 packs per a day</option>
+                                <option>3 or more packs per a day</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="water">Water Intake</label>
+                        <div class="col-xs-5 col-sm-4 col-md-3">
+                            <input type="number" id="water" name="water" maxlength="10" class="form-control" min="0"
+                                   max="100"
+                            >
+                        </div>
+                        <div class="col-xs-7 col-sm-5 col-md-4 control-text">
+                            <span>cups per a day</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-container form-boxed row">
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-3 control-label" for="table-pmh">Past Medical
+                            History</label>
+                        <a id="btn-add-pmh-record" class="btn btn-custom-add">
+                            <span class="glyphicon glyphicon-plus"></span> Add Record
+                        </a>
+                        <span id="info-phm" class="text-info"></span>
+                        <div class="col-xs-12">
+                            <table id="table-pmh" class="table table-bordered ">
+                                <thead>
+                                <tr>
+                                    <th style="width: 15%;">History Type</th>
+                                    <th style="width: 15%;">Name</th>
+                                    <th style="width: 15%;">Date</th>
+                                    <th style="width: 55%;">Comment</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <select class="input-in-table">
+                                            <option>Disease</option>
+                                            <option>Medical Test</option>
+                                            <option>Treatment</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="input-in-table" maxlength="50"></td>
+                                    <td><input type="date" class="input-in-table" min="1800-01-01"></td>
+                                    <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                    <td style="padding: 5px; width: 20px; border:hidden; border-left: inherit">
+                                        <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-3 control-label" for="table-ed">Existing Diseases</label>
+                        <a id="btn-add-ed-record" class="btn btn-custom-add">
+                            <span class="glyphicon glyphicon-plus"></span> Add Record
+                        </a>
+                        <span id="info-ed" class="text-info"></span>
+                        <div class="col-xs-12">
+                            <table id="table-ed" class="table table-bordered ">
+                                <thead>
+                                <tr>
+                                    <th style="width: 15%;">Disease Name</th>
+                                    <th style="width: 15%;">Degree</th>
+                                    <th style="width: 15%;">Duration</th>
+                                    <th style="width: 55%;">Comment</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><input type="text" class="input-in-table" maxlength="50"></td>
+                                    <td>
+                                        <select class="input-in-table">
+                                            <option>Severe</option>
+                                            <option>Normal</option>
+                                            <option>Trifling</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="input-in-table text-right col-xs-3"
+                                               style="width: 50%; padding-right: 5px"
+                                               min="0">
+                                        <select class="input-in-table" style="width: 50%">
+                                            <option>days</option>
+                                            <option>weeks</option>
+                                            <option>months</option>
+                                            <option>years</option>
+                                        </select>
+                                    </td>
+                                    <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                    <td style="padding: 5px; width: 20px; border:hidden; border-left: inherit">
+                                        <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-3 control-label" for="table-sd">Suspected Diseases</label>
+                        <a id="btn-add-sd-record" class="btn btn-custom-add">
+                            <span class="glyphicon glyphicon-plus"></span> Add Record
+                        </a>
+                        <span id="info-sd" class="text-info"></span>
+                        <div class="col-xs-12">
+                            <table id="table-sd" class="table table-bordered ">
+                                <thead>
+                                <tr>
+                                    <th style="width: 15%;">Disease Name</th>
+                                    <th style="width: 15%;">Symptoms</th>
+                                    <th style="width: 15%;">Degree</th>
+                                    <th style="width: 15%">Duration</th>
+                                    <th style="width: 40%;">Comment</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="sd1">
+                                    <td bgcolor="white">
+                                        <input type="text" class="input-in-table" maxlength="50"
+                                               style="height: 40px; width: 85%">
+                                        <a id="btn-add-symptom" class="btn btn-custom-add" data-placement="right"
+                                           data-toggle="tooltip" title="Add Symptom">
+                                            <span class="glyphicon glyphicon-plus in-table"></span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="input-in-table" maxlength="50">
+                                    </td>
+                                    <td>
+                                        <select class="input-in-table">
+                                            <option>Severe</option>
+                                            <option>Normal</option>
+                                            <option>Trifling</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="input-in-table text-right col-xs-3"
+                                               style="width: 50%; padding-right: 5px"
+                                               min="0">
+                                        <select class="input-in-table" style="width: 50%">
+                                            <option>days</option>
+                                            <option>weeks</option>
+                                            <option>months</option>
+                                            <option>years</option>
+                                        </select>
+                                    </td>
+                                    <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                    <td style="padding: 5px; width: 20px; border:hidden; border-left: inherit">
+                                        <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-3 control-label" for="table-m">Medications</label>
+                        <a id="btn-add-m-record" class="btn btn-custom-add">
+                            <span class="glyphicon glyphicon-plus"></span> Add Record
+                        </a>
+                        <span id="info-m" class="text-info"></span>
+                        <div class="col-xs-12">
+                            <table id="table-m" class="table table-bordered ">
+                                <thead>
+                                <tr>
+                                    <th style="width: 15%;">Medi. Name</th>
+                                    <th style="width: 15%;">Intake</th>
+                                    <th style="width: 15%;">Frequency</th>
+                                    <th style="width: 15%;">Duration</th>
+                                    <th style="width: 40%;">Comment</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><input type="text" class="input-in-table" maxlength="50"></td>
+                                    <td>
+                                        <input type="number" class="input-in-table text-right col-xs-3"
+                                               style="width: 50%; padding-right: 5px"
+                                               min="0">
+                                        <select class="input-in-table" style="width: 50%">
+                                            <option>mL</option>
+                                            <option>g</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="input-in-table text-right col-xs-3"
+                                               style="width: 50%; padding-right: 5px"
+                                               min="0">
+                                        <select class="input-in-table" style="width: 50%">
+                                            <option>/day</option>
+                                            <option>/week</option>
+                                            <option>/month</option>
+                                            <option>/year</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="input-in-table text-right col-xs-3"
+                                               style="width: 50%; padding-right: 5px"
+                                               min="0">
+                                        <select class="input-in-table" style="width: 50%">
+                                            <option>days</option>
+                                            <option>weeks</option>
+                                            <option>months</option>
+                                            <option>years</option>
+                                        </select>
+                                    </td>
+                                    <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                    <td style="padding: 5px; width: 20px; border:hidden; border-left: inherit">
+                                        <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-3 control-label" for="table-fmh">Family Medical History</label>
+                        <a id="btn-add-fmh-record" class="btn btn-custom-add">
+                            <span class="glyphicon glyphicon-plus"></span> Add Record
+                        </a>
+                        <span id="info-fmh" class="text-info"></span>
+                        <div class="col-xs-12">
+                            <table id="table-fmh" class="table table-bordered ">
+                                <thead>
+                                <tr>
+                                    <th style="width: 15%;">Relationship</th>
+                                    <th style="width: 90%;">Comment</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><select class="input-in-table">
+                                        <option>Grandfather</option>
+                                        <option>Grandmother</option>
+                                        <option>Father</option>
+                                        <option>Mother</option>
+                                        <option>Brother</option>
+                                        <option>Sister</option>
+                                    </select></td>
+                                    <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-3 control-label" for="table-a">Allergies</label>
+                        <a id="btn-add-a-record" class="btn btn-custom-add">
+                            <span class="glyphicon glyphicon-plus"></span> Add Record
+                        </a>
+                        <span id="info-a" class="text-info"></span>
+                        <div class="col-xs-12">
+                            <table id="table-a" class="table table-bordered ">
+                                <thead>
+                                <tr>
+                                    <th style="width: 15%;">Allergy Name</th>
+                                    <th style="width: 15%;">Degree</th>
+                                    <th style="width: 70%;">Comment</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <select class="input-in-table">
+                                            <option>Balsam of Peru</option>
+                                            <option>Fruit</option>
+                                            <option>Rice</option>
+                                            <option>...</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="input-in-table">
+                                            <option>Severe</option>
+                                            <option>Normal</option>
+                                            <option>Trifling</option>
+                                        </select>
+                                    </td>
+                                    <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-xs-3 control-label" for="table-a">Notice</label>
+                        <div class="col-xs-12">
+                            <textarea type="textarea" id="notice" name="notice"
+                                      class="form-control"
+                                      placeholder="Write any notifications that need to be informed to physicians. &#10;Example) I have my heart on the right side by nature."
+                                      rows="5"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-btns-container row">
+                        <div id="btnFormReset"
+                             class="col-xs-12 col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-4 form-button">
+                            <button class="btn btn-lg btn-primary btn-block" type="button">Reset</button>
+                        </div>
+                        <div id="btnFormUpdate" class="col-xs-12 col-sm-4 col-md-2 form-button">
+                            <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="updateFailedModal" tabindex="-1" role="dialog" aria-labelledby="updateFailedTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="updateFailedTitle">Update Failed</h4>
+            </div>
+            <div class="modal-body">
+                Signup failed
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="updatedModal" tabindex="-1" role="dialog" aria-labelledby="updatedTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="updatedTitle">Update Success</h4>
+            </div>
+            <div class="modal-body">
+                Your profile is successfully updated.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'miaas/template_footer.html' %}
+
+<!-- custom javascript -->
+<script src="{% static 'miass/js/profile.js' %}"></script>
+
+</body>
+</html>

@@ -229,7 +229,7 @@ function checkEmail() {
         inputEmail.css("border-color", "red");
         inputEmail.popover({
             title: "Warning",
-            content: "The form of e-mail address is xxx@Xxxx.xxx",
+            content: "The form of e-mail address is xxx@xxxx.xxx",
             placement: "bottom",
             trigger: "manual"
         });
