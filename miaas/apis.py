@@ -7,10 +7,7 @@ from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
 
-from miaas import cloud_db_copy
-from .forms import UploadForm
-
-import constants, cloud_db
+import constants, cloud_db, email
 from image_manager import ImageManager, ImageRetriever
 
 MSG_DB_FAILED = "Failed to handle DB requests."
@@ -19,6 +16,7 @@ MSG_NOT_MATCHED_USER = "Logged in user is not match with request user"
 MSG_NOT_MATCHED_IMAGE = "Access with wrong path"
 MSG_ALREADY_LOGGEDIN = "Already logged in."
 MSG_SIGNUP_FAILED = "Sign up failed."
+MSG_NEED_AUTH = "Your account is not authenticated yet. Please check your email."
 MSG_INVALID_IDPW = "Invalid ID and/or PW."
 MSG_INVALID_PARAMS = "Invalid parameters."
 MSG_NODATA = "No data."
@@ -143,7 +141,7 @@ def handle_session_mgt(request):
     db = cloud_db.DbManager()
     try:
         if request.method == 'POST':
-            ### login ###
+            ### login(signin) ###
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
             data = json.loads(request.body)
@@ -155,6 +153,12 @@ def handle_session_mgt(request):
             user_id = data['user_id']
             password = data['password']
 
+            authenticated = db.check_authentication(user_id)
+            if authenticated is None:
+                raise Exception(MSG_UNKNOWN_ERROR)
+            elif authenticated is False:
+                raise Exception(MSG_NEED_AUTH)
+
             user = {}
             intpr_session = {}
             user_type = db.retrieve_user(user_id, password)
@@ -163,23 +167,22 @@ def handle_session_mgt(request):
             elif user_type == 'patient':
                 user = db.retrieve_patient(user_id, password)
                 intpr_session['sessions'] = db.retrieve_patient_session(data['user_id'])
-                new_flag = 0
-                for session in intpr_session['sessions']:
-                    if session['status'] == 0:
-                        new_flag = 1
-                intpr_session['new'] = new_flag
             elif user_type == 'physician':
                 user = db.retrieve_physician(user_id, password)
                 intpr_session['sessions'] = db.retrieve_physician_session(data['user_id'])
-                new_flag = 0
-                for session in intpr_session['sessions']:
-                    if session['status'] == 0:
-                        new_flag = 1
-                intpr_session['new'] = new_flag
             else:
                 raise Exception(MSG_INVALID_IDPW)
             if not user.get('user_id'):
                 raise Exception(MSG_INVALID_IDPW)
+
+            # intpr session check
+            new_flag = 0
+            for session in intpr_session['sessions']:
+                if session['status'] == 0:
+                    new_flag = 1
+            intpr_session['new'] = new_flag
+
+            # set sessions
             request.session['user'] = user
             # pprint(intpr_session)
             request.session['intpr_session'] = intpr_session
@@ -216,11 +219,19 @@ def handle_user_mgt(request):
     try:
         if (request.method) == 'GET':
             # logger.info(request.GET)
-            user_id = request.GET.get('user_id')
-            if not user_id:
-                raise Exception(MSG_INVALID_PARAMS)
             action = request.GET.get('action')
             if not action:
+                raise Exception(MSG_INVALID_PARAMS)
+
+            if action == 'checkEmail':
+                user_type = request.GET.get('user_type')
+                email = request.GET.get('email')
+                if not user_type or not email:
+                    raise Exception(MSG_INVALID_PARAMS)
+                return JsonResponse(dict(constants.CODE_SUCCESS, **{'emailUsed': db.check_email(user_type, email)}))
+
+            user_id = request.GET.get('user_id')
+            if not user_id:
                 raise Exception(MSG_INVALID_PARAMS)
 
             if action == 'getPatient':
@@ -965,5 +976,9 @@ def handle_test(request):
     if len(request.body) == 0:
         logger.info('no data')
     else:
+        logger.info('=== API Handler Test ===')
         logger.info(request.body)
+
+        email.send_checking_mail()
+
     return JsonResponse(constants.CODE_SUCCESS)

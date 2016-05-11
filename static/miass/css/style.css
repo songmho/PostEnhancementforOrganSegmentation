@@ -344,6 +344,12 @@ a:focus {
     margin-right: 2px;
 }
 
+.form-group .form-notice {
+    margin-top: 2px;
+    font-size: 13px;
+    color: #858585;
+}
+
 .form-control.form-control-inline {
     display: inline-block;
 }

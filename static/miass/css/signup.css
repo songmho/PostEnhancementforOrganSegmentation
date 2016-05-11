@@ -45,22 +45,38 @@ body {
     font-size: 16px;
     height: 44px;
 }
-.form-signup #inputPw {
+.form-signup #inputPw,
+.form-signup #inputEmail {
     margin-bottom: -1px;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
 }
-.form-signup #inputPwConfirm {
-    margin-bottom: 10px;
+.form-signup #inputPwConfirm,
+.form-signup #inputEmailConfirm {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
 
-.form-group .popover-title {
+.form-group .popover {
+    z-index: 10;
+}
+
+.form-group .popover.popover-info {
+    z-index: 12;
+}
+
+.form-group .popover .popover-title {
     color: #fff;
     background-color: #d9534f;
     border-color: #d43f3a;
 }
-.form-group .popover-content {
+
+.form-group .popover.popover-info .popover-title {
+    color: #fff;
+    background-color: #FFC107;
+    border-color: #F57F17;
+}
+
+.form-group .popover .popover-content {
     font-weight: bold;
 }

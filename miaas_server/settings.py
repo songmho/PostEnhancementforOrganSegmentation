@@ -150,6 +150,18 @@ USE_L10N = True
 
 USE_TZ = True
 
+DEFAULT_CHARSET = 'utf-8'
+
+
+# Email Host
+# gmail: noreply.miaas@gmail.com / ssel0909
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'noreply.miaas@gmail.com'
+EMAIL_HOST_PASSWORD = 'ssel0909'
+EMAIL_DEFAULT_FROM = EMAIL_HOST_USER
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/

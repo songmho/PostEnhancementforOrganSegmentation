@@ -29,6 +29,9 @@ $(document).ready(function () {
     $('#inputEmail').blur(function (){
         checkEmail();
     });
+    $('#inputEmailConfirm').blur(function (){
+        checkEmailConfirm();
+    });
     $('#inputBirthday').blur(function (){
         checkBirth();
     });
@@ -67,46 +70,26 @@ $(document).ready(function () {
         $('#col-signup-usertype').show();
     });
 
+    $('#btnSignupEmailOK').click(function() {
+        setStep3();
+    });
+
     $('#col-signup-basic').on('submit', function (e) {
         e.preventDefault();
-        var invalidElements = "";
-        if (!(checkIDFlag && checkPasswordFlag && checkPasswordConfirmFlag && checkNameFlag && checkPhoneFlag && checkEmailFlag && checkEmailFlag)) {
-            if (!checkIDFlag) {
-                invalidElements += "ID"
-            }
-            if (!checkPasswordFlag || !checkPasswordConfirmFlag) {
-                if (invalidElements == "")
-                    invalidElements += "Password";
-                else
-                    invalidElements += ", Password"
-            }
-            if (!checkNameFlag) {
-                if (invalidElements == "")
-                    invalidElements += "Name";
-                else
-                    invalidElements += ", Name"
-            }
-            if (!checkPhoneFlag) {
-                if (invalidElements == "")
-                    invalidElements += "Phone Number";
-                else
-                    invalidElements += ", Phone Number"
-            }
-            if (!checkEmailFlag) {
-                if (invalidElements == "")
-                    invalidElements += "E-mail";
-                else
-                    invalidElements += ", E-mail"
-            }
-            openModal("Please check these elements;" + invalidElements, "Warning");
-        }
-        else {
-            $('#col-signup-basic').hide();
-            if (usertype == 'patient') {
-                $('#col-signup-detail-patient').show();
-            } else if (usertype == 'physician') {
-                $('#col-signup-detail-physician').show();
-            }
+
+        if(checkingIDUsed || checkingEmailUsed) {
+            $.LoadingOverlay('show');
+            var checkingIDInterval = setInterval(function() {
+                if(!checkingIDUsed && !checkingEmailUsed) {
+                    clearInterval(checkingIDInterval);
+                    checkingIDInterval = null;
+                    $.LoadingOverlay('hide');
+
+                    checkAndSetStep3();
+                }
+            }, 10);
+        } else {
+            checkAndSetStep3();
         }
     });
 
@@ -129,6 +112,67 @@ $(document).ready(function () {
         signup('physician');
     });
 });
+
+function checkAndSetStep3() {
+    if (!checkIDUsed) {
+        return;
+    } else if (checkEmailUsed < 0) {
+        return;
+    } else if (checkEmailUsed == 0) {
+        var dlgMsg = 'This email is already used for ';
+        if (usertype == 'patient')
+            dlgMsg += 'physician';
+        else
+            dlgMsg += 'patient';
+        dlgMsg += '. If you are the same person, you just continue. Or not, you should check the email and use another email.<br/>Are you sure to use this email?';
+        $('#signupEmailAlertModal .modal-body').html(dlgMsg);
+        $('#signupEmailAlertModal').modal({backdrop: 'static', keyboard: false})
+    } else {
+        setStep3();
+    }
+}
+
+function setStep3() {
+    var invalidElements = "";
+    if (!(checkIDFlag && checkPasswordFlag && checkPasswordConfirmFlag && checkNameFlag && checkPhoneFlag && checkEmailFlag && checkEmailConfirmFlag)) {
+        if (!checkIDFlag) {
+            invalidElements += "ID"
+        }
+        if (!checkPasswordFlag || !checkPasswordConfirmFlag) {
+            if (invalidElements == "")
+                invalidElements += "Password";
+            else
+                invalidElements += ", Password"
+        }
+        if (!checkNameFlag) {
+            if (invalidElements == "")
+                invalidElements += "Name";
+            else
+                invalidElements += ", Name"
+        }
+        if (!checkPhoneFlag) {
+            if (invalidElements == "")
+                invalidElements += "Phone Number";
+            else
+                invalidElements += ", Phone Number"
+        }
+        if (!checkEmailFlag || !checkEmailConfirmFlag) {
+            if (invalidElements == "")
+                invalidElements += "E-mail";
+            else
+                invalidElements += ", E-mail"
+        }
+        openModal("Please check these elements;" + invalidElements, "Warning");
+    }
+    else {
+        $('#col-signup-basic').hide();
+        if (usertype == 'patient') {
+            $('#col-signup-detail-patient').show();
+        } else if (usertype == 'physician') {
+            $('#col-signup-detail-physician').show();
+        }
+    }
+}
 
 function signup(usertype) {
     var user = {};

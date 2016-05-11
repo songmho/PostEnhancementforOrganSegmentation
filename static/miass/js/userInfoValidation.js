@@ -1,4 +1,6 @@
 var checkIDFlag = false;
+var checkIDUsed = false;
+var checkingIDUsed = false;
 var tempID = "";
 function checkID() {
     var idRe = /^[a-z]+[a-z0-9_.\-]{3,19}$/g;
@@ -44,7 +46,9 @@ function checkID() {
         inputId.css("border-color", "");
     }
 
-    $.ajax("api/user", {
+    checkIDUsed = false;
+    checkingIDUsed = true;
+    $.ajax("/api/user", {
         method: 'GET',
         data: {
             action: 'checkId',
@@ -52,8 +56,10 @@ function checkID() {
         },
         dataType: 'json',
         success: function (res) {
+            //console.log(res);
             if (res['code'] == 'SUCCESS') {
                 if (!res['existedId'] == false) {
+                    checkIDUsed = false;
                     checkIDFlag = false;
                     inputId.css("border-color", "red");
                     inputId.popover({
@@ -66,8 +72,11 @@ function checkID() {
                     setTimeout(function () {
                         inputId.popover('destroy');
                     }, 2000);
+                } else {
+                    checkIDUsed = true;
                 }
             } else {
+                checkIDUsed = false;
                 checkIDFlag = false;
                 inputId.css("border-color", "red");
                 inputId.popover({
@@ -81,6 +90,7 @@ function checkID() {
                     inputId.popover('destroy');
                 }, 2000);
             }
+            checkingIDUsed = false;
         }
     });
 }
@@ -113,6 +123,10 @@ function checkPassword() {
     else {
         checkPasswordFlag = true;
         inputPw.css("border-color", "");
+    }
+
+    if($('#inputPwConfirm').val() != '') {
+        checkPasswordConfirm();
     }
 }
 var checkPasswordConfirmFlag = false;
@@ -214,6 +228,8 @@ function checkPhone() {
 }
 
 var checkEmailFlag = false;
+var checkEmailUsed = -2;
+var checkingEmailUsed = false;
 var tempEmail = "";
 function checkEmail() {
     var inputEmail = $('#inputEmail');
@@ -229,7 +245,7 @@ function checkEmail() {
         inputEmail.css("border-color", "red");
         inputEmail.popover({
             title: "Warning",
-            content: "The form of e-mail address is xxx@Xxxx.xxx",
+            content: "The form of e-mail address is xxx@xxxx.xxx",
             placement: "bottom",
             trigger: "manual"
         });
@@ -241,6 +257,104 @@ function checkEmail() {
     else {
         checkEmailFlag = true;
         inputEmail.css("border-color", "");
+    }
+
+    if($('#inputEmailConfirm').val() != '') {
+        checkEmailConfirm();
+    }
+
+    checkEmailUsed = -2;
+    checkingEmailUsed = true;
+    $.ajax("/api/user", {
+        method: 'GET',
+        data: {
+            action: 'checkEmail',
+            user_type: usertype,
+            email: inputEmail.val()
+        },
+        dataType: 'json',
+        success: function (res) {
+            console.log(res);
+            if (res['code'] == 'SUCCESS') {
+                checkEmailUsed = res['emailUsed'];
+            } else {
+                checkEmailUsed = -2;
+            }
+
+            if (checkEmailUsed == 1) {
+                //pass
+            } else if (checkEmailUsed == 0) {
+                var popoverMsg = 'This email is already used for ';
+                if (usertype == 'patient')
+                    popoverMsg += 'physician';
+                else
+                    popoverMsg += 'patient';
+                popoverMsg += '. If you are the same person, you just continue. Or not, you should check the email and use another email.';
+
+                inputEmail.css("border-color", "orange");
+                inputEmail.popover( {
+                    title: "Notice",
+                    content: popoverMsg,
+                    placement: "bottom",
+                    trigger: "manual"
+                }).data('bs.popover')
+                  .tip()
+                  .addClass('popover-info');
+                inputEmail.popover("show");
+                setTimeout(function () {
+                    inputEmail.popover('destroy');
+                }, 2000);
+            } else { // below -1
+                checkEmailFlag = false;
+
+                var popoverMsg = 'Unknown error.';
+                switch(checkEmailUsed) {
+                    case -2:
+                        popoverMsg = 'Checking email is failed. Please try again.';
+                        break;
+                    case -1:
+                        popoverMsg = 'This email is already used.';
+                        break;
+                }
+
+                inputEmail.css("border-color", "red");
+                inputEmail.popover({
+                    title: "Warning",
+                    content: popoverMsg,
+                    placement: "bottom",
+                    trigger: "manual"
+                });
+                inputEmail.popover("show");
+                setTimeout(function () {
+                    inputEmail.popover('destroy');
+                }, 2000);
+            }
+
+            checkingEmailUsed = false;
+        }
+    });
+}
+
+var checkEmailConfirmFlag = false;
+function checkEmailConfirm() {
+    var inputEmailConfirm = $('#inputEmailConfirm');
+    if ($('#inputEmail').val() != inputEmailConfirm.val()) {
+        checkEmailConfirmFlag = false;
+        inputEmailConfirm.css("border-color", "red");
+        inputEmailConfirm.popover({
+            title: "Warning",
+            content: "Emails are Different.",
+            placement: "bottom",
+            trigger: "manual"
+        });
+        inputEmailConfirm.popover("show");
+        setTimeout(function () {
+            inputEmailConfirm.popover('destroy');
+        }, 2000);
+    }
+    else if($('#inputEmail').val() == inputEmailConfirm.val() && inputEmailConfirm.val()!="") {
+        checkEmailConfirmFlag = true;
+        inputEmailConfirm.css("border-color", "");
     }
 }
 

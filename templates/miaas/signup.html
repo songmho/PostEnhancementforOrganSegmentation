@@ -50,8 +50,11 @@
                     </div>
                     <div class="form-group">
                         <label for="inputEmail">Email Address</label>
-                        <input type="email" id="inputEmail" name="email" maxlength="100" class="form-control"
+                        <input type="email" id="inputEmail" name="email" maxlength="100" class="form-control invalid"
                                placeholder="Email">
+                        <input type="email" id="inputEmailConfirm" name="emailConfirm" maxlength="100" class="form-control"
+                               placeholder="Email Confirm">
+                        <div class="form-notice">* Notice that the email is used to authenticate your account. Please check your email is correct.</div>
                     </div>
                     <div class="form-group">
                         <label for="selectNationality">Country</label>
@@ -149,6 +152,24 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="signupEmailAlertModal" tabindex="-1" role="dialog" aria-labelledby="signupEmailAlertModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="signupEmailAlertModalTitle">Email Used</h4>
+        </div>
+        <div class="modal-body">
+        Email is already used
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">I'll Use Another Email</button>
+            <button id="btnSignupEmailOK" type="button" class="btn btn-primary" data-dismiss="modal">I'm the Same Person</button>
         </div>
         </div>
     </div>

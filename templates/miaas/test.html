@@ -69,8 +69,12 @@
             <input type="submit" value="Send" />
         </form>
     </div>
+    <br />
+    <div>
+        <button id="test">test</button>
     </div>
-
+</div>
+<br/><br/>
 <div>
     <form method="post" action="/api/test" accept-charset="UTF-8">
         <textarea id="mytextarea" name="testtextarea">Hello, World!</textarea>
@@ -187,6 +191,19 @@
                 startFileProgressUpdate(xprogressID);
             }, 500)
 
+        });
+
+        $('#test').click(function() {
+            $.ajax("/api/test", {
+                method: 'POST',
+                data: JSON.stringify({
+                    test: "test",
+                }),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(JSON.stringify(res));
+                }
+            })
         });
 
         $("#login").click(function() {

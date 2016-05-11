@@ -39,7 +39,9 @@ $(document).ready(function() {
         $.LoadingOverlay('show');
     });
 
-    $('[data-toggle="tooltip"]').tooltip();
+    try {
+        $('[data-toggle="tooltip"]').tooltip();
+    } catch(e) {}
 });
 
 function openModal(msg, title, action) {
