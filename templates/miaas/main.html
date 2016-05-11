@@ -143,6 +143,42 @@
         </div>
     </div>
 
+    <div class="modal fade" id="signinNeedAuthModal" tabindex="-1" role="dialog" aria-labelledby="signinNeedAuthModalTitle">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="signinNeedAuthModalTitle">Need Email Authentication</h4>
+            </div>
+            <div class="modal-body">
+                You sholud authenticate your email first. Please check your email, and verify that you own the email.<br/><br/>
+                If you do not received the authentication email? You can request to resend the email.
+            </div>
+            <div class="modal-footer">
+                <button id="btn-auth-resend" type="button" class="btn btn-primary">Resend</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close modal-alert-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="alertModalTitle">Request Failed</h4>
+                </div>
+                <div class="modal-body">
+                    Request failed
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default modal-alert-close" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- scripts -->
     <script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
     <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>

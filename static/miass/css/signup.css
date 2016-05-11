@@ -80,3 +80,7 @@ body {
 .form-group .popover .popover-content {
     font-weight: bold;
 }
+
+.loadingoverlay {
+    z-index: 1500 !important;
+}

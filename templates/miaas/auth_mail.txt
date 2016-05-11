@@ -1,0 +1,12 @@
+MIAAS Email Authentication
+
+Welcome to MIAAS!
+Thanks for registering at MIAAS! We are glad you have chosen to be a part of our service and we hope you satisfy the service.
+
+Email Authentication
+Verity that you own {{ user.email }}.
+Please copy and paste the below link to web browser.
+{{ auth_link }}
+
+Thank you,
+SmartyLab Corporation.

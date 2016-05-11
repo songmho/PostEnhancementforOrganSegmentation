@@ -556,8 +556,7 @@ body.modal-open {
 }
 
 .loadingoverlay {
-    z-index: 6;
-!important;
+    z-index: 1500 !important;
 }
 
 @media (min-width: 768px) {
@@ -575,4 +574,3 @@ body.modal-open {
 .form-container .popover-content {
     font-weight: bold;
 }
-

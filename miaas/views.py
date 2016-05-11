@@ -67,6 +67,9 @@ def signin_page(request):
     context = _get_session_context(request)
     return render(request, 'miaas/signin.html', context)
 
+def auth_email_page(request, user_id, auth_code):
+    pass
+
 
 def signup_page(request):
     return render(request, 'miaas/signup.html', None)

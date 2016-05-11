@@ -263,3 +263,7 @@ footer.page-footer .copyright-logo {
     margin-top: 24px;
     color: #7A7677;
 }
+
+.loadingoverlay {
+    z-index: 1500 !important;
+}

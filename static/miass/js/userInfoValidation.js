@@ -274,7 +274,7 @@ function checkEmail() {
         },
         dataType: 'json',
         success: function (res) {
-            console.log(res);
+            //console.log(res);
             if (res['code'] == 'SUCCESS') {
                 checkEmailUsed = res['emailUsed'];
             } else {

@@ -163,6 +163,9 @@ EMAIL_HOST_PASSWORD = 'ssel0909'
 EMAIL_DEFAULT_FROM = EMAIL_HOST_USER
 
 
+DOMAIN_ADDRESS = 'http://localhost:8000'
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 

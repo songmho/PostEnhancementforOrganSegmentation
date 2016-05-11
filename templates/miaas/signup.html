@@ -18,14 +18,18 @@
             </div>
             <div class="row row-signup-content">
                 <div class="col-xs-12" id="col-signup-usertype">
+                    <br/>
                     <h4>Step1: Choose Who You Are</h4>
                     <h5>Are you a Patient? Or are you a Physician?</h5>
+                    <br/>
                     <button id="btn-patient" type="button" class="btn btn-lg btn-primary btn-block">I'm a Patient</button>
                     <button id="btn-physician" type="button" class="btn btn-lg btn-primary btn-block">I'm a Physician</button>
                 </div>
 
                 <form class="col-xs-12" id="col-signup-basic" name="signupStep2" style="display: none;" accept-charset="UTF-8">
+                    <br/>
                     <h4>Step2: Write Your Basic Information</h4>
+                    <br/>
                     <div class="form-group">
                         <label for="inputId" >User ID</label>
                         <input type="text" id="inputId" name="id" maxlength="20" class="form-control valid"
@@ -72,7 +76,9 @@
                 </form>
 
                 <form class="col-xs-12" id="col-signup-detail-patient" name="signupStep3Patient" style="display: none;" accept-charset="UTF-8">
+                    <br/>
                     <h4>Step3: Write Your Personal Information</h4>
+                    <br/>
                     <div class="form-group">
                         <label for="selectGender" >Gender</label>
                         <select class="form-control" id="selectGender" name="gender" >
@@ -97,7 +103,9 @@
                 </form>
 
                 <form class="col-xs-12" id="col-signup-detail-physician" name="signupStep3Physician" style="display: none;" accept-charset="UTF-8">
+                    <br/>
                     <h4>Step3: Write Your Physician Information</h4>
+                    <br/>
                     <div class="form-group">
                         <label for="selectField" >Field of Medicine</label>
                         <select class="form-control" id="selectField" name="field" >
@@ -134,6 +142,16 @@
                         </div>
                     </div>
                 </form>
+
+                <div class="col-xs-12" id="col-signup-authentication" style="display: none;">
+                    <br/>
+                    <h4>Step4: Authenticate Email</h4>
+                    <h5>The email will be sent soon. Please wait a minute.</h5>
+                    <h5>Check your email and click the authentication link.</h5>
+                    <br/>
+                    <a id="btn-auth-ok" href="{% url 'miaas:main' %}" class="btn btn-lg btn-primary btn-block">OK</a>
+                </div>
+
             </div>
         </div>
     </section>

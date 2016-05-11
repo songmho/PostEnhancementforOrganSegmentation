@@ -32,14 +32,13 @@ class DbManager():
             raise Exception("DB Connection Error" + e.message)
             self.is_connected = False
 
-    #HT
+    # HT (for authentication)
     def check_authentication(self, user_id):
         authenticated = False
         with self.connector.cursor() as cursor:
             try:
                 db_query = "SELECT auth_type FROM authentication WHERE user_id=%s"
                 cursor.execute(db_query, user_id)
-                self.connector.commit()
                 row = cursor.fetchone()
                 if row:
                     auth_type = row[0]
@@ -57,7 +56,45 @@ class DbManager():
         pass
 
     def add_authentication(self, user_id, auth_code, auth_type='new'):
-        pass
+        if_inserted = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "INSERT INTO authentication (user_id, auth_code, auth_type) values (%s, %s, %s)"
+                cursor.execute(db_query,
+                               (user_id, auth_code, auth_type))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_inserted = True
+            except Exception as e:
+                logger.exception(e)
+                raise Exception("Generating authentication failed.")
+        return if_inserted
+
+    def update_authentication(self, user_id, auth_code, auth_type='new'):
+        is_existed = False
+        try:
+            if self.check_authentication(user_id):
+                is_existed = True
+        except:
+            pass
+        if is_existed:
+            return self.add_authentication(user_id, auth_code, auth_type)
+        else:
+            if_updated = False
+            with self.connector.cursor() as cursor:
+                try:
+                    db_query = "UPDATE authentication SET auth_code=%s, auth_type=%s WHERE user_id=%s"
+                    cursor.execute(db_query,
+                                   (auth_code, auth_type, user_id))
+                    self.connector.commit()
+                    row_count = cursor.rowcount
+                    if row_count > 0:
+                        if_updated = True
+                except Exception as e:
+                    logger.exception(e)
+                    raise Exception("Updating authentication failed.")
+            return if_updated
 
     def check_email(self, user_type, email):
         res = -2
@@ -65,7 +102,6 @@ class DbManager():
             try:
                 db_query = "SELECT user_type FROM user WHERE email=%s"
                 cursor.execute(db_query, email)
-                self.connector.commit()
                 if cursor.rowcount == 0:
                     res = 1
                 else:
@@ -80,6 +116,7 @@ class DbManager():
                 logger.exception(e)
                 res = -2
         return res
+    # end auth (HT)
 
     def find_user(self, user_id):
         if_exist = False
@@ -96,7 +133,27 @@ class DbManager():
                 raise Exception("Finding existing user is failed.")
         return if_exist
 
-    def retrieve_user(self, user_id, password):
+    def retrieve_user_info(self, user_id):
+        user = {}
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT name, phone_number, email, user_type FROM user WHERE user_id=%s"
+                cursor.execute(db_query, user_id)
+
+                self.connector.commit()
+                row = cursor.fetchone()
+                user['user_id'] = user_id
+                user['name'] = row[0]
+                user['phone_number'] = row[1]
+                user['email'] = row[2]
+                user['user_type'] = row[3]
+
+            except Exception as e:
+                logger.exception(e)
+                raise Exception("Retrieving user information is failed.")
+        return user
+
+    def retrieve_user_type(self, user_id, password):
         user_type = None
         with self.connector.cursor() as cursor:
             try:

@@ -7,7 +7,7 @@ from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
 
-import constants, cloud_db, email
+import constants, cloud_db, email_auth
 from image_manager import ImageManager, ImageRetriever
 
 MSG_DB_FAILED = "Failed to handle DB requests."
@@ -157,11 +157,11 @@ def handle_session_mgt(request):
             if authenticated is None:
                 raise Exception(MSG_UNKNOWN_ERROR)
             elif authenticated is False:
-                raise Exception(MSG_NEED_AUTH)
+                return JsonResponse(constants.CODE_NEED_AUTH)
 
             user = {}
             intpr_session = {}
-            user_type = db.retrieve_user(user_id, password)
+            user_type = db.retrieve_user_type(user_id, password)
             if user_type is None:
                 raise Exception(MSG_INVALID_IDPW)
             elif user_type == 'patient':
@@ -217,8 +217,8 @@ def handle_user_mgt(request):
     """
     db = cloud_db.DbManager()
     try:
-        if (request.method) == 'GET':
-            # logger.info(request.GET)
+        if request.method == 'GET':
+            logger.info(request.GET)
             action = request.GET.get('action')
             if not action:
                 raise Exception(MSG_INVALID_PARAMS)
@@ -237,16 +237,41 @@ def handle_user_mgt(request):
             if action == 'getPatient':
                 user = db.retrieve_patient(user_id)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
+
             elif action == 'getPhysician':
                 user = db.retrieve_physician(user_id)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
+
             elif action == 'checkId':
                 # retrieve user_id ...
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'existedId': db.find_user(user_id)}))
+
+            elif action == 'resendAuth':
+                authenticated = db.check_authentication(user_id)
+                if authenticated is None:
+                    raise Exception(MSG_UNKNOWN_ERROR)
+                elif authenticated is True:
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': 'Already authenticated email.'}))
+
+                user = db.retrieve_user_info(user_id)
+                if not user:
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': 'User not found.'}))
+
+                auth_code = email_auth.generate_auth_code()
+                if not db.update_authentication(user_id, auth_code):
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
+                try:
+                    email_auth.send_checking_mail(user, auth_code)
+                except Exception as e:
+                    logger.exception(e)
+                    pass
+
+                return JsonResponse(constants.CODE_SUCCESS)
+
             else:
                 return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
 
-        if (request.method) == 'POST':
+        if request.method == 'POST':
             # signup (register)
             if len(request.body) == 0:
                 raise Exception(MSG_NODATA)
@@ -262,22 +287,30 @@ def handle_user_mgt(request):
                 user = data['user']
                 user_type = user['user_type']
 
+                signup_success = False
                 if user_type == 'patient':
                     if db.add_patient(user):
-                        request.session['user'] = user
-                        return JsonResponse(constants.CODE_SUCCESS)
-                    else:
-                        logger.info('signup patient fail')
-                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
+                        signup_success = True
                 elif user_type == 'physician':
                     if db.add_physician(user):
-                        request.session['user'] = user
-                        return JsonResponse(constants.CODE_SUCCESS)
-                    else:
-                        logger.info('signup physician fail')
-                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
+                        signup_success = True
                 else:
                     raise Exception(MSG_INVALID_PARAMS)
+
+                if not signup_success:
+                    logger.info('signup fail')
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
+
+                auth_code = email_auth.generate_auth_code()
+                if not db.add_authentication(user['user_id'], auth_code):
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
+                try:
+                    email_auth.send_checking_mail(user, auth_code)
+                except Exception as e:
+                    logger.exception(e)
+                    pass
+
+                return JsonResponse(constants.CODE_SUCCESS)
 
             elif action == 'update':
                 if not data.get('user'):
@@ -979,6 +1012,11 @@ def handle_test(request):
         logger.info('=== API Handler Test ===')
         logger.info(request.body)
 
-        email.send_checking_mail()
+        user_info = {
+            'user_id': 'hanter',
+            'name': 'Hanter Jung',
+            'email': 'hanterkr@gmail.com'
+        }
+        email_auth.send_checking_mail(user_info, '9fudsiu32q984rhds98')
 
     return JsonResponse(constants.CODE_SUCCESS)

@@ -212,7 +212,10 @@ function signup(usertype) {
         success: function (res) {
             $.LoadingOverlay('hide');
             if (res['code'] == 'SUCCESS') {
-                location.href = indexPage;
+                //location.href = indexPage;
+                $('#col-signup-detail-patient').hide();
+                $('#col-signup-detail-physician').hide();
+                $('#col-signup-authentication').show();
             } else {
                 openSignupFailModal(res['msg']);
             }
