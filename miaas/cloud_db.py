@@ -32,54 +32,18 @@ class DbManager():
             raise Exception("DB Connection Error" + e.message)
             self.is_connected = False
 
-    #HT
-    def check_authentication(self, user_id):
-        authenticated = False
+    def retrieve_user(self, user_id, password):
+        user_type = None
         with self.connector.cursor() as cursor:
             try:
-                db_query = "SELECT auth_type FROM authentication WHERE user_id=%s"
-                cursor.execute(db_query, user_id)
+                db_query = "SELECT user_type FROM user WHERE user_id=%s and password=%s"
+                cursor.execute(db_query, (user_id, password))
                 self.connector.commit()
                 row = cursor.fetchone()
-                if row:
-                    auth_type = row[0]
-                    if auth_type != 'new':
-                        authenticated = True
-                else:
-                    # already authenticated
-                    authenticated = True
+                user_type = row[0]
             except Exception as e:
                 logger.exception(e)
-                authenticated = None
-        return authenticated
-
-    def retrieve_authentication(self, user_id):
-        pass
-
-    def add_authentication(self, user_id, auth_code, auth_type='new'):
-        pass
-
-    def check_email(self, user_type, email):
-        res = -2
-        with self.connector.cursor() as cursor:
-            try:
-                db_query = "SELECT user_type FROM user WHERE email=%s"
-                cursor.execute(db_query, email)
-                self.connector.commit()
-                if cursor.rowcount == 0:
-                    res = 1
-                else:
-                    for row in cursor:
-                        if row[0] == user_type:
-                            res = -1
-                            break
-                        else:
-                            res = 0
-
-            except Exception as e:
-                logger.exception(e)
-                res = -2
-        return res
+        return user_type
 
     def find_user(self, user_id):
         if_exist = False
@@ -95,19 +59,6 @@ class DbManager():
                 logger.exception(e)
                 raise Exception("Finding existing user is failed.")
         return if_exist
-
-    def retrieve_user(self, user_id, password):
-        user_type = None
-        with self.connector.cursor() as cursor:
-            try:
-                db_query = "SELECT user_type FROM user WHERE user_id=%s and password=%s"
-                cursor.execute(db_query, (user_id, password))
-                self.connector.commit()
-                row = cursor.fetchone()
-                user_type = row[0]
-            except Exception as e:
-                logger.exception(e)
-        return user_type
 
     def find_id(self, email, name):
         user_id = None
@@ -1566,3 +1517,20 @@ class DbManager():
                 logger.exception(e)
                 return False
         return True
+
+    def check_email(self, user_type, email):
+        res = 0
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT user_type " \
+                           "FROM user " \
+                           "WHERE email = %s"
+                if cursor.rowcount == 0:
+                    res = 1
+                else:
+                    for row in cursor:
+                        if row[0] == user_type:
+                            res = -1
+
+            except Exception as e:
+                return -2

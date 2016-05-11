@@ -111,7 +111,6 @@ footer.page-footer .footer-container .footer-contents {
     margin-top: 4px;
 }
 
-
 footer.page-footer .footer-container a {
     color: #fff;
 }
@@ -206,6 +205,12 @@ footer.page-footer .copyright-logo {
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
+}
+
+.table-container.input-table-container {
+    margin: 0;
+    padding: 0;
+
 }
 
 .table-container.detail-page-table-container {
@@ -566,6 +571,8 @@ body.modal-open {
     background-color: #d9534f;
     border-color: #d43f3a;
 }
+
 .form-container .popover-content {
     font-weight: bold;
 }
+
