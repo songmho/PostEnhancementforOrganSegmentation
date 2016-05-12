@@ -1,0 +1,61 @@
+{% load staticfiles %}
+{% load my_filters %}
+
+{% include 'miaas/template_header.html' %}
+
+<!-- custom css -->
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/verify_auth_mail.css' %}">
+
+<body>
+
+{% if authenticated %}
+<div class="container">
+    <section class="section section-auth-confirm">
+        <div class="div-auth-confirm">
+            <div class="row row-auth-title">
+                <div class="col-xs-12">
+                    <h2 class="text-primary">MIAAS Email Authentication</h2>
+                </div>
+            </div>
+            <div class="row row-auth-content">
+                <div class="col-xs-12" id="col-signup-usertype">
+                    <br/>
+                    <h4>Your account '{{ user_id }}' is successfully registered.</h4>
+                    <h5>Thank you for choosing our service.</h5>
+                    <br/>
+                    <a href="{% url 'miaas:signin' %}" class="btn btn-lg btn-primary btn-block">Log in to MIIAS</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% else %}
+
+<div class="container">
+    <section class="section section-auth-confirm">
+        <div class="div-auth-confirm">
+            <div class="row row-auth-title">
+                <div class="col-xs-12">
+                    <h2 class="text-primary">MIAAS Email Authentication</h2>
+                </div>
+            </div>
+            <div class="row row-auth-content">
+                <div class="col-xs-12" id="col-signup-usertype">
+                    <br/>
+                    <h4>Invalid Authentication Link</h4>
+                    <h5>Please check your email is latest. If not, please request to resend authentication email.</h5>
+                    <br/>
+                    <a href="javascript: history.back();" type="button" class="btn btn-lg btn-primary btn-block">Back</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endif %}
+
+{% include 'miaas/template_footer.html' %}
+
+</body>
+</html>

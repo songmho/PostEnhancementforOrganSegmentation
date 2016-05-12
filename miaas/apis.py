@@ -261,10 +261,9 @@ def handle_user_mgt(request):
                 if not db.update_authentication(user_id, auth_code):
                     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
                 try:
-                    email_auth.send_checking_mail(user, auth_code)
+                    email_auth.send_auth_mail(user, auth_code)
                 except Exception as e:
                     logger.exception(e)
-                    pass
 
                 return JsonResponse(constants.CODE_SUCCESS)
 
@@ -305,7 +304,7 @@ def handle_user_mgt(request):
                 if not db.add_authentication(user['user_id'], auth_code):
                     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
                 try:
-                    email_auth.send_checking_mail(user, auth_code)
+                    email_auth.send_auth_mail(user, auth_code)
                 except Exception as e:
                     logger.exception(e)
                     pass
@@ -1017,6 +1016,6 @@ def handle_test(request):
             'name': 'Hanter Jung',
             'email': 'hanterkr@gmail.com'
         }
-        email_auth.send_checking_mail(user_info, '9fudsiu32q984rhds98')
+        email_auth.send_auth_mail(user_info, '9fudsiu32q984rhds98')
 
     return JsonResponse(constants.CODE_SUCCESS)

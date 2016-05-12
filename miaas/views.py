@@ -16,7 +16,7 @@ from django.views.generic.edit import FormView
 from .forms import UploadForm
 
 from miaas import sample_contexts as sctx
-from miaas import cloud_db, constants, cloud_db_copy
+from miaas import cloud_db, constants, cloud_db_copy, email_auth
 
 from image_manager import ImageManager, ImageRetriever
 import logging, json, time
@@ -68,7 +68,14 @@ def signin_page(request):
     return render(request, 'miaas/signin.html', context)
 
 def auth_email_page(request, user_id, auth_code):
-    pass
+    context = {
+        'user_id': user_id,
+        'auth_code': auth_code
+    }
+    verified = email_auth.verify_auth_mail(user_id, auth_code)
+    context['authenticated'] = verified
+
+    return render(request, 'miaas/verify_auth_mail.html', context)
 
 
 def signup_page(request):

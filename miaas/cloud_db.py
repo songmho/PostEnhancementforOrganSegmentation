@@ -53,7 +53,23 @@ class DbManager():
         return authenticated
 
     def retrieve_authentication(self, user_id):
-        pass
+        auth = {}
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT auth_code, auth_type FROM authentication WHERE user_id=%s"
+                cursor.execute(db_query, user_id)
+                row = cursor.fetchone()
+                if row:
+                    auth['user_id'] = user_id
+                    auth['auth_code'] = row[0]
+                    auth['auth_type'] = row[1]
+                else:
+                    # already authenticated
+                    return None
+            except Exception as e:
+                logger.exception(e)
+                return None
+        return auth
 
     def add_authentication(self, user_id, auth_code, auth_type='new'):
         if_inserted = False
@@ -95,6 +111,21 @@ class DbManager():
                     logger.exception(e)
                     raise Exception("Updating authentication failed.")
             return if_updated
+
+    def delete_authentication(self, user_id, auth_code):
+        if_deleted = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "DELETE FROM authentication WHERE user_id=%s AND auth_code=%s"
+                cursor.execute(db_query, (user_id, auth_code))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_deleted = True
+            except Exception as e:
+                logger.exception(e)
+                # raise Exception("Deleting authentication failed.")
+        return if_deleted
 
     def check_email(self, user_type, email):
         res = -2
