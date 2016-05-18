@@ -82,8 +82,8 @@ def auth_change_email_page(request, user_id, auth_code):
         'user_id': user_id,
         'auth_code': auth_code
     }
-    verified = email_auth.verify_auth_mail(user_id, auth_code)
-    context['authenticated'] = verified
+    updated = email_auth.verify_and_update_auth_mail(user_id, auth_code)
+    context['authenticated'] = updated
 
     return render(request, 'miaas/verify_change_mail.html', context)
 
@@ -97,6 +97,19 @@ def find_page(request):
 
 
 def account_page(request):
+    db = cloud_db.DbManager()
+
+    if request.session.get('user'):
+        user = request.session['user']
+        try:
+            user_type = db.retrieve_user_type(user['user_id'], user['password'])
+            if user_type == 'patient':
+                user = db.retrieve_patient(user['user_id'], user['password'])
+            elif user_type == 'physician':
+                user = db.retrieve_physician(user['user_id'], user['password'])
+        except: pass
+        request.session['user'] = user
+
     context = _get_session_context(request, pw_contains=True)
     return render(request, 'miaas/account.html', context)
 

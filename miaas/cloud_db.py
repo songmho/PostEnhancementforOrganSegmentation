@@ -78,7 +78,7 @@ class DbManager():
                         auth['user_id'] = user_id
                         auth['auth_code'] = row[0]
                         auth['auth_type'] = auth_type
-                        if row[2]:
+                        if row[1]:
                             auth['extra_value'] = row[1]
                     else:
                         return None
@@ -170,32 +170,64 @@ class DbManager():
                         else:
                             res = 0
                 else:
-                    with self.connector.cursor() as cursor2:
-                        db_query = "SELECT u.user_type " \
-                                   "FROM user as u LEFT JOIN authentication as a on u.user_id=a.user_id " \
-                                   "WHERE a.extra_value=%s"
-                        cursor2.execute(db_query, email)
-                        if cursor2.rowcount == 0:
-                            res = 1
-                        elif cursor2.rowcount > 0:
-                            for row in cursor2:
-                                if row[0] == user_type:
-                                    res = -1
-                                    break
-                                else:
-                                    res = 0
+                    res = 1
             except Exception as e:
                 logger.exception(e)
                 res = -2
+
+        if res >= 0:
+            with self.connector.cursor() as cursor2:
+                try:
+                    db_query = "SELECT u.user_type " \
+                               "FROM user as u LEFT JOIN authentication as a on u.user_id=a.user_id " \
+                               "WHERE a.extra_value=%s"
+                    cursor2.execute(db_query, email)
+                    if cursor2.rowcount == 0:
+                        pass    # res = res
+                    elif cursor2.rowcount > 0:
+                        for row in cursor2:
+                            if row[0] == user_type:
+                                res = -1
+                                break
+                            else:
+                                res = 0
+                except Exception as e:
+                    logger.exception(e)
+                    res = -2
         return res
     # end auth (HT)
 
-    # HT (for changing account info-email and password)
+    # HT (for changing account info:email and password)
     def change_password(self, user_id, password):
-        pass
+        if_updated = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE user SET password=%s WHERE user_id=%s"
+                cursor.execute(db_query, (password, user_id))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_updated = True
+            except Exception as e:
+                logger.exception(e)
+                raise Exception("Changing Password failed.")
+        return if_updated
 
     def change_email(self, user_id, email):
-        pass
+        if_updated = False
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "UPDATE user SET email=%s WHERE user_id=%s"
+                cursor.execute(db_query, (email, user_id))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_updated = True
+            except Exception as e:
+                logger.exception(e)
+                raise Exception("Changing Email failed.")
+        return if_updated
+    # end changing account info (HT)
 
     def find_user(self, user_id):
         if_exist = False

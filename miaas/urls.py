@@ -64,6 +64,7 @@ urlpatterns = [
     url(r'^json_res/success$', views.json_response_success),
 
     url(r'^auth/(?P<user_id>[-._a-z0-9]+)/(?P<auth_code>[a-zA-Z0-9]+)$', views.auth_email_page, name='auth_email'),
+    url(r'^auth/update/(?P<user_id>[-._a-z0-9]+)/(?P<auth_code>[a-zA-Z0-9]+)$', views.auth_change_email_page, name='auth_email_update'),
 
     url(r'^', views.page_not_found_view)
 ]
