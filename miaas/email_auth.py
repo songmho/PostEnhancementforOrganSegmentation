@@ -16,6 +16,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 def get_auth_link(user_id, auth_code):
     return settings.DOMAIN_ADDRESS + reverse('miaas:auth_email', kwargs={'user_id': user_id, 'auth_code': auth_code})
 
@@ -29,6 +30,16 @@ def send_auth_mail(user_info, auth_code):
 
     template_plain = render_to_string('miaas/auth_mail.txt', {'user': user_info, 'auth_link': auth_link})
     template_html = render_to_string('miaas/auth_mail.html', {'user': user_info, 'auth_link': auth_link})
+
+    send_mail('MIAAS - Email Authentication Request', template_plain, settings.EMAIL_DEFAULT_FROM,
+              [user_info['email']], fail_silently=False, html_message=template_html)
+
+
+def send_email_change_mail(user_info, auth_code):
+    auth_link = get_auth_link(user_info['user_id'], auth_code)
+
+    template_plain = render_to_string('miaas/auth_mail_change.txt', {'user': user_info, 'auth_link': auth_link})
+    template_html = render_to_string('miaas/auth_mail_change.html', {'user': user_info, 'auth_link': auth_link})
 
     send_mail('MIAAS - Email Authentication Request', template_plain, settings.EMAIL_DEFAULT_FROM,
               [user_info['email']], fail_silently=False, html_message=template_html)

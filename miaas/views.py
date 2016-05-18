@@ -77,6 +77,16 @@ def auth_email_page(request, user_id, auth_code):
 
     return render(request, 'miaas/verify_auth_mail.html', context)
 
+def auth_change_email_page(request, user_id, auth_code):
+    context = {
+        'user_id': user_id,
+        'auth_code': auth_code
+    }
+    verified = email_auth.verify_auth_mail(user_id, auth_code)
+    context['authenticated'] = verified
+
+    return render(request, 'miaas/verify_change_mail.html', context)
+
 
 def signup_page(request):
     return render(request, 'miaas/signup.html', None)
@@ -87,7 +97,7 @@ def find_page(request):
 
 
 def account_page(request):
-    context = _get_session_context(request)
+    context = _get_session_context(request, pw_contains=True)
     return render(request, 'miaas/account.html', context)
 
 
@@ -107,11 +117,11 @@ def physician_profile_page(request):
     return render(request, 'miaas/physician_profile.html', context)
 
 
-def _get_session_context(request):
+def _get_session_context(request, pw_contains=False):
     context = {}
     if 'user' in request.session.keys():
         context['user_session'] = request.session['user']
-        if context.get('user_session'):
+        if context.get('user_session') and not pw_contains:
             context['user_session'].pop('password', None)
     if 'intpr_session' in request.session.keys():
         context['intpr_session'] = request.session['intpr_session']

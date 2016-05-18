@@ -315,6 +315,7 @@ def handle_user_mgt(request):
                 if not data.get('user'):
                     raise Exception(MSG_INVALID_PARAMS)
                 user = data['user']
+                logger.info(user)
                 user_type = user['user_type']
 
                 if not request.session.get('user'):
@@ -322,25 +323,54 @@ def handle_user_mgt(request):
                 if request.session['user']['user_id'] != user['user_id']:
                     raise Exception(MSG_NOT_MATCHED_USER)
 
-                if user_type == 'patient':
-                    logger.info(user)
-                    if db.update_patient(user):
-                        # request.session['user'].update(user)
-                        request.session['user'] = update_session(request.session['user'], user)
-                        return JsonResponse(constants.CODE_SUCCESS)
+                old_email = request.session['user']['email']
+                new_email = user['email']
+                is_email_same = (old_email == new_email)
+                print('old:%s, new:%s, isSame?%s' % (old_email, new_email, is_email_same))
+
+                if not is_email_same and db.check_email(user_type, new_email) == -1:
+                    raise Exception("The email is already used.")
+
+                email_wait_added = True
+                auth_code = None
+                if not is_email_same:
+                    user['email'] = old_email
+                    auth_code = email_auth.generate_auth_code()
+                    email_wait_added = db.update_authentication(user['user_id'], auth_code,
+                                                                'update_email', new_email)
+                    if not email_wait_added:
+                        raise Exception("Changing Email is failed.")
+
+                try:
+                    update_user_success = False
+                    if user_type == 'patient':
+                        update_user_success = db.update_patient(user)
+                    elif user_type == 'physician':
+                        update_user_success = db.update_physician(user)
                     else:
-                        logger.info('update patient fail')
-                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_CHANGE}))
-                elif user_type == 'physician':
-                    if db.update_physician(user):
-                        # request.session['user'].update(user)
+                        raise Exception(MSG_INVALID_PARAMS)
+
+                    if update_user_success:
                         request.session['user'] = update_session(request.session['user'], user)
-                        return JsonResponse(constants.CODE_SUCCESS)
+                        if email_wait_added and auth_code:
+                            user['email'] = new_email
+                            email_auth.send_email_change_mail(user, auth_code)
+                            return JsonResponse(constants.CODE_WAIT)
+                        else:
+                            return JsonResponse(constants.CODE_SUCCESS)
                     else:
-                        logger.info('update patient fail')
-                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_CHANGE}))
-                else:
-                    raise Exception(MSG_INVALID_PARAMS)
+                        if email_wait_added and auth_code:
+                            user['email'] = new_email
+                            email_auth.send_email_change_mail(user, auth_code)
+                            return JsonResponse(constants.CODE_WAIT)
+                        else:
+                            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_CHANGE}))
+                except Exception as ef:
+                    logger.exception(ef)
+                    if auth_code is not None:
+                        db.delete_authentication(user['user_id'], auth_code)
+
+                raise Exception(MSG_UNKNOWN_ERROR)
 
             elif action == 'findid':
                 if not data.get('email') and not data.get('name'):

@@ -1,3 +1,5 @@
+var isAccountPage = (user != undefined && user != null && user != {} && user != '');
+
 var checkIDFlag = false;
 var checkIDUsed = false;
 var checkingIDUsed = false;
@@ -99,30 +101,37 @@ var checkPasswordFlag = false;
 var tempPassword = "";
 function checkPassword() {
     var inputPw = $('#inputPw');
-    if ((tempPassword == inputPw.val() || inputPw.val().length == 0) && checkPasswordFlag) {
-        return
-    }
-    else {
-        tempPassword = inputPw.val();
-        checkPasswordFlag = false;
-    }
-    if (inputPw.val().length < 4) {
-        checkPasswordFlag = false;
-        inputPw.css("border-color", "red");
-        inputPw.popover({
-            title: "Warning",
-            content: "The length of Password is larger than 4.",
-            placement: "bottom",
-            trigger: "manual"
-        });
-        inputPw.popover("show");
-        setTimeout(function () {
-            inputPw.popover('destroy');
-        }, 2000);
-    }
-    else {
+
+    if(isAccountPage && inputPw.val() == "") { //in account page, no password changed
         checkPasswordFlag = true;
         inputPw.css("border-color", "");
+        tempPassword = "";
+    } else {
+        if ((tempPassword == inputPw.val() || inputPw.val().length == 0) && checkPasswordFlag) {
+            return
+        }
+        else {
+            tempPassword = inputPw.val();
+            checkPasswordFlag = false;
+        }
+        if (inputPw.val().length < 4) {
+            checkPasswordFlag = false;
+            inputPw.css("border-color", "red");
+            inputPw.popover({
+                title: "Warning",
+                content: "The length of Password is larger than 4.",
+                placement: "bottom",
+                trigger: "manual"
+            });
+            inputPw.popover("show");
+            setTimeout(function () {
+                inputPw.popover('destroy');
+            }, 2000);
+        }
+        else {
+            checkPasswordFlag = true;
+            inputPw.css("border-color", "");
+        }
     }
 
     if($('#inputPwConfirm').val() != '') {
@@ -146,9 +155,16 @@ function checkPasswordConfirm() {
             inputPwConfrim.popover('destroy');
         }, 2000);
     }
-    else if($('#inputPw').val() == inputPwConfrim.val() && inputPwConfrim.val()!="") {
-        checkPasswordConfirmFlag = true;
-        inputPwConfrim.css("border-color", "");
+    else if($('#inputPw').val() == inputPwConfrim.val()) {
+        if (isAccountPage) {
+            checkPasswordConfirmFlag = true;
+            inputPwConfrim.css("border-color", "");
+        } else {
+            if (inputPwConfrim.val() != "") {
+                checkPasswordConfirmFlag = true;
+                inputPwConfrim.css("border-color", "");
+            }
+        }
     }
 }
 
@@ -265,74 +281,83 @@ function checkEmail() {
 
     checkEmailUsed = -2;
     checkingEmailUsed = true;
-    $.ajax("/api/user", {
-        method: 'GET',
-        data: {
-            action: 'checkEmail',
-            user_type: usertype,
-            email: inputEmail.val()
-        },
-        dataType: 'json',
-        success: function (res) {
-            //console.log(res);
-            if (res['code'] == 'SUCCESS') {
-                checkEmailUsed = res['emailUsed'];
-            } else {
-                checkEmailUsed = -2;
-            }
+    var needEmailCheck = true;
+    if (isAccountPage) {   //for account change
+        if (inputEmail.val() == user['email']) needEmailCheck = false;
+        checkEmailUsed = 1;
+        checkingEmailUsed = false;
+    }
 
-            if (checkEmailUsed == 1) {
-                //pass
-            } else if (checkEmailUsed == 0) {
-                var popoverMsg = 'This email is already used for ';
-                if (usertype == 'patient')
-                    popoverMsg += 'physician';
-                else
-                    popoverMsg += 'patient';
-                popoverMsg += '. If you are the same person, you just continue. Or not, you should check the email and use another email.';
-
-                inputEmail.css("border-color", "orange");
-                inputEmail.popover( {
-                    title: "Notice",
-                    content: popoverMsg,
-                    placement: "bottom",
-                    trigger: "manual"
-                }).data('bs.popover')
-                  .tip()
-                  .addClass('popover-info');
-                inputEmail.popover("show");
-                setTimeout(function () {
-                    inputEmail.popover('destroy');
-                }, 2000);
-            } else { // below -1
-                checkEmailFlag = false;
-
-                var popoverMsg = 'Unknown error.';
-                switch(checkEmailUsed) {
-                    case -2:
-                        popoverMsg = 'Checking email is failed. Please try again.';
-                        break;
-                    case -1:
-                        popoverMsg = 'This email is already used.';
-                        break;
+    if(needEmailCheck) {
+        $.ajax("/api/user", {
+            method: 'GET',
+            data: {
+                action: 'checkEmail',
+                user_type: usertype,
+                email: inputEmail.val()
+            },
+            dataType: 'json',
+            success: function (res) {
+                //console.log(res);
+                if (res['code'] == 'SUCCESS') {
+                    checkEmailUsed = res['emailUsed'];
+                } else {
+                    checkEmailUsed = -2;
                 }
 
-                inputEmail.css("border-color", "red");
-                inputEmail.popover({
-                    title: "Warning",
-                    content: popoverMsg,
-                    placement: "bottom",
-                    trigger: "manual"
-                });
-                inputEmail.popover("show");
-                setTimeout(function () {
-                    inputEmail.popover('destroy');
-                }, 2000);
-            }
+                if (checkEmailUsed == 1) {
+                    //pass
+                } else if (checkEmailUsed == 0) {
+                    var popoverMsg = 'This email is already used for ';
+                    if (usertype == 'patient')
+                        popoverMsg += 'physician';
+                    else
+                        popoverMsg += 'patient';
+                    popoverMsg += '. If you are the same person, you just continue. Or not, you should check the email and use another email.';
 
-            checkingEmailUsed = false;
-        }
-    });
+                    inputEmail.css("border-color", "orange");
+                    inputEmail.popover({
+                        title: "Notice",
+                        content: popoverMsg,
+                        placement: "bottom",
+                        trigger: "manual"
+                    }).data('bs.popover')
+                        .tip()
+                        .addClass('popover-info');
+                    inputEmail.popover("show");
+                    setTimeout(function () {
+                        inputEmail.popover('destroy');
+                    }, 2000);
+                } else { // below -1
+                    checkEmailFlag = false;
+
+                    var popoverMsg = 'Unknown error.';
+                    switch (checkEmailUsed) {
+                        case -2:
+                            popoverMsg = 'Checking email is failed. Please try again.';
+                            break;
+                        case -1:
+                            popoverMsg = 'This email is already used.';
+                            break;
+                    }
+
+                    inputEmail.css("border-color", "red");
+                    inputEmail.popover({
+                        title: "Warning",
+                        content: popoverMsg,
+                        placement: "bottom",
+                        trigger: "manual"
+                    });
+                    inputEmail.popover("show");
+                    setTimeout(function () {
+                        inputEmail.popover('destroy');
+                    }, 2000);
+                }
+
+                checkingEmailUsed = false;
+            }
+        });
+    }
 }
 
 var checkEmailConfirmFlag = false;

@@ -1,5 +1,6 @@
 CODE_SUCCESS = {"code": "SUCCESS"}
 CODE_NEED_AUTH = {"code": "NEED_AUTH"}
+CODE_WAIT = {"code": "WAIT"}
 CODE_FAILURE = {"code": "FAILURE"}
 
 CNT_CONTENTS_IN_PAGE = 10

@@ -34,6 +34,7 @@ class DbManager():
 
     # HT (for authentication)
     def check_authentication(self, user_id):
+        # check the user is need to authenticate
         authenticated = False
         with self.connector.cursor() as cursor:
             try:
@@ -43,6 +44,7 @@ class DbManager():
                 if row:
                     auth_type = row[0]
                     if auth_type != 'new':
+                        # already authenticated
                         authenticated = True
                 else:
                     # already authenticated
@@ -52,32 +54,50 @@ class DbManager():
                 authenticated = None
         return authenticated
 
-    def retrieve_authentication(self, user_id):
+    def retrieve_authentication(self, user_id, auth_type=None):
         auth = {}
         with self.connector.cursor() as cursor:
             try:
-                db_query = "SELECT auth_code, auth_type FROM authentication WHERE user_id=%s"
-                cursor.execute(db_query, user_id)
-                row = cursor.fetchone()
-                if row:
-                    auth['user_id'] = user_id
-                    auth['auth_code'] = row[0]
-                    auth['auth_type'] = row[1]
+                if auth_type is None:
+                    db_query = "SELECT auth_code, auth_type, extra_value FROM authentication WHERE user_id=%s"
+                    cursor.execute(db_query, user_id)
+                    row = cursor.fetchone()
+                    if row:
+                        auth['user_id'] = user_id
+                        auth['auth_code'] = row[0]
+                        auth['auth_type'] = row[1]
+                        if row[2]:
+                            auth['extra_value'] = row[2]
+                    else:
+                        return None
                 else:
-                    # already authenticated
-                    return None
+                    db_query = "SELECT auth_code, extra_value FROM authentication WHERE user_id=%s AND auth_type=%s"
+                    cursor.execute(db_query, (user_id, auth_type))
+                    row = cursor.fetchone()
+                    if row:
+                        auth['user_id'] = user_id
+                        auth['auth_code'] = row[0]
+                        auth['auth_type'] = auth_type
+                        if row[2]:
+                            auth['extra_value'] = row[1]
+                    else:
+                        return None
             except Exception as e:
                 logger.exception(e)
                 return None
         return auth
 
-    def add_authentication(self, user_id, auth_code, auth_type='new'):
+    def add_authentication(self, user_id, auth_code, auth_type='new', extra_value=None):
         if_inserted = False
         with self.connector.cursor() as cursor:
             try:
-                db_query = "INSERT INTO authentication (user_id, auth_code, auth_type) values (%s, %s, %s)"
-                cursor.execute(db_query,
-                               (user_id, auth_code, auth_type))
+                if extra_value is None:
+                    db_query = "INSERT INTO authentication (user_id, auth_code, auth_type) values (%s, %s, %s)"
+                    cursor.execute(db_query, (user_id, auth_code, auth_type))
+                else:
+                    db_query = "INSERT INTO authentication (user_id, auth_code, auth_type, extra_value)" \
+                               " values (%s, %s, %s, %s)"
+                    cursor.execute(db_query, (user_id, auth_code, auth_type, extra_value))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
@@ -87,22 +107,31 @@ class DbManager():
                 raise Exception("Generating authentication failed.")
         return if_inserted
 
-    def update_authentication(self, user_id, auth_code, auth_type='new'):
+    def update_authentication(self, user_id, auth_code, auth_type='new', extra_value=None):
         is_existed = False
-        try:
-            if self.check_authentication(user_id):
-                is_existed = True
-        except:
-            pass
-        if is_existed:
-            return self.add_authentication(user_id, auth_code, auth_type)
+
+        with self.connector.cursor() as cursor:
+            try:
+                db_query = "SELECT * FROM authentication WHERE user_id=%s"
+                cursor.execute(db_query, user_id)
+                if cursor.rowcount > 0:
+                    is_existed = True
+            except:
+                pass
+
+        if not is_existed:
+            return self.add_authentication(user_id, auth_code, auth_type, extra_value)
         else:
             if_updated = False
             with self.connector.cursor() as cursor:
                 try:
-                    db_query = "UPDATE authentication SET auth_code=%s, auth_type=%s WHERE user_id=%s"
-                    cursor.execute(db_query,
-                                   (auth_code, auth_type, user_id))
+                    if extra_value is None:
+                        db_query = "UPDATE authentication SET auth_code=%s, auth_type=%s WHERE user_id=%s"
+                        cursor.execute(db_query, (auth_code, auth_type, user_id))
+                    else:
+                        db_query = "UPDATE authentication SET auth_code=%s, auth_type=%s, extra_value=%s" \
+                                   " WHERE user_id=%s"
+                        cursor.execute(db_query, (auth_code, auth_type, extra_value, user_id))
                     self.connector.commit()
                     row_count = cursor.rowcount
                     if row_count > 0:
@@ -133,21 +162,40 @@ class DbManager():
             try:
                 db_query = "SELECT user_type FROM user WHERE email=%s"
                 cursor.execute(db_query, email)
-                if cursor.rowcount == 0:
-                    res = 1
-                else:
+                if cursor.rowcount > 0:
                     for row in cursor:
                         if row[0] == user_type:
                             res = -1
                             break
                         else:
                             res = 0
-
+                else:
+                    with self.connector.cursor() as cursor2:
+                        db_query = "SELECT u.user_type " \
+                                   "FROM user as u LEFT JOIN authentication as a on u.user_id=a.user_id " \
+                                   "WHERE a.extra_value=%s"
+                        cursor2.execute(db_query, email)
+                        if cursor2.rowcount == 0:
+                            res = 1
+                        elif cursor2.rowcount > 0:
+                            for row in cursor2:
+                                if row[0] == user_type:
+                                    res = -1
+                                    break
+                                else:
+                                    res = 0
             except Exception as e:
                 logger.exception(e)
                 res = -2
         return res
     # end auth (HT)
+
+    # HT (for changing account info-email and password)
+    def change_password(self, user_id, password):
+        pass
+
+    def change_email(self, user_id, email):
+        pass
 
     def find_user(self, user_id):
         if_exist = False
@@ -294,7 +342,7 @@ class DbManager():
                     if password is None:
                         user['password'] = None
                     else:
-                        user['password'] = row[8]
+                        user['password'] = row[9]
             except Exception as e:
                 logger.exception(e)
                 raise Exception("Login is Failed.")
@@ -464,7 +512,7 @@ class DbManager():
                     if password is None:
                         user['password'] = None
                     else:
-                        user['password'] = row[9]
+                        user['password'] = row[10]
             except Exception as e:
                 logger.exception(e)
                 raise Exception("Login is failed.")

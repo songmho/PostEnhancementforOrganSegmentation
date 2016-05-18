@@ -3,13 +3,16 @@
  */
 
 $(document).ready(function () {
-    console.log(user);
     checkPasswordFlag = true;
+    checkPasswordConfirmFlag = true;
     checkNameFlag = true;
     checkPhoneFlag = true;
     checkEmailFlag = true;
+    checkEmailConfirmFlag = true;
     checkBirthFlag = true;
     checkLicenseFlag = true;
+    checkEmailUsed = 1;
+
     var selectNationality = $('#selectNationality');
     for (var country in country_arr) {
         var opt = country_arr[country];
@@ -31,12 +34,17 @@ $(document).ready(function () {
     $('#inputEmail').blur(function () {
         checkEmail();
     });
+    $('#inputEmailConfirm').blur(function (){
+        checkEmailConfirm();
+    });
     $('#inputBirthday').blur(function () {
         checkBirth();
     });
     $('#inputLicence').blur(function () {
         checkLicense();
     });
+
+    console.log(user);
 
     if (user.user_type == 'patient') {
         $("#selectGender").val(user.gender).attr("selected", "selected");
@@ -55,41 +63,90 @@ $(document).ready(function () {
         resetUser();
     });
 
-    $('#accountForm').on('submit', function (e) {
-            e.preventDefault();
-            var invalidElements = "";
-            if (!(checkPasswordFlag && !checkPasswordConfirmFlag && checkNameFlag && checkPhoneFlag && checkEmailFlag && checkEmailFlag)) {
-                if (!checkPasswordFlag || !checkPasswordConfirmFlag) {
-                    if (invalidElements == "")
-                        invalidElements += "Password";
-                    else
-                        invalidElements += ", Password"
-                }
-                if (!checkNameFlag) {
-                    if (invalidElements == "")
-                        invalidElements += "Name";
-                    else
-                        invalidElements += ", Name"
-                }
-                if (!checkPhoneFlag) {
-                    if (invalidElements == "")
-                        invalidElements += "Phone Number";
-                    else
-                        invalidElements += ", Phone Number"
-                }
-                if (!checkEmailFlag) {
-                    if (invalidElements == "")
-                        invalidElements += "E-mail";
-                    else
-                        invalidElements += ", E-mail"
-                }
-                openModal("Please check these elements;" + invalidElements, "Warning");
-            } else {
-                updateUser();
-            }
+    $('#btnUpdateAccount').click(function() {
+        console.log('btn account clicked');
+
+        if($('#inputPw').val()=='' && $('#inputPwConfirm').val()=='') {
+            $('#inputPw').removeAttr('required');
+            $('#inputPwConfirm').removeAttr('required');
         }
-    );
+    });
+
+    $('#accountForm').on('submit', function (e) {
+        console.log('account submit');
+        e.preventDefault();
+        $('#inputPw').attr('required', '');
+        $('#inputPwConfirm').attr('required', '');
+
+        if(checkingEmailUsed) {
+            $.LoadingOverlay('show');
+            var checkingEmailInterval = setInterval(function() {
+                if(!checkingEmailUsed) {
+                    clearInterval(checkingEmailInterval);
+                    checkingEmailInterval = null;
+                    $.LoadingOverlay('hide');
+                    checkFormEmail();
+                }
+            }, 10);
+        } else {
+            checkFormEmail();
+        }
+    });
+
+    $('#btnAccountEmailOK').click(function() {
+        checkForm();
+    })
 });
+
+function checkFormEmail() {
+    if(checkEmailUsed < 0) {
+        openModal("This email is already used.", "Account Update Fail");
+    } else if(checkEmailUsed == 0) {
+        var dlgMsg = 'This email is already used for ';
+        if (usertype == 'patient')
+            dlgMsg += 'physician';
+        else
+            dlgMsg += 'patient';
+        dlgMsg += '. If you are the same person, you just continue. Or not, you should check the email and use another email.<br/>Are you sure to use this email?';
+        $('#accountEmailAlertModal .modal-body').html(dlgMsg);
+        $('#accountEmailAlertModal').modal({backdrop: 'static', keyboard: false})
+    } else {
+        checkForm();
+    }
+}
+
+function checkForm() {
+    var invalidElements = "";
+    if (!(checkPasswordFlag && checkPasswordConfirmFlag && checkNameFlag && checkPhoneFlag && checkEmailFlag && checkEmailConfirmFlag)) {
+        if (!checkPasswordFlag || !checkPasswordConfirmFlag) {
+            if (invalidElements == "")
+                invalidElements += "Password";
+            else
+                invalidElements += ", Password"
+        }
+        if (!checkNameFlag) {
+            if (invalidElements == "")
+                invalidElements += "Name";
+            else
+                invalidElements += ", Name"
+        }
+        if (!checkPhoneFlag) {
+            if (invalidElements == "")
+                invalidElements += "Phone Number";
+            else
+                invalidElements += ", Phone Number"
+            }
+        if (!checkEmailFlag || !checkEmailConfirmFlag) {
+            if (invalidElements == "")
+                invalidElements += "E-mail";
+            else
+                invalidElements += ", E-mail"
+        }
+        openModal("Please check these elements;" + invalidElements, "Account Update Fail");
+    } else {
+        updateUser();
+    }
+}
 
 var updatingUser = {};
 function updateUser() {
@@ -106,6 +163,8 @@ function updateUser() {
     }
     updatingUser['user_id'] = user.user_id;
     updatingUser['password'] = $('#inputPw').val();
+    if (updatingUser['password']==undefined || updatingUser['password']==null || updatingUser['password']=='')
+        updatingUser['password'] = user['password'];
     updatingUser['name'] = $('#inputName').val();
     updatingUser['phone_number'] = $('#inputMobile').val();
     updatingUser['email'] = $('#inputEmail').val();
@@ -123,9 +182,16 @@ function updateUser() {
         success: function (res) {
             console.log(res);
             $.LoadingOverlay('hide');
-            if (res['code'] == 'SUCCESS') {
+
+            console.log(res['code']);
+
+            if (res['code'] == "SUCCESS") {
                 user = updatingUser;
                 openModal("Account information is successfully updated.", "Update Success");
+            } else if (res['code'] == 'WAIT') {
+                user = updatingUser;
+                openModal("Your email will be updated completely when your email is authenticated.<br/>" +
+                    "Please check your new email and authenticate it.", "Update Success")
             } else {
                 openModal(res['msg'], "Update Failed");
             }
@@ -135,9 +201,11 @@ function updateUser() {
 
 function resetUser() {
     checkPasswordFlag = true;
+    checkPasswordConfirmFlag = true;
     checkNameFlag = true;
     checkPhoneFlag = true;
     checkEmailFlag = true;
+    checkEmailConfirmFlag = true;
     checkBirthFlag = true;
     checkLicenseFlag = true;
 

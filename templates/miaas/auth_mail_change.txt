@@ -1,0 +1,9 @@
+MIAAS Updating Email Authentication
+
+Email Changing Authentication
+Verity that you own {{ user.email }}.
+Please copy and paste the below link to web browser.
+{{ auth_link }}
+
+Thank you,
+SmartyLab Corporation.

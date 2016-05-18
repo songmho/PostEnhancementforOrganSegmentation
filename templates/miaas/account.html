@@ -65,6 +65,24 @@
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputEmail">Email Address</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <input type="email" id="inputEmail" maxlength="100" name="email" class="form-control"
+                                   placeholder="Email"required
+                                   value="{{ user_session.email }}" />
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputEmailConfirm">Email Confirm</label>
+                        <div class="col-xs-12 col-sm-9 col-md-7">
+                            <input type="email" id="inputEmailConfirm" maxlength="100" name="emailConfirm" class="form-control"
+                                   placeholder="Email Confirm" required
+                                   value="{{ user_session.email }}" />
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputMobile">Phone Number</label>
                         <div class="col-xs-12 col-sm-9 col-md-7">
                             <input type="tel" maxlength="20" id="inputMobile" name="mobile" class="form-control"
@@ -73,14 +91,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="inputEmail">Email Address</label>
-                        <div class="col-xs-12 col-sm-9 col-md-7">
-                            <input type="email" id="inputEmail" maxlength="100" name="email" class="form-control"
-                                   required
-                                   value="{{ user_session.email }}" />
-                        </div>
-                    </div>
+
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label"
                                for="selectNationality">Country</label>
@@ -154,7 +165,7 @@
                         <button class="btn btn-lg btn-primary btn-block" type="button">Reset</button>
                     </div>
                     <div id="btnFormUpdate" class="col-xs-12 col-sm-4 col-md-2 form-button">
-                        <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+                        <button id="btnUpdateAccount" class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
                     </div>
                 </div>
             </form>
@@ -163,11 +174,31 @@
 </div>
 
 <!-- Modal -->
-
+<div class="modal fade" id="accountEmailAlertModal" tabindex="-1" role="dialog" aria-labelledby="accountEmailAlertModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="accountEmailAlertModalTitle">Email Used</h4>
+        </div>
+        <div class="modal-body">
+        Email is already used
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">I'll Use Another Email</button>
+            <button id="btnAccountEmailOK" type="button" class="btn btn-primary" data-dismiss="modal">I'm the Same Person</button>
+        </div>
+        </div>
+    </div>
+</div>
 
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
+<script type="text/javascript">
+    usertype = user['user_type'];
+</script>
+
 <script src="{% static 'miass/js/country.js' %}"></script>
 <script src="{% static 'miass/js/userInfoValidation.js' %}"></script>
 <script src="{% static 'miass/js/account.js' %}"></script>
