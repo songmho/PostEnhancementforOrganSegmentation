@@ -76,3 +76,18 @@ def verify_and_update_auth_mail(user_id, auth_code):
     except Exception as e:
         logger.exception(e)
         return False
+
+
+def generate_temp_password():
+    return ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(6))
+
+
+def send_find_pw_mail(user_info, temp_pw):
+    signin_link = settings.DOMAIN_ADDRESS + reverse('miaas:signin')
+
+    template_plain = render_to_string('miaas/auth_password_change.txt', {'user': user_info, 'temp_pw': temp_pw})
+    template_html = render_to_string('miaas/auth_password_change.html', {'user': user_info, 'temp_pw': temp_pw,
+                                                                         'signin_link': signin_link})
+
+    send_mail('MIAAS - Temporary Password', template_plain, settings.EMAIL_DEFAULT_FROM,
+              [user_info['email']], fail_silently=False, html_message=template_html)

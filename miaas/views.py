@@ -91,7 +91,7 @@ def auth_change_email_page(request, user_id, auth_code):
 def signup_page(request):
     return render(request, 'miaas/signup.html', None)
 
-
+3
 def find_page(request):
     return render(request, 'miaas/find.html', None)
 

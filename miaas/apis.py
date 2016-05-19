@@ -373,29 +373,43 @@ def handle_user_mgt(request):
                 raise Exception(MSG_UNKNOWN_ERROR)
 
             elif action == 'findid':
-                if not data.get('email') and not data.get('name'):
+                if not data.get('email') and not data.get('user_type'):
                     raise Exception(MSG_INVALID_PARAMS)
-                user_id = db.find_id(data['email'], data['name'])
+                user_id = db.find_id(data['email'], data['user_type'])
                 if user_id:
                     return JsonResponse(dict(constants.CODE_SUCCESS, **{'user_id': user_id}))
                 else:
                     raise Exception(MSG_NO_USER_FOUND)
 
             elif action == 'findpw':
-                if not data.get('email') and not data.get('name') and not data.get('user_id'):
+                if not data.get('email') and not data.get('user_id'):
                     raise Exception(MSG_INVALID_PARAMS)
-                password = db.find_passwd(data['user_id'], data['email'], data['name'])
+                password = db.find_passwd(data['user_id'], data['email'])
                 if password:
-                    return JsonResponse(dict(constants.CODE_SUCCESS, **{'password': password}))
+                    user = db.retrieve_user_info(data['user_id'])
+                    if not user:
+                        raise Exception(MSG_NO_USER_FOUND)
+
+                    temp_pw = email_auth.generate_temp_password()
+                    if not db.change_password(data['user_id'], temp_pw):
+                        raise Exception("Finding Password failed.")
+
+                    try:
+                        del request.session['user']
+                        request.session.clear()
+                    except: pass
+
+                    email_auth.send_find_pw_mail(user, temp_pw)
+                    return JsonResponse(constants.CODE_SUCCESS)
                 else:
                     raise Exception(MSG_NO_USER_FOUND)
 
-            elif action == 'resetPassword':
-                result = db.reset_passwd(data.get('user_id'), data['password'])
-                if result:
-                    return JsonResponse(dict(constants.CODE_SUCCESS, **{'msg': 'success'}))
-                else:
-                    raise Exception(MSG_DB_FAILED)
+            # elif action == 'resetPassword':
+            #     result = db.reset_passwd(data.get('user_id'), data['password'])
+            #     if result:
+            #         return JsonResponse(dict(constants.CODE_SUCCESS, **{'msg': 'success'}))
+            #     else:
+            #         raise Exception(MSG_DB_FAILED)
 
             return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 

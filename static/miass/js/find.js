@@ -11,37 +11,13 @@ $(document).ready(function () {
     $('#inputPwConfirm').blur(function () {
         checkPasswordConfirm();
     });
-    $('#btnConfirmReset').click(function () {
-        if (!checkPasswordFlag || !checkPasswordConfirmFlag) {
-            openModal("Please check your password");
-        }
-        else {
-            $.LoadingOverlay('show');
-            $.ajax("/api/user", {
-                method: 'POST',
-                data: JSON.stringify({
-                    action: 'resetPassword',
-                    user_id: $('#inputId').val(),
-                    password: $('#inputPw').val()
-                }),
-                dataType: 'json',
-                success: function (res) {
-                    $.LoadingOverlay('hide');
-                    if (res['code'] == 'SUCCESS') {
-                        location.replace(mainURL);
-                    } else {
-                        openFindFailedModal(res['msg']);
-                    }
-                }
-            });
-        }
-
-    });
 
     $('#find-change').click(function () {
         if (bFindId) {
             $('#find-header').text('Find Password');
             $('#find-change').text('Click here to find ID');
+            $('#selectType-group').hide();
+            $('#selectType').removeAttr('required');
             $('#inputId-group').show();
             $('#inputId').attr('required', '');
             bFindId = false;
@@ -50,6 +26,8 @@ $(document).ready(function () {
             $('#find-change').text('Click here to find password');
             $('#inputId-group').hide();
             $('#inputId').removeAttr('required');
+            $('#selectType-group').show();
+            $('#selectType').attr('required', '');
             bFindId = true;
         }
     });
@@ -58,23 +36,23 @@ $(document).ready(function () {
         e.preventDefault();
         $.LoadingOverlay('show');
 
-        var name = $('#inputName').val();
-        var email = $('#inputEmail').val();
-
         if (bFindId) {
+            var type = $('#selectType').val();
+            var email = $('#inputEmail').val();
+
             $.ajax("/api/user", {
                 method: 'POST',
                 data: JSON.stringify({
                     action: 'findid',
-                    email: email,
-                    name: name
+                    user_type: type,
+                    email: email
                 }),
                 dataType: 'json',
                 success: function (res) {
                     $.LoadingOverlay('hide');
 
                     if (res['code'] == 'SUCCESS') {
-                        openFindModal('You ID is "' + res['user_id'] + '"', 'Find ID')
+                        openFindModal('Your ID is "<b style="color: #d76474;">' + res['user_id'] + '</b>".', 'Find ID')
                     } else {
                         openFindFailedModal(res['msg']);
                     }
@@ -82,13 +60,13 @@ $(document).ready(function () {
             });
         } else {
             var user_id = $('#inputId').val();
+            var email = $('#inputEmail').val();
 
             $.ajax("/api/user", {
                 method: 'POST',
                 data: JSON.stringify({
                     action: 'findpw',
                     email: email,
-                    name: name,
                     user_id: user_id
                 }),
                 dataType: 'json',
@@ -96,7 +74,7 @@ $(document).ready(function () {
                     $.LoadingOverlay('hide');
 
                     if (res['code'] == 'SUCCESS') {
-                        openResetPasswordModal('You password is "' + res['password'] + '"', 'Find PW')
+                        openFindModal('Temporary password will be sent to your email. Please wait a minute.', 'Find Password')
                     } else {
                         openFindFailedModal(res['msg']);
                     }
@@ -132,7 +110,7 @@ function openFindModal(msg, title) {
     if (msg == undefined || msg == null || msg == '') {
         msg = '...'
     }
-    $('#findModal .modal-body').text(msg);
+    $('#findModal .modal-body').html(msg);
     $('#findModal').modal();
 }
 

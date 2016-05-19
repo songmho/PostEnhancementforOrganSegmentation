@@ -277,46 +277,53 @@ class DbManager():
                 logger.exception(e)
         return user_type
 
-    def find_id(self, email, name):
+    def find_id(self, email, user_type):
         user_id = None
         with self.connector.cursor() as cursor:
             try:
-                db_query = "SELECT user_id FROM user WHERE email=%s AND name=%s"
-                cursor.execute(db_query, (email, name))
+                db_query = "SELECT user_id FROM user WHERE email=%s AND user_type=%s"
+                cursor.execute(db_query, (email, user_type))
                 self.connector.commit()
-                row = cursor.fetchone()
-                user_id = row[0]
+
+                if cursor.rowcount > 0:
+                    row = cursor.fetchone()
+                    user_id = row[0]
+                else:
+                    raise Exception("There is no matched user information.")
             except Exception as e:
                 logger.exception(e)
                 raise Exception("Finding ID is failed.")
         return user_id
 
-    def find_passwd(self, user_id, email, name):
+    def find_passwd(self, user_id, email):
         passwd = None
         with self.connector.cursor() as cursor:
             try:
-                db_query = "SELECT password FROM user WHERE user_id=%s AND email=%s AND name=%s"
-                cursor.execute(db_query, (user_id, email, name))
+                db_query = "SELECT password FROM user WHERE user_id=%s AND email=%s"
+                cursor.execute(db_query, (user_id, email))
                 self.connector.commit()
-                row = cursor.fetchone()
-                passwd = row[0]
+                if cursor.rowcount > 0:
+                    row = cursor.fetchone()
+                    passwd = row[0]
+                else:
+                    raise Exception("There is no matched user information.")
             except Exception as e:
                 logger.exception(e)
                 raise Exception("Finding Password is failed.")
 
         return passwd
 
-    def reset_passwd(self, user_id, password):
-        with self.connector.cursor() as cursor:
-            try:
-                db_query = "UPDATE user SET password = %s " \
-                           "WHERE user_id = %s"
-                cursor.execute(db_query, (password, user_id))
-                self.connector.commit()
-                return True
-            except Exception as e:
-                logger.exception(e)
-                return False
+    # def reset_passwd(self, user_id, password):
+    #     with self.connector.cursor() as cursor:
+    #         try:
+    #             db_query = "UPDATE user SET password = %s " \
+    #                        "WHERE user_id = %s"
+    #             cursor.execute(db_query, (password, user_id))
+    #             self.connector.commit()
+    #             return True
+    #         except Exception as e:
+    #             logger.exception(e)
+    #             return False
 
     def add_patient(self, patient):
         if_inserted = False
