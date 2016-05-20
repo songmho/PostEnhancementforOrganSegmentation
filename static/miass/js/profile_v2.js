@@ -25,6 +25,9 @@ $(document).ready(function () {
     });
 
     $('#btnFormReset').click(resetProfile);
+    $('#btnFormUpdate').click(function() {
+        $('#patientProfileForm').submit();
+    });
     $('#patientProfileForm').on('submit', function (e) {
         e.preventDefault();
         updateProfile();
@@ -59,7 +62,107 @@ $(document).ready(function () {
             weight.attr('max', 1100);
         }
     });
+
+    $('#btn-add-pmh-record').click(function () {
+        addRow($('#table-pmh'), $('#info-phm'))
+    });
+
+    $('#btn-add-ed-record').click(function () {
+        addRow($('#table-ed'), $('#info-ed'));
+    });
+
+    $('#btn-add-sd-record').click(function () {
+        function changeClassName(table, info, newEntry){
+            var lastItemNo = table.find("tr:last").attr("class").replace("sd", "");
+            if(lastItemNo > 3){
+                info.text("You can't add records more than 3.");
+                return false
+            }
+            newEntry.removeClass();
+            newEntry.find("td:eq(0)").attr("rowspan", "1");
+            newEntry.addClass("sd" + (parseInt(lastItemNo) + 1));
+            return true
+        }
+        addRow($('#table-sd'), $('#info-sd'), changeClassName)
+    });
+
+    $('#table-sd').on('click', '#btn-add-symptom', function (e) {
+        var clickedEntry = $(this).parent().parent();
+        var cls = clickedEntry.attr("class");
+        if($("." + cls).length > 2){
+            $('#info-sd').text("You can't add symptoms more than 3.");
+            return
+        }
+        var newEntry = clickedEntry.clone();
+        newEntry.find("td:eq(0)").remove();
+        newEntry.insertAfter($("#table-sd ." + cls + ":last"));
+        resizeRowspan(cls);
+    });
+
+    $('#btn-add-m-record').click(function () {
+        addRow($('#table-m'), $('#info-m'));
+    });
+
+    $('#btn-add-fmh-record').click(function () {
+        addRow($('#table-fmh'), $('#info-fmh'));
+    });
+
+    $('#btn-add-a-record').click(function () {
+        addRow($('#table-a'), $('#info-a'));
+    });
+
+    $('.input-in-table').keydown(function(e) {
+        //console.log(e);
+        if (e.shiftKey && e.keyCode==220) {     // | key (it is used as delimiter
+            e.preventDefault();
+
+            var textarea = $(this);
+            textarea.popover({
+                title: "Alert",
+                content: "This form cannot contain the special character '|'.",
+                placement: "bottom",
+                trigger: "manual"
+            });
+            textarea.popover("show");
+            setTimeout(function () {
+                textarea.popover('destroy');
+            }, 2000);
+        }
+    });
+
 });
+
+function resizeRowspan(cls) {
+    var rowspan = $("." + cls).length;
+    $("." + cls + ":first td:eq(0)").attr("rowspan", rowspan);
+}
+
+function addRow(table, info, f) {
+    var rowCount = table.find('>tbody>tr').length;
+    if (rowCount > 10 && f == null) {
+        info.text("You can't add records more than 10.");
+        return
+    }
+    var controlForm = table;
+    var currentEntry = table.find('>tbody>tr:first');
+    var newEntry = $(currentEntry.clone());
+    if(f != null){
+        res = f(table, info, newEntry);
+        if(!res)
+            return
+    }
+    newEntry.appendTo(controlForm);
+    newEntry.find('input').val('');
+    /*if (rowCount > 1) {
+        var removeButtons = document.getElementsByClassName('btn-remove');
+        for (var i = 0; i < removeButtons.length; i++) {
+            removeButtons.item(i).disabled = false;
+        }
+    }*/
+    newEntry.find('.btn-custom-delete').click(function() {
+        newEntry.remove();
+    });
+}
 
 function resetProfile() {
     $('#patientProfileForm input, #patientProfileForm textarea').each(function () {

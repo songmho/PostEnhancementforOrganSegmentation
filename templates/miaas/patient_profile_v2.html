@@ -139,7 +139,7 @@
                         </a>
                         <span id="info-phm" class="text-info"></span>
                         <div class="col-xs-12">
-                            <table id="table-pmh" class="table table-bordered ">
+                            <table id="table-pmh" class="table table-profile table-bordered ">
                                 <thead>
                                 <tr>
                                     <th style="width: 15%;">History Type</th>
@@ -160,7 +160,7 @@
                                     <td><input type="text" class="input-in-table" maxlength="50"></td>
                                     <td><input type="date" class="input-in-table" min="1800-01-01"></td>
                                     <td><textarea class="input-in-table" rows="5"></textarea></td>
-                                    <td style="padding: 5px; width: 20px; border:hidden; border-left: inherit">
+                                    <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
                                 </tr>
@@ -176,7 +176,7 @@
                         </a>
                         <span id="info-ed" class="text-info"></span>
                         <div class="col-xs-12">
-                            <table id="table-ed" class="table table-bordered ">
+                            <table id="table-ed" class="table table-profile table-bordered ">
                                 <thead>
                                 <tr>
                                     <th style="width: 15%;">Disease Name</th>
@@ -207,7 +207,7 @@
                                         </select>
                                     </td>
                                     <td><textarea class="input-in-table" rows="5"></textarea></td>
-                                    <td style="padding: 5px; width: 20px; border:hidden; border-left: inherit">
+                                    <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
                                 </tr>
@@ -223,7 +223,7 @@
                         </a>
                         <span id="info-sd" class="text-info"></span>
                         <div class="col-xs-12">
-                            <table id="table-sd" class="table table-bordered ">
+                            <table id="table-sd" class="table table-profile table-bordered ">
                                 <thead>
                                 <tr>
                                     <th style="width: 15%;">Disease Name</th>
@@ -265,7 +265,7 @@
                                         </select>
                                     </td>
                                     <td><textarea class="input-in-table" rows="5"></textarea></td>
-                                    <td style="padding: 5px; width: 20px; border:hidden; border-left: inherit">
+                                    <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
                                 </tr>
@@ -281,7 +281,7 @@
                         </a>
                         <span id="info-m" class="text-info"></span>
                         <div class="col-xs-12">
-                            <table id="table-m" class="table table-bordered ">
+                            <table id="table-m" class="table table-profile table-bordered ">
                                 <thead>
                                 <tr>
                                     <th style="width: 15%;">Medi. Name</th>
@@ -326,7 +326,7 @@
                                         </select>
                                     </td>
                                     <td><textarea class="input-in-table" rows="5"></textarea></td>
-                                    <td style="padding: 5px; width: 20px; border:hidden; border-left: inherit">
+                                    <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
                                 </tr>
@@ -342,7 +342,7 @@
                         </a>
                         <span id="info-fmh" class="text-info"></span>
                         <div class="col-xs-12">
-                            <table id="table-fmh" class="table table-bordered ">
+                            <table id="table-fmh" class="table table-profile table-bordered ">
                                 <thead>
                                 <tr>
                                     <th style="width: 15%;">Relationship</th>
@@ -360,6 +360,9 @@
                                         <option>Sister</option>
                                     </select></td>
                                     <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                    <td class="td-profile-side">
+                                        <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -373,7 +376,7 @@
                         </a>
                         <span id="info-a" class="text-info"></span>
                         <div class="col-xs-12">
-                            <table id="table-a" class="table table-bordered ">
+                            <table id="table-a" class="table table-profile table-bordered ">
                                 <thead>
                                 <tr>
                                     <th style="width: 15%;">Allergy Name</th>
@@ -384,12 +387,13 @@
                                 <tbody>
                                 <tr>
                                     <td>
-                                        <select class="input-in-table">
+                                        <!--select class="input-in-table">
                                             <option>Balsam of Peru</option>
                                             <option>Fruit</option>
                                             <option>Rice</option>
                                             <option>...</option>
-                                        </select>
+                                        </select-->
+                                        <input type="text" class="input-in-table" maxlength="50">
                                     </td>
                                     <td>
                                         <select class="input-in-table">
@@ -399,6 +403,9 @@
                                         </select>
                                     </td>
                                     <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                    <td class="td-profile-side">
+                                        <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -422,7 +429,7 @@
                             <button class="btn btn-lg btn-primary btn-block" type="button">Reset</button>
                         </div>
                         <div id="btnFormUpdate" class="col-xs-12 col-sm-4 col-md-2 form-button">
-                            <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+                            <button class="btn btn-lg btn-primary btn-block" type="button">Update</button>
                         </div>
                     </div>
                 </div>
@@ -472,7 +479,7 @@
 {% include 'miaas/template_footer.html' %}
 
 <!-- custom javascript -->
-<script src="{% static 'miass/js/profile.js' %}"></script>
+<script src="{% static 'miass/js/profile_v2.js' %}"></script>
 
 </body>
 </html>

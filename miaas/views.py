@@ -117,7 +117,7 @@ def account_page(request):
 def profile_page(request):
     context = _get_session_context(request)
     # logger.info(context)
-    return render(request, 'miaas/patient_profile_copy.html', context)
+    return render(request, 'miaas/patient_profile_v2.html', context)
 
 
 def archive_upload_page(request):

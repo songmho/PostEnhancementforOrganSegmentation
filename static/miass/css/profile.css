@@ -17,9 +17,43 @@
     border-top: 1px solid #ddd;
     height: 40px;
 }
+
+.table.table-profile .input-in-table {
+    vertical-align: top;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.table.table-profile textarea.input-in-table {
+    resize: vertical;
+}
+
+.table.table-profile select.input-in-table {
+    background-color: #ffffff;
+}
+
+.table.table-profile .td-profile-side {
+    padding: 5px;
+    width: 20px;
+    border:hidden;
+    border-left: inherit;
+    position:absolute;
+}
+.table.table-profile .td-profile-side .btn-custom-delete {
+    position: relative;
+}
+
+table.table-profile > tbody > tr:first-of-type {
+    display: none;
+}
+
 .glyphicon.glyphicon-remove{
     color: #CD5C5C;
 }
+
 .btn.btn-custom-delete {
     height: 20px;
     width: 20px;
@@ -49,14 +83,7 @@
     margin-left: 10px;
     font-size: 12px;
 }
-.input-in-table {
-    vertical-align: top;
-    padding: 0;
-    margin: 0;
-    border: 0;
-    width: 100%;
-    height: 100%
-}
+
 .glyphicon.glyphicon-plus.in-table{
     margin-top: 10px;
 }
