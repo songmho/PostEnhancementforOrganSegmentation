@@ -63,6 +63,8 @@ $(document).ready(function () {
         }
     });
 
+
+    /*** for detailed profile tables ***/
     $('#btn-add-pmh-record').click(function () {
         addRow($('#table-pmh'), $('#info-phm'))
     });
@@ -74,8 +76,8 @@ $(document).ready(function () {
     $('#btn-add-sd-record').click(function () {
         function changeClassName(table, info, newEntry){
             var lastItemNo = table.find("tr:last").attr("class").replace("sd", "");
-            if(lastItemNo > 3){
-                info.text("You can't add records more than 3.");
+            if(lastItemNo > 10){
+                info.text("You can't add records more than 10.");
                 return false
             }
             newEntry.removeClass();
@@ -89,8 +91,8 @@ $(document).ready(function () {
     $('#table-sd').on('click', '#btn-add-symptom', function (e) {
         var clickedEntry = $(this).parent().parent();
         var cls = clickedEntry.attr("class");
-        if($("." + cls).length > 2){
-            $('#info-sd').text("You can't add symptoms more than 3.");
+        if($("." + cls).length > 4){
+            $('#info-sd').text("You can't add symptoms more than 5.");
             return
         }
         var newEntry = clickedEntry.clone();
@@ -147,7 +149,7 @@ function addRow(table, info, f) {
     var currentEntry = table.find('>tbody>tr:first');
     var newEntry = $(currentEntry.clone());
     if(f != null){
-        res = f(table, info, newEntry);
+        var res = f(table, info, newEntry);
         if(!res)
             return
     }
@@ -159,6 +161,24 @@ function addRow(table, info, f) {
             removeButtons.item(i).disabled = false;
         }
     }*/
+    newEntry.find('.input-in-table').keydown(function(e) {
+        //console.log(e);
+        if (e.shiftKey && e.keyCode==220) {     // | key (it is used as delimiter
+            e.preventDefault();
+
+            var textarea = $(this);
+            textarea.popover({
+                title: "Alert",
+                content: "This form cannot contain the special character '|'.",
+                placement: "bottom",
+                trigger: "manual"
+            });
+            textarea.popover("show");
+            setTimeout(function () {
+                textarea.popover('destroy');
+            }, 2000);
+        }
+    });
     newEntry.find('.btn-custom-delete').click(function() {
         newEntry.remove();
     });
@@ -214,7 +234,7 @@ function resetProfile() {
 
 var newProfiles = [];
 function updateProfile() {
-    console.log(profiles);
+    //console.log(profiles);
     newProfiles = [];
 
     //check form
@@ -262,7 +282,7 @@ function updateProfile() {
     }
 
     //add value
-    $('#patientProfileForm input, #patientProfileForm textarea').each(function () {
+    $('#patientProfileBasicForm input, #patientProfileBasicForm textarea').each(function () {
         var id = $(this).attr('id');
         var value = $(this).val();
         var nowProf = {};
@@ -281,18 +301,24 @@ function updateProfile() {
         }
 
         newProfiles.push(nowProf);
-
     });
     var smoking = $('#smoking');
     if (smoking.val() != undefined && smoking.val() != null && smoking.val() != "") {
         newProfiles.push({type: 'smoking', 'value': smoking.val()});
     }
 
-    if (newProfiles.length == 0) {
+    var detailedProfiles = getDetailedProfiles();
+    var isProfilesEmpty = checkDetailProfilesEmpty(detailedProfiles);
+    if (newProfiles.length == 0 && isProfilesEmpty) {
         openModal('No Data in Profiles', 'Profile Update Failure');
         return;
     }
 
+    //console.log(detailedProfiles);
+    //console.log(JSON.stringify(detailedProfiles));
+    if (!isProfilesEmpty) {
+        newProfiles.push({'type': 'detail', 'value': stingifyDetailProfiles(detailedProfiles)});
+    }
     console.log(newProfiles);
 
     $.LoadingOverlay('show');
@@ -315,6 +341,125 @@ function updateProfile() {
             }
         }
     });
+}
+
+function getDetailedProfiles() {
+    var detailedProfile = {};
+
+    var pastMedicalHistory = [];
+    $('#table-pmh > tbody > tr').each(function(index, elem) {
+        if (index == 0) return;
+        var pmh_column = {};
+        pmh_column['history_type'] = $(elem).find('.table-pmh-type').val();
+        pmh_column['name'] = $(elem).find('.table-pmh-name').val();
+        pmh_column['date'] = $(elem).find('.table-pmh-date').val();
+        pmh_column['comment'] = $(elem).find('.table-pmh-comment').val();
+        pastMedicalHistory.push(pmh_column);
+    });
+    detailedProfile['pmh'] = pastMedicalHistory;
+
+    var existingDiseases = [];
+    $('#table-ed > tbody > tr').each(function(index, elem) {
+        if (index == 0) return;
+        var ed_column = {};
+        ed_column['name'] = $(elem).find('.table-ed-name').val();
+        ed_column['degree'] = $(elem).find('.table-ed-degree').val();
+        ed_column['duration'] = $(elem).find('.table-ed-duration-val').val() + '|'
+                + $(elem).find('.table-ed-duration-unit').val();
+        ed_column['comment'] = $(elem).find('.table-ed-comment').val();
+        existingDiseases.push(ed_column);
+    });
+    detailedProfile['ed'] = existingDiseases;
+
+    var suspectedDiseases = [];
+    var now_sd_column = {};
+    var rowspan = 0;
+    $('#table-sd > tbody > tr').each(function(index, elem) {
+        if (index == 0) return;
+
+        if (rowspan == 0) { //new row
+            rowspan = $(this).find('> td:first-of-type').prop('rowspan');
+            now_sd_column = {};
+            now_sd_column['name'] = $(elem).find('.table-sd-name').val();
+            now_sd_column['symptoms'] = [];
+
+            suspectedDiseases.push(now_sd_column);
+        }
+
+        var nowSymtom = {};
+        nowSymtom['symptom'] = $(elem).find('.table-sd-symptom').val();
+        nowSymtom['degree'] = $(elem).find('.table-sd-degree').val();
+        nowSymtom['duration'] = $(elem).find('.table-sd-duration-val').val() + '|'
+                + $(elem).find('.table-sd-duration-unit').val();
+        nowSymtom['comment'] = $(elem).find('.table-sd-comment').val();
+        now_sd_column['symptoms'].push(nowSymtom);
+        rowspan--;
+    });
+    detailedProfile['sd'] = suspectedDiseases;
+
+    var medications = [];
+    $('#table-m > tbody > tr').each(function(index, elem) {
+        if (index == 0) return;
+        var m_column = {};
+        m_column['name'] = $(elem).find('.table-m-name').val();
+        m_column['intake'] = $(elem).find('.table-m-intake-val').val() + '|'
+                + $(elem).find('.table-m-intake-unit').val();
+        m_column['frequency'] = $(elem).find('.table-m-freq-val').val() + '|'
+                + $(elem).find('.table-m-freq-unit').val();
+        m_column['duration'] = $(elem).find('.table-m-duration-val').val() + '|'
+                + $(elem).find('.table-m-duration-unit').val();
+        m_column['comment'] = $(elem).find('.table-m-comment').val();
+        medications.push(m_column);
+    });
+    detailedProfile['med'] = medications;
+
+    var familyMedicalHistory = [];
+    $('#table-fmh > tbody > tr').each(function(index, elem) {
+        if (index == 0) return;
+        var fmh_column = {};
+        fmh_column['relationship'] = $(elem).find('.table-fmh-relationship').val();
+        fmh_column['history'] = $(elem).find('.table-fmh-history').val();
+        familyMedicalHistory.push(fmh_column);
+    });
+    detailedProfile['fmh'] = familyMedicalHistory;
+
+    var allergies = [];
+    $('#table-a > tbody > tr').each(function(index, elem) {
+        if (index == 0) return;
+        var a_column = {};
+        a_column['name'] = $(elem).find('.table-a-name').val();
+        a_column['degree'] = $(elem).find('.table-a-degree').val();
+        a_column['comment'] = $(elem).find('.table-a-comment').val();
+        allergies.push(a_column);
+    });
+    detailedProfile['alg'] = allergies;
+
+    detailedProfile['notice'] = $('#notice').val();
+
+    return detailedProfile;
+}
+
+function checkDetailProfilesEmpty(detailedProfile) {
+    if (detailedProfile['pmh'].length() > 0) return false;
+    if (detailedProfile['ed'].length() > 0) return false;
+    if (detailedProfile['sd'].length() > 0) return false;
+    if (detailedProfile['med'].length() > 0) return false;
+    if (detailedProfile['fmh'].length() > 0) return false;
+    if (detailedProfile['alg'].length() > 0) return false;
+    if (detailedProfile['notice'] != '') return false;
+    return true
+}
+
+function stingifyDetailProfiles(detailedProfile) {
+    var stringProfile = {};
+    stringProfile['pmh'] = JSON.stringify(detailedProfile['pmh']);
+    stringProfile['ed'] = JSON.stringify(detailedProfile['ed']);
+    stringProfile['sd'] = JSON.stringify(detailedProfile['sd']);
+    stringProfile['med'] = JSON.stringify(detailedProfile['med']);
+    stringProfile['fmh'] = JSON.stringify(detailedProfile['fmh']);
+    stringProfile['alg'] = JSON.stringify(detailedProfile['alg']);
+    stringProfile['notice'] = detailedProfile['notice'];
+    return stringProfile;
 }
 
 function openUpdateFailModal(msg, title) {

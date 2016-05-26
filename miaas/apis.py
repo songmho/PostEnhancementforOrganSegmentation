@@ -447,9 +447,9 @@ def handle_patient_profile_mgt(request):
                 raise Exception(MSG_NODATA)
             # logger.info(request.body)
             # logger.info(request.body)
-            # data = json.loads(request.body)
             data = json.loads(request.body)
-            # logger.info(data)
+            logger.info(data)
+
             if not data.get('profiles'):
                 raise Exception("No changed data")
             if not data.get('user_id') or not data.get('timestamp'):
@@ -465,7 +465,7 @@ def handle_patient_profile_mgt(request):
 
             return JsonResponse(constants.CODE_SUCCESS)
 
-            # for key, value in data['profiles'].items():
+            # for key, value in data['profile3s'].items():
             # logger.info(data)
             # for prof in data['profiles']:
             #     # logger.info(prof)

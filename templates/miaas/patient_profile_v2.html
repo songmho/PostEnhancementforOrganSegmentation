@@ -21,7 +21,7 @@
                 <h2 class="text-primary">Personal Profile</h2>
             </div>
             <form id="patientProfileForm" class="col-xs-12 col-form" accept-charset="UTF-8">
-                <div class="form-container form-boxed form-horizontal row">
+                <div id="patientProfileBasicForm" class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 col-md-6 form-group">
                         <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="height">Height</label>
                         <div class="col-xs-5 col-sm-4 col-md-3">
@@ -130,10 +130,9 @@
                     </div>
                 </div>
 
-                <div class="form-container form-boxed row">
+                <div id="patientProfileDetailForm" class="form-container form-boxed row">
                     <div class="col-xs-12 form-group">
-                        <label class="col-xs-3 control-label" for="table-pmh">Past Medical
-                            History</label>
+                        <label class="col-xs-3 control-label" for="table-pmh">Past Medical History</label>
                         <a id="btn-add-pmh-record" class="btn btn-custom-add">
                             <span class="glyphicon glyphicon-plus"></span> Add Record
                         </a>
@@ -151,15 +150,15 @@
                                 <tbody>
                                 <tr>
                                     <td>
-                                        <select class="input-in-table">
+                                        <select class="input-in-table table-pmh-type">
                                             <option>Disease</option>
                                             <option>Medical Test</option>
                                             <option>Treatment</option>
                                         </select>
                                     </td>
-                                    <td><input type="text" class="input-in-table" maxlength="50"></td>
-                                    <td><input type="date" class="input-in-table" min="1800-01-01"></td>
-                                    <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                    <td><input type="text" class="input-in-table table-pmh-name" maxlength="50"></td>
+                                    <td><input type="date" class="input-in-table table-pmh-date" min="1800-01-01"></td>
+                                    <td><textarea class="input-in-table table-pmh-comment" rows="5"></textarea></td>
                                     <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
@@ -187,26 +186,26 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td><input type="text" class="input-in-table" maxlength="50"></td>
+                                    <td><input type="text" class="input-in-table table-ed-name" maxlength="50"></td>
                                     <td>
-                                        <select class="input-in-table">
+                                        <select class="input-in-table table-ed-degree">
                                             <option>Severe</option>
                                             <option>Normal</option>
                                             <option>Trifling</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="number" class="input-in-table text-right col-xs-3"
+                                        <input type="number" class="input-in-table table-ed-duration-val text-right col-xs-3"
                                                style="width: 50%; padding-right: 5px"
-                                               min="0">
-                                        <select class="input-in-table" style="width: 50%">
+                                               min="0" max="365">
+                                        <select class="input-in-table table-ed-duration-unit" style="width: 50%">
                                             <option>days</option>
                                             <option>weeks</option>
                                             <option>months</option>
                                             <option>years</option>
                                         </select>
                                     </td>
-                                    <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                    <td><textarea class="input-in-table table-ed-comment" rows="5"></textarea></td>
                                     <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
@@ -236,35 +235,35 @@
                                 <tbody>
                                 <tr class="sd1">
                                     <td bgcolor="white">
-                                        <input type="text" class="input-in-table" maxlength="50"
-                                               style="height: 40px; width: 85%">
+                                        <input type="text" class="input-in-table table-sd-name" maxlength="50"
+                                               style="width: 85%">
                                         <a id="btn-add-symptom" class="btn btn-custom-add" data-placement="right"
                                            data-toggle="tooltip" title="Add Symptom">
                                             <span class="glyphicon glyphicon-plus in-table"></span>
                                         </a>
                                     </td>
                                     <td>
-                                        <input type="text" class="input-in-table" maxlength="50">
+                                        <input type="text" class="input-in-table table-sd-symptom" maxlength="50">
                                     </td>
                                     <td>
-                                        <select class="input-in-table">
+                                        <select class="input-in-table table-sd-degree">
                                             <option>Severe</option>
                                             <option>Normal</option>
                                             <option>Trifling</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="number" class="input-in-table text-right col-xs-3"
+                                        <input type="number" class="input-in-table table-sd-duration-val text-right col-xs-3"
                                                style="width: 50%; padding-right: 5px"
                                                min="0">
-                                        <select class="input-in-table" style="width: 50%">
+                                        <select class="input-in-table table-sd-duration-unit" style="width: 50%">
                                             <option>days</option>
                                             <option>weeks</option>
                                             <option>months</option>
                                             <option>years</option>
                                         </select>
                                     </td>
-                                    <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                    <td><textarea class="input-in-table table-sd-comment" rows="5"></textarea></td>
                                     <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
@@ -293,21 +292,21 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td><input type="text" class="input-in-table" maxlength="50"></td>
+                                    <td><input type="text" class="input-in-table table-m-name" maxlength="50"></td>
                                     <td>
-                                        <input type="number" class="input-in-table text-right col-xs-3"
+                                        <input type="number" class="input-in-table table-m-intake-val text-right col-xs-3"
                                                style="width: 50%; padding-right: 5px"
                                                min="0">
-                                        <select class="input-in-table" style="width: 50%">
+                                        <select class="input-in-table table-m-intake-unit" style="width: 50%">
                                             <option>mL</option>
                                             <option>g</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="number" class="input-in-table text-right col-xs-3"
+                                        <input type="number" class="input-in-table table-m-freq-val text-right col-xs-3"
                                                style="width: 50%; padding-right: 5px"
                                                min="0">
-                                        <select class="input-in-table" style="width: 50%">
+                                        <select class="input-in-table table-m-freq-unit" style="width: 50%">
                                             <option>/day</option>
                                             <option>/week</option>
                                             <option>/month</option>
@@ -315,17 +314,17 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="number" class="input-in-table text-right col-xs-3"
+                                        <input type="number" class="input-in-table table-m-duration-val text-right col-xs-3"
                                                style="width: 50%; padding-right: 5px"
                                                min="0">
-                                        <select class="input-in-table" style="width: 50%">
+                                        <select class="input-in-table table-m-duration-unit" style="width: 50%">
                                             <option>days</option>
                                             <option>weeks</option>
                                             <option>months</option>
                                             <option>years</option>
                                         </select>
                                     </td>
-                                    <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                    <td><textarea class="input-in-table table-m-comment" rows="5"></textarea></td>
                                     <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
@@ -346,12 +345,12 @@
                                 <thead>
                                 <tr>
                                     <th style="width: 15%;">Relationship</th>
-                                    <th style="width: 90%;">Comment</th>
+                                    <th style="width: 90%;">History</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td><select class="input-in-table">
+                                    <td><select class="input-in-table table-fmh-relationship">
                                         <option>Grandfather</option>
                                         <option>Grandmother</option>
                                         <option>Father</option>
@@ -359,7 +358,7 @@
                                         <option>Brother</option>
                                         <option>Sister</option>
                                     </select></td>
-                                    <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                    <td><textarea class="input-in-table table-fmh-history" rows="5"></textarea></td>
                                     <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
@@ -393,16 +392,16 @@
                                             <option>Rice</option>
                                             <option>...</option>
                                         </select-->
-                                        <input type="text" class="input-in-table" maxlength="50">
+                                        <input type="text" class="input-in-table table-a-name" maxlength="50">
                                     </td>
                                     <td>
-                                        <select class="input-in-table">
+                                        <select class="input-in-table table-a-degree">
                                             <option>Severe</option>
                                             <option>Normal</option>
                                             <option>Trifling</option>
                                         </select>
                                     </td>
-                                    <td><textarea class="input-in-table" rows="5"></textarea></td>
+                                    <td><textarea class="input-in-table table-a-comment" rows="5"></textarea></td>
                                     <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
@@ -414,7 +413,7 @@
 
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-xs-3 control-label" for="table-a">Notice</label>
+                        <label class="col-xs-3 control-label">Notice</label>
                         <div class="col-xs-12">
                             <textarea type="textarea" id="notice" name="notice"
                                       class="form-control"
