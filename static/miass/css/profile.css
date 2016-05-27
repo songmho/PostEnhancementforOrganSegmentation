@@ -20,7 +20,8 @@
 
 .table.table-profile .input-in-table {
     vertical-align: top;
-    padding: 0;
+    /*padding: 0;*/
+    padding: 0 6px;
     margin: 0;
     border: 0;
     width: 100%;

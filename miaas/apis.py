@@ -25,6 +25,7 @@ MSG_NO_EMAIL = "No email entered."
 MSG_NO_USER_FOUND = "No user found."
 MSG_UNKNOWN_ERROR = "Unknown error."
 MSG_PROFILE_FAILED = "Profile update failed."
+MSG_PROFILE_NO_CHANGED = "No changed profiles."
 MSG_ACCOUNT_FAILED = "Account update failed."
 MSG_INSERT_ERROR = "To insert data failed."
 MSG_UPDATE_ERROR = "To update data failed."
@@ -452,28 +453,17 @@ def handle_patient_profile_mgt(request):
 
             if not data.get('profiles'):
                 raise Exception("No changed data")
-            if not data.get('user_id') or not data.get('timestamp'):
+            if not data.get('user_id'):
                 raise Exception(MSG_INVALID_PARAMS)
             user_id = data['user_id']
-            timestamp = data['timestamp']
 
             if request.session['user']['user_id'] != user_id:
                 raise Exception(MSG_NOT_MATCHED_USER)
 
-            if not db.add_patient_profile(user_id, timestamp, data['profiles']):
-                raise Exception(MSG_PROFILE_FAILED)
+            # if not db.add_patient_profile(user_id, timestamp, data['profiles']):
+            if not db.update_patient_profile(user_id, data['profiles']):
+                raise Exception(MSG_PROFILE_NO_CHANGED)
 
-            return JsonResponse(constants.CODE_SUCCESS)
-
-            # for key, value in data['profile3s'].items():
-            # logger.info(data)
-            # for prof in data['profiles']:
-            #     # logger.info(prof)
-            #     key = prof['type']
-            #     value = prof['value']
-            #     if not db.add_patient_profile(user_id, key, value, timestamp):
-            #         raise Exception(MSG_PROFILE_FAILED)
-            #     logger.info('userid=%s key=%s value=%s' % (user_id, key, value))
             return JsonResponse(constants.CODE_SUCCESS)
 
     except Exception as e:

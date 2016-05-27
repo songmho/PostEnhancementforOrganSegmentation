@@ -2,7 +2,7 @@
  * Created by hanter on 2016. 2. 23..
  */
 
-var profiles = [];
+var profiles = {};
 
 $(document).ready(function () {
     $.LoadingOverlay('show');
@@ -17,6 +17,10 @@ $(document).ready(function () {
             //console.log(JSON.stringify(res));
             if (res['code'] == 'SUCCESS') {
                 profiles = res['profiles'];
+                if (profiles['detail'] != undefined && profiles['detail'] != null &&
+                        profiles['detail'] != {})
+                    profiles['detail'] = parseDetailProfiles(profiles['detail']);
+                console.log(profiles);
                 resetProfile();
             } else {
                 openUpdateFailModal(res['msg'], 'Getting Profile Failed');
@@ -97,6 +101,11 @@ $(document).ready(function () {
         }
         var newEntry = clickedEntry.clone();
         newEntry.find("td:eq(0)").remove();
+        newEntry.find('.table-sd-symptom').val('');
+        newEntry.find('.table-sd-degree').val("Severe").attr("selected", "selected");
+        newEntry.find('.table-sd-duration-val').val('');
+        newEntry.find('.table-sd-duration-unit').val("days").attr("selected", "selected");
+        newEntry.find('.table-sd-comment').val('');
         newEntry.insertAfter($("#table-sd ." + cls + ":last"));
         resizeRowspan(cls);
     });
@@ -143,7 +152,7 @@ function addRow(table, info, f) {
     var rowCount = table.find('>tbody>tr').length;
     if (rowCount > 10 && f == null) {
         info.text("You can't add records more than 10.");
-        return
+        return null;
     }
     var controlForm = table;
     var currentEntry = table.find('>tbody>tr:first');
@@ -151,7 +160,7 @@ function addRow(table, info, f) {
     if(f != null){
         var res = f(table, info, newEntry);
         if(!res)
-            return
+            return null;
     }
     newEntry.appendTo(controlForm);
     newEntry.find('input').val('');
@@ -182,6 +191,7 @@ function addRow(table, info, f) {
     newEntry.find('.btn-custom-delete').click(function() {
         newEntry.remove();
     });
+    return newEntry;
 }
 
 function resetProfile() {
@@ -190,12 +200,12 @@ function resetProfile() {
     });
 
     //console.log(profiles);
-
-    for (var i in profiles) {
-        var profile = profiles[i];
-
-        if (profile.type == "height") {
-            var height = profile.value.split(" ");
+    var keys = Object.keys(profiles);
+    console.log(keys);
+    keys.forEach(function(key) {
+        if (key == "height") {
+            console.log(profiles[key]);
+            var height = profiles[key].split(" ");
             $('#height').val(height[0]);
             var heightType = $('#heightType');
             heightType.val(height[1]).attr("selected", "selected");
@@ -211,8 +221,8 @@ function resetProfile() {
                 $('#height').attr('min', 2);
                 $('#height').attr('max', 10);
             }
-        } else if (profile.type == "weight") {
-            var weight = profile.value.split(" ");
+        } else if (key == "weight") {
+            var weight = profiles[key].split(" ");
             var weightType = $('#weightType');
             $('#weight').val(weight[0]);
             weightType.val(weight[1]).attr("selected", "selected");
@@ -224,18 +234,22 @@ function resetProfile() {
                 $('#weight').attr('min', 66);
                 $('#weight').attr('max', 1100);
             }
-        } else if (profile.type == "smoking") {
-            $('#smoking').val(profile.value).attr("selected", "selected");
+        } else if (key == "smoking") {
+            $('#smoking').val(profiles[key]).attr("selected", "selected");
+        } else if (key == "detail") {
+
         } else {
-            $('#' + profile.type).val(profile.value);
+            $('#' + key).val(profiles[key]);
         }
-    }
+    });
+
+    setDetailedProfiles(profiles['detail']);
 }
 
-var newProfiles = [];
+var newProfiles = {};
 function updateProfile() {
     //console.log(profiles);
-    newProfiles = [];
+    newProfiles = {};
 
     //check form
     var height = $('#height');
@@ -285,29 +299,29 @@ function updateProfile() {
     $('#patientProfileBasicForm input, #patientProfileBasicForm textarea').each(function () {
         var id = $(this).attr('id');
         var value = $(this).val();
-        var nowProf = {};
+        var key;
 
-        if (value == undefined || value == null || value == '' || value == ' ') {
+        if (value == undefined || value == null || value == '' || value == ' '
+                || !/\S/.test(value)) {
             return;
         }
 
-        nowProf['type'] = id;
+        key = id;
         if (id == "height") {
-            nowProf['value'] = value + ' ' + $('#heightType').val()
+            value = value + ' ' + $('#heightType').val()
         } else if (id == "weight") {
-            nowProf['value'] = value + ' ' + $('#weightType').val()
-        } else {
-            nowProf['value'] = value;
+            value = value + ' ' + $('#weightType').val()
         }
 
-        newProfiles.push(nowProf);
+        newProfiles[key] = value;
     });
     var smoking = $('#smoking');
     if (smoking.val() != undefined && smoking.val() != null && smoking.val() != "") {
-        newProfiles.push({type: 'smoking', 'value': smoking.val()});
+        newProfiles['smoking'] = smoking.val();
     }
 
     var detailedProfiles = getDetailedProfiles();
+    console.log(detailedProfiles);
     var isProfilesEmpty = checkDetailProfilesEmpty(detailedProfiles);
     if (newProfiles.length == 0 && isProfilesEmpty) {
         openModal('No Data in Profiles', 'Profile Update Failure');
@@ -317,7 +331,7 @@ function updateProfile() {
     //console.log(detailedProfiles);
     //console.log(JSON.stringify(detailedProfiles));
     if (!isProfilesEmpty) {
-        newProfiles.push({'type': 'detail', 'value': stingifyDetailProfiles(detailedProfiles)});
+        newProfiles['detail'] = stingifyDetailProfiles(detailedProfiles);
     }
     console.log(newProfiles);
 
@@ -327,7 +341,6 @@ function updateProfile() {
         data: JSON.stringify({
             user_id: user.user_id,
             profiles: newProfiles,
-            timestamp: new Date().getTime()
         }),
         dataType: 'json',
         success: function (res) {
@@ -439,13 +452,39 @@ function getDetailedProfiles() {
     return detailedProfile;
 }
 
+function setDetailedProfiles(detailedProfile) {
+    for (var i=0; i<detailedProfile['pmh'].length; i++) {
+        var row = addRow($('#table-pmh'), $('#info-phm'));
+
+    }
+
+    for (var i=0; i<detailedProfile['med'].length; i++) {
+        var item = detailedProfile['med'][i];
+        var row = addRow($('#table-m'), $('#info-m'));
+        var intake = item['intake'].split("|");
+        var frequency = item['frequency'].split("|");
+        var duration = item['duration'].split("|");
+        row.find('.table-m-name').val(item['name']);
+        row.find('.table-m-intake-val').val(intake[0]);
+        row.find('.table-m-intake-unit').val(intake[1]).attr("selected", "selected");
+        row.find('.table-m-freq-val').val(frequency[0]);
+        row.find('.table-m-freq-unit').val(frequency[1]).attr("selected", "selected");
+        row.find('.table-m-duration-val').val(duration[0]);
+        row.find('.table-m-duration-unit').val(duration[1]).attr("selected", "selected");
+        row.find('.table-m-comment').val(item['comment']);
+        row.find('.table-m-comment').val(item['comment']);
+    }
+
+    $('#notice').val(detailedProfile['notice']);
+}
+
 function checkDetailProfilesEmpty(detailedProfile) {
-    if (detailedProfile['pmh'].length() > 0) return false;
-    if (detailedProfile['ed'].length() > 0) return false;
-    if (detailedProfile['sd'].length() > 0) return false;
-    if (detailedProfile['med'].length() > 0) return false;
-    if (detailedProfile['fmh'].length() > 0) return false;
-    if (detailedProfile['alg'].length() > 0) return false;
+    if (detailedProfile['pmh'].length > 0) return false;
+    if (detailedProfile['ed'].length > 0) return false;
+    if (detailedProfile['sd'].length > 0) return false;
+    if (detailedProfile['med'].length > 0) return false;
+    if (detailedProfile['fmh'].length > 0) return false;
+    if (detailedProfile['alg'].length > 0) return false;
     if (detailedProfile['notice'] != '') return false;
     return true
 }
@@ -460,6 +499,18 @@ function stingifyDetailProfiles(detailedProfile) {
     stringProfile['alg'] = JSON.stringify(detailedProfile['alg']);
     stringProfile['notice'] = detailedProfile['notice'];
     return stringProfile;
+}
+
+function parseDetailProfiles(stringifiedProfile) {
+    var detailedProfile = {};
+    detailedProfile['pmh'] = JSON.parse(stringifiedProfile['pmh']);
+    detailedProfile['ed'] = JSON.parse(stringifiedProfile['ed']);
+    detailedProfile['sd'] = JSON.parse(stringifiedProfile['sd']);
+    detailedProfile['med'] = JSON.parse(stringifiedProfile['med']);
+    detailedProfile['fmh'] = JSON.parse(stringifiedProfile['fmh']);
+    detailedProfile['alg'] = JSON.parse(stringifiedProfile['alg']);
+    detailedProfile['notice'] = stringifiedProfile['notice'];
+    return detailedProfile;
 }
 
 function openUpdateFailModal(msg, title) {

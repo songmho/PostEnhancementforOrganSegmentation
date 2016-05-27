@@ -431,58 +431,81 @@ class DbManager():
     #     return if_inserted
 
     def update_patient_profile(self, user_id, profiles):
-        if_updated = False
+        profiles['user_id'] = user_id
+        profiles['detail']['user_id'] = user_id
+        if_basic_updated = False
+        if_detail_updated = False
+
+        db_query = "INSERT INTO patient_profile_basic " \
+                   "(user_id, height, weight, drinkingCapacity, drinkingFrequency, " \
+                   "sleeping, exercise, smoking, water) " \
+                   "VALUES (%(user_id)s, %(height)s, %(weight)s, %(drinkingCapacity)s, %(drinkingFrequency)s, " \
+                   "%(sleeping)s, %(exercise)s, %(smoking)s, %(water)s) " \
+                   "ON DUPLICATE KEY UPDATE height=%(height)s, weight=%(weight)s, " \
+                   "drinkingCapacity=%(drinkingCapacity)s, drinkingFrequency=%(drinkingFrequency)s, " \
+                   "sleeping=%(sleeping)s, exercise=%(exercise)s, smoking=%(smoking)s, water=%(water)s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, profiles)
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_basic_updated = True
+            except Exception as e:
+                logger.exception(e)
+                raise Exception("Updating patient profile error.")
+
+        db_query = "INSERT INTO patient_profile_detail " \
+                   "(user_id, pmh, ed, sd, med, fmh, alg, notice)" \
+                   "VALUES (%(user_id)s, %(pmh)s, %(ed)s, %(sd)s, %(med)s, %(fmh)s, %(alg)s, %(notice)s) " \
+                   "ON DUPLICATE KEY UPDATE pmh=%(pmh)s, ed=%(ed)s, sd=%(sd)s, med=%(med)s, " \
+                   "fmh=%(fmh)s, alg=%(alg)s, pmh=%(notice)s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, profiles['detail'])
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_detail_updated = True
+            except Exception as e:
+                logger.exception(e)
+                raise Exception("Updating patient profile error.")
+        return if_basic_updated or if_detail_updated
 
 
     # type='None' (performance low)
-    def retrieve_patient_profile(self, patient_id, type=None):
-        profiles = []
-        if type is None:
-            # Retrieve all profile types
-            db_query = "SELECT pp.type, pp.value, pp.timestamp " \
-                       "From (" \
-                       "  SELECT @row_num := IF(@prev_value=p.type, @row_num+1, 1) as rnd, p.*, @prev_value := p.type " \
-                       "  From patient_profile p, (select @row_num := 1) x, (select @prev_value := '') y " \
-                       "  WHERE p.user_id = %s " \
-                       "  ORDER BY p.type, p.timestamp DESC" \
-                       ") pp " \
-                       "Where pp.rnd = 1"
-            with self.connector.cursor() as cursor:
-                try:
-                    cursor.execute(db_query, (patient_id))
-                    self.connector.commit()
-                    for row in cursor:
-                        profile = {}
-                        profile['type'] = row[0]
-                        profile['value'] = row[1]
-                        profile['timestamp'] = row[2]
-                        profiles.append(profile)
-                except Exception as e:
-                    logger.exception(e)
-                    raise Exception("Unknown error occurs while getting the profile information.")
-        else:
-            db_query = "SELECT pp.type, pp.value, pp.timestamp " \
-                       "From (" \
-                       "  SELECT @row_num := IF(@prev_value=p.type, @row_num+1, 1) as rnd, p.*, @prev_value := p.type " \
-                       "  From patient_profile p, (select @row_num := 1) x, (select @prev_value := '') y " \
-                       "  WHERE p.user_id = %s " \
-                       "  ORDER BY p.type, p.timestamp DESC" \
-                       ") pp " \
-                       "Where pp.rnd = 1 and pp.type=%s"
-            with self.connector.cursor() as cursor:
-                try:
-                    cursor.execute(db_query, (patient_id, type))
-                    self.connector.commit()
-                    for row in cursor:
-                        profile = {}
-                        profile['type'] = row[0]
-                        profile['value'] = row[1]
-                        profile['timestamp'] = row[2]
-                        profiles.append(profile)
-                except Exception as e:
-                    logger.exception(e)
-                    raise Exception("Unknown error occurs while getting the profile information.")
+    def retrieve_patient_profile(self, patient_id):
+        profiles = {}
+        db_query = "SELECT height, weight, drinkingCapacity, drinkingFrequency, sleeping, exercise, smoking, water, " \
+                   "pmh, ed, sd, med, fmh, alg, notice " \
+                   "FROM patient_profile_all " \
+                   "WHERE user_id=%s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, patient_id)
+                row = cursor.fetchone()
+                if row:
+                    profiles['height'] = row[0]
+                    profiles['weight'] = row[1]
+                    profiles['drinkingCapacity'] = row[2]
+                    profiles['drinkingFrequency'] = row[3]
+                    profiles['sleeping'] = row[4]
+                    profiles['exercise'] = row[5]
+                    profiles['smoking'] = row[6]
+                    profiles['water'] = row[7]
+                    profiles['detail'] = {}
+                    profiles['detail']['pmh'] = row[8]
+                    profiles['detail']['ed'] = row[9]
+                    profiles['detail']['sd'] = row[10]
+                    profiles['detail']['med'] = row[11]
+                    profiles['detail']['fmh'] = row[12]
+                    profiles['detail']['alg'] = row[13]
+                    profiles['detail']['notice'] = row[14]
+            except Exception as e:
+                logger.exception(e)
+                raise Exception("Retrieve patient profile error.")
         return profiles
+
 
     def add_physician(self, physician):
         if_inserted = False
