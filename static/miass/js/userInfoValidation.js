@@ -25,7 +25,7 @@ function checkID() {
         inputId.popover("show");
         setTimeout(function () {
             inputId.popover('destroy');
-        }, 2000);
+        }, 3000);
         return
     }
     else if (!inputId.val().match(idRe)) {
@@ -40,7 +40,7 @@ function checkID() {
         inputId.popover("show");
         setTimeout(function () {
             inputId.popover('destroy');
-        }, 2000);
+        }, 3000);
         return
     }
     else {
@@ -73,7 +73,7 @@ function checkID() {
                     inputId.popover("show");
                     setTimeout(function () {
                         inputId.popover('destroy');
-                    }, 2000);
+                    }, 3000);
                 } else {
                     checkIDUsed = true;
                 }
@@ -90,7 +90,7 @@ function checkID() {
                 inputId.popover("show");
                 setTimeout(function () {
                     inputId.popover('destroy');
-                }, 2000);
+                }, 3000);
             }
             checkingIDUsed = false;
         }
@@ -126,7 +126,7 @@ function checkPassword() {
             inputPw.popover("show");
             setTimeout(function () {
                 inputPw.popover('destroy');
-            }, 2000);
+            }, 3000);
         }
         else {
             checkPasswordFlag = true;
@@ -153,7 +153,7 @@ function checkPasswordConfirm() {
         inputPwConfrim.popover("show");
         setTimeout(function () {
             inputPwConfrim.popover('destroy');
-        }, 2000);
+        }, 3000);
     }
     else if($('#inputPw').val() == inputPwConfrim.val()) {
         if (isAccountPage) {
@@ -191,7 +191,7 @@ function checkName() {
         inputName.popover("show");
         setTimeout(function () {
             inputName.popover('destroy');
-        }, 2000);
+        }, 3000);
     }
     else {
         checkNameFlag = true;
@@ -222,7 +222,7 @@ function checkPhone() {
         inputMobile.popover("show");
         setTimeout(function () {
             inputMobile.popover('destroy');
-        }, 2000);
+        }, 3000);
     }
     else if (!inputMobile.val().match(phoneRe)) {
         inputMobile.css("border-color", "red");
@@ -235,7 +235,7 @@ function checkPhone() {
         inputMobile.popover("show");
         setTimeout(function () {
             inputMobile.popover('destroy');
-        }, 2000);
+        }, 3000);
     }
     else {
         checkPhoneFlag = true;
@@ -268,7 +268,7 @@ function checkEmail() {
         inputEmail.popover("show");
         setTimeout(function () {
             inputEmail.popover('destroy');
-        }, 2000);
+        }, 3000);
     }
     else {
         checkEmailFlag = true;
@@ -327,7 +327,7 @@ function checkEmail() {
                     inputEmail.popover("show");
                     setTimeout(function () {
                         inputEmail.popover('destroy');
-                    }, 2000);
+                    }, 5000);
                 } else { // below -1
                     checkEmailFlag = false;
 
@@ -351,7 +351,7 @@ function checkEmail() {
                     inputEmail.popover("show");
                     setTimeout(function () {
                         inputEmail.popover('destroy');
-                    }, 2000);
+                    }, 3000);
                 }
 
                 checkingEmailUsed = false;
@@ -375,7 +375,7 @@ function checkEmailConfirm() {
         inputEmailConfirm.popover("show");
         setTimeout(function () {
             inputEmailConfirm.popover('destroy');
-        }, 2000);
+        }, 3000);
     }
     else if($('#inputEmail').val() == inputEmailConfirm.val() && inputEmailConfirm.val()!="") {
         checkEmailConfirmFlag = true;
@@ -395,7 +395,7 @@ function checkBirth() {
         checkBirthFlag = false;
     }
     var currentTime = new Date().getTime() + 3600 * 9;
-    var minBirthday = -5367427200000;
+    var minBirthday = -5367427300000;
     if (Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
         checkBirthFlag = false;
         inputBirthday.css("border-color", "red");
@@ -408,7 +408,7 @@ function checkBirth() {
         inputBirthday.popover("show");
         setTimeout(function () {
             inputBirthday.popover('destroy');
-        }, 2000);
+        }, 3000);
     }
     else {
         checkBirthFlag = true;
@@ -439,7 +439,7 @@ function checkLicense() {
         inputLicense.popover("show");
         setTimeout(function () {
             inputLicense.popover('destroy');
-        }, 2000);
+        }, 3000);
     }
     else {
         checkLicenseFlag = true;

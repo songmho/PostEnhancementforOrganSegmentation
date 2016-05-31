@@ -158,7 +158,7 @@
                                     </td>
                                     <td><input type="text" class="input-in-table table-pmh-name" maxlength="50"></td>
                                     <td><input type="date" class="input-in-table table-pmh-date" min="1800-01-01"></td>
-                                    <td><textarea class="input-in-table table-pmh-comment" rows="5"></textarea></td>
+                                    <td><textarea class="input-in-table table-pmh-comment" rows="3"></textarea></td>
                                     <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
@@ -194,18 +194,18 @@
                                             <option>Trifling</option>
                                         </select>
                                     </td>
-                                    <td>
+                                    <td class="td-profile-val-unit">
                                         <input type="number" class="input-in-table table-ed-duration-val text-right col-xs-3"
                                                style="width: 42%; padding-right: 5px"
                                                min="0" max="365">
-                                        <select class="input-in-table table-ed-duration-unit" style="width: 58%">
+                                        <select class="input-in-table table-ed-duration-unit" data-unit="duration" style="width: 58%">
                                             <option>days</option>
                                             <option>weeks</option>
                                             <option>months</option>
                                             <option>years</option>
                                         </select>
                                     </td>
-                                    <td><textarea class="input-in-table table-ed-comment" rows="5"></textarea></td>
+                                    <td><textarea class="input-in-table table-ed-comment" rows="3"></textarea></td>
                                     <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
@@ -252,18 +252,18 @@
                                             <option>Trifling</option>
                                         </select>
                                     </td>
-                                    <td>
+                                    <td class="td-profile-val-unit">
                                         <input type="number" class="input-in-table table-sd-duration-val text-right col-xs-3"
                                                style="width: 42%; padding-right: 5px"
                                                min="0">
-                                        <select class="input-in-table table-sd-duration-unit" style="width: 58%">
+                                        <select class="input-in-table table-sd-duration-unit" data-unit="duration" style="width: 58%">
                                             <option>days</option>
                                             <option>weeks</option>
                                             <option>months</option>
                                             <option>years</option>
                                         </select>
                                     </td>
-                                    <td><textarea class="input-in-table table-sd-comment" rows="5"></textarea></td>
+                                    <td><textarea class="input-in-table table-sd-comment" rows="3"></textarea></td>
                                     <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
@@ -293,38 +293,39 @@
                                 <tbody>
                                 <tr>
                                     <td><input type="text" class="input-in-table table-m-name" maxlength="50"></td>
-                                    <td>
+                                    <td class="td-profile-val-unit">
                                         <input type="number" class="input-in-table table-m-intake-val text-right col-xs-3"
                                                style="width: 50%; padding-right: 5px"
                                                min="0">
-                                        <select class="input-in-table table-m-intake-unit" style="width: 50%">
+                                        <select class="input-in-table table-m-intake-unit" data-unit="intake" style="width: 50%">
                                             <option>mL</option>
+                                            <option>mg</option>
                                             <option>g</option>
                                         </select>
                                     </td>
-                                    <td>
+                                    <td class="td-profile-val-unit">
                                         <input type="number" class="input-in-table table-m-freq-val text-right col-xs-3"
                                                style="width: 42%; padding-right: 5px"
                                                min="0">
-                                        <select class="input-in-table table-m-freq-unit" style="width: 58%">
+                                        <select class="input-in-table table-m-freq-unit" data-unit="freq" style="width: 58%">
                                             <option>/day</option>
                                             <option>/week</option>
                                             <option>/month</option>
                                             <option>/year</option>
                                         </select>
                                     </td>
-                                    <td>
+                                    <td class="td-profile-val-unit">
                                         <input type="number" class="input-in-table table-m-duration-val text-right col-xs-3"
                                                style="width: 42%; padding-right: 5px"
                                                min="0">
-                                        <select class="input-in-table table-m-duration-unit" style="width: 58%">
+                                        <select class="input-in-table table-m-duration-unit" data-unit="duration" style="width: 58%">
                                             <option>days</option>
                                             <option>weeks</option>
                                             <option>months</option>
                                             <option>years</option>
                                         </select>
                                     </td>
-                                    <td><textarea class="input-in-table table-m-comment" rows="5"></textarea></td>
+                                    <td><textarea class="input-in-table table-m-comment" rows="3"></textarea></td>
                                     <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
@@ -358,7 +359,7 @@
                                         <option>Brother</option>
                                         <option>Sister</option>
                                     </select></td>
-                                    <td><textarea class="input-in-table table-fmh-history" rows="5"></textarea></td>
+                                    <td><textarea class="input-in-table table-fmh-history" rows="3"></textarea></td>
                                     <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
@@ -401,7 +402,7 @@
                                             <option>Trifling</option>
                                         </select>
                                     </td>
-                                    <td><textarea class="input-in-table table-a-comment" rows="5"></textarea></td>
+                                    <td><textarea class="input-in-table table-a-comment" rows="3"></textarea></td>
                                     <td class="td-profile-side">
                                         <span class="btn btn-custom-delete glyphicon glyphicon-remove"></span>
                                     </td>
@@ -418,7 +419,7 @@
                             <textarea type="textarea" id="notice" name="notice"
                                       class="form-control"
                                       placeholder="Write any notifications that need to be informed to physicians. &#10;Example) I have my heart on the right side by nature."
-                                      rows="5"></textarea>
+                                      rows="8"></textarea>
                         </div>
                     </div>
 

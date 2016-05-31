@@ -459,7 +459,7 @@ class DbManager():
                    "(user_id, pmh, ed, sd, med, fmh, alg, notice)" \
                    "VALUES (%(user_id)s, %(pmh)s, %(ed)s, %(sd)s, %(med)s, %(fmh)s, %(alg)s, %(notice)s) " \
                    "ON DUPLICATE KEY UPDATE pmh=%(pmh)s, ed=%(ed)s, sd=%(sd)s, med=%(med)s, " \
-                   "fmh=%(fmh)s, alg=%(alg)s, pmh=%(notice)s"
+                   "fmh=%(fmh)s, alg=%(alg)s, notice=%(notice)s"
         with self.connector.cursor() as cursor:
             try:
                 cursor.execute(db_query, profiles['detail'])
@@ -478,7 +478,7 @@ class DbManager():
         profiles = {}
         db_query = "SELECT height, weight, drinkingCapacity, drinkingFrequency, sleeping, exercise, smoking, water, " \
                    "pmh, ed, sd, med, fmh, alg, notice " \
-                   "FROM patient_profile_all " \
+                   "FROM patient_profile_all "  \
                    "WHERE user_id=%s"
         with self.connector.cursor() as cursor:
             try:

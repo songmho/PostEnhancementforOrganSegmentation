@@ -449,7 +449,7 @@ def handle_patient_profile_mgt(request):
             # logger.info(request.body)
             # logger.info(request.body)
             data = json.loads(request.body)
-            logger.info(data)
+            # logger.info(data)
 
             if not data.get('profiles'):
                 raise Exception("No changed data")
@@ -460,6 +460,7 @@ def handle_patient_profile_mgt(request):
             if request.session['user']['user_id'] != user_id:
                 raise Exception(MSG_NOT_MATCHED_USER)
 
+            pprint(data['profiles'])
             # if not db.add_patient_profile(user_id, timestamp, data['profiles']):
             if not db.update_patient_profile(user_id, data['profiles']):
                 raise Exception(MSG_PROFILE_NO_CHANGED)

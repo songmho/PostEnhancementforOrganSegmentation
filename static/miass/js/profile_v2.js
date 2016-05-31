@@ -78,18 +78,7 @@ $(document).ready(function () {
     });
 
     $('#btn-add-sd-record').click(function () {
-        function changeClassName(table, info, newEntry){
-            var lastItemNo = table.find("tr:last").attr("class").replace("sd", "");
-            if(lastItemNo > 10){
-                info.text("You can't add records more than 10.");
-                return false
-            }
-            newEntry.removeClass();
-            newEntry.find("td:eq(0)").attr("rowspan", "1");
-            newEntry.addClass("sd" + (parseInt(lastItemNo) + 1));
-            return true
-        }
-        addRow($('#table-sd'), $('#info-sd'), changeClassName)
+        addRow($('#table-sd'), $('#info-sd'), addSDOptionFunc);
     });
 
     $('#table-sd').on('click', '#btn-add-symptom', function (e) {
@@ -97,7 +86,7 @@ $(document).ready(function () {
         var cls = clickedEntry.attr("class");
         if($("." + cls).length > 4){
             $('#info-sd').text("You can't add symptoms more than 5.");
-            return
+            return;
         }
         var newEntry = clickedEntry.clone();
         newEntry.find("td:eq(0)").remove();
@@ -108,6 +97,12 @@ $(document).ready(function () {
         newEntry.find('.table-sd-comment').val('');
         newEntry.insertAfter($("#table-sd ." + cls + ":last"));
         resizeRowspan(cls);
+
+        newEntry.find('.btn-custom-delete').click(function() {
+            newEntry.remove();
+            resizeRowspan(cls);
+        });
+
     });
 
     $('#btn-add-m-record').click(function () {
@@ -188,10 +183,106 @@ function addRow(table, info, f) {
             }, 2000);
         }
     });
+    newEntry.find('input, .table-fmh-history').addClass('profile-required');
+    newEntry.find('.td-profile-val-unit').each(function(index, elem) {
+        var td = $(this);
+        setValueCheckerForTD(td);
+    });
     newEntry.find('.btn-custom-delete').click(function() {
         newEntry.remove();
     });
     return newEntry;
+}
+
+function addSDOptionFunc(table, info, newEntry){
+    var lastItemNo = table.find("tr:last").attr("class").replace("sd", "");
+    if(lastItemNo > 10){
+        info.text("You can't add records more than 10.");
+        return false;
+    }
+    newEntry.removeClass();
+    newEntry.find("td:eq(0)").attr("rowspan", "1");
+    newEntry.addClass("sd" + (parseInt(lastItemNo) + 1));
+    newEntry.find('.td-profile-val-unit').each(function(index, elem) {
+        var td = $(this);
+        setValueCheckerForTD(td);
+    });
+    newEntry.find('.btn-custom-delete').click(function() {
+        var cls = newEntry.prop("classList")[0];
+        $('.'+cls).remove();
+        //newEntry.remove();
+    });
+    return true;
+}
+
+function setValueCheckerForTD(td) {
+    var inputVal = td.find('input');
+    var selUnit = td.find('select');
+    var unitType = selUnit.data('unit');
+
+    function setInputMinMax(unitType, unit) {
+        var min=1;
+        var max=100;
+        switch (unitType) {
+            case 'duration':
+                switch (unit) {
+                    case 'days':
+                        max=365; break;
+                    case 'weeks':
+                        max=100; break;
+                    case 'months':
+                        max=60; break;
+                    case 'years':
+                        max=100; break;
+                }
+                break;
+            case 'intake':
+                switch (unit) {
+                    case 'mL':
+                        max=5000; break;
+                    case 'mg':
+                        max=10000; break;
+                    case 'g':
+                        max=100; break;
+                }
+                break;
+            case 'freq':
+                switch (unit) {
+                    case '/day':
+                        max=10; break;
+                    case '/week':
+                        max=21; break;
+                    case '/month':
+                        max=31; break;
+                    case '/year':
+                        max=365; break;
+                }
+                break;
+        }
+
+        inputVal.attr('min', min);
+        inputVal.attr('max', max);
+
+        var val = inputVal.val();
+        if(val == '') val = '';
+        else if(val > max) val = max;
+        else if (val < min) val=min;
+        inputVal.val(val);
+    }
+    //setInputMinMax(unitType, selUnit.val());
+
+    inputVal.off('change');
+    inputVal.change(function() {
+        setInputMinMax(unitType, selUnit.val());
+    });
+    selUnit.off('change');
+    selUnit.change(function() {
+        inputVal.off('change');
+        inputVal.change(function() {
+            setInputMinMax(unitType, selUnit.val());
+        });
+        setInputMinMax(unitType, selUnit.val());
+    });
 }
 
 function resetProfile() {
@@ -201,7 +292,6 @@ function resetProfile() {
 
     //console.log(profiles);
     var keys = Object.keys(profiles);
-    console.log(keys);
     keys.forEach(function(key) {
         if (key == "height") {
             console.log(profiles[key]);
@@ -256,43 +346,70 @@ function updateProfile() {
     if (height.val() <= 0 && height.val() != "") {
         openUpdateFailModal('Height must be larger than 0', 'Update Failed');
         height.focus();
-        return
+        return;
     }
     var weight = $('#weight');
     if (weight.val() <= 0 && weight.val() != "") {
         openUpdateFailModal('Weight must be larger than 0.', 'Update Failed');
         weight.focus();
-        return
+        return;
     }
     var drinkingCapacity = $('#drinkingCapacity');
     if (drinkingCapacity.val() < 0 && drinkingCapacity.val() != "") {
         openUpdateFailModal('Drinking capacity must be equal or larger than 0', 'Update Failed');
         drinkingCapacity.focus();
-        return
+        return;
     }
     var drinkingFrequency = $('#drinkingFrequency');
     if (drinkingFrequency.val() < 0 && drinkingFrequency.val() != "") {
         openUpdateFailModal('Drinking frequency must be equal or larger than 0', 'Update Failed');
         drinkingFrequency.focus();
-        return
+        return;
     }
     var sleeping = $('#sleeping');
     if ((sleeping.val() < 0 || sleeping.val() > 24) && sleeping.val() != "") {
         openUpdateFailModal('Sleeping hours must be larger than 0 and lower than 24.', 'Update Failed');
         sleeping.focus();
-        return
+        return;
     }
     var exercise = $('#exercise');
     if ((exercise.val() < 0 || exercise.val() > 1440) && exercise.val() != "") {
         openUpdateFailModal('Exercise Time must be larger than 0 and lower than 1440', 'Update Failed');
         exercise.focus();
-        return
+        return;
     }
     var water = $('#water');
     if (water.val() < 0 && water.val() != "") {
         openUpdateFailModal('Water intake must be larger than 0', 'Update Failed');
         water.focus();
-        return
+        return;
+    }
+
+    //check details
+    var required_list = [];
+    $('.profile-required').each(function (index, elem) {
+        required_list.push($(elem));
+    });
+    for (var i=0; i<required_list.length; i++) {
+        var el = required_list[i];
+        var value = el.val();
+        if (value == undefined || value == null || value == '' || value == ' '
+                || !/\S/.test(value)) {
+            el.popover({
+                title: "Notice",
+                content: "This column must be filled",
+                placement: "bottom",
+                trigger: "manual"
+            }).data('bs.popover')
+                .tip()
+                .addClass('popover-info');
+            el.focus().popover("show");
+            setTimeout(function () {
+               el.popover('destroy');
+            }, 3000);
+
+            return;
+        }
     }
 
     //add value
@@ -363,7 +480,7 @@ function getDetailedProfiles() {
     $('#table-pmh > tbody > tr').each(function(index, elem) {
         if (index == 0) return;
         var pmh_column = {};
-        pmh_column['history_type'] = $(elem).find('.table-pmh-type').val();
+        pmh_column['type'] = $(elem).find('.table-pmh-type').val();
         pmh_column['name'] = $(elem).find('.table-pmh-name').val();
         pmh_column['date'] = $(elem).find('.table-pmh-date').val();
         pmh_column['comment'] = $(elem).find('.table-pmh-comment').val();
@@ -454,8 +571,64 @@ function getDetailedProfiles() {
 
 function setDetailedProfiles(detailedProfile) {
     for (var i=0; i<detailedProfile['pmh'].length; i++) {
+        var item = detailedProfile['pmh'][i];
         var row = addRow($('#table-pmh'), $('#info-phm'));
+        row.find('.table-pmh-type').val(item['type']).attr("selected", "selected");
+        row.find('.table-pmh-name').val(item['name']);
+        row.find('.table-pmh-date').val(item['date']);
+        row.find('.table-pmh-comment').val(item['comment']);
+    }
 
+    for (var i=0; i<detailedProfile['ed'].length; i++) {
+        var item = detailedProfile['ed'][i];
+        var row = addRow($('#table-ed'), $('#info-ed'));
+        var duration = item['duration'].split("|");
+        row.find('.table-ed-name').val(item['name']);
+        row.find('.table-ed-degree').val(item['degree']).attr("selected", "selected");
+        row.find('.table-ed-duration-val').val(duration[0]);
+        row.find('.table-ed-duration-unit').val(duration[1]).attr("selected", "selected");
+        row.find('.table-ed-comment').val(item['comment']);
+
+    }
+
+    for (var i=0; i<detailedProfile['sd'].length; i++) {
+        var item = detailedProfile['sd'][i];
+        var row = addRow($('#table-sd'), $('#info-sd'), addSDOptionFunc);
+        var symptoms = item['symptoms'];
+        row.find('.table-sd-name').val(item['name']);
+        for (var k=0; k<symptoms.length; k++) {
+            var subrow;
+            if (k==0) subrow = row;
+            else {
+                //var cls = row.attr("class");
+                var cls = row.prop("classList")[0];
+                subrow = row.clone();
+                subrow.find("td:eq(0)").remove();
+                subrow.find('.table-sd-symptom').val('');
+                subrow.find('.table-sd-degree').val("Severe").attr("selected", "selected");
+                subrow.find('.table-sd-duration-val').val('');
+                subrow.find('.table-sd-duration-unit').val("days").attr("selected", "selected");
+                subrow.find('.table-sd-comment').val('');
+                subrow.insertAfter($("#table-sd ." + cls + ":last"));
+                resizeRowspan(cls);
+
+                var thisSubrow = subrow;
+                thisSubrow.find('.btn-custom-delete').each(function(index, elem) {
+                    var eltd = $(this).parent().parent(); //td
+                    $(this).click(function() {
+                        console.log(eltd);
+                        eltd.remove();
+                        resizeRowspan(cls);
+                    });
+                });
+            }
+            var duration = symptoms[k]['duration'].split("|");
+            subrow.find('.table-sd-symptom').val(symptoms[k]['symptom']);
+            subrow.find('.table-sd-degree').val(symptoms[k]['degree']).attr("selected", "selected");
+            subrow.find('.table-sd-duration-val').val(duration[0]);
+            subrow.find('.table-sd-duration-unit').val(duration[1]).attr("selected", "selected");
+            subrow.find('.table-sd-comment').val(symptoms[k]['comment']);
+        }
     }
 
     for (var i=0; i<detailedProfile['med'].length; i++) {
@@ -473,6 +646,21 @@ function setDetailedProfiles(detailedProfile) {
         row.find('.table-m-duration-unit').val(duration[1]).attr("selected", "selected");
         row.find('.table-m-comment').val(item['comment']);
         row.find('.table-m-comment').val(item['comment']);
+    }
+
+    for (var i=0; i<detailedProfile['fmh'].length; i++) {
+        var item = detailedProfile['fmh'][i];
+        var row = addRow($('#table-fmh'), $('#info-fmh'));
+        row.find('.table-fmh-relationship').val(item['relationship']).attr("selected", "selected");
+        row.find('.table-fmh-history').val(item['history']);
+    }
+
+    for (var i=0; i<detailedProfile['alg'].length; i++) {
+        var item = detailedProfile['alg'][i];
+        var row = addRow($('#table-a'), $('#info-a'));
+        row.find('.table-a-name').val(item['name']);
+        row.find('.table-a-degree').val(item['degree']).attr("selected", "selected");
+        row.find('.table-a-comment').val(item['comment']);
     }
 
     $('#notice').val(detailedProfile['notice']);
