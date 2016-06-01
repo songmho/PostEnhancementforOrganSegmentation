@@ -81,7 +81,7 @@ $(document).ready(function () {
         addRow($('#table-sd'), $('#info-sd'), addSDOptionFunc);
     });
 
-    $('#table-sd').on('click', '#btn-add-symptom', function (e) {
+    $('#table-sd').on('click', '.btn-add-symptom', function (e) {
         var clickedEntry = $(this).parent().parent();
         var cls = clickedEntry.attr("class");
         if($("." + cls).length > 4){
@@ -98,6 +98,10 @@ $(document).ready(function () {
         newEntry.insertAfter($("#table-sd ." + cls + ":last"));
         resizeRowspan(cls);
 
+        newEntry.find('.td-profile-val-unit').each(function(index, elem) {
+            var td = $(elem);
+            setValueCheckerForTD(td);
+        });
         newEntry.find('.btn-custom-delete').click(function() {
             newEntry.remove();
             resizeRowspan(cls);
@@ -185,8 +189,21 @@ function addRow(table, info, f) {
     });
     newEntry.find('input, .table-fmh-history').addClass('profile-required');
     newEntry.find('.td-profile-val-unit').each(function(index, elem) {
-        var td = $(this);
+        var td = $(elem);
         setValueCheckerForTD(td);
+    });
+    newEntry.find('input[type="date"]').each(function(index, elem) {
+        var inputDate = $(elem);
+        inputDate.focusout(function() {
+            var date = new Date($(this).val());
+            var time = date.getTime();
+            var minTime = new Date("1980-01-01").getTime();
+            var maxTime = new Date().getTime();
+            if (time < minTime) time = minTime;
+            else if (time > maxTime) time = maxTime;
+
+            $(this).val(new Date(time).format("yyyy-MM-dd"));
+        });
     });
     newEntry.find('.btn-custom-delete').click(function() {
         newEntry.remove();
@@ -204,7 +221,7 @@ function addSDOptionFunc(table, info, newEntry){
     newEntry.find("td:eq(0)").attr("rowspan", "1");
     newEntry.addClass("sd" + (parseInt(lastItemNo) + 1));
     newEntry.find('.td-profile-val-unit').each(function(index, elem) {
-        var td = $(this);
+        var td = $(elem);
         setValueCheckerForTD(td);
     });
     newEntry.find('.btn-custom-delete').click(function() {
@@ -333,6 +350,7 @@ function resetProfile() {
         }
     });
 
+    removeAllDetailedProfiles();
     setDetailedProfiles(profiles['detail']);
 }
 
@@ -612,6 +630,10 @@ function setDetailedProfiles(detailedProfile) {
                 subrow.insertAfter($("#table-sd ." + cls + ":last"));
                 resizeRowspan(cls);
 
+                subrow.find('.td-profile-val-unit').each(function(index, elem) {
+                    var td = $(elem);
+                    setValueCheckerForTD(td);
+                });
                 var thisSubrow = subrow;
                 thisSubrow.find('.btn-custom-delete').each(function(index, elem) {
                     var eltd = $(this).parent().parent(); //td
@@ -664,6 +686,40 @@ function setDetailedProfiles(detailedProfile) {
     }
 
     $('#notice').val(detailedProfile['notice']);
+}
+
+function removeAllDetailedProfiles() {
+    $('#table-pmh > tbody > tr').each(function (index, elem) {
+        if (index == 0) return;
+        $(elem).remove();
+    });
+
+    $('#table-ed > tbody > tr').each(function (index, elem) {
+        if (index == 0) return;
+        $(elem).remove();
+    });
+
+    $('#table-sd > tbody > tr').each(function (index, elem) {
+        if (index == 0) return;
+        $(elem).remove();
+    });
+
+    $('#table-m > tbody > tr').each(function (index, elem) {
+        if (index == 0) return;
+        $(elem).remove();
+    });
+
+    $('#table-fmh > tbody > tr').each(function (index, elem) {
+        if (index == 0) return;
+        $(elem).remove();
+    });
+
+    $('#table-a > tbody > tr').each(function (index, elem) {
+        if (index == 0) return;
+        $(elem).remove();
+    });
+
+    $('#notice').val('');
 }
 
 function checkDetailProfilesEmpty(detailedProfile) {

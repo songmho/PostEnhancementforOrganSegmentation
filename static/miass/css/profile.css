@@ -51,6 +51,18 @@ table.table-profile > tbody > tr:first-of-type {
     display: none;
 }
 
+td.td-relative .btn-add-symptom {
+    position: absolute;
+    top:10px;
+    right:2px;
+    width:20px;
+    height:20px;
+}
+
+td.td-relative {
+    position: relative;
+}
+
 .glyphicon.glyphicon-remove{
     color: #CD5C5C;
 }
@@ -85,9 +97,6 @@ table.table-profile > tbody > tr:first-of-type {
     font-size: 12px;
 }
 
-.glyphicon.glyphicon-plus.in-table{
-    margin-top: 10px;
-}
 ::-webkit-clear-button { display: none; }
 /*::-webkit-inner-spin-button { margin-top: 8px }*/
 ::-webkit-inner-spin-button { display: none; }
