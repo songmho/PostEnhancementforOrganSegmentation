@@ -330,27 +330,33 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 # Add patient information to 'user' table
-                user_id = patient['user_id']
-                password = patient['password']
-                name = patient['name']
-                phone_number = patient['phone_number']
-                email = patient['email']
-                join_date = patient['join_date']
-                nationality = patient['nationality']
-                user_type = patient['user_type']
-                db_query = "INSERT INTO user (user_id, password, name, phone_number, email, join_date, nationality, user_type) values (%s, %s, %s, %s, %s, %s, %s, %s)"
+                p = patient
+                db_query = "INSERT INTO user (user_id, password, first_name, last_name, phone_number, email, " \
+                           "birthday, address, city, state, country, user_type, join_date) " \
+                           "values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(db_query,
-                               (user_id, password, name, phone_number, email, join_date, nationality, user_type))
-                self.connector.commit()
-                # Add patient information to 'user' table
-                gender = patient['gender']
-                birthday = patient['birthday']
-                db_query = "INSERT INTO patient (user_id, gender, birthday) VALUES (%s, %s, %s)"
-                cursor.execute(db_query, (user_id, gender, birthday))
+                               (p['user_id'], p['password'], p['first_name'], p['last_name'], p['phone_number'], p['email'],
+                                p['birthday'], p['address'], p['city'], p['state'], p['country'], p['user_type'], p['join_date']))
                 self.connector.commit()
                 row_count = cursor.rowcount
                 if row_count > 0:
                     if_inserted = True
+                else:
+                    if_inserted = False
+                    raise Exception("Cannot Inserted.")
+
+                # Add patient information to 'user' table
+                db_query = "INSERT INTO patient (user_id, gender) VALUES (%s, %s)"
+                cursor.execute(db_query, (p['user_id'], p['gender']))
+                self.connector.commit()
+                row_count = cursor.rowcount
+                if row_count > 0:
+                    if_inserted = True
+                else:
+                    if_inserted = False
+                    db_query = "DELETE FROM user WHERE user_id=%s"
+                    cursor.execute(db_query, p['user_id'])
+                    self.connector.commit()
             except Exception as e:
                 logger.exception(e)
                 raise Exception("Registering a patient is failed.")
@@ -361,27 +367,40 @@ class DbManager():
         with self.connector.cursor() as cursor:
             try:
                 if password is None:
-                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.nationality, u.user_type, p.gender, p.birthday FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s"
-                    cursor.execute(db_query, (patient_id))
+                    db_query = "SELECT u.first_name, u.last_name, u.phone_number, u.email, u.birthday," \
+                               "u.address, u.city, u.state, u.country, u.user_type, u.join_date, u.deactivate_date, " \
+                               "p.gender " \
+                               "FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id " \
+                               "WHERE u.user_id=%s"
+                    cursor.execute(db_query, patient_id)
                 else:
-                    db_query = "SELECT u.name, u.phone_number, u.email, u.join_date, u.deactivate_date, u.nationality, u.user_type, p.gender, p.birthday, u.password FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id WHERE u.user_id=%s and u.password=%s"
+                    db_query = "SELECT u.first_name, u.last_name, u.phone_number, u.email, u.birthday," \
+                               "u.address, u.city, u.state, u.country, u.user_type, u.join_date, u.deactivate_date, " \
+                               "p.gender, u.password " \
+                               "FROM patient as p LEFT JOIN user as u on p.user_id=u.user_id " \
+                               "WHERE u.user_id=%s and u.password=%s"
                     cursor.execute(db_query, (patient_id, password))
                 self.connector.commit()
                 for row in cursor:
                     user['user_id'] = patient_id
-                    user['name'] = row[0]
-                    user['phone_number'] = row[1]
-                    user['email'] = row[2]
-                    user['join_date'] = row[3]
-                    user['deactivate_date'] = row[4]
-                    user['nationality'] = row[5]
-                    user['user_type'] = row[6]
-                    user['gender'] = row[7]
-                    user['birthday'] = row[8]
+                    user['first_name'] = row[0]
+                    user['last_name'] = row[1]
+                    user['name'] = row[0] + ' ' + row[1]
+                    user['phone_number'] = row[2]
+                    user['email'] = row[3]
+                    user['birthday'] = row[4]
+                    user['address'] = row[5]
+                    user['city'] = row[6]
+                    user['state'] = row[7]
+                    user['country'] = row[8]
+                    user['user_type'] = row[9]
+                    user['join_date'] = row[10]
+                    user['deactivate_date'] = row[11]
+                    user['gender'] = row[12]
                     if password is None:
                         user['password'] = None
                     else:
-                        user['password'] = row[9]
+                        user['password'] = row[13]
             except Exception as e:
                 logger.exception(e)
                 raise Exception("Login is Failed.")
@@ -1697,7 +1716,7 @@ class DbManager():
         result = []
         with self.connector.cursor() as cursor:
             try:
-                db_query = "SELECT s.*, phi.name " \
+                db_query = "SELECT s.*, phi.first_name, phi.last_name " \
                            "FROM session s " \
                            "JOIN physician_info phi ON s.physician_id = phi.user_id " \
                            "WHERE patient_id = %s and status < 2 " \
@@ -1706,13 +1725,15 @@ class DbManager():
                 for row in cursor:
                     session = {}
                     session['session_id'] = row[0]
-                    session['patinet_id'] = row[1]
+                    session['patient_id'] = row[1]
                     session['physician_id'] = row[2]
                     session['type'] = row[3]
                     session['value'] = json.loads(row[4])
                     session['timestamp'] = row[5]
                     session['status'] = row[6]
-                    session['name'] = row[7]
+                    session['first_name'] = row[7]
+                    session['last_name'] = row[8]
+                    session['name'] = row[7] + ' ' + row[8]
                     result.append(session)
             except Exception as e:
                 logger.exception(e)
@@ -1723,7 +1744,7 @@ class DbManager():
         result = []
         with self.connector.cursor() as cursor:
             try:
-                db_query = "SELECT s.*, pai.name " \
+                db_query = "SELECT s.*, pai.first_name, pai.last_name " \
                            "FROM session s " \
                            "JOIN patient_info pai ON s.patient_id = pai.user_id " \
                            "WHERE physician_id = %s and status < 2 " \
@@ -1732,13 +1753,15 @@ class DbManager():
                 for row in cursor:
                     session = {}
                     session['session_id'] = row[0]
-                    session['patinet_id'] = row[1]
+                    session['patient_id'] = row[1]
                     session['physician_id'] = row[2]
                     session['type'] = row[3]
                     session['value'] = json.loads(row[4])
                     session['timestamp'] = row[5]
                     session['status'] = row[6]
-                    session['name'] = row[7]
+                    session['first_name'] = row[7]
+                    session['last_name'] = row[8]
+                    session['name'] = row[7] + ' ' + row[8]
                     result.append(session)
             except Exception as e:
                 logger.exception(e)

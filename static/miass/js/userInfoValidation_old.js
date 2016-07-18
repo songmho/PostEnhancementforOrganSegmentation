@@ -2,6 +2,7 @@ var isAccountPage = (user != undefined && user != null && user != {} && user != 
 
 var checkIDFlag = false;
 var checkIDUsed = false;
+var checkingIDUsed = false;
 var tempID = "";
 function checkID() {
     var idRe = /^[a-z]+[a-z0-9_.\-]{3,19}$/g;
@@ -15,13 +16,31 @@ function checkID() {
     if (inputId.val().length < 4) {
         checkIDFlag = false;
         inputId.css("border-color", "red");
-        openModal("The length of ID is 4 to 20.", "Checking ID");
+        inputId.popover({
+            title: "Warning",
+            content: "The length of ID is larger than 4.",
+            placement: "bottom",
+            trigger: "manual"
+        });
+        inputId.popover("show");
+        setTimeout(function () {
+            inputId.popover('destroy');
+        }, 3000);
         return
     }
     else if (!inputId.val().match(idRe)) {
         checkIDFlag = false;
         inputId.css("border-color", "red");
-        openModal("ID must be started with small letters.<br/> And only small letters, digits, and special letters ('-','_','.') are allowed.", "Checking ID");
+        inputId.popover({
+            title: "Warning",
+            content: "ID must be started with small letters, and only small letters, digits, and special letters ('-','_','.') are allowed.",
+            placement: "bottom",
+            trigger: "manual"
+        });
+        inputId.popover("show");
+        setTimeout(function () {
+            inputId.popover('destroy');
+        }, 3000);
         return
     }
     else {
@@ -30,7 +49,7 @@ function checkID() {
     }
 
     checkIDUsed = false;
-    $.LoadingOverlay('show');
+    checkingIDUsed = true;
     $.ajax("/api/user", {
         method: 'GET',
         data: {
@@ -39,24 +58,41 @@ function checkID() {
         },
         dataType: 'json',
         success: function (res) {
-            $.LoadingOverlay('hide');
             //console.log(res);
             if (res['code'] == 'SUCCESS') {
                 if (!res['existedId'] == false) {
-                    inputId.css("border-color", "red");
-                    openModal("ID is already existed.", "Checking ID");
                     checkIDUsed = false;
                     checkIDFlag = false;
+                    inputId.css("border-color", "red");
+                    inputId.popover({
+                        title: "Warning",
+                        content: "ID is already existed",
+                        placement: "bottom",
+                        trigger: "manual"
+                    });
+                    inputId.popover("show");
+                    setTimeout(function () {
+                        inputId.popover('destroy');
+                    }, 3000);
                 } else {
-                    openModal("You can use this ID.", "Checking ID");
                     checkIDUsed = true;
                 }
             } else {
-                inputId.css("border-color", "red");
-                openModal("Checking ID is failed. <br/>Please try again.", "Checking ID");
                 checkIDUsed = false;
                 checkIDFlag = false;
+                inputId.css("border-color", "red");
+                inputId.popover({
+                    title: "Warning",
+                    content: "Checking ID is failed. Please try again.",
+                    placement: "bottom",
+                    trigger: "manual"
+                });
+                inputId.popover("show");
+                setTimeout(function () {
+                    inputId.popover('destroy');
+                }, 3000);
             }
+            checkingIDUsed = false;
         }
     });
 }
@@ -132,17 +168,17 @@ function checkPasswordConfirm() {
     }
 }
 
-var checkFirstNameFlag = false;
-var tempFirstName = "";
-function checkFirstName() {
-    var inputName = $('#inputFirstName');
+var checkNameFlag = false;
+var tempName = "";
+function checkName() {
+    var inputName = $('#inputName');
     var nameRe = /^[a-zA-Z가-힣 ]{1,200}$/g;
-    if ((tempFirstName == inputName.val() || inputName.val().length == 0) && checkFirstNameFlag) {
+    if ((tempName == inputName.val() || inputName.val().length == 0) && checkNameFlag) {
         return
     }
     else {
-        tempFirstName = inputName.val();
-        checkFirstNameFlag = false;
+        tempName = inputName.val();
+        checkNameFlag = false;
     }
     if (!inputName.val().match(nameRe)) {
         inputName.css("border-color", "red");
@@ -158,38 +194,7 @@ function checkFirstName() {
         }, 3000);
     }
     else {
-        checkFirstNameFlag = true;
-        inputName.css("border-color", "");
-    }
-}
-
-var checkLastNameFlag = false;
-var tempLastName = "";
-function checkLastName() {
-    var inputName = $('#inputLastName');
-    var nameRe = /^[a-zA-Z가-힣 ]{1,200}$/g;
-    if ((tempLastName == inputName.val() || inputName.val().length == 0) && checkLastNameFlag) {
-        return
-    }
-    else {
-        tempLastName = inputName.val();
-        checkLastNameFlag = false;
-    }
-    if (!inputName.val().match(nameRe)) {
-        inputName.css("border-color", "red");
-        inputName.popover({
-            title: "Warning",
-            content: "Please enter valid user name.",
-            placement: "bottom",
-            trigger: "manual"
-        });
-        inputName.popover("show");
-        setTimeout(function () {
-            inputName.popover('destroy');
-        }, 3000);
-    }
-    else {
-        checkLastNameFlag = true;
+        checkNameFlag = true;
         inputName.css("border-color", "");
     }
 }
@@ -210,7 +215,7 @@ function checkPhone() {
         inputMobile.css("border-color", "red");
         inputMobile.popover({
             title: "Warning",
-            content: "The length of phone number is larger than 4.",
+            content: "The number of digits is larger than 4.",
             placement: "bottom",
             trigger: "manual"
         });
@@ -240,6 +245,7 @@ function checkPhone() {
 
 var checkEmailFlag = false;
 var checkEmailUsed = -2;
+var checkingEmailUsed = false;
 var tempEmail = "";
 function checkEmail() {
     var inputEmail = $('#inputEmail');
@@ -253,22 +259,36 @@ function checkEmail() {
     }
     if (!inputEmail.val().match(emailRe)) {
         inputEmail.css("border-color", "red");
-        openModal("The form of e-mail address is xxxx@xxxx.xxx", 'Email Check');
+        inputEmail.popover({
+            title: "Warning",
+            content: "The form of e-mail address is xxx@xxxx.xxx",
+            placement: "bottom",
+            trigger: "manual"
+        });
+        inputEmail.popover("show");
+        setTimeout(function () {
+            inputEmail.popover('destroy');
+        }, 3000);
     }
     else {
         checkEmailFlag = true;
         inputEmail.css("border-color", "");
     }
 
+    if($('#inputEmailConfirm').val() != '') {
+        checkEmailConfirm();
+    }
+
     checkEmailUsed = -2;
+    checkingEmailUsed = true;
     var needEmailCheck = true;
     if (isAccountPage) {   //for account change
         if (inputEmail.val() == user['email']) needEmailCheck = false;
         checkEmailUsed = 1;
+        checkingEmailUsed = false;
     }
 
     if(needEmailCheck) {
-        $.LoadingOverlay('show');
         $.ajax("/api/user", {
             method: 'GET',
             data: {
@@ -279,7 +299,6 @@ function checkEmail() {
             dataType: 'json',
             success: function (res) {
                 //console.log(res);
-                $.LoadingOverlay('hide');
                 if (res['code'] == 'SUCCESS') {
                     checkEmailUsed = res['emailUsed'];
                 } else {
@@ -287,7 +306,6 @@ function checkEmail() {
                 }
 
                 if (checkEmailUsed == 1) {
-                    openModal("You can use this email address.", "Email Check");
                     //pass
                 } else if (checkEmailUsed == 0) {
                     var popoverMsg = 'This email is already used for ';
@@ -295,12 +313,21 @@ function checkEmail() {
                         popoverMsg += 'physician';
                     else
                         popoverMsg += 'patient';
-                    //popoverMsg += '. If you are the same person, you just continue. Or not, you should check the email and use another email.';
-                    popoverMsg += '.<br/> If you are the same person, you just continue. Or not, you should check the email and use another email.';
+                    popoverMsg += '. If you are the same person, you just continue. Or not, you should check the email and use another email.';
 
                     inputEmail.css("border-color", "orange");
-                    openModal(popoverMsg, 'Email Check');
-
+                    inputEmail.popover({
+                        title: "Notice",
+                        content: popoverMsg,
+                        placement: "bottom",
+                        trigger: "manual"
+                    }).data('bs.popover')
+                        .tip()
+                        .addClass('popover-info');
+                    inputEmail.popover("show");
+                    setTimeout(function () {
+                        inputEmail.popover('destroy');
+                    }, 5000);
                 } else { // below -1
                     checkEmailFlag = false;
 
@@ -315,115 +342,77 @@ function checkEmail() {
                     }
 
                     inputEmail.css("border-color", "red");
-                    openModal(popoverMsg, 'EmailCheck');
+                    inputEmail.popover({
+                        title: "Warning",
+                        content: popoverMsg,
+                        placement: "bottom",
+                        trigger: "manual"
+                    });
+                    inputEmail.popover("show");
+                    setTimeout(function () {
+                        inputEmail.popover('destroy');
+                    }, 3000);
                 }
+
+                checkingEmailUsed = false;
             }
         });
+    }
+}
+
+var checkEmailConfirmFlag = false;
+function checkEmailConfirm() {
+    var inputEmailConfirm = $('#inputEmailConfirm');
+    if ($('#inputEmail').val() != inputEmailConfirm.val()) {
+        checkEmailConfirmFlag = false;
+        inputEmailConfirm.css("border-color", "red");
+        inputEmailConfirm.popover({
+            title: "Warning",
+            content: "Emails are Different.",
+            placement: "bottom",
+            trigger: "manual"
+        });
+        inputEmailConfirm.popover("show");
+        setTimeout(function () {
+            inputEmailConfirm.popover('destroy');
+        }, 3000);
+    }
+    else if($('#inputEmail').val() == inputEmailConfirm.val() && inputEmailConfirm.val()!="") {
+        checkEmailConfirmFlag = true;
+        inputEmailConfirm.css("border-color", "");
     }
 }
 
 var checkBirthFlag = false;
 var tempBirth = "";
 function checkBirth() {
-    var inputBirthdayMonth = $('#inputBirthdayMonth');
-    var inputBirthdayDay = $('#inputBirthdayDay');
-    var inputBirthdayYear = $('#inputBirthdayYear');
-
-    if (tempBirth == "" && (!/\S/.test($('#inputBirthdayMonth').val()) ||
-                            !/\S/.test($('#inputBirthdayDay').val()) ||
-                            !/\S/.test($('#inputBirthdayYear').val()) )) {
+    var inputBirthday = $('#inputBirthday');
+    if ((tempBirth == inputBirthday.val() || inputBirthday.val().length == 0) && checkBirthFlag)
         return;
-    }
 
-    var month = parseInt($('#inputBirthdayMonth').val());
-    var day = parseInt($('#inputBirthdayDay').val());
-    var year = parseInt($('#inputBirthdayYear').val());
-
-    if (month == NaN || month <= 0 || month >= 13) {
-        inputBirthdayMonth.css("border-color", "red");
-        inputBirthdayDay.css("border-color", "red");
-        inputBirthdayYear.css("border-color", "red");
-        inputBirthdayMonth.popover({
-            title: "Warning",
-            content: "The month must be 01 to 12.",
-            placement: "bottom",
-            trigger: "manual"
-        });
-        inputBirthdayMonth.popover("show");
-        setTimeout(function () {
-            inputBirthdayMonth.popover('destroy');
-        }, 3000);
-    }
-
-    if (day == NaN || day <= 0 || day >= 32) {
-        inputBirthdayMonth.css("border-color", "red");
-        inputBirthdayDay.css("border-color", "red");
-        inputBirthdayYear.css("border-color", "red");
-        inputBirthdayDay.popover({
-            title: "Warning",
-            content: "The month must be 01 to 31.",
-            placement: "bottom",
-            trigger: "manual"
-        });
-        inputBirthdayDay.popover("show");
-        setTimeout(function () {
-            inputBirthdayDay.popover('destroy');
-        }, 3000);
-    }
-
-    if (year == NaN || year <= 1799 || year > new Date().getYear()+1900) {
-        inputBirthdayMonth.css("border-color", "red");
-        inputBirthdayDay.css("border-color", "red");
-        inputBirthdayYear.css("border-color", "red");
-        inputBirthdayYear.popover({
-            title: "Warning",
-            content: "Your birthday may be after 1799 year or before now.",
-            placement: "bottom",
-            trigger: "manual"
-        });
-        inputBirthdayYear.popover("show");
-        setTimeout(function () {
-            inputBirthdayYear.popover('destroy');
-        }, 3000);
-    }
-
-    var bmonth = month < 10 ? '0'+month : month;
-    var bday = day < 10 ? '0'+day : day;
-    var birthday = year + '-' + bmonth + '-' + bday;
-
-    if (tempBirth == birthday && checkBirthFlag)
-        return;
     else {
-        tempBirth = birthday;
+        tempBirth = inputBirthday.val();
         checkBirthFlag = false;
     }
-
-    //var currentTime = new Date().getTime() + 3600 * 9;
-    var currentTime = new Date().getTime();
+    var currentTime = new Date().getTime() + 3600 * 9;
     var minBirthday = -5367427300000;
-    var birthdayTime = Date.parse(birthday);
-
-    if (birthdayTime > currentTime || birthdayTime < minBirthday) {
+    if (Date.parse(inputBirthday.val()) > currentTime || Date.parse(inputBirthday.val()) < minBirthday) {
         checkBirthFlag = false;
-        inputBirthdayMonth.css("border-color", "red");
-        inputBirthdayDay.css("border-color", "red");
-        inputBirthdayYear.css("border-color", "red");
-        inputBirthdayYear.popover({
+        inputBirthday.css("border-color", "red");
+        inputBirthday.popover({
             title: "Warning",
             content: "Your birthday may be after 1799 year or before now.",
             placement: "bottom",
             trigger: "manual"
         });
-        inputBirthdayYear.popover("show");
+        inputBirthday.popover("show");
         setTimeout(function () {
-            inputBirthdayYear.popover('destroy');
+            inputBirthday.popover('destroy');
         }, 3000);
     }
     else {
         checkBirthFlag = true;
-        inputBirthdayMonth.css("border-color", "");
-        inputBirthdayDay.css("border-color", "");
-        inputBirthdayYear.css("border-color", "");
+        inputBirthday.css("border-color", "");
     }
 }
 
@@ -456,14 +445,4 @@ function checkLicense() {
         checkLicenseFlag = true;
         inputLicense.css("border-color", "");
     }
-}
-
-var checkAddressFlag = true;
-function checkAddress() {
-    checkAddressFlag = /\S/.test($('#inputAddress').val());
-}
-
-var checkCityFlag = true;
-function checkCity() {
-    checkCityFlag = /\S/.test($('#inputCity').val());
 }

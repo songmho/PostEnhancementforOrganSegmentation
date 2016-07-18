@@ -4,148 +4,109 @@
 {% include 'miaas/template_header.html' %}
 
 <!-- custom css -->
-<link rel="stylesheet" type="text/css" href="{% static 'miass/css/signup.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'miass/css/signup_old.css' %}">
 
 <body>
 
 <div class="container">
     <section class="section section-signup">
         <div class="form-signup">
+            <div class="row row-signup-title">
+                <div class="col-xs-12">
+                    <h2 class="text-primary">Sign Up for MIAAS</h2>
+                </div>
+            </div>
             <div class="row row-signup-content">
                 <div class="col-xs-12" id="col-signup-usertype">
-                    <h2 class="text-primary text-center">Choose your role.</h2>
-                    <br/><br/>
-                    <div class="col-xs-12 col-sm-6">
-                        <button id="btn-patient" type="button" class="btn btn-lg btn-primary btn-block">Patient</button>
-                    </div>
-                    <div class="col-xs-12 col-sm-6">
-                        <button id="btn-physician" type="button" class="btn btn-lg btn-primary btn-block">Physician</button>
-                    </div>
-                    <br/><br/><br/>
+                    <br/>
+                    <h4>Step1: Choose Who You Are</h4>
+                    <h5>Are you a Patient? Or are you a Physician?</h5>
+                    <br/>
+                    <button id="btn-patient" type="button" class="btn btn-lg btn-primary btn-block">I'm a Patient</button>
+                    <button id="btn-physician" type="button" class="btn btn-lg btn-primary btn-block">I'm a Physician</button>
                 </div>
 
                 <form class="col-xs-12" id="col-signup-basic" name="signupStep2" style="display: none;" accept-charset="UTF-8">
-                    <h2 class="text-primary text-center">Enter personal information.</h2>
                     <br/>
-                    <div class="form-group col-xs-12 col-sm-6">
-                        <label for="inputFirstName" >First Name</label>
-                        <input type="text" id="inputFirstName" name="inputFirstName" maxlength="20" class="form-control valid"
-                               placeholder="First Name">
-                    </div>
-                    <div class="form-group col-xs-12 col-sm-6">
-                        <label for="inputLastName" >Last Name</label>
-                        <input type="text" id="inputLastName" name="inputLastName" maxlength="20" class="form-control valid"
-                               placeholder="Last Name">
-                    </div>
-
-                    <div class="form-group col-xs-12 col-sm-6">
-                        <label for="inputBirthdayYear" >Date of Birth</label>
-                        <input type="number" id="inputBirthdayMonth" name="inputBirthdayMonth" maxlength="2" min="1" max="12"
-                               class="form-control form-control-left form-control-col-3 text-center valid" placeholder="MM">
-                        <input type="number" id="inputBirthdayDay" name="inputBirthdayDay" maxlength="2" min="1" max="31"
-                               class="form-control form-control-center form-control-col-3 text-center valid" placeholder="DD">
-                        <input type="number" id="inputBirthdayYear" name="inputBirthdayYear" maxlength="4" min="1800" max="3000"
-                               class="form-control form-control-right form-control-col-5 text-center valid" placeholder="YYYY">
-                    </div>
-                    <div class="form-group col-xs-12 col-sm-6">
-                        <label for="inputMobile">Phone #</label>
-                        <input type="tel" id="inputMobile" name="mobile" maxlength="17" class="form-control"
-                               placeholder="Mobile">
-                    </div>
-
-                    <div class="form-group col-xs-12">
+                    <h4>Step2: Write Your Basic Information</h4>
+                    <br/>
+                    <div class="form-group">
                         <label for="inputId" >User ID</label>
-                        <input type="text" id="inputId" name="id" maxlength="20"
-                               class="form-control form-control-left form-control-col-8 valid"
+                        <input type="text" id="inputId" name="id" maxlength="20" class="form-control valid"
                                placeholder="Enter your ID with the length 4 ~ 20">
-                        <button type="button" id="btnCheckId" class="btn btn-lg btn-primary btn-block pull-right
-                                                                     form-control form-control-right form-control-col-3">
-                            Check
-                        </button>
                     </div>
-
-                    <div class="form-group col-xs-12 col-sm-6">
+                    <div class="form-group">
                         <label for="inputPw">Password</label>
                         <input type="password" id="inputPw" name="pw" maxlength="20" class="form-control invalid"
                                placeholder="Password">
-                    </div>
-                    <div class="form-group col-xs-12 col-sm-6">
-                        <label for="inputPw">Password Confirm</label>
                         <input type="password" id="inputPwConfirm" maxlength="20" name="pwConfirm" class="form-control"
                                placeholder="Password Confirm">
                     </div>
-
-                    <div class="form-group col-xs-12">
-                        <label for="inputEmail" >Email Address</label>
-                        <input type="email" id="inputEmail" name="email" maxlength="100"
-                               class="form-control form-control-left form-control-col-8 valid"
+                    <div class="form-group">
+                        <label for="inputName" >User Name</label>
+                        <input type="text" id="inputName" name="name" maxlength="100" class="form-control valid"
+                               placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputMobile">Phone Number</label>
+                        <input type="tel" id="inputMobile" name="mobile" maxlength="17" class="form-control"
+                               placeholder="Mobile">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail">Email Address</label>
+                        <input type="email" id="inputEmail" name="email" maxlength="100" class="form-control invalid"
                                placeholder="Email">
-                        <button type="button" id="btnCheckEmail" class="btn btn-lg btn-primary btn-block pull-right
-                                                                        form-control form-control-right form-control-col-3">
-                            Check
-                        </button>
-                        <div class="form-notice ">* Notice that the email is used to authenticate your account.<br/>&nbsp;&nbsp;Please check your email is correct.</div>
+                        <input type="email" id="inputEmailConfirm" name="emailConfirm" maxlength="100" class="form-control"
+                               placeholder="Email Confirm">
+                        <div class="form-notice">* Notice that the email is used to authenticate your account. Please check your email is correct.</div>
                     </div>
-
-                    <div class="form-group col-xs-12">
-                        <label for="inputAddress">Address</label>
-                        <input id="inputAddress" type="text" name="inputAddress" placeholder="Address"
-                               class="form-control" />
+                    <div class="form-group">
+                        <label for="selectNationality">Country</label>
+                        <select id="selectNationality" name="nationality" class="form-control"></select>
                     </div>
-                    <div class="form-group col-xs-4">
-                        <label for="inputCity">City</label>
-                        <input id="inputCity" type="text" name="inputCity" placeholder="City"
-                               class="form-control" />
-                    </div>
-                    <div class="form-group col-xs-4">
-                        <label for="inputState">State</label>
-                        <input id="inputState" type="text" name="inputState" placeholder="State"
-                               class="form-control" />
-                    </div>
-                    <div class="form-group col-xs-4">
-                        <label for="selectCountry">Country</label>
-                        <select id="selectCountry" name="country" class="form-control"></select>
-                    </div>
-
-{#                    <div class="row" class="row-form-btns">#}
-                    <div class="col-xs-12">
-                        <br/>
-                        <div id="btn-basic-prev" class="col-xs-6 col-md-offset-2 col-md-4">
+                    <br/>
+                    <div class="row" class="row-form-btns">
+                        <div id="btn-basic-prev" class="col-xs-6 col-md-4">
                             <button class="btn btn-lg btn-primary btn-block" type="button">Prev</button>
                         </div>
-                        <div id="btn-basic-next" class="col-xs-6 col-md-4">
+                        <div id="btn-basic-next" class="col-xs-6 col-md-4 col-md-offset-4">
                             <button class="btn btn-lg btn-primary btn-block" type="submit">Next</button>
                         </div>
                     </div>
                 </form>
 
                 <form class="col-xs-12" id="col-signup-detail-patient" name="signupStep3Patient" style="display: none;" accept-charset="UTF-8">
-                    <h2 class="text-primary text-center">Enter additional information.</h2>
                     <br/>
-                    <div class="form-group col-xs-12">
+                    <h4>Step3: Write Your Personal Information</h4>
+                    <br/>
+                    <div class="form-group">
                         <label for="selectGender" >Gender</label>
                         <select class="form-control" id="selectGender" name="gender" >
                             <option>Male</option>
                             <option>Female</option>
                         </select>
                     </div>
-
-{#                    <div class="row" class="row-form-btns">#}
-                    <div class="col-xs-12">
-                        <br/>
-                        <div id="btn-patient-prev" class="col-xs-6 col-md-offset-2 col-md-4">
+                    <div class="form-group">
+                        <label for="inputBirthday">Birthday</label>
+                        <input type="date" id="inputBirthday" name="birthday" class="form-control" min="1800-01-01"
+                               placeholder="Birthday">
+                    </div>
+                    <br/>
+                    <div class="row" class="row-form-btns">
+                        <div id="btn-patient-prev" class="col-xs-6 col-md-4">
                             <button class="btn btn-lg btn-primary btn-block" type="button">Prev</button>
                         </div>
-                        <div id="btn-patient-done" class="col-xs-6 col-md-4">
+                        <div id="btn-patient-done" class="col-xs-6 col-md-4 col-md-offset-4">
                             <button class="btn btn-lg btn-success btn-block" type="submit">Done</button>
                         </div>
                     </div>
                 </form>
 
                 <form class="col-xs-12" id="col-signup-detail-physician" name="signupStep3Physician" style="display: none;" accept-charset="UTF-8">
-                    <h2 class="text-primary text-center">Enter physician information.</h2>
                     <br/>
-                    <div class="form-group col-xs-12">
+                    <h4>Step3: Write Your Physician Information</h4>
+                    <br/>
+                    <div class="form-group">
                         <label for="selectField" >Field of Medicine</label>
                         <select class="form-control" id="selectField" name="field" >
                             <option>Heart Specialist</option>
@@ -158,27 +119,25 @@
                             <option>Family Practice</option>
                             <option>Emergency Medicine</option>
                             <option>Interventional Cardiology</option>
-                            <option>Other</option>
                         </select>
                     </div>
-                    <div class="form-group col-xs-12">
+                    <div class="form-group">
                         <label for="inputLicence" >Licence ID</label>
                         <input type="text" maxlength="255" id="inputLicence" name="licence" class="form-control valid"
                                placeholder="Licence number">
                     </div>
-                    <div class="form-group col-xs-12">
+                    <div class="form-group">
                         <label for="fileCertification">Certification</label>
                         <input type="file" id="fileCertification" name="certification" class="form-control"
                                placeholder="Certification" >
                         <p class="help-block">Please upload your authenticatable thing (e.g. doctor's licence and etc.)</p>
                     </div>
-
-{#                    <div class="row" class="row-form-btns">#}
-                    <div class="col-xs-12">
-                        <div id="btn-physician-prev" class="col-xs-6 col-md-offset-2 col-md-4">
+                    <br/>
+                    <div class="row" class="row-form-btns">
+                        <div id="btn-physician-prev" class="col-xs-6 col-md-4">
                             <button class="btn btn-lg btn-primary btn-block" type="button">Prev</button>
                         </div>
-                        <div id="btn-physician-done" class="col-xs-6 col-md-4">
+                        <div id="btn-physician-done" class="col-xs-6 col-md-4 col-md-offset-4">
                             <button class="btn btn-lg btn-success btn-block" type="submit">Done</button>
                         </div>
                     </div>

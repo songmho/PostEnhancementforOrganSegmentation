@@ -8,57 +8,47 @@ $(document).ready(function () {
     $('#col-signup-detail-physician').hide();
     for(var country in country_arr){
         var opt = country_arr[country];
-        $('#selectCountry').append('<option value="' +opt+'">'+opt+'</option>');
+        $('#selectNationality').append('<option value="' +opt+'">'+opt+'</option>');
     }
 
-    //$('#inputId').blur(function (){
-    //    checkID();
-    //});
-    $('#btnCheckId').click(checkID);
+    $('#inputId').blur(function (){
+        checkID();
+    });
     $('#inputPw').blur(function (){
         checkPassword();
     });
     $('#inputPwConfirm').blur(function (){
         checkPasswordConfirm();
     });
-    $('#inputLastName').blur(function (){
-        checkLastName();
-    });
-    $('#inputFirstName').blur(function (){
-        checkFirstName();
+    $('#inputName').blur(function (){
+        checkName();
     });
     $('#inputMobile').blur(function (){
         checkPhone();
     });
-    //$('#inputEmail').blur(function (){
-    //    checkEmail();
-    //});
-    $('#btnCheckEmail').click(checkEmail);
-    $('#inputBirthdayMonth').blur(function (){
+    $('#inputEmail').blur(function (){
+        checkEmail();
+    });
+    $('#inputEmailConfirm').blur(function (){
+        checkEmailConfirm();
+    });
+    $('#inputBirthday').blur(function (){
         checkBirth();
-    });
-    $('#inputBirthdayDay').blur(function (){
-        checkBirth();
-    });
-    $('#inputBirthdayYear').blur(function (){
-        checkBirth();
-    });
-    $('#inputAddress').blur(function (){
-        checkAddress();
-    });
-    $('#inputCity').blur(function (){
-        checkCity();
     });
     $('#inputLicence').blur(function (){
         checkLicense();
     });
 
+    $('#inputBirthday').prop('max', function () {
+        return new Date().toJSON().split('T')[0];
+    });
     $('#btn-patient').click(function () {
         usertype = 'patient';
         $('#selectField').removeAttr('required');
         $('#inputLicence').removeAttr('required');
         $('#fileCertification').removeAttr('required');
         $('#selectGender').attr('required', '');
+        $('#inputAge').attr('required', '');
 
         $('#col-signup-usertype').hide();
         $('#col-signup-basic').show();
@@ -66,6 +56,7 @@ $(document).ready(function () {
     $('#btn-physician').click(function () {
         usertype = 'physician';
         $('#selectGender').removeAttr('required');
+        $('#inputAge').removeAttr('required');
         $('#selectField').attr('required', '');
         $('#inputLicence').attr('required', '');
         $('#fileCertification').attr('required', '');
@@ -85,7 +76,21 @@ $(document).ready(function () {
 
     $('#col-signup-basic').on('submit', function (e) {
         e.preventDefault();
-        checkAndSetStep3();
+
+        if(checkingIDUsed || checkingEmailUsed) {
+            $.LoadingOverlay('show');
+            var checkingIDInterval = setInterval(function() {
+                if(!checkingIDUsed && !checkingEmailUsed) {
+                    clearInterval(checkingIDInterval);
+                    checkingIDInterval = null;
+                    $.LoadingOverlay('hide');
+
+                    checkAndSetStep3();
+                }
+            }, 10);
+        } else {
+            checkAndSetStep3();
+        }
     });
 
     $('#btn-patient-prev').click(function () {
@@ -110,10 +115,8 @@ $(document).ready(function () {
 
 function checkAndSetStep3() {
     if (!checkIDUsed) {
-        openModal("Please check user ID.", "Signup");
         return;
     } else if (checkEmailUsed < 0) {
-        openModal("Please check email address.", "Signup");
         return;
     } else if (checkEmailUsed == 0) {
         var dlgMsg = 'This email is already used for ';
@@ -131,35 +134,9 @@ function checkAndSetStep3() {
 
 function setStep3() {
     var invalidElements = "";
-    if (!(checkIDFlag && checkPasswordFlag && checkPasswordConfirmFlag && checkFirstName && checkLastNameFlag &&
-        checkPhoneFlag && checkEmailFlag && checkBirthFlag && checkAddressFlag && checkCityFlag)) {
-
-        if (!checkFirstNameFlag) {
-            invalidElements += "FirstName";
-        }
-        if (!checkLastNameFlag) {
-            if (invalidElements == "")
-                invalidElements += "LastName";
-            else
-                invalidElements += ", LastName"
-        }
-        if (!checkBirth) {
-            if (invalidElements == "")
-                invalidElements += "Date of Birth";
-            else
-                invalidElements += ", Date of Birth";
-        }
-        if (!checkPhoneFlag) {
-            if (invalidElements == "")
-                invalidElements += "Phone #";
-            else
-                invalidElements += ", Phone #";
-        }
+    if (!(checkIDFlag && checkPasswordFlag && checkPasswordConfirmFlag && checkNameFlag && checkPhoneFlag && checkEmailFlag && checkEmailConfirmFlag)) {
         if (!checkIDFlag) {
-            if (invalidElements == "")
-                invalidElements += "ID";
-            else
-                invalidElements += ", ID";
+            invalidElements += "ID"
         }
         if (!checkPasswordFlag || !checkPasswordConfirmFlag) {
             if (invalidElements == "")
@@ -167,25 +144,25 @@ function setStep3() {
             else
                 invalidElements += ", Password"
         }
-        if (!checkEmailFlag) {
+        if (!checkNameFlag) {
+            if (invalidElements == "")
+                invalidElements += "Name";
+            else
+                invalidElements += ", Name"
+        }
+        if (!checkPhoneFlag) {
+            if (invalidElements == "")
+                invalidElements += "Phone Number";
+            else
+                invalidElements += ", Phone Number"
+        }
+        if (!checkEmailFlag || !checkEmailConfirmFlag) {
             if (invalidElements == "")
                 invalidElements += "E-mail";
             else
-                invalidElements += ", E-mail";
+                invalidElements += ", E-mail"
         }
-        if (!checkAddressFlag) {
-            if (invalidElements == "")
-                invalidElements += "Address";
-            else
-                invalidElements += ", Address";
-        }
-        if (!checkCityFlag) {
-            if (invalidElements == "")
-                invalidElements += "City";
-            else
-                invalidElements += ", City";
-        }
-        openModal("Please check these elements: " + invalidElements, "Warning");
+        openModal("Please check these elements;" + invalidElements, "Warning");
     }
     else {
         $('#col-signup-basic').hide();
@@ -205,6 +182,7 @@ function signup(usertype) {
             return
         }
         user['gender'] = $('#selectGender').val();
+        user['birthday'] = Date.parse($('#inputBirthday').val());
     } else if (usertype == 'physician') {
         if (!checkLicenseFlag) {
             openModal("Please check license.", "Warning");
@@ -215,17 +193,12 @@ function signup(usertype) {
         user['certificate_dir'] = 'here';
     }
     user['join_date'] = new Date().getTime();
-    user['first_name'] = $('#inputFirstName').val();
-    user['last_name'] = $('#inputLastName').val();
-    user['birthday'] = Date.parse(tempBirth);
-    user['phone_number'] = $('#inputMobile').val();
     user['user_id'] = $('#inputId').val();
     user['password'] = $('#inputPw').val();
+    user['name'] = $('#inputName').val();
+    user['phone_number'] = $('#inputMobile').val();
     user['email'] = $('#inputEmail').val();
-    user['address'] = $('#inputAddress').val();
-    user['city'] = $('#inputCity').val();
-    user['state'] = $('#inputState').val();
-    user['country'] = $('#selectCountry :selected').val();
+    user['nationality'] = $('#selectNationality :selected').val();
     user['user_type'] = usertype;
 
     $.LoadingOverlay('show');

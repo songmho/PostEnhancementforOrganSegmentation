@@ -32,8 +32,8 @@ body {
     position: relative;
     height: auto;
     -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
+         -moz-box-sizing: border-box;
+                    box-sizing: border-box;
     padding: 10px;
     font-size: 16px;
 }
@@ -45,61 +45,6 @@ body {
     font-size: 16px;
     height: 44px;
 }
-
-.form-signup .form-group label {
-    display: block;
-}
-.form-signup .form-control.form-control-left {
-    margin-right: 1%;
-    display: inline-block;
-}
-.form-signup .form-control.form-control-center {
-    margin-left: 1%;
-    margin-right: 1%;
-    display: inline-block;
-}
-.form-signup .form-control.form-control-right {
-    margin-left: 1%;
-    display: inline-block;
-}
-.form-signup .form-control.form-control-col-1 {
-    width: 8.3%
-}
-.form-signup .form-control.form-control-col-2 {
-    width: 16.7%
-}
-.form-signup .form-control.form-control-col-3 {
-    width: 25%
-}
-.form-signup .form-control.form-control-col-4 {
-    width: 33.3%
-}
-.form-signup .form-control.form-control-col-5 {
-    width: 41.7%
-}
-.form-signup .form-control.form-control-col-6 {
-    width: 50%
-}
-.form-signup .form-control.form-control-col-7 {
-    width: 58.3%
-}
-.form-signup .form-control.form-control-col-8 {
-    width: 67.7%
-}
-.form-signup .form-control.form-control-col-9 {
-    width: 75%
-}
-.form-signup .form-control.form-control-col-10 {
-    width: 83.3%
-}
-.form-signup .form-control.form-control-col-11 {
-    width: 91.7%
-}
-.form-signup .form-control.form-control-col-12 {
-    width: 100%
-}
-
-
 .form-signup #inputPw,
 .form-signup #inputEmail {
     margin-bottom: -1px;

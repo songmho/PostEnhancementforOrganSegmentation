@@ -229,7 +229,8 @@ def handle_user_mgt(request):
                 email = request.GET.get('email')
                 if not user_type or not email:
                     raise Exception(MSG_INVALID_PARAMS)
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'emailUsed': db.check_email(user_type, email)}))
+                return JsonResponse(dict(constants.CODE_SUCCESS,
+                                         **{'emailUsed': db.check_email(user_type, email)}))
 
             user_id = request.GET.get('user_id')
             if not user_id:
