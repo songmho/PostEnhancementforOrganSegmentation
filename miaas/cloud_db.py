@@ -248,16 +248,19 @@ class DbManager():
         user = {}
         with self.connector.cursor() as cursor:
             try:
-                db_query = "SELECT name, phone_number, email, user_type FROM user WHERE user_id=%s"
+                db_query = "SELECT first_name, last_name, phone_number, email, user_type " \
+                           "FROM user WHERE user_id=%s"
                 cursor.execute(db_query, user_id)
 
                 self.connector.commit()
                 row = cursor.fetchone()
                 user['user_id'] = user_id
-                user['name'] = row[0]
-                user['phone_number'] = row[1]
-                user['email'] = row[2]
-                user['user_type'] = row[3]
+                user['first_name'] = row[0]
+                user['last_name'] = row[1]
+                user['name'] = row[0] + ' ' + row[1]
+                user['phone_number'] = row[2]
+                user['email'] = row[3]
+                user['user_type'] = row[4]
 
             except Exception as e:
                 logger.exception(e)
@@ -1375,7 +1378,7 @@ class DbManager():
                            "JOIN miaas.medical_image m ON req.image_id = m.image_id " \
                            "WHERE req.request_id=%s"
 
-        db_query_response = "SELECT p.user_id, u.name, p.medicine_field, res.message  " \
+        db_query_response = "SELECT p.user_id, u.first_name, u.last_name, p.medicine_field, res.message  " \
                             "FROM response res " \
                             "JOIN physician p ON res.physician_id = p.user_id " \
                             "JOIN user u ON p.user_id = u.user_id " \
@@ -1404,9 +1407,9 @@ class DbManager():
                 for row in cursor:
                     response = {}
                     response['physician_id'] = row[0]
-                    response['physician_name'] = row[1]
-                    response['medicine_filed'] = row[2]
-                    response['response_message'] = row[3]
+                    response['physician_name'] = row[1] + ' ' + row[2]
+                    response['medicine_filed'] = row[3]
+                    response['response_message'] = row[4]
                     responses.append(response)
             except Exception as e:
                 logger.exception(e)
@@ -1501,8 +1504,9 @@ class DbManager():
     def retrieve_request_info(self, request_id):
         request_detail = {}
         db_query_request = "SELECT req.request_id, req.subject, req.message, m.subject, m.image_type, " \
-                           "m.timestamp, m.taken_from, m.physician, m.place, m.description, req.status, req.level, m.user_id, m.image_id, " \
-                           "u.name, u.phone_number, u.email " \
+                           "m.timestamp, m.taken_from, m.physician, m.place, m.description, " \
+                           "req.status, req.level, m.user_id, m.image_id, " \
+                           "u.first_name, u.last_name, u.phone_number, u.email " \
                            "FROM miaas.request req " \
                            "JOIN miaas.medical_image m ON req.image_id = m.image_id " \
                            "JOIN miaas.user u ON m.user_id = u.user_id " \
@@ -1527,9 +1531,9 @@ class DbManager():
                     request_detail['level'] = row[11]
                     request_detail['patient_id'] = row[12]
                     request_detail['image_id'] = row[13]
-                    request_detail['name'] = row[14]
-                    request_detail['phone_number'] = row[15]
-                    request_detail['email'] = row[16]
+                    request_detail['name'] = row[14] + ' ' + row[15]
+                    request_detail['phone_number'] = row[16]
+                    request_detail['email'] = row[17]
 
             except Exception as e:
                 logger.exception(e)
@@ -1540,7 +1544,7 @@ class DbManager():
     # KH
     def retrieve_interpretation_detail(self, intpr_id):
         intpr_detail = {}
-        db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.name, req.level, intpr.summary, " \
+        db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.first_name, u.last_name, req.level, intpr.summary, " \
                    "intpr.suspected_disease, intpr.opinion, intpr.recommendation, " \
                    "m.subject, m.image_type, m.timestamp, m.medical_department, " \
                    "m.taken_from, m.physician, m.place, m.description, req.subject, req.message, m.image_id " \
@@ -1558,23 +1562,23 @@ class DbManager():
                 for row in cursor:
                     intpr_detail['intpr_id'] = row[0]
                     intpr_detail['physician_id'] = row[1]
-                    intpr_detail['physician_name'] = row[2]
-                    intpr_detail['level'] = row[3]
-                    intpr_detail['summary'] = row[4]
-                    intpr_detail['suspected_disease'] = row[5]
-                    intpr_detail['opinion'] = row[6]
-                    intpr_detail['recommendation'] = row[7]
-                    intpr_detail['image_subject'] = row[8]
-                    intpr_detail['image_type'] = row[9]
-                    intpr_detail['image_date'] = row[10]
-                    intpr_detail['medical_department'] = row[11]
-                    intpr_detail['taken_from'] = row[12]
-                    intpr_detail['physician'] = row[13]
-                    intpr_detail['place'] = row[14]
-                    intpr_detail['description'] = row[15]
-                    intpr_detail['request_subject'] = row[16]
-                    intpr_detail['request_message'] = row[17]
-                    intpr_detail['image_id'] = row[18]
+                    intpr_detail['physician_name'] = row[2] + ' ' + row[3]
+                    intpr_detail['level'] = row[4]
+                    intpr_detail['summary'] = row[5]
+                    intpr_detail['suspected_disease'] = row[6]
+                    intpr_detail['opinion'] = row[7]
+                    intpr_detail['recommendation'] = row[8]
+                    intpr_detail['image_subject'] = row[9]
+                    intpr_detail['image_type'] = row[10]
+                    intpr_detail['image_date'] = row[11]
+                    intpr_detail['medical_department'] = row[12]
+                    intpr_detail['taken_from'] = row[13]
+                    intpr_detail['physician'] = row[14]
+                    intpr_detail['place'] = row[15]
+                    intpr_detail['description'] = row[16]
+                    intpr_detail['request_subject'] = row[17]
+                    intpr_detail['request_message'] = row[18]
+                    intpr_detail['image_id'] = row[19]
             except Exception as e:
                 logger.exception(e)
                 raise Exception("retrieve_interpretation_detail Error" + e.message)
@@ -1584,7 +1588,7 @@ class DbManager():
     # KH
     def retrieve_physician_interpretation_detail(self, intpr_id):
         intpr_detail = {}
-        db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.name, req.level, intpr.summary, " \
+        db_query = "SELECT intpr.intpr_id, intpr.physician_id, u.first_name, u.last_name, req.level, intpr.summary, " \
                    "intpr.suspected_disease, intpr.opinion, intpr.recommendation, " \
                    "m.subject, m.image_type, m.timestamp, m.medical_department, " \
                    "m.taken_from, m.physician, m.place, m.description, req.subject, req.message, m.image_id, " \
@@ -1604,27 +1608,27 @@ class DbManager():
                 for row in cursor:
                     intpr_detail['intpr_id'] = row[0]
                     intpr_detail['physician_id'] = row[1]
-                    intpr_detail['physician_name'] = row[2]
-                    intpr_detail['level'] = row[3]
-                    intpr_detail['summary'] = row[4]
-                    intpr_detail['suspected_disease'] = row[5]
-                    intpr_detail['opinion'] = row[6]
-                    intpr_detail['recommendation'] = row[7]
-                    intpr_detail['image_subject'] = row[8]
-                    intpr_detail['image_type'] = row[9]
-                    intpr_detail['image_date'] = row[10]
-                    intpr_detail['medical_department'] = row[11]
-                    intpr_detail['taken_from'] = row[12]
-                    intpr_detail['physician'] = row[13]
-                    intpr_detail['place'] = row[14]
-                    intpr_detail['description'] = row[15]
-                    intpr_detail['request_subject'] = row[16]
-                    intpr_detail['request_message'] = row[17]
-                    intpr_detail['image_id'] = row[18]
-                    intpr_detail['patient_id'] = row[19]
-                    intpr_detail['name'] = row[20]
-                    intpr_detail['email'] = row[21]
-                    intpr_detail['phone_number'] = row[22]
+                    intpr_detail['physician_name'] = row[2] + ' ' + row[3]
+                    intpr_detail['level'] = row[4]
+                    intpr_detail['summary'] = row[5]
+                    intpr_detail['suspected_disease'] = row[6]
+                    intpr_detail['opinion'] = row[7]
+                    intpr_detail['recommendation'] = row[8]
+                    intpr_detail['image_subject'] = row[9]
+                    intpr_detail['image_type'] = row[10]
+                    intpr_detail['image_date'] = row[11]
+                    intpr_detail['medical_department'] = row[12]
+                    intpr_detail['taken_from'] = row[13]
+                    intpr_detail['physician'] = row[14]
+                    intpr_detail['place'] = row[15]
+                    intpr_detail['description'] = row[16]
+                    intpr_detail['request_subject'] = row[17]
+                    intpr_detail['request_message'] = row[18]
+                    intpr_detail['image_id'] = row[19]
+                    intpr_detail['patient_id'] = row[20]
+                    intpr_detail['name'] = row[21]
+                    intpr_detail['email'] = row[22]
+                    intpr_detail['phone_number'] = row[23]
             except Exception as e:
                 logger.exception(e)
                 raise Exception("retrieve_physician_interpretation_detail Error" + e.message)
