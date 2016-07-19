@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MIAAS - Email Authentication Request</title>
+    <style>
+        html { font-family: sans-serif; }
+        body { padding: 12px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 16px;}
+        h2 { font-size: 30px; color:#d76474; font-weight:300; }
+        h4 { font-size: 22px; font-weight:500; margin-bottom: 0.6em; }
+        b { font-weight: bold; color:#d76474 }
+        a { color: #d76474; text-decoration: none; }
+        a:hover { color: #b52f42; }
+        .row.auth-footer { font-size: 12px; color:#aaaaaa; border-top: solid 1px #cccccc; }
+        .btn {
+            min-width: 200px;
+            color: #ffffff;
+            background-color: #d76474;
+            border: 1px solid #d25062;
+            padding: 10px 16px;
+            font-size: 18px;
+            line-height: 1.3333333;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: normal;
+            text-align: center;
+            vertical-align: middle;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            cursor: pointer;
+            white-space: nowrap;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .btn:hover {
+            color: #ffffff;
+            background-color: #d25062;
+        }
+    </style>
+</head>
+<body>
+    <div class="row auth-title">
+        <div class="col-xs-12">
+            <h2>MIAAS Email Authentication</h2>
+        </div>
+    </div>
+    <div class="row auth-content">
+        <div class="col-xs-12" id="col-signup-usertype">
+            <h4>Welcome to MIAAS!</h4>
+            <p>Thanks for registering at MIAAS! We are glad you have chosen to be a part of our service and we hope you satisfy the service.</p>
+            <h4>Email Authentication</h4>
+            <p>
+                Verity that you own <b>{{ user.email }}</b>.<br/>
+            </p>
+            <a id="btn-confirm" href="{{ auth_link }}" class="btn">Confirm</a>
+        </div>
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <div class="row auth-footer">
+        <p>
+            This message was sent to <a>{{ user.email }}</a>. If you didn't create a MIAAS account using this email address, <a>please let us know</a>.<br/>
+            Smartylab Corporation, Seoul, Korea
+        </p>
+    </div>
+</body>
+</html>
