@@ -131,7 +131,7 @@ function checkAndSetStep3() {
 
 function setStep3() {
     var invalidElements = "";
-    if (!(checkIDFlag && checkPasswordFlag && checkPasswordConfirmFlag && checkFirstName && checkLastNameFlag &&
+    if (!(checkIDFlag && checkPasswordFlag && checkPasswordConfirmFlag && checkFirstNameFlag && checkLastNameFlag &&
         checkPhoneFlag && checkEmailFlag && checkBirthFlag && checkAddressFlag && checkCityFlag)) {
 
         if (!checkFirstNameFlag) {
@@ -200,10 +200,6 @@ function setStep3() {
 function signup(usertype) {
     var user = {};
     if (usertype == 'patient') {
-        if (!checkBirthFlag) {
-            openModal("Please check birthday.", "Warning");
-            return
-        }
         user['gender'] = $('#selectGender').val();
     } else if (usertype == 'physician') {
         if (!checkLicenseFlag) {

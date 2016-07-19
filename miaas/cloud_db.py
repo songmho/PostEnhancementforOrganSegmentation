@@ -406,6 +406,7 @@ class DbManager():
         return user
 
     def update_patient(self, user):
+        if_updated = False
         with self.connector.cursor() as cursor:
             try:
                 p = user

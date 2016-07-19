@@ -387,6 +387,10 @@ a:focus {
         position: relative;
     }
 
+    .col-md-offset-right-6 {
+        margin-right: 50% !important;
+    }
+
     .row.form-container.form-boxed {
         position: relative;
     }

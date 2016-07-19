@@ -5,55 +5,74 @@
 $(document).ready(function () {
     checkPasswordFlag = true;
     checkPasswordConfirmFlag = true;
-    checkNameFlag = true;
+    checkFirstNameFlag = true;
+    checkLastNameFlag = true;
     checkPhoneFlag = true;
     checkEmailFlag = true;
-    checkEmailConfirmFlag = true;
+    checkEmailUsed = 1;
     checkBirthFlag = true;
     checkLicenseFlag = true;
-    checkEmailUsed = 1;
 
-    var selectNationality = $('#selectNationality');
+    var selectCountry = $('#selectCountry');
     for (var country in country_arr) {
         var opt = country_arr[country];
-        selectNationality.append('<option value="' + opt + '">' + opt + '</option>');
+        selectCountry.append('<option value="' + opt + '">' + opt + '</option>');
     }
-    selectNationality.val(user['nationality']);
+    selectCountry.val(user['country']);
     $('#inputPw').blur(function () {
         checkPassword();
     });
     $('#inputPwConfirm').blur(function () {
         checkPasswordConfirm();
     });
-    $('#inputName').blur(function () {
-        checkName();
+    $('#inputFirstName').blur(function () {
+        checkFirstName();
+    });
+    $('#inputLastName').blur(function () {
+        checkLastName();
     });
     $('#inputMobile').blur(function () {
         checkPhone();
     });
-    $('#inputEmail').blur(function () {
-        checkEmail();
-    });
-    $('#inputEmailConfirm').blur(function (){
-        checkEmailConfirm();
-    });
-    $('#inputBirthday').blur(function () {
+    //$('#inputEmail').blur(function () {
+    //    checkEmail();
+    //});
+    $('#inputBirthdayMonth').blur(function (){
         checkBirth();
+    });
+    $('#inputBirthdayDay').blur(function (){
+        checkBirth();
+    });
+    $('#inputBirthdayYear').blur(function (){
+        checkBirth();
+    });
+    $('#inputAddress').blur(function (){
+        checkAddress();
+    });
+    $('#inputCity').blur(function (){
+        checkCity();
     });
     $('#inputLicence').blur(function () {
         checkLicense();
     });
 
-    console.log(user);
+    if (user.birthday != undefined && user.birthday != null && user.birthday != 0) {
+        var birthdayDate = new Date(user.birthday);
+        var month = birthdayDate.getMonth() + 1;
+        var day = birthdayDate.getDate();
+        var year = birthdayDate.getYear() + 1900;
+
+        $('#inputBirthdayMonth').val(month);
+        $('#inputBirthdayDay').val(day);
+        $('#inputBirthdayYear').val(year);
+        var bmonth = month < 10 ? '0' + month : month;
+        var bday = day < 10 ? '0' + day : day;
+        var birthday = year + '-' + bmonth + '-' + bday;
+        tempBirth = birthday;
+    }
 
     if (user.user_type == 'patient') {
         $("#selectGender").val(user.gender).attr("selected", "selected");
-        var inputBirthday = $('#inputBirthday');
-        inputBirthday.val(new Date(user.birthday).format("yyyy-MM-dd"));
-        inputBirthday.prop('max', function () {
-            return new Date().toJSON().split('T')[0];
-        });
-
     } else if (user.user_type = 'physician') {
         $("#selectField").val(user.medicine_field).attr("selected", "selected");
         //certification
@@ -78,19 +97,8 @@ $(document).ready(function () {
         $('#inputPw').attr('required', '');
         $('#inputPwConfirm').attr('required', '');
 
-        if(checkingEmailUsed) {
-            $.LoadingOverlay('show');
-            var checkingEmailInterval = setInterval(function() {
-                if(!checkingEmailUsed) {
-                    clearInterval(checkingEmailInterval);
-                    checkingEmailInterval = null;
-                    $.LoadingOverlay('hide');
-                    checkFormEmail();
-                }
-            }, 10);
-        } else {
-            checkFormEmail();
-        }
+
+        checkFormEmail();
     });
 
     $('#btnAccountEmailOK').click(function() {
@@ -117,32 +125,55 @@ function checkFormEmail() {
 
 function checkForm() {
     var invalidElements = "";
-    if (!(checkPasswordFlag && checkPasswordConfirmFlag && checkNameFlag && checkPhoneFlag && checkEmailFlag && checkEmailConfirmFlag)) {
+    if (!(checkPasswordFlag && checkPasswordConfirmFlag && checkFirstNameFlag && checkLastNameFlag &&
+        checkPhoneFlag && checkEmailFlag && checkBirthFlag && checkAddressFlag && checkCityFlag)) {
+
+        if (!checkFirstNameFlag) {
+            invalidElements += "FirstName";
+        }
+        if (!checkLastNameFlag) {
+            if (invalidElements == "")
+                invalidElements += "LastName";
+            else
+                invalidElements += ", LastName"
+        }
+        if (!checkBirth) {
+            if (invalidElements == "")
+                invalidElements += "Date of Birth";
+            else
+                invalidElements += ", Date of Birth";
+        }
+        if (!checkPhoneFlag) {
+            if (invalidElements == "")
+                invalidElements += "Phone #";
+            else
+                invalidElements += ", Phone #";
+        }
         if (!checkPasswordFlag || !checkPasswordConfirmFlag) {
             if (invalidElements == "")
                 invalidElements += "Password";
             else
                 invalidElements += ", Password"
         }
-        if (!checkNameFlag) {
-            if (invalidElements == "")
-                invalidElements += "Name";
-            else
-                invalidElements += ", Name"
-        }
-        if (!checkPhoneFlag) {
-            if (invalidElements == "")
-                invalidElements += "Phone Number";
-            else
-                invalidElements += ", Phone Number"
-            }
-        if (!checkEmailFlag || !checkEmailConfirmFlag) {
+        if (!checkEmailFlag) {
             if (invalidElements == "")
                 invalidElements += "E-mail";
             else
-                invalidElements += ", E-mail"
+                invalidElements += ", E-mail";
         }
-        openModal("Please check these elements;" + invalidElements, "Account Update Fail");
+        if (!checkAddressFlag) {
+            if (invalidElements == "")
+                invalidElements += "Address";
+            else
+                invalidElements += ", Address";
+        }
+        if (!checkCityFlag) {
+            if (invalidElements == "")
+                invalidElements += "City";
+            else
+                invalidElements += ", City";
+        }
+        openModal("Please check these elements: " + invalidElements, "Account Update Fail");
     } else {
         updateUser();
     }
@@ -153,7 +184,6 @@ function updateUser() {
     updatingUser = {};
     if (user.user_type == 'patient') {
         updatingUser['gender'] = $('#selectGender').val();
-        updatingUser['birthday'] = Date.parse($('#inputBirthday').val())
 
     } else if (user.user_type == 'physician') {
         updatingUser['medicine_field'] = $('#selectField').val();
@@ -165,10 +195,15 @@ function updateUser() {
     updatingUser['password'] = $('#inputPw').val();
     if (updatingUser['password']==undefined || updatingUser['password']==null || updatingUser['password']=='')
         updatingUser['password'] = user['password'];
-    updatingUser['name'] = $('#inputName').val();
+    updatingUser['first_name'] = $('#inputFirstName').val();
+    updatingUser['last_name'] = $('#inputLastName').val();
+    updatingUser['birthday'] = Date.parse(tempBirth);
     updatingUser['phone_number'] = $('#inputMobile').val();
     updatingUser['email'] = $('#inputEmail').val();
-    updatingUser['nationality'] = $('#selectNationality :selected').val();
+    updatingUser['address'] = $('#inputAddress').val();
+    updatingUser['city'] = $('#inputCity').val();
+    updatingUser['state'] = $('#inputState').val();
+    updatingUser['country'] = $('#selectCountry :selected').val();
     updatingUser['user_type'] = user.user_type;
 
     $.LoadingOverlay('show');
@@ -202,15 +237,18 @@ function updateUser() {
 function resetUser() {
     checkPasswordFlag = true;
     checkPasswordConfirmFlag = true;
-    checkNameFlag = true;
+    checkFirstNameFlag = true;
+    checkLastNameFlag = true;
     checkPhoneFlag = true;
     checkEmailFlag = true;
-    checkEmailConfirmFlag = true;
+    checkEmailUsed = 1;
     checkBirthFlag = true;
     checkLicenseFlag = true;
 
-    $('#inputName').val(user.name);
-    $('#inputName').css("border-color", "");
+    $('#inputFirstName').val(user.first_name);
+    $('#inputFirstName').css("border-color", "");
+    $('#inputLastName').val(user.last_name);
+    $('#inputLastName').css("border-color", "");
     $('#inputPw').val('');
     $('#inputPw').css("border-color", "");
     $('#inputPwConfirm').val('');
@@ -219,12 +257,31 @@ function resetUser() {
     $('#inputMobile').css("border-color", "");
     $('#inputEmail').val(user.email);
     $('#inputEmail').css("border-color", "");
-    $('#selectNationality').val(user['nationality']);
+    $('#inputAddress').val(user.address);
+    $('#inputCity').val(user.city);
+    $('#inputState').val(user.state);
+    $('#selectCountry').val(user['country']);
+
+    if (user.birthday != undefined && user.birthday != null && user.birthday != 0) {
+        var birthdayDate = new Date(user.birthday);
+        var month = birthdayDate.getMonth() + 1;
+        var day = birthdayDate.getDate();
+        var year = birthdayDate.getYear() + 1900;
+
+        $('#inputBirthdayMonth').val(month);
+        $('#inputBirthdayMonth').css("border-color", "");
+        $('#inputBirthdayDay').val(day);
+        $('#inputBirthdayDay').css("border-color", "");
+        $('#inputBirthdayYear').val(year);
+        $('#inputBirthdayYear').css("border-color", "");
+        var bmonth = month < 10 ? '0' + month : month;
+        var bday = day < 10 ? '0' + day : day;
+        var birthday = year + '-' + bmonth + '-' + bday;
+        tempBirth = birthday;
+    }
 
     if (user.user_type == 'patient') {
         $("#selectGender").val(user.gender).attr("selected", "selected");
-        $('#inputBirthday').val(new Date(user.birthday).format("yyyy-MM-dd"));
-        $('#inputBirthday').css("border-color", "");
     } else if (user.user_type == 'physician') {
         $("#selectField").val(user.medicine_field).attr("selected", "selected");
         $('#inputLicence').val(user.license_number);
