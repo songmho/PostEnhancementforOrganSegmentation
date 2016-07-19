@@ -163,7 +163,8 @@ EMAIL_HOST_PASSWORD = 'ssel0909'
 EMAIL_DEFAULT_FROM = EMAIL_HOST_USER
 
 
-DOMAIN_ADDRESS = 'http://localhost:8000'
+# DOMAIN_ADDRESS = 'http://localhost:8000'
+DOMAIN_ADDRESS = 'http://203.253.23.43'
 
 
 # Static files (CSS, JavaScript, Images)
