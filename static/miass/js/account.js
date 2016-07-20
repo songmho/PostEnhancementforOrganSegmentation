@@ -12,6 +12,8 @@ $(document).ready(function () {
     checkEmailUsed = 1;
     checkBirthFlag = true;
     checkLicenseFlag = true;
+    checkAddressFlag = true;
+    checkCityFlag = true;
 
     var selectCountry = $('#selectCountry');
     for (var country in country_arr) {
@@ -85,17 +87,17 @@ $(document).ready(function () {
     $('#btnUpdateAccount').click(function() {
         console.log('btn account clicked');
 
-        if($('#inputPw').val()=='' && $('#inputPwConfirm').val()=='') {
-            $('#inputPw').removeAttr('required');
-            $('#inputPwConfirm').removeAttr('required');
-        }
+        //if($('#inputPw').val()=='' && $('#inputPwConfirm').val()=='') {
+        //    $('#inputPw').removeAttr('required');
+        //    $('#inputPwConfirm').removeAttr('required');
+        //}
     });
 
     $('#accountForm').on('submit', function (e) {
         console.log('account submit');
         e.preventDefault();
-        $('#inputPw').attr('required', '');
-        $('#inputPwConfirm').attr('required', '');
+        //$('#inputPw').attr('required', '');
+        //$('#inputPwConfirm').attr('required', '');
 
 
         checkFormEmail();
@@ -173,7 +175,7 @@ function checkForm() {
             else
                 invalidElements += ", City";
         }
-        openModal("Please check these elements: " + invalidElements, "Account Update Fail");
+        openModal("Please check these information: " + invalidElements, "Account Update Fail");
     } else {
         updateUser();
     }
@@ -244,6 +246,8 @@ function resetUser() {
     checkEmailUsed = 1;
     checkBirthFlag = true;
     checkLicenseFlag = true;
+    checkAddressFlag = true;
+    checkCityFlag = true;
 
     $('#inputFirstName').val(user.first_name);
     $('#inputFirstName').css("border-color", "");

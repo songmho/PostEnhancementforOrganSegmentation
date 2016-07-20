@@ -55,19 +55,19 @@ $(document).ready(function () {
 
     $('#btn-patient').click(function () {
         usertype = 'patient';
-        $('#selectField').removeAttr('required');
-        $('#inputLicence').removeAttr('required');
+        //$('#selectField').removeAttr('required');
+        //$('#inputLicence').removeAttr('required');
         $('#fileCertification').removeAttr('required');
-        $('#selectGender').attr('required', '');
+        //$('#selectGender').attr('required', '');
 
         $('#col-signup-usertype').hide();
         $('#col-signup-basic').show();
     });
     $('#btn-physician').click(function () {
         usertype = 'physician';
-        $('#selectGender').removeAttr('required');
-        $('#selectField').attr('required', '');
-        $('#inputLicence').attr('required', '');
+        //$('#selectGender').removeAttr('required');
+        //$('#selectField').attr('required', '');
+        //$('#inputLicence').attr('required', '');
         $('#fileCertification').attr('required', '');
         $('#col-signup-usertype').hide();
         $('#col-signup-basic').show();
@@ -185,7 +185,7 @@ function setStep3() {
             else
                 invalidElements += ", City";
         }
-        openModal("Please check these elements: " + invalidElements, "Warning");
+        openModal("Please check these information: " + invalidElements, "Warning");
     }
     else {
         $('#col-signup-basic').hide();

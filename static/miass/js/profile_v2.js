@@ -14,7 +14,6 @@ $(document).ready(function () {
         dataType: 'json',
         success: function (res) {
             $.LoadingOverlay('hide');
-            //console.log(JSON.stringify(res));
             if (res['code'] == 'SUCCESS') {
                 profiles = res['profiles'];
                 if (profiles['detail'] != undefined && profiles['detail'] != null &&
@@ -70,7 +69,7 @@ $(document).ready(function () {
 
     /*** for detailed profile tables ***/
     $('#btn-add-pmh-record').click(function () {
-        addRow($('#table-pmh'), $('#info-phm'))
+        addRow($('#table-pmh'), $('#info-phm'));
     });
 
     $('#btn-add-ed-record').click(function () {
@@ -188,6 +187,7 @@ function addRow(table, info, f) {
         }
     });
     newEntry.find('input, .table-fmh-history').addClass('profile-required');
+    //newEntry.find('td-profile-val-unit > input, ')
     newEntry.find('.td-profile-val-unit').each(function(index, elem) {
         var td = $(elem);
         setValueCheckerForTD(td);
@@ -310,6 +310,9 @@ function resetProfile() {
     //console.log(profiles);
     var keys = Object.keys(profiles);
     keys.forEach(function(key) {
+        if (profiles[key] == undefined || profiles[key] == null || !/\S/.test(profiles[key]))
+            return;
+
         if (key == "height") {
             console.log(profiles[key]);
             var height = profiles[key].split(" ");
@@ -434,25 +437,28 @@ function updateProfile() {
     $('#patientProfileBasicForm input, #patientProfileBasicForm textarea').each(function () {
         var id = $(this).attr('id');
         var value = $(this).val();
-        var key;
 
         if (value == undefined || value == null || value == '' || value == ' '
                 || !/\S/.test(value)) {
+            newProfiles[id] = null;
             return;
+        } else {
+
         }
 
-        key = id;
         if (id == "height") {
             value = value + ' ' + $('#heightType').val()
         } else if (id == "weight") {
             value = value + ' ' + $('#weightType').val()
         }
 
-        newProfiles[key] = value;
+        newProfiles[id] = value;
     });
     var smoking = $('#smoking');
     if (smoking.val() != undefined && smoking.val() != null && smoking.val() != "") {
         newProfiles['smoking'] = smoking.val();
+    } else {
+        newProfiles['smoking'] = null;
     }
 
     var detailedProfiles = getDetailedProfiles();
@@ -471,6 +477,7 @@ function updateProfile() {
     console.log(newProfiles);
 
     $.LoadingOverlay('show');
+    console.log(newProfiles);
     $.ajax("/api/patient_profile", {
         method: 'POST',
         data: JSON.stringify({
@@ -588,6 +595,10 @@ function getDetailedProfiles() {
 }
 
 function setDetailedProfiles(detailedProfile) {
+    if (detailedProfile == undefined || detailedProfile == null)
+        return;
+
+    if (detailedProfile['pmh'] != null)
     for (var i=0; i<detailedProfile['pmh'].length; i++) {
         var item = detailedProfile['pmh'][i];
         var row = addRow($('#table-pmh'), $('#info-phm'));
@@ -597,6 +608,7 @@ function setDetailedProfiles(detailedProfile) {
         row.find('.table-pmh-comment').val(item['comment']);
     }
 
+    if (detailedProfile['ed'] != null)
     for (var i=0; i<detailedProfile['ed'].length; i++) {
         var item = detailedProfile['ed'][i];
         var row = addRow($('#table-ed'), $('#info-ed'));
@@ -609,6 +621,7 @@ function setDetailedProfiles(detailedProfile) {
 
     }
 
+    if (detailedProfile['sd'] != null)
     for (var i=0; i<detailedProfile['sd'].length; i++) {
         var item = detailedProfile['sd'][i];
         var row = addRow($('#table-sd'), $('#info-sd'), addSDOptionFunc);
@@ -653,6 +666,7 @@ function setDetailedProfiles(detailedProfile) {
         }
     }
 
+    if (detailedProfile['med'] != null)
     for (var i=0; i<detailedProfile['med'].length; i++) {
         var item = detailedProfile['med'][i];
         var row = addRow($('#table-m'), $('#info-m'));
@@ -670,6 +684,7 @@ function setDetailedProfiles(detailedProfile) {
         row.find('.table-m-comment').val(item['comment']);
     }
 
+    if (detailedProfile['fmh'] != null)
     for (var i=0; i<detailedProfile['fmh'].length; i++) {
         var item = detailedProfile['fmh'][i];
         var row = addRow($('#table-fmh'), $('#info-fmh'));
@@ -677,6 +692,7 @@ function setDetailedProfiles(detailedProfile) {
         row.find('.table-fmh-history').val(item['history']);
     }
 
+    if (detailedProfile['alg'] != null)
     for (var i=0; i<detailedProfile['alg'].length; i++) {
         var item = detailedProfile['alg'][i];
         var row = addRow($('#table-a'), $('#info-a'));

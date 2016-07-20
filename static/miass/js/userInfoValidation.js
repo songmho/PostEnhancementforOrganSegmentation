@@ -62,6 +62,7 @@ function checkID() {
 }
 
 var checkPasswordFlag = false;
+var checkPasswordConfirmFlag = false;
 var tempPassword = "";
 function checkPassword() {
     var inputPw = $('#inputPw');
@@ -70,20 +71,25 @@ function checkPassword() {
         checkPasswordFlag = true;
         inputPw.css("border-color", "");
         tempPassword = "";
+        if($('#inputPwConfirm').val() == "") {
+            checkPasswordConfirmFlag = true;
+            $('#inputPwConfirm').css("border-color", "red");
+        }
     } else {
         if ((tempPassword == inputPw.val() || inputPw.val().length == 0) && checkPasswordFlag) {
-            return
+            return;
         }
         else {
             tempPassword = inputPw.val();
             checkPasswordFlag = false;
         }
+
         if (inputPw.val().length < 4) {
             checkPasswordFlag = false;
             inputPw.css("border-color", "red");
             inputPw.popover({
                 title: "Warning",
-                content: "The length of Password is larger than 4.",
+                content: "The length of Password is greater than 4.",
                 placement: "bottom",
                 trigger: "manual"
             });
@@ -98,19 +104,28 @@ function checkPassword() {
         }
     }
 
-    if($('#inputPwConfirm').val() != '') {
-        checkPasswordConfirm();
+    if(isAccountPage) {
+        checkPasswordConfirmFlag = false;
+        if($('#inputPwConfirm').val() != '') {
+            $('#inputPwConfirm').css("border-color", "red");
+            checkPasswordConfirm();
+        }
+    } else {
+        if($('#inputPwConfirm').val() != '') {
+            checkPasswordConfirm();
+        }
     }
 }
-var checkPasswordConfirmFlag = false;
+
 function checkPasswordConfirm() {
+    console.log('psconfirm');
     var inputPwConfrim = $('#inputPwConfirm');
     if ($('#inputPw').val() != inputPwConfrim.val()) {
         checkPasswordConfirmFlag = false;
         inputPwConfrim.css("border-color", "red");
         inputPwConfrim.popover({
             title: "Warning",
-            content: "Passwords are Different.",
+            content: "Confirm Password does not match Password.",
             placement: "bottom",
             trigger: "manual"
         });
@@ -198,7 +213,9 @@ var checkPhoneFlag = false;
 var tempPhone = "";
 function checkPhone() {
     var inputMobile = $('#inputMobile');
-    var phoneRe = /^[0-9]{4,17}$/;
+    //var phoneRe = /^[0-9]{4,17}$/;
+    var phoneRe = /^\+[0-9]{1,3}\-[0-9]{4,14}?$/g;
+
     if ((tempPhone == inputMobile.val() || inputMobile.val().length == 0) && checkPhoneFlag)
         return;
 
@@ -206,11 +223,11 @@ function checkPhone() {
         tempPhone = inputMobile.val();
         checkPhoneFlag = false;
     }
-    if (inputMobile.val().length < 4) {
+    /*if (inputMobile.val().length < 4) {
         inputMobile.css("border-color", "red");
         inputMobile.popover({
             title: "Warning",
-            content: "The length of phone number is larger than 4.",
+            content: "The length of phone number is greater than 4.",
             placement: "bottom",
             trigger: "manual"
         });
@@ -219,18 +236,19 @@ function checkPhone() {
             inputMobile.popover('destroy');
         }, 3000);
     }
-    else if (!inputMobile.val().match(phoneRe)) {
+    else */if (!inputMobile.val().match(phoneRe)) {
         inputMobile.css("border-color", "red");
         inputMobile.popover({
             title: "Warning",
-            content: "Only digits are allowed.",
+            content: "The style of phone number is EPP-style. It use the format <br/>+CCC-NNNNNNNN, where C is the 1-3 digit country code, N is up to 14 digits.<br/><br/>For Example )<br/>+1-4108889999<br/>+82-1088889999",
             placement: "bottom",
-            trigger: "manual"
+            trigger: "manual",
+            html: true
         });
         inputMobile.popover("show");
         setTimeout(function () {
             inputMobile.popover('destroy');
-        }, 3000);
+        }, 10000);
     }
     else {
         checkPhoneFlag = true;
@@ -254,6 +272,7 @@ function checkEmail() {
     if (!inputEmail.val().match(emailRe)) {
         inputEmail.css("border-color", "red");
         openModal("The form of e-mail address is xxxx@xxxx.xxx", 'Email Check');
+        return;
     }
     else {
         checkEmailFlag = true;
@@ -427,7 +446,7 @@ function checkBirth() {
     }
 }
 
-var checkLicenseFlag = true;
+var checkLicenseFlag = false;
 var tempLicense = "";
 function checkLicense() {
     var inputLicense = $('#inputLicence');
@@ -460,10 +479,10 @@ function checkLicense() {
 
 var checkAddressFlag = true;
 function checkAddress() {
-    checkAddressFlag = /\S/.test($('#inputAddress').val());
+    //checkAddressFlag = /\S/.test($('#inputAddress').val());
 }
 
 var checkCityFlag = true;
 function checkCity() {
-    checkCityFlag = /\S/.test($('#inputCity').val());
+    //checkCityFlag = /\S/.test($('#inputCity').val());
 }

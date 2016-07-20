@@ -455,7 +455,6 @@ class DbManager():
         if_basic_updated = False
 
         logger.info(profiles)
-
         db_query = "INSERT INTO patient_profile_basic " \
                    "(user_id, height, weight, drinkingCapacity, drinkingFrequency, " \
                    "sleeping, exercise, smoking, water) " \

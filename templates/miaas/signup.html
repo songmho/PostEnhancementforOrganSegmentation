@@ -28,18 +28,18 @@
                     <h2 class="text-primary text-center">Enter personal information.</h2>
                     <br/>
                     <div class="form-group col-xs-12 col-sm-6">
-                        <label for="inputFirstName" >First Name</label>
+                        <label for="inputFirstName" >First Name *</label>
                         <input type="text" id="inputFirstName" name="inputFirstName" maxlength="40" class="form-control valid"
                                placeholder="First Name">
                     </div>
                     <div class="form-group col-xs-12 col-sm-6">
-                        <label for="inputLastName" >Last Name</label>
+                        <label for="inputLastName" >Last Name *</label>
                         <input type="text" id="inputLastName" name="inputLastName" maxlength="40" class="form-control valid"
                                placeholder="Last Name">
                     </div>
 
                     <div class="form-group col-xs-12 col-sm-6">
-                        <label for="inputBirthdayYear" >Date of Birth</label>
+                        <label for="inputBirthdayYear" >Date of Birth *</label>
                         <input type="number" id="inputBirthdayMonth" name="inputBirthdayMonth" maxlength="2" min="1" max="12"
                                class="form-control form-control-left form-control-col-3 text-center valid" placeholder="MM">
                         <input type="number" id="inputBirthdayDay" name="inputBirthdayDay" maxlength="2" min="1" max="31"
@@ -48,13 +48,13 @@
                                class="form-control form-control-right form-control-col-5 text-center valid" placeholder="YYYY">
                     </div>
                     <div class="form-group col-xs-12 col-sm-6">
-                        <label for="inputMobile">Phone #</label>
+                        <label for="inputMobile">Phone Number *</label>
                         <input type="tel" id="inputMobile" name="mobile" maxlength="17" class="form-control"
-                               placeholder="Mobile">
+                               placeholder="+CCC-NNNNNNN">
                     </div>
 
                     <div class="form-group col-xs-12">
-                        <label for="inputId" >User ID</label>
+                        <label for="inputId" >User ID *</label>
                         <input type="text" id="inputId" name="id" maxlength="20"
                                class="form-control form-control-left form-control-col-8 valid"
                                placeholder="Enter your ID with the length 4 ~ 20">
@@ -65,18 +65,18 @@
                     </div>
 
                     <div class="form-group col-xs-12 col-sm-6">
-                        <label for="inputPw">Password</label>
+                        <label for="inputPw">Password *</label>
                         <input type="password" id="inputPw" name="pw" maxlength="20" class="form-control invalid"
                                placeholder="Password">
                     </div>
                     <div class="form-group col-xs-12 col-sm-6">
-                        <label for="inputPw">Password Confirm</label>
+                        <label for="inputPw">Confirm Password *</label>
                         <input type="password" id="inputPwConfirm" maxlength="20" name="pwConfirm" class="form-control"
-                               placeholder="Password Confirm">
+                               placeholder="Confirm Password">
                     </div>
 
                     <div class="form-group col-xs-12">
-                        <label for="inputEmail" >Email Address</label>
+                        <label for="inputEmail" >Email Address *</label>
                         <input type="email" id="inputEmail" name="email" maxlength="100"
                                class="form-control form-control-left form-control-col-8 valid"
                                placeholder="Email">
@@ -90,12 +90,12 @@
                     <div class="form-group col-xs-12">
                         <label for="inputAddress">Address</label>
                         <input id="inputAddress" type="text" name="inputAddress" placeholder="Address"
-                               class="form-control" maxlength="255" required />
+                               class="form-control" maxlength="255" />
                     </div>
                     <div class="form-group col-xs-4">
                         <label for="inputCity">City</label>
                         <input id="inputCity" type="text" name="inputCity" placeholder="City"
-                               class="form-control" maxlength="255" required />
+                               class="form-control" maxlength="255" />
                     </div>
                     <div class="form-group col-xs-4">
                         <label for="inputState">State</label>
@@ -104,8 +104,17 @@
                     </div>
                     <div class="form-group col-xs-4">
                         <label for="selectCountry">Country</label>
-                        <select id="selectCountry" name="country" class="form-control" required></select>
+                        <select id="selectCountry" name="country" class="form-control">
+                            <option value="" selected disabled>Select Country</option>
+                        </select>
                     </div>
+
+                    <div class="col-xs-12">
+                        <div class="form-notice pull-right">
+                            You should fill in all the marked(*) information.
+                        </div>
+                    </div>
+                    <br/>
 
 {#                    <div class="row" class="row-form-btns">#}
                     <div class="col-xs-12">
@@ -123,7 +132,7 @@
                     <h2 class="text-primary text-center">Enter additional information.</h2>
                     <br/>
                     <div class="form-group col-xs-12">
-                        <label for="selectGender" >Gender</label>
+                        <label for="selectGender" >Gender *</label>
                         <select class="form-control" id="selectGender" name="gender" >
                             <option>Male</option>
                             <option>Female</option>
@@ -146,7 +155,7 @@
                     <h2 class="text-primary text-center">Enter physician information.</h2>
                     <br/>
                     <div class="form-group col-xs-12">
-                        <label for="selectField" >Field of Medicine</label>
+                        <label for="selectField" >Field of Medicine *</label>
                         <select class="form-control" id="selectField" name="field" >
                             <option>Heart Specialist</option>
                             <option>Brain Specialist</option>
@@ -162,12 +171,12 @@
                         </select>
                     </div>
                     <div class="form-group col-xs-12">
-                        <label for="inputLicence" >Licence ID</label>
+                        <label for="inputLicence" >Licence ID *</label>
                         <input type="text" maxlength="255" id="inputLicence" name="licence" class="form-control valid"
                                placeholder="Licence number">
                     </div>
                     <div class="form-group col-xs-12">
-                        <label for="fileCertification">Certification</label>
+                        <label for="fileCertification">Certification *</label>
                         <input type="file" id="fileCertification" name="certification" class="form-control"
                                placeholder="Certification" >
                         <p class="help-block">Please upload your authenticatable thing (e.g. doctor's licence and etc.)</p>
