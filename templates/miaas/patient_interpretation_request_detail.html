@@ -36,7 +36,7 @@
                                 <tr>
                                     <td><a class="text-primary view-profile" href="#" physician_id="{{ res.physician_id }}">{{ res.physician_id }}</a></td>
                                     <td class="word-break">{{ res.physician_name }}</td>
-                                    <td>{{ res.medical_field }}</td>
+                                    <td class="word-break">{{ res.medical_field }}</td>
                                     <td class="word-break">{{ res.response_message }}</td>
                                 </tr>
                             {% endfor %}
@@ -74,7 +74,7 @@
                             <tr>
                                 <td><a class="text-primary view-profile" href="#" physician_id="{{ res.physician_id }}">{{ res.physician_id }}</a></td>
                                 <td class="word-break">{{ res.physician_name }}</td>
-                                <td>{{ res.medical_field }}</td>
+                                <td class="word-break">{{ res.medical_field }}</td>
                                 <td class="word-break">{{ res.response_message }}</td>
                                 <td class="valign vcenter">
                                     <a class="btn btn-success btn-block btn-physician-select" physician_id="{{ res.physician_id }}" >SELECT</a>

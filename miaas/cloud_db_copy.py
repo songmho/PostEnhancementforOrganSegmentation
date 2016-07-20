@@ -1,5 +1,5 @@
 import logging
-from _mysql import DataError, IntegrityError, NotSupportedError, OperationalError, ProgrammingError
+from pymysql import DataError, IntegrityError, NotSupportedError, OperationalError, ProgrammingError
 from pandas import json
 from pprint import pprint
 
@@ -280,14 +280,14 @@ class DbManager:
         #     {"query": "SELECT user_type "
         #               "FROM user "
         #               "WHERE user_id = %s and password = %s"},
-        FIND_USER:
-            {"query": "SELECT IF(count(1), 'True', 'False') "
-                      "FROM user "
-                      "WHERE user_id = %s"},
-        FIND_ID:
-            {"query": "SELECT user_id "
-                      "FROM user "
-                      "WHERE email=%s AND name=%s"},
+        # FIND_USER:
+        #     {"query": "SELECT IF(count(1), 'True', 'False') "
+        #               "FROM user "
+        #               "WHERE user_id = %s"},
+        # FIND_ID:
+        #     {"query": "SELECT user_id "
+        #               "FROM user "
+        #               "WHERE email=%s AND name=%s"},
 
         # FIND_PASSWORD:
         #     {"query": "SELECT password "
@@ -318,6 +318,11 @@ class DbManager:
                     for key, r in zip(self.RETRIEVE_LIST_QUERY[query_type]['columns'], rows):
                         temp[key] = r
                     result.append(temp)
+
+                    if query_type == self.REQUEST_RESPONSE_LIST:
+                        temp['physician_name'] = temp['physician_first_name']
+                        if temp.get('physician_last_name'):
+                            temp['physician_name'] += ' ' + temp['physician_last_name']
 
             except Exception as e:
                 logger.exception(e)

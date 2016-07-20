@@ -214,7 +214,6 @@ def patient_interpretation_request_detail_page(request, request_id):
             context['responses'] = responses
         except Exception:
             return render(request, 'miaas/404.html', context="")
-
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_request_detail.html', context)
 
@@ -233,7 +232,7 @@ def physician_request_search_detail_page(request, request_id):
             context['request_detail'] = request_detail
             context['patient'] = patient
             context['image'] = image
-            pprint(context)
+            # pprint(context)
         except Exception:
             return render(request, 'miaas/404.html', context="")
 
@@ -249,7 +248,6 @@ def physician_interpretation_write(request, request_id):
         try:
             db = cloud_db_copy.DbManager()
             request_detail, patient, image, intpr_temp = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
-            print intpr_temp
             if request_detail['status'] == 0:
                 raise Exception()
             context['request_detail'] = request_detail
@@ -276,7 +274,7 @@ def physician_interpretation_detail_page(request, intpr_id):
             context['image'] = image
         except Exception:
             return render(request, 'miaas/404.html', context="")
-    logger.info('physician_interpretation_detail_page get: %s' % request.GET)
+    # logger.info('physician_interpretation_detail_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_detail.html', context)
 
 
