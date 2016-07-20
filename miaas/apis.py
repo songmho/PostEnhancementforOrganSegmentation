@@ -590,7 +590,11 @@ def handle_medical_image_mgt(request):
                 # logger.info('from session image page: %s' % (request.session['medical_image']))
                 # image_dir = request.session['medical_image'][str(image_id)]['image_dir']
                 # image_dir = request.session['curr_image']['image_dir']
+                print ('req get:')
+                pprint(request.GET)
                 image_dirs_dict = ImageRetriever.get_image_list(image_dir)
+                print ('dict:')
+                pprint(image_dirs_dict)
                 return JsonResponse(dict(constants.CODE_SUCCESS, **{'image_list': image_dirs_dict}))
 
             else:

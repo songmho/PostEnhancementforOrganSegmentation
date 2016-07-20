@@ -13,6 +13,7 @@ urlpatterns = [
 
     url(r'^signin$', views.main_page, name='signin'),
     # url(r'^signin$', views.signin_page, name='signin'),
+    url(r'^contact_us$', views.contact_us_page, name='contact_us'),
     url(r'^signup$', views.signup_page, name='signup'),
     url(r'^find$', views.find_page, name='find'),
     url(r'^profile$', views.profile_page, name='profile'),

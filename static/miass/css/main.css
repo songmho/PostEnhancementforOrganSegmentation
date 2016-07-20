@@ -267,3 +267,22 @@ footer.page-footer .copyright-logo {
 .loadingoverlay {
     z-index: 1500 !important;
 }
+
+
+/* about contact us*/
+.contact-title {
+    margin-left: 20px;
+    margin-bottom: 30px;
+}
+.contact-panel {
+    background-color: #eee;
+    padding: 30px 40px;
+    min-height: 180px;
+    font-size: 18px;
+    text-align: center;
+}
+.contact-panel .glyphicon {
+    font-size: 22px;
+    font-weight: bold;
+    top: 5px;
+}

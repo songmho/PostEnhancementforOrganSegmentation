@@ -20,6 +20,7 @@ from miaas import cloud_db, constants, cloud_db_copy, email_auth
 
 from image_manager import ImageManager, ImageRetriever
 import logging, json, time
+from pprint import pprint
 
 # get db data -> 404 template, urls in tutorial #3: https://docs.djangoproject.com/en/1.9/intro/tutorial03/
 # form, db class -> tutorial #4
@@ -88,10 +89,14 @@ def auth_change_email_page(request, user_id, auth_code):
     return render(request, 'miaas/verify_change_mail.html', context)
 
 
+def contact_us_page(request):
+    return render(request, 'miaas/contact_us.html', None)
+
+
 def signup_page(request):
     return render(request, 'miaas/signup.html', None)
 
-3
+
 def find_page(request):
     return render(request, 'miaas/find.html', None)
 
@@ -228,7 +233,7 @@ def physician_request_search_detail_page(request, request_id):
             context['request_detail'] = request_detail
             context['patient'] = patient
             context['image'] = image
-            print image
+            pprint(context)
         except Exception:
             return render(request, 'miaas/404.html', context="")
 

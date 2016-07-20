@@ -134,13 +134,17 @@ footer.page-footer .copyright-logo {
         padding-top: 10px;
         padding-bottom: 10px;
     }
-
     footer.page-footer .copyright-logo {
-        display: none;
+        margin-top: 10px;
     }
-
     footer.page-footer .footer-contents span:first-of-type {
         display: block;
+    }
+}
+
+@media (max-width: 500px) {
+    footer.page-footer .copyright-logo {
+        display: none;
     }
 }
 

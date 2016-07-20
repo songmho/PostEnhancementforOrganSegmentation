@@ -452,9 +452,9 @@ class DbManager():
 
     def update_patient_profile(self, user_id, profiles):
         profiles['user_id'] = user_id
-        profiles['detail']['user_id'] = user_id
         if_basic_updated = False
-        if_detail_updated = False
+
+        logger.info(profiles)
 
         db_query = "INSERT INTO patient_profile_basic " \
                    "(user_id, height, weight, drinkingCapacity, drinkingFrequency, " \
@@ -474,6 +474,12 @@ class DbManager():
             except Exception as e:
                 logger.exception(e)
                 raise Exception("Updating patient profile error.")
+
+        if not profiles.get('detail'):
+            return if_basic_updated
+
+        profiles['detail']['user_id'] = user_id
+        if_detail_updated = False
 
         db_query = "INSERT INTO patient_profile_detail " \
                    "(user_id, pmh, ed, sd, med, fmh, alg, notice)" \

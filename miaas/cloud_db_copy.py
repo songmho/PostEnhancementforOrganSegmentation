@@ -24,10 +24,10 @@ class DbManager:
     REQUEST_COLUMNS = ["request_id", "image_id", "status", "request_subject", "request_message", "request_date",
                        "level"]
     RESPONSE_COLUMNS = ["request_id", "physician_id", "response_message", "response_date"]
-    PHYSICIAN_COLUMNS = ['user_id', 'physician_name', 'license_number', 'medicine_field', 'certificate_dir',
-                         'phone_number', 'email', 'join_date', 'deactivate_date']
-    PATIENT_COLUMNS = ['user_id', 'patient_name', 'gender', 'birthday',
-                       'phone_number', 'email', 'join_date', 'deactivate_date']
+    PHYSICIAN_COLUMNS = ['user_id', 'physician_first_name', 'physician_last_name', 'license_number', 'medicine_field', 'certificate_dir',
+                         'birthday', 'phone_number', 'email', 'join_date', 'deactivate_date']
+    PATIENT_COLUMNS = ['user_id', 'patient_first_name', 'patient_last_name', 'gender',
+                       'birthday', 'phone_number', 'email', 'join_date', 'deactivate_date']
     PHYSICIAN_PROFILE_COLUMNS = ["profile_id", "user_id", "aboutMe", "specialism", "medicalSchool", "graduate",
                                  "certifications", "memberships", "fieldsOfMedicine", "hiv", "offices", "languages",
                                  "insuranceProgram", "healthPlans", "hospitalPrivileges", "malpractice",
@@ -164,12 +164,12 @@ class DbManager:
                             "image_type", "level", "intpr_id"]},
         REQUEST_RESPONSE_LIST:
             {
-                "query": "SELECT phi.user_id, phi.name, phi.medicine_field, phi.phone_number, phi.email, res.message " \
+                "query": "SELECT phi.user_id, phi.first_name, phi.last_name, phi.medicine_field, phi.phone_number, phi.email, res.message " \
                          "FROM response res " \
                          "JOIN physician_info phi ON res.physician_id = phi.user_id " \
                          "WHERE res.request_id=%s",
 
-                "columns": ["physician_id", "physician_name", "medical_field", "phone_number", 'email',
+                "columns": ["physician_id", "physician_first_name", "physician_last_name", "medical_field", "phone_number", 'email',
                             "response_message"]},
         IMAGE_INTPR_LIST:
             {
@@ -190,7 +190,8 @@ class DbManager:
                          "JOIN medical_image m ON intpr.image_id = m.image_id "
                          "WHERE intpr.intpr_id = %s",
 
-                "columns": [INTPR_COLUMNS, PHYSICIAN_COLUMNS + ["password"], REQUEST_COLUMNS, IMAGE_COLUMNS]},
+                "columns": [INTPR_COLUMNS, PHYSICIAN_COLUMNS,
+                            REQUEST_COLUMNS, IMAGE_COLUMNS]},
 
         PATIENT_REQUEST_DETAIL:
             {
@@ -216,7 +217,7 @@ class DbManager:
                       "LEFT JOIN interpretation_temp intpr_temp ON req.request_id = intpr_temp.request_id "
                       "WHERE req.request_id = %s",
 
-             "columns": [REQUEST_COLUMNS, PATIENT_COLUMNS + ["password"], IMAGE_COLUMNS, INTPR_TEMP_COLUMNS]},
+             "columns": [REQUEST_COLUMNS, PATIENT_COLUMNS, IMAGE_COLUMNS, INTPR_TEMP_COLUMNS]},
 
         PHYSICIAN_INTPR_DETAIL:
             {"query": "SELECT intpr.*, pai.*, req.*, m.* "
@@ -226,34 +227,34 @@ class DbManager:
                       "JOIN medical_image m ON intpr.image_id = m.image_id "
                       "WHERE intpr.intpr_id = %s",
 
-             "columns": [INTPR_COLUMNS, PATIENT_COLUMNS + ["password"], REQUEST_COLUMNS, IMAGE_COLUMNS]},
-        PATIENT_INFO_ID:
-            {"query": "SELECT * "
-                      "FROM patient_info "
-                      "WHERE user_id = %s",
+             "columns": [INTPR_COLUMNS, PATIENT_COLUMNS, REQUEST_COLUMNS, IMAGE_COLUMNS]},
+        # PATIENT_INFO_ID:
+        #     {"query": "SELECT * "
+        #               "FROM patient_info "
+        #               "WHERE user_id = %s",
+        #
+        #      "columns": [PATIENT_COLUMNS]},
 
-             "columns": [PATIENT_COLUMNS]},
+        # PATIENT_INFO_ID_PASSWORD:
+        #     {"query": "SELECT *  "
+        #               "FROM patient_info "
+        #               "WHERE user_id = %s and password = %s",
+        #
+        #      "columns": [PATIENT_COLUMNS + ["password"]]},
 
-        PATIENT_INFO_ID_PASSWORD:
-            {"query": "SELECT *  "
-                      "FROM patient_info "
-                      "WHERE user_id = %s and password = %s",
+        # PHYSICIAN_INFO_ID:
+        #     {"query": "SELECT *  "
+        #               "FROM physician_info "
+        #               "WHERE user_id = %s",
+        #
+        #      "columns": [PHYSICIAN_COLUMNS]},
 
-             "columns": [PATIENT_COLUMNS + ["password"]]},
-
-        PHYSICIAN_INFO_ID:
-            {"query": "SELECT *  "
-                      "FROM physician_info "
-                      "WHERE user_id = %s",
-
-             "columns": [PHYSICIAN_COLUMNS]},
-
-        PHYSICIAN_INFO_ID_PASSWORD:
-            {"query": "SELECT *  "
-                      "FROM patient_info "
-                      "WHERE user_id = %s and password = %s",
-
-             "columns": [PHYSICIAN_COLUMNS + ["password"]]},
+        # PHYSICIAN_INFO_ID_PASSWORD:
+        #     {"query": "SELECT *  "
+        #               "FROM patient_info "
+        #               "WHERE user_id = %s and password = %s",
+        #
+        #      "columns": [PHYSICIAN_COLUMNS + ["password"]]},
 
         PHYSICIAN_PROFILE:
             {"query": "SELECT *  "
@@ -275,10 +276,10 @@ class DbManager:
     }
 
     RETRIEVE_SINGLE_COLUMN_QUERY = {
-        USER_TYPE:
-            {"query": "SELECT user_type "
-                      "FROM user "
-                      "WHERE user_id = %s and password = %s"},
+        # USER_TYPE:
+        #     {"query": "SELECT user_type "
+        #               "FROM user "
+        #               "WHERE user_id = %s and password = %s"},
         FIND_USER:
             {"query": "SELECT IF(count(1), 'True', 'False') "
                       "FROM user "
@@ -288,10 +289,10 @@ class DbManager:
                       "FROM user "
                       "WHERE email=%s AND name=%s"},
 
-        FIND_PASSWORD:
-            {"query": "SELECT password "
-                      "FROM user "
-                      "WHERE email=%s AND name=%s"},
+        # FIND_PASSWORD:
+        #     {"query": "SELECT password "
+        #               "FROM user "
+        #               "WHERE email=%s AND name=%s"},
     }
 
     def retrieve_single_column(self, query_type, *args):
@@ -345,6 +346,15 @@ class DbManager:
                             temp[key] = row[row_idx]
                             row_idx += 1
                         result.append(temp)
+                    if query_type == self.PHYSICIAN_REQUEST_DETAIL or query_type == self.PHYSICIAN_INTPR_DETAIL:
+                        result[1]['patient_name'] = result[1]['patient_first_name']
+                        if result[1].get('patient_last_name'):
+                            result[1]['patient_name'] += ' ' + result[1]['patient_last_name']
+                    elif query_type == self.PATIENT_INTPR_DETAIL:
+                        result[1]['physician_name'] = result[1]['physician_first_name']
+                        if result[1].get('physician_last_name'):
+                            result[1]['physician_name'] += ' ' + result[1]['physician_last_name']
+
             except Exception as e:
                 logger.exception(e)
                 raise Exception(query_type + " Error :" + e.message)
