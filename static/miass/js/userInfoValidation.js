@@ -6,7 +6,7 @@ var tempID = "";
 function checkID() {
     var idRe = /^[a-z]+[a-z0-9_.\-]{3,19}$/g;
     var inputId = $('#inputId');
-    if ((tempID == inputId.val() || inputId.val().length == 0) && checkIDFlag) {
+    if (tempID == inputId.val() && checkIDFlag) {
         return
     }
     else {
@@ -76,7 +76,7 @@ function checkPassword() {
             $('#inputPwConfirm').css("border-color", "red");
         }
     } else {
-        if ((tempPassword == inputPw.val() || inputPw.val().length == 0) && checkPasswordFlag) {
+        if (tempPassword == inputPw.val() && checkPasswordFlag) {
             return;
         }
         else {
@@ -152,8 +152,9 @@ var tempFirstName = "";
 function checkFirstName() {
     var inputName = $('#inputFirstName');
     var nameRe = /^[a-zA-Z가-힣 ]{1,200}$/g;
-    if ((tempFirstName == inputName.val() || inputName.val().length == 0) && checkFirstNameFlag) {
-        return
+    if (tempFirstName == inputName.val() && checkFirstNameFlag) {
+        console.log('same!');
+        return;
     }
     else {
         tempFirstName = inputName.val();
@@ -183,7 +184,7 @@ var tempLastName = "";
 function checkLastName() {
     var inputName = $('#inputLastName');
     var nameRe = /^[a-zA-Z가-힣 ]{1,200}$/g;
-    if ((tempLastName == inputName.val() || inputName.val().length == 0) && checkLastNameFlag) {
+    if (tempLastName == inputName.val() && checkLastNameFlag) {
         return
     }
     else {
@@ -216,7 +217,7 @@ function checkPhone() {
     //var phoneRe = /^[0-9]{4,17}$/;
     var phoneRe = /^\+[0-9]{1,3}\-[0-9]{4,14}?$/g;
 
-    if ((tempPhone == inputMobile.val() || inputMobile.val().length == 0) && checkPhoneFlag)
+    if (tempPhone == inputMobile.val() && checkPhoneFlag)
         return;
 
     else {
@@ -262,7 +263,7 @@ var tempEmail = "";
 function checkEmail() {
     var inputEmail = $('#inputEmail');
     var emailRe = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-    if ((tempEmail == inputEmail.val() || inputEmail.val().length == 0) && checkEmailFlag)
+    if (tempEmail == inputEmail.val() && checkEmailFlag)
         return;
 
     else {
@@ -451,7 +452,7 @@ var tempLicense = "";
 function checkLicense() {
     var inputLicense = $('#inputLicence');
     var licenseRe = /^[\-0-9A-Z]{1,200}$/g;
-    if ((tempLicense == inputLicense.val() || inputLicense.val().length == 0) && checkLicenseFlag)
+    if (tempLicense == inputLicense.val() && checkLicenseFlag)
         return;
 
     else {

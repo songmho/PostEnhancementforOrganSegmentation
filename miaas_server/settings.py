@@ -174,11 +174,11 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
-    '/var/www/static/',
+    # '/var/www/static/',
 ]
-if __name__ == '__main__':
-    from django.conf import settings
-    settings.configure()
+# if __name__ == '__main__':
+#     from django.conf import settings
+#     settings.configure()
 
 # File Upload Handler
 FILE_UPLOAD_HANDLERS = ['miaas.uploadprogresscachedhandler.UploadProgressCachedHandler', ] + global_settings.FILE_UPLOAD_HANDLERS
