@@ -400,9 +400,9 @@ function resetImageInfo() {
 function resetTakenLayout() {
     var tf = $('#takenFrom').val();
     if(tf == 'Home') {
-        $('#takenPhysicianName').removeAttr('required').val('');
-        $('#clinicName').removeAttr('required').val('');
-        $('#medicalDepartment').removeAttr('required').val('');
+        //$('#takenPhysicianName').removeAttr('required').val('');
+        //$('#clinicName').removeAttr('required').val('');
+        //$('#medicalDepartment').removeAttr('required').val('');
         $('#physicianGroup').addClass('deactivate');
         $('#clinicNameGroup').addClass('deactivate');
         $('#medicalDepartmentGroup').addClass('deactivate');
@@ -410,9 +410,9 @@ function resetTakenLayout() {
         //$('#clinicNameGroup').css('visibility', 'hidden');
         //$('#medicalDepartmentGroup').css('visibility', 'hidden');
     } else {
-        $('#takenPhysicianName').attr('required', '');
-        $('#clinicName').attr('required', '');
-        $('#medicalDepartment').attr('required', '');
+        //$('#takenPhysicianName').attr('required', '');
+        //$('#clinicName').attr('required', '');
+        //$('#medicalDepartment').attr('required', '');
         $('#physicianGroup').removeClass('deactivate');
         $('#clinicNameGroup').removeClass('deactivate');
         $('#medicalDepartmentGroup').removeClass('deactivate');
