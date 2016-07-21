@@ -26,7 +26,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
             <form id="imageInfoForm" class="col-xs-12 col-form" accept-charset="UTF-8">
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="subject" >Image Subject</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="subject" >*Image Subject</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="text" id="subject" maxlength="255" name="subject" class="form-control"
                                    placeholder="Subject" required readonly value="{{ image.subject }}">
@@ -34,7 +34,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="imageType" >Image Type</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="imageType" >*Image Type</label>
                         <div class="col-sm-9 col-md-4">
                             <select class="form-control" id="imageType" name="imageType" required disabled>
                                 <option value="EEG">EEG (Electroencephalography)</option>
@@ -49,7 +49,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 col-sm-12 col-md-6 col-md-overlay col-md-overlay-right form-group">
-                        <label class="col-sm-3 col-md-4 control-label" for="image_file">Medical Image</label>
+                        <label class="col-sm-3 col-md-4 control-label" for="image_file">*Medical Image</label>
                         <div class="col-sm-9 col-md-8">
                             <button id="btnImageFile" class="btn btn-default btn-block text-black" disabled type="button">Click Here to Upload</button>
                         </div>
@@ -64,7 +64,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <div class="medimage-preview-wrapper">
                             <div id="image-previewer" class="medimage-preview">
                                 <div id="image-previewer-image" class="medimage-previewer">
-                                    <div class="text-center text-warning" style="margin-top:136px;">Image Preview</div>
+                                    <div class="text-center text-warning" style="margin-top:136px;">*Image Preview</div>
                                 </div>
                                 <div id="image-previewer-graph" class="medimage-previewer" style="display: none;"></div>
                             </div>
@@ -72,7 +72,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="takenDate" >Recorded Date</label>
+                        <label class="col-sm-3 col-md-2 control-label" for="takenDate" >*Recorded Date</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="date" id="takenDate" name="takenDate" class="form-control" min="1800-01-01"
                                    placeholder="YYYY-MM-DD" required readonly value="2016-02-02">
@@ -80,7 +80,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label no-pad-left-sm" for="takenFrom" >Recording Place</label>
+                        <label class="col-sm-3 col-md-2 control-label no-pad-left-sm" for="takenFrom" >*Recording Place</label>
                         <div class="col-sm-9 col-md-4">
                             <select class="form-control" id="takenFrom" name="takenFrom" required disabled>
                                 <option>Medical Clinic</option>
@@ -156,7 +156,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                 <div class="form-container form-boxed form-horizontal row">
                     <div class="col-xs-12 form-group">
                         <label class="col-sm-3 col-md-2 control-label" for="reqLevel"
-                               style="padding-top: 7px;">Request Level</label>
+                               style="padding-top: 7px;">*Request Level</label>
                         <div class="col-xs-12 col-sm-6 col-md-10">
                             <select class="form-control" id="reqLevel" name="reqLevel" required>
                                 <option value="1" disabled>{{ 1|intpr_level_string }}</option>
@@ -167,7 +167,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div id="reqSubjectGroup" class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label no-pad-top" for="reqSubject" >Request Subject</label>
+                        <label class="col-sm-3 col-md-2 control-label no-pad-top" for="reqSubject" >*Request Subject</label>
                         <div class="col-xs-12 col-sm-6 col-md-10">
                             <input type="text" id="reqSubject" maxlength="255" name="reqSubject" class="form-control"
                                    placeholder="Example) Please interpret my CT image for suspected lung cancer." required>
@@ -175,7 +175,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                     </div>
 
                     <div id="reqMessageGroup" class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label no-pad-top" for="reqMessage" >Request Message</label>
+                        <label class="col-sm-3 col-md-2 control-label no-pad-top" for="reqMessage" >*Request Message</label>
                         <div class="col-sm-9 col-md-10">
                             <textarea type="textarea" id="reqMessage" name="reqMessage" class="form-control"
                                       placeholder="Write any messages that you want to tell physicians.&#10; Example) I was recommended to have a serious operation, so I want to receive others’ opinion for this image." rows="5" required></textarea>

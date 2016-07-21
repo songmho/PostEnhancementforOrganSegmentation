@@ -97,16 +97,16 @@ $(document).ready(function () {
     $('#takenFrom').change(function () {
         var tf = $(this).val();
         if (tf == 'Home') {
-            $('#takenPhysicianName').removeAttr('required').val('');
-            $('#clinicName').removeAttr('required').val('');
-            $('#medicalDepartment').removeAttr('required').val('');
+            //$('#takenPhysicianName').removeAttr('required').val('');
+            //$('#clinicName').removeAttr('required').val('');
+            //$('#medicalDepartment').removeAttr('required').val('');
             $('#physicianGroup').hide();
             $('#clinicNameGroup').hide();
             $('#medicalDepartmentGroup').hide();
         } else {
-            $('#takenPhysicianName').attr('required', '');
-            $('#clinicName').attr('required', '');
-            $('#medicalDepartment').attr('required', '');
+            //$('#takenPhysicianName').attr('required', '');
+            //$('#clinicName').attr('required', '');
+            //$('#medicalDepartment').attr('required', '');
             $('#physicianGroup').show();
             $('#clinicNameGroup').show();
             $('#medicalDepartmentGroup').show();

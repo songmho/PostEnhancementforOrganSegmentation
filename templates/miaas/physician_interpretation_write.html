@@ -16,6 +16,11 @@
 {#<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/plugin/bootstrap-wyshiwyg/bootstrap-wysihtml5-0.0.2.css' %}">#}
 <link rel="stylesheet" type="text/css" href="{% static 'lib/wado/conerstone/cornerstone.min.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'miass/css/imageViewer.css' %}">
+<style>
+    .mce-path {
+        visibility: hidden !important;
+    }
+</style>
 
 {% include 'miaas/template_nav_physician.html' %}
 
@@ -24,7 +29,7 @@
         <section class="section section-default">
             <div class="row">
                 <div class="col-xs-12 col-title">
-                    <h2 class="text-primary" id="titleSubject">Interpreting for "{{ request_detail.request_subject }}"</h2>
+                    <h2 class="text-primary" id="titleSubject">*Interpreting for "{{ request_detail.request_subject }}"</h2>
                 </div>
                 <form id="writeForm" class="col-xs-12 col-form" accept-charset="UTF-8">
                     {% include 'miaas/template_container_request_info.html' %}
@@ -40,7 +45,7 @@
                         </div>
 
                         <div class="col-sm-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">Suspected Disease</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">*Suspected Disease</label>
                             <div class="col-xs-12 col-sm-9 col-md-10 control-text">
                             <textarea type="textarea" id="suspectedDisease" name="suspectedDisease"
                                       class="form-control interpretation-writer"
@@ -58,7 +63,7 @@
                         </div>
 
                         <div class="col-sm-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">Opinion</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">*Opinion</label>
                             <div class="col-xs-12 col-sm-9 col-md-10 control-text">
                             <textarea type="textarea" id="opinion" name="opinion"
                                       class="form-control interpretation-writer"
@@ -76,7 +81,7 @@
                         </div>
 
                         <div class="col-sm-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">Recommendation</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">*Recommendation</label>
                             <div class="col-xs-12 col-sm-9 col-md-10 control-text">
                             <textarea type="textarea" id="recommendation" name="recommendation"
                                       class="form-control interpretation-writer"
@@ -94,7 +99,7 @@
                         </div>
 
                         <div class="col-sm-12 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">Summary</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">*Summary</label>
                             <div class="col-xs-12 col-sm-9 col-md-10 control-text">
                             <textarea type="textarea" id="summary" name="summary"
                                       class="form-control interpretation-writer"
