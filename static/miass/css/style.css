@@ -377,6 +377,13 @@ a:focus {
     }
 }
 
+.table.table-profile-view > thead > tr > th {
+    text-align: center;
+}
+.table.table-profile-view > tbody > tr > td {
+    background-color: white;
+}
+
 /* Column */
 @media (min-width: 992px) {
     .col-md-overlay-enable-container {

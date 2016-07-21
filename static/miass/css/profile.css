@@ -28,7 +28,8 @@
     height: 100%;
 }
 
-.table.table-profile textarea.input-in-table {
+.table.table-profile textarea.input-in-table,
+textarea#notice {
     resize: vertical;
 }
 

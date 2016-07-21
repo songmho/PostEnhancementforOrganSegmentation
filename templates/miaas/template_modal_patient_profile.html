@@ -11,120 +11,183 @@
                         <div class="col-xs-12 col-md-6 form-group">
                             <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="height">Height</label>
                             <div class="col-sm-9 col-md-7">
-                                <textarea type="textarea" id="height" name="height" class="form-control"  readonly>The information isn't provided by the patient.</textarea>
+                                <div id="height" class="form-control">Not provided by the patient</div>
                             </div>
                         </div>
 
                         <div class="col-xs-12 col-md-6 form-group">
                             <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="weight" >Weight</label>
                             <div class="col-sm-9 col-md-7">
-                                <textarea type="textarea" id="weight" name="weight" class="form-control"  readonly>The information isn't provided by the patient.</textarea>
+                                <div id="weight" class="form-control">Not provided by the patient</div>
                             </div>
                         </div>
 
                         <div class="col-xs-12 col-md-6 form-group">
                             <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingCapacity" >Drinking Capacity</label>
                             <div class="col-sm-9 col-md-7">
-                                <textarea type="textarea" id="drinkingCapacity" name="drinkingCapacity" class="form-control"  readonly>The information isn't provided by the patient.</textarea>
+                                <div id="drinkingCapacity" class="form-control">Not provided by the patient</div>
                             </div>
                         </div>
 
                         <div class="col-xs-12 col-md-6 form-group">
                             <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="drinkingFrequency" >Drinking Frequency</label>
                             <div class="col-sm-9 col-md-7">
-                                <textarea type="textarea" id="drinkingFrequency" name="drinkingFrequency" class="form-control"  readonly>The information isn't provided by the patient.</textarea>
+                                <div id="drinkingFrequency" class="form-control">Not provided by the patient</div>
                             </div>
                         </div>
 
                         <div class="col-xs-12 col-md-6 form-group">
                             <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="sleeping" >Sleeping Hours</label>
                             <div class="col-sm-9 col-md-7">
-                                <textarea type="textarea" id="sleeping" name="sleeping" class="form-control"  readonly>The information isn't provided by the patient.</textarea>
+                                <div id="sleeping" class="form-control">Not provided by the patient</div>
                             </div>
                         </div>
 
                         <div class="col-xs-12 col-md-6 form-group">
                             <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="exercise" >Exercise Hours</label>
                             <div class="col-sm-9 col-md-7">
-                                <textarea type="textarea" id="exercise" name="exercise" class="form-control"  readonly>The information isn't provided by the patient.</textarea>
+                                <div id="exercise" class="form-control">Not provided by the patient</div>
                             </div>
                         </div>
 
                         <div class="col-xs-12 col-md-6 form-group">
                             <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="smoking" >Smoking Status</label>
                             <div class="col-sm-9 col-md-7">
-                                <textarea type="textarea" id="smoking" name="smoking" class="form-control"  readonly>The information isn't provided by the patient.</textarea>
+                                <div id="smoking" class="form-control">Not provided by the patient</div>
                             </div>
                         </div>
 
                         <div class="col-xs-12 col-md-6 form-group">
                             <label class="col-xs-12 col-sm-3 col-md-5 control-label" for="water" >Water Intake</label>
                             <div class="col-sm-9 col-md-7">
-                                <textarea type="textarea" id="water" name="water" class="form-control"  readonly>The information isn't provided by the patient.</textarea>
+                                <div id="water" class="form-control">Not provided by the patient</div>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-container form-boxed form-horizontal row">
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="pastMedicalHistory">Past Medical
-                            History</label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="pastMedicalHistory" name="pastMedicalHistory"
-                                      class="form-control" rows="5" readonly>The information isn't provided by the patient.</textarea>
+                        <div id="form-pmh" class="col-xs-12 form-group">
+                            <label class="col-xs-12" >Past Medical History</label>
+                            <div class="col-xs-12">
+                                <p class="table-profile-empty">This information isn't provided by the patient.</p>
+                                <table class="table table-profile-view table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width:15%">History Type</th>
+                                        <th style="width:15%">Name</th>
+                                        <th style="width:15%">Date</th>
+                                        <th>Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="existingDiseases">Existing Diseases </label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="existingDiseases" name="existingDiseases"
-                                      class="form-control" rows="5" readonly>The information isn't provided by the patient.</textarea>
+                        <div class="col-xs-12 form-group">
+                            <label class="col-xs-12" >Existing Diseases</label>
+                            <div id="form-ed" class="col-xs-12">
+                                <p class="table-profile-empty">This information isn't provided by the patient.</p>
+                                <table class="table table-profile-view table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width:15%">Disease Name</th>
+                                        <th style="width:15%">Degree</th>
+                                        <th style="width:15%">Duration</th>
+                                        <th>Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="suspectedDiseases">Suspected
-                            Diseases </label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="suspectedDiseases" name="suspectedDiseases"
-                                      class="form-control" rows="5" readonly>The information isn't provided by the patient.</textarea>
+                        <div class="col-xs-12 form-group">
+                            <label class="col-xs-12" >Suspected Diseases</label>
+                            <div id="form-sd" class="col-xs-12">
+                                <p class="table-profile-empty">This information isn't provided by the patient.</p>
+                                <table class="table table-profile-view table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width:15%">Disease Name</th>
+                                        <th style="width:15%">Symptoms</th>
+                                        <th style="width:15%">Degree</th>
+                                        <th style="width:15%">Duration</th>
+                                        <th>Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="medications">Medications </label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="medications" name="medications"
-                                      class="form-control" rows="5" readonly>The information isn't provided by the patient.</textarea>
+                        <div class="col-xs-12 form-group">
+                            <label class="col-xs-12" >Medications</label>
+                            <div id="form-med" class="col-xs-12">
+                                <p class="table-profile-empty">This information isn't provided by the patient.</p>
+                                <table class="table table-profile-view table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width:15%">Medi. Name</th>
+                                        <th style="width:15%">Intake</th>
+                                        <th style="width:15%">Frequency</th>
+                                        <th style="width:15%">Duration</th>
+                                        <th>Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="familyMedicalHistory">Family Medical
-                            History </label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="familyMedicalHistory" name="familyMedicalHistory"
-                                      class="form-control" rows="5" readonly>The information isn't provided by the patient.</textarea>
+                        <div class="col-xs-12 form-group">
+                            <label class="col-xs-12" >Family Medical History</label>
+                            <div id="form-fmh" class="col-xs-12">
+                                <p class="table-profile-empty">This information isn't provided by the patient.</p>
+                                <table class="table table-profile-view table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width:20%">Relationship</th>
+                                        <th>Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="allergies">Allergies</label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="allergies" name="allergies"
-                                      class="form-control" rows="5" readonly>The information isn't provided by the patient.</textarea>
+                        <div class="col-xs-12 form-group">
+                            <label class="col-xs-12" >Allergies</label>
+                            <div id="form-alg" class="col-xs-12">
+                                <p class="table-profile-empty">This information isn't provided by the patient.</p>
+                                <table class="table table-profile-view table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width:20%">Allergy Name</th>
+                                        <th style="width:15%">Degree</th>
+                                        <th>Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
 
-
-                    <div class="col-xs-12 form-group">
-                        <label class="col-sm-3 col-md-2 control-label" for="notice">Notice</label>
-                        <div class="col-sm-9 col-md-10">
-                            <textarea type="textarea" id="notice" name="notice"
-                                      class="form-control" rows="5" readonly>The information isn't provided by the patient.</textarea>
+                        <div class="col-xs-12 form-group">
+                            <label class="col-xs-12" for="notice">Notice</label>
+                            <div class="col-xs-12">
+                                <textarea id="notice" class="form-control" rows="8" readonly
+                                          style="background-color: white; resize: none;">
+                                    This information isn't provided by the patient.
+                                </textarea>
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
             </div>

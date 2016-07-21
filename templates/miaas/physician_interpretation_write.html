@@ -115,8 +115,7 @@
                     </div>
                     <div class="form-btns-container row">
                         <div class="col-xs-12 col-sm-4 col-sm-offset-4 col-md-offset-2 col-md-3  form-button">
-                            <a class="btn btn-lg btn-primary btn-block" onclick="$('#patientProfileModal').modal();">
-                                View Profile</a>
+                            <a id="btnViewProfile" class="btn btn-lg btn-primary btn-block">View Profile</a>
                         </div>
 
                         <div class="col-xs-12 col-sm-4 col-md-3 form-button">
@@ -182,13 +181,45 @@
 {% include 'miaas/template_modal_imageviewer.html' %}
 {% include 'miaas/template_footer.html' %}
 
+<script>
+    imageInfo = JSON.parse("{{ image | jsonstr }}");
+    archiveURL = "{% url 'miaas:archive' %}";
+    patient = JSON.parse("{{ patient | jsonstr }}");
+</script>
+
+<!-- include the tinyMCE library -->
+<script src="{% static 'lib/tinymce/tinymce.min.js' %}"></script>
+
+<!-- include the cornerstone library -->
+<script src="{% static 'lib/wado/conerstone/cornerstone.js' %}"></script>
+<script src="{% static 'lib/wado/cornerstoneMath.js' %}"></script>
+<script src="{% static 'lib/wado/cornerstoneTools.js' %}"></script>
+
+<!-- include the dicomParser library as the WADO image loader depends on it -->
+<script src="{% static 'lib/wado/dicomParser/dicomParser.min.js' %}"></script>
+
+<!-- jpeg 2000 codec -->
+<script src="{% static 'lib/wado/jpx.min.js' %}"></script>`
+
+<!-- include the cornerstoneWADOImageLoader library -->
+<script src="{% static 'lib/wado/cornerstoneWADOImageLoader.min.js' %}"></script>
+
+<!-- include the dygraph library -->
+<script src="{% static 'lib/dygraph/dygraph-combined.js' %}"></script>
+<script src="{% static 'lib/dygraph/smooth-plotter.js' %}"></script>
+
+<script src="{% static 'miass/js/dygraphsInteraction.js' %}"></script>
+<script src="{% static 'miass/js/imageViewer.js' %}"></script>
+<script src="{% static 'miass/js/imagePreviewer.js' %}"></script>
+
+<!-- include the patient profile modal -->
+<script src="{% static 'miass/js/modal_patient_profile.js' %}"></script>
+
 <!-- custom javascript -->
 <script>
-    var profiles;
     var phIntprList = "{% url 'miaas:physician_interpretation' %}";
 
     $(document).ready(function () {
-        $.LoadingOverlay('show');
         tinymce.init({
             selector: 'textarea.interpretation-writer',
             menubar: false,
@@ -215,28 +246,6 @@
         {#            $(elem).contents().find('body').html();#}
         {#        });#}
 
-        $.ajax("/api/patient_profile", {
-            method: 'GET',
-            data: {
-                user_id: '{{ patient.user_id }}'
-            },
-            dataType: 'json',
-            success: function (res) {
-                $.LoadingOverlay('hide');
-{#                console.log(JSON.stringify(res));#}
-                if (res['code'] == 'SUCCESS') {
-                    profiles = res['profiles'];
-                    {#                    console.log(profiles);#}
-                    for (var i in profiles) {
-                        var profile = profiles[i];
-                        {#                        console.info("type="+profile.type+" / value="+profile.value);#}
-                        $('#' + profile.type).val(profile.value);
-                    }
-                } else {
-                    openModal(res['msg'], 'Getting Profile Failed');
-                }
-            }
-        });
 
         $('#btnWrite').click(function () {
             $('#writeSubmitConfirmModal').modal();
@@ -330,34 +339,16 @@
         });
     }
 
-    imageInfo = JSON.parse("{{ image | jsonstr }}");
-    archiveURL = "{% url 'miaas:archive' %}";
+    $('#btnViewProfile').click(function() {
+        getPatientProfile(function() {
+            $('#patientProfileModal').modal();
+            $('#btnViewProfile').off('click').unbind('click').click(function() {
+                $('#patientProfileModal').modal();
+            })
+        });
+    });
 </script>
 
-<!-- include the tinyMCE library -->
-<script src="{% static 'lib/tinymce/tinymce.min.js' %}"></script>
-
-<!-- include the cornerstone library -->
-<script src="{% static 'lib/wado/conerstone/cornerstone.js' %}"></script>
-<script src="{% static 'lib/wado/cornerstoneMath.js' %}"></script>
-<script src="{% static 'lib/wado/cornerstoneTools.js' %}"></script>
-
-<!-- include the dicomParser library as the WADO image loader depends on it -->
-<script src="{% static 'lib/wado/dicomParser/dicomParser.min.js' %}"></script>
-
-<!-- jpeg 2000 codec -->
-<script src="{% static 'lib/wado/jpx.min.js' %}"></script>
-
-<!-- include the cornerstoneWADOImageLoader library -->
-<script src="{% static 'lib/wado/cornerstoneWADOImageLoader.min.js' %}"></script>
-
-<!-- include the dygraph library -->
-<script src="{% static 'lib/dygraph/dygraph-combined.js' %}"></script>
-<script src="{% static 'lib/dygraph/smooth-plotter.js' %}"></script>
-
-<script src="{% static 'miass/js/dygraphsInteraction.js' %}"></script>
-<script src="{% static 'miass/js/imageViewer.js' %}"></script>
-<script src="{% static 'miass/js/imagePreviewer.js' %}"></script>
 
 </body>
 </html>
