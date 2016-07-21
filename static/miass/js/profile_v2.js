@@ -314,7 +314,7 @@ function resetProfile() {
             return;
 
         if (key == "height") {
-            console.log(profiles[key]);
+            //console.log(profiles[key]);
             var height = profiles[key].split(" ");
             $('#height').val(height[0]);
             var heightType = $('#heightType');
@@ -465,7 +465,7 @@ function updateProfile() {
     console.log(detailedProfiles);
     var isProfilesEmpty = checkDetailProfilesEmpty(detailedProfiles);
     if (newProfiles.length == 0 && isProfilesEmpty) {
-        openModal('No Data in Profiles', 'Profile Update Failure');
+        openModal('No Data in Profiles', 'Alert');
         return;
     }
 
@@ -492,7 +492,11 @@ function updateProfile() {
                 profiles = newProfiles;
                 openUpdatedModal();
             } else {
-                openModal(res['msg'], 'Update Failed');
+                if (res['msg'] == 'No changed profiles.') {
+                    openModal(res['msg'], 'Alert');
+                } else {
+                    openModal(res['msg'], 'Update Failed');
+                }
             }
         }
     });
