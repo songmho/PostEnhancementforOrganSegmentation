@@ -31,8 +31,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                 {% include 'miaas/template_container_request_info.html' %}
 
                 <div class="form-btns-container row">
-                    <div id="btnFormCancel" class="col-xs-12 col-md-4 col-md-offset-4 form-button">
-                        <a class="btn btn-lg btn-success btn-block" onclick="javascript:history.back();">Back</a>
+                    <div class="col-xs-12 col-md-4 col-md-offset-4 form-button">
+                        <a id="btnBack" class="btn btn-lg btn-success btn-block">Back</a>
                     </div>
                 </div>
             </div>
@@ -52,6 +52,15 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     });
     imageInfo = JSON.parse("{{ image | jsonstr }}");
     archiveURL = "{% url 'miaas:archive' %}";
+
+    $('#btnBack').click(function() {
+        $.LoadingOverlay('show');
+        var backurl = "{% url 'miaas:physician_interpretation' %}";
+        {% if lastPage %}
+            backurl += '?' + 'page=' + '{{ lastPage }}';
+        {% endif %}
+        location.href = backurl;
+    });
 </script>
 
 <!-- include the cornerstone library -->

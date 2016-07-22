@@ -152,33 +152,39 @@ def _get_session_context(request, pw_contains=False):
 ####################
 
 # patient
-def medical_image_page(request, image_id):
-    context = _get_session_context(request)
-    if not image_id or int(image_id) < 0:
-        return archive_page(request)
-    else:
-        try:
-            db = cloud_db_copy.DbManager()
-            image, = db.retrieve_detail(db.PATIENT_IMAGE_DETAIL, image_id)
-            intpr_list = db.retrieve_list(db.IMAGE_INTPR_LIST, image_id)
-            if image['user_id'] != request.session.get('user'):
-                return render(request, 'miaas/404.html', context="")
-            context['image'] = image
-            context['intpr_list'] = intpr_list
-        except Exception:
-            return render(request, 'miaas/404.html', context="")
-
-            # if result.get('image') and isinstance(result.get('intpr'), list):
-            #     context['image'] = result['image']
-            #     context['intpr_list'] = result['intpr']
-            # request.session['medical_image'][str(result['image']['image_id'])] = result['image']
-            # logger.info('image page(%s): %s' % (result['image']['image_id'], request.session['medical_image']))
-            # request.session['curr_image'] = result['image']
-    return render(request, 'miaas/patient_medical_image.html', context)
+# def medical_image_page(request, image_id):
+#     context = _get_session_context(request)
+#     if request.GET.get('lastPage'):
+#         context['lastPage'] = request.GET['lastPage']
+#
+#     if not image_id or int(image_id) < 0:
+#         return archive_page(request)
+#     else:
+#         try:
+#             db = cloud_db_copy.DbManager()
+#             image, = db.retrieve_detail(db.PATIENT_IMAGE_DETAIL, image_id)
+#             intpr_list = db.retrieve_list(db.IMAGE_INTPR_LIST, image_id)
+#             if image['user_id'] != request.session.get('user'):
+#                 return render(request, 'miaas/404.html', context="")
+#             context['image'] = image
+#             context['intpr_list'] = intpr_list
+#         except Exception:
+#             return render(request, 'miaas/404.html', context="")
+#
+#             # if result.get('image') and isinstance(result.get('intpr'), list):
+#             #     context['image'] = result['image']
+#             #     context['intpr_list'] = result['intpr']
+#             # request.session['medical_image'][str(result['image']['image_id'])] = result['image']
+#             # logger.info('image page(%s): %s' % (result['image']['image_id'], request.session['medical_image']))
+#             # request.session['curr_image'] = result['image']
+#     return render(request, 'miaas/patient_medical_image.html', context)
 
 
 def patient_interpretation_detail_page(request, intpr_id):
     context = _get_session_context(request)
+    if request.GET.get('lastPage'):
+        context['lastPage'] = request.GET['lastPage']
+
     if not intpr_id or int(intpr_id) < 0:
         return patient_interpretation_list_page(request)
     if request.session.get('user'):
@@ -200,6 +206,9 @@ def patient_interpretation_detail_page(request, intpr_id):
 
 def patient_interpretation_request_detail_page(request, request_id):
     context = _get_session_context(request)
+    if request.GET.get('lastPage'):
+        context['lastPage'] = request.GET['lastPage']
+
     if not request_id or int(request_id) < 0:
         return patient_request_list_page(request)
     if request.session.get('user'):
@@ -221,6 +230,9 @@ def patient_interpretation_request_detail_page(request, request_id):
 # physician
 def physician_request_search_detail_page(request, request_id):
     context = _get_session_context(request)
+    if request.GET.get('lastPage'):
+        context['lastPage'] = request.GET['lastPage']
+
     if not request_id or int(request_id) < 0:
         return physician_interpretation_search(request)
     if request.session.get('user'):
@@ -242,6 +254,9 @@ def physician_request_search_detail_page(request, request_id):
 
 def physician_interpretation_write(request, request_id):
     context = _get_session_context(request)
+    if request.GET.get('lastPage'):
+        context['lastPage'] = request.GET['lastPage']
+
     if not request_id or int(request_id) < 0:
         return physician_interpretation_response_page(request)
     if request.session.get('user'):
@@ -262,6 +277,9 @@ def physician_interpretation_write(request, request_id):
 
 def physician_interpretation_detail_page(request, intpr_id):
     context = _get_session_context(request)
+    if request.GET.get('lastPage'):
+        context['lastPage'] = request.GET['lastPage']
+
     if not intpr_id or int(intpr_id) < 0:
         return physician_interpretation_page(request)
     if request.session.get('user'):
@@ -285,6 +303,9 @@ def physician_interpretation_detail_page(request, intpr_id):
 # patient
 def patient_interpretation_list_page(request):
     context = _get_session_context(request)
+    if request.GET.get('page'):
+        context['page'] = request.GET['page']
+
     dt_list = []
     if request.session.get('user'):
         try:
@@ -313,6 +334,9 @@ def patient_interpretation_list_page(request):
 
 def patient_request_list_page(request):
     context = _get_session_context(request)
+    if request.GET.get('page'):
+        context['page'] = request.GET['page']
+
     dt_list = []
     if request.session.get('user'):
         try:
@@ -343,6 +367,9 @@ def patient_request_list_page(request):
 
 def archive_page(request):
     context = _get_session_context(request)
+    if request.GET.get('page'):
+        context['page'] = request.GET['page']
+
     dt_list = []
     if request.session.get('user'):
         try:
@@ -373,6 +400,9 @@ def archive_page(request):
 # physician
 def physician_interpretation_search(request):
     context = _get_session_context(request)
+    if request.GET.get('page'):
+        context['page'] = request.GET['page']
+
     dt_list = []
     if request.session.get('user'):
         try:
@@ -402,6 +432,9 @@ def physician_interpretation_search(request):
 
 def physician_interpretation_response_page(request):
     context = _get_session_context(request)
+    if request.GET.get('page'):
+        context['page'] = request.GET['page']
+
     dt_list = []
     if request.session.get('user'):
         # Retrieve lists.
@@ -433,6 +466,9 @@ def physician_interpretation_response_page(request):
 
 def physician_interpretation_page(request):
     context = _get_session_context(request)
+    if request.GET.get('page'):
+        context['page'] = request.GET['page']
+
     dt_list = []
     if request.session.get('user'):
         try:
@@ -539,6 +575,8 @@ class ArchiveDetailView(ArchiveUploadView):
 
     def get_context_data(self, **kwargs):
         context = _get_session_context(self.request)
+        if self.request.GET.get('lastPage'):
+            context['lastPage'] = self.request.GET['lastPage']
         image_id = self.kwargs['image_id']
 
         try:
@@ -547,7 +585,7 @@ class ArchiveDetailView(ArchiveUploadView):
             else:
                 db = cloud_db.DbManager()
                 result = db.retrieve_image_and_intpr(image_id)
-                logger.info(result)
+                # logger.info(result)
 
                 if result.get('image') and isinstance(result.get('intpr'), list):
                     context['image'] = result['image']

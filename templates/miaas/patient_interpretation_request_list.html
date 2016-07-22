@@ -84,11 +84,17 @@
                          setStatusColor();
                          }*/
                     });
+
+            {% if page %}
+                table.page(parseInt({{ page }})-1).draw('page');
+            {% endif %}
+
             $('#dataTable tbody').on('click', 'tr', function () {
                 $.LoadingOverlay('show');
                 var data = table.row(this).data();
                 var index_id = data[data.length - 1];
-                location.href = '{% url 'miaas:interpretation_request_list' %}/detail/' + index_id;
+                var nowPage = table.page.info()["page"]+1;
+                location.href = '{% url 'miaas:interpretation_request_list' %}/detail/' + index_id + '?lastPage=' + nowPage;
             });
         });
 

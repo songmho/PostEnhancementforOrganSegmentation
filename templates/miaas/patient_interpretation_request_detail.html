@@ -48,10 +48,10 @@
                     {% include 'miaas/template_container_request_info.html' %}
 
                     <div class="form-btns-container row">
-                        <div id="btnFormCancel" class="col-xs-6 col-md-3 col-md-offset-3 form-button">
-                            <a class="btn btn-lg btn-success btn-block"  onclick="javascript:history.back();">Back</a>
+                        <div class="col-xs-6 col-md-3 col-md-offset-3 form-button">
+                            <a id="btnBack" class="btn btn-lg btn-success btn-block">Back</a>
                         </div>
-                        <div id="btnFormCancel" class="col-xs-6 col-md-3  form-button">
+                        <div class="col-xs-6 col-md-3  form-button">
                             <a class="btn btn-lg btn-danger btn-block btn-request-cancel">Cancel Request</a>
                         </div>
                     </div>
@@ -90,10 +90,10 @@
                     {% include 'miaas/template_container_request_info.html' %}
 
                     <div class="form-btns-container row">
-                        <div id="btnFormCancel" class="col-xs-6 col-md-3 col-md-offset-3 form-button">
-                            <a class="btn btn-lg btn-success btn-block" onclick="javascript:history.back();">Back</a>
+                        <div class="col-xs-6 col-md-3 col-md-offset-3 form-button">
+                            <a id="btnBack" class="btn btn-lg btn-success btn-block">Back</a>
                         </div>
-                        <div id="btnFormCancel" class="col-xs-6 col-md-3  form-button">
+                        <div class="col-xs-6 col-md-3  form-button">
                             <a class="btn btn-lg btn-danger btn-block btn-request-cancel">Cancel Request</a>
                         </div>
 
@@ -126,13 +126,13 @@
                     </div>
 
                     <div class="form-btns-container row" accept-charset="UTF-8">
-                        <div id="btnFormCancel" class="col-xs-6 col-md-3 col-md-offset-3 form-button">
-                            <a class="btn btn-lg btn-success btn-block" onclick="javascript:history.back();">Back</a>
+                        <div class="col-xs-6 col-md-3 col-md-offset-3 form-button">
+                            <a id="btnBack" class="btn btn-lg btn-success btn-block">Back</a>
                         </div>
-                        <div id="btnFormCancel" class="col-xs-6 col-md-3 form-button">
+                        <div class="col-xs-6 col-md-3 form-button">
                             <a class="btn btn-lg btn-danger btn-block btn-request-cancel">Cancel Request</a>
                         </div>
-                        <div id="btnFormCancel" class="col-xs-6 col-md-3 form-button">
+                        <div class="col-xs-6 col-md-3 form-button">
                             <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
                         </div>
 
@@ -302,6 +302,15 @@
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");
     archiveURL = "{% url 'miaas:archive' %}";
+
+    $('#btnBack').click(function() {
+        $.LoadingOverlay('show');
+        var backurl = "{% url 'miaas:interpretation_request_list' %}";
+        {% if lastPage %}
+            backurl += '?' + 'page=' + '{{ lastPage }}';
+        {% endif %}
+        location.href = backurl;
+    });
 </script>
 
 <!-- include the cornerstone library -->

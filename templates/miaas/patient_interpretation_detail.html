@@ -45,8 +45,8 @@
                 </div>
 
                 <div class="form-btns-container row">
-                    <div id="btnFormCancel" class="col-xs-12 col-md-4 col-md-offset-4 form-button">
-                        <a class="btn btn-lg btn-success btn-block" onclick="javascript:history.back();">Back</a>
+                    <div class="col-xs-12 col-md-4 col-md-offset-4 form-button">
+                        <a id="btnBack" class="btn btn-lg btn-success btn-block">Back</a>
                     </div>
                 </div>
             </div>
@@ -101,6 +101,15 @@
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");
     archiveURL = "{% url 'miaas:archive' %}";
+
+    $('#btnBack').click(function() {
+        $.LoadingOverlay('show');
+        var backurl = "{% url 'miaas:interpretation' %}";
+        {% if lastPage %}
+            backurl += '?' + 'page=' + '{{ lastPage }}';
+        {% endif %}
+        location.href = backurl;
+    });
 </script>
 
 <!-- include the cornerstone library -->

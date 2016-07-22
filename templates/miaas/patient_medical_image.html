@@ -211,8 +211,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
         {% endfor %}
 
         <div class="form-btns-container row">
-            <div id="btnFormCancel" class="col-xs-12 col-md-4 col-md-offset-4 form-button">
-                <a class="btn btn-lg btn-success btn-block"  onclick="javascript:history.back();">Back</a>
+            <div class="col-xs-12 col-md-4 col-md-offset-4 form-button">
+                <a id="btnBack" class="btn btn-lg btn-success btn-block">Back</a>
             </div>
         </div>
 
@@ -290,6 +290,15 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
     archiveURL = "{% url 'miaas:archive' %}";
     requestListURL = "{% url 'miaas:interpretation_request_list' %}";
+
+    $('#btnBack').click(function() {
+        $.LoadingOverlay('show');
+        var backurl = "{% url 'miaas:archive' %}";
+        {% if lastPage %}
+            backurl += '?' + 'page=' + '{{ lastPage }}';
+        {% endif %}
+        location.href = backurl;
+    });
 </script>
 
 <!-- include the progressbar library -->
