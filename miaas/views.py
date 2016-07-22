@@ -143,6 +143,9 @@ def _get_session_context(request, pw_contains=False):
             context['user_session'].pop('password', None)
     if 'intpr_session' in request.session.keys():
         context['intpr_session'] = request.session['intpr_session']
+
+    # session expiry for 1 hour
+    request.session.set_expiry(60*60)
         
     return context
 
@@ -205,6 +208,7 @@ def patient_interpretation_detail_page(request, intpr_id):
 
 
 def patient_interpretation_request_detail_page(request, request_id):
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     context = _get_session_context(request)
     if request.GET.get('lastPage'):
         context['lastPage'] = request.GET['lastPage']
@@ -223,7 +227,8 @@ def patient_interpretation_request_detail_page(request, request_id):
             context['responses'] = responses
         except Exception:
             return render(request, 'miaas/404.html', context="")
-    logger.info('interpretation_request_detail_page get: %s' % request.GET)
+    logger.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    logger.info('dasfadfs asdf interpretation_request_detail_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_request_detail.html', context)
 
 

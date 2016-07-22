@@ -29,7 +29,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-sm-3 col-md-2 control-label" for="subject" >*Image Subject</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="text" id="subject" maxlength="255" name="subject" class="form-control"
-                                   placeholder="Subject" required readonly value="{{ image.subject }}">
+                                   placeholder="Example) CT image for suspected lung cancer" required readonly value="{{ image.subject }}">
                         </div>
                     </div>
 
@@ -93,7 +93,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-sm-3 col-md-2 control-label no-pad-left-sm" for="takenPhysicianName" >Doctor in Charge</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="text" maxlength="100" id="takenPhysicianName" name="takenPhysicianName" class="form-control"
-                                   placeholder="Examining Physician" readonly value="{{ image.physician }}">
+                                   placeholder="Example) Doctor. Smith" readonly value="{{ image.physician }}">
                         </div>
                     </div>
 
@@ -101,7 +101,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-sm-3 col-md-2 control-label" for="clinicName" >Clinic Name</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="text" id="clinicName" maxlength="255" name="clinicName" class="form-control"
-                                   placeholder="Place" readonly value="{{ image.place }}">
+                                   placeholder="Example) Seoul Severance Hospital" readonly value="{{ image.place }}">
                         </div>
                     </div>
 
@@ -110,7 +110,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-sm-3 col-md-2 control-label no-pad-top pad-7-bot" for="clinicName" >Medical Department</label>
                         <div class="col-sm-9 col-md-4">
                             <input type="text" id="medicalDepartment" maxlength="255" name="medicalDepartment" class="form-control"
-                                   placeholder="Place" readonly value="{{ image.medical_department }}">
+                                   placeholder="Example) Cardiothoracic surgery" readonly value="{{ image.medical_department }}">
                         </div>
                     </div>
 
@@ -118,7 +118,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-sm-3 col-md-2 control-label" for="imageDescription" >Notice</label>
                         <div class="col-sm-9 col-md-10">
                             <textarea type="textarea" id="imageDescription" name="imageDescription" class="form-control"
-                                      placeholder="Description" rows="5" readonly>{{ image.description }}</textarea>
+                                      placeholder="Write any notifications that need to be informed to physicians.&#10;Example) This image was taken for suspected lung cancer." rows="5" readonly>{{ image.description }}</textarea>
                         </div>
                     </div>
 
