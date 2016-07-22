@@ -11,9 +11,14 @@ $(document).ready(function () {
         $('#selectCountry').append('<option value="' +opt+'">'+opt+'</option>');
     }
 
-    //$('#inputId').blur(function (){
-    //    checkID();
-    //});
+    $('#inputId').blur(function (){
+        var nowId = $('#inputId').val();
+        if (/\S/.test(nowId) && nowId == tempID) {
+            checkIDFlag = true;
+        } else {
+            checkIDFlag = false;
+        }
+    });
     $('#btnCheckId').click(checkID);
     $('#inputPw').blur(function (){
         checkPassword();
@@ -30,9 +35,14 @@ $(document).ready(function () {
     $('#inputMobile').blur(function (){
         checkPhone();
     });
-    //$('#inputEmail').blur(function (){
-    //    checkEmail();
-    //});
+    $('#inputEmail').blur(function (){
+        var nowEmail = $('#inputEmail').val();
+        if (/\S/.test(nowEmail) && nowEmail == tempEmail) {
+            checkEmailFlag = true;
+        } else {
+            checkEmailFlag = false;
+        };
+    });
     $('#btnCheckEmail').click(checkEmail);
     $('#inputBirthdayMonth').blur(function (){
         checkBirth();

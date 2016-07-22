@@ -377,6 +377,13 @@ a:focus {
     }
 }
 
+textarea {
+    resize: vertical;
+}
+
+
+/* Table Profile */
+
 .table.table-profile-view > thead > tr > th {
     text-align: center;
 }

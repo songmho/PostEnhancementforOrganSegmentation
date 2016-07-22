@@ -43,7 +43,7 @@
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-4 control-label" for="inputEmail">Email Address</label>
+                        <label class="col-xs-12 col-sm-3 col-md-4 control-label" for="inputEmail">*Email Address</label>
                         <div class="col-xs-12 col-sm-9 col-md-8">
                             <input type="email" id="inputEmail" maxlength="100" name="email" class="form-control"
                                    placeholder="Email" value="{{ user_session.email }}"
@@ -69,7 +69,7 @@
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-4 control-label" for="inputFirstName">First Name</label>
+                        <label class="col-xs-12 col-sm-3 col-md-4 control-label" for="inputFirstName">*First Name</label>
                         <div class="col-xs-12 col-sm-9 col-md-8">
                             <input type="text" id="inputFirstName" maxlength="40" name="firstName" class="form-control"
                                    placeholder="First Name" value="{{ user_session.first_name }}" />
@@ -77,7 +77,7 @@
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-4 control-label" for="inputLastName">Last Name</label>
+                        <label class="col-xs-12 col-sm-3 col-md-4 control-label" for="inputLastName">*Last Name</label>
                         <div class="col-xs-12 col-sm-9 col-md-8">
                             <input type="text" id="inputLastName" maxlength="40" name="lastName" class="form-control"
                                    placeholder="Last Name" value="{{ user_session.last_name }}" />
@@ -85,7 +85,7 @@
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-4 control-label" for="inputBirthdayYear">Date of Birth</label>
+                        <label class="col-xs-12 col-sm-3 col-md-4 control-label" for="inputBirthdayYear">*Date of Birth</label>
                         <div class="col-xs-12 col-sm-9 col-md-8">
                             <input type="number" id="inputBirthdayMonth" name="birthdayMonth" maxlength="2" min="1" max="12"
                                    class="form-control" placeholder="MM"
@@ -100,7 +100,7 @@
                     </div>
 
                     <div class="col-xs-12 col-md-6 form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-4 control-label" for="inputMobile">Phone Number</label>
+                        <label class="col-xs-12 col-sm-3 col-md-4 control-label" for="inputMobile">*Phone #</label>
                         <div class="col-xs-12 col-sm-9 col-md-8">
                             <input type="tel" maxlength="17" id="inputMobile" name="mobile" class="form-control"
                                    placeholder="+CCC-NNNNNNN" value="{{ user_session.phone_number }}" />
@@ -140,7 +140,7 @@
 
                     {% if user_session.user_type == 'patient' %}
                         <div class="col-xs-12 col-md-6 form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-4 control-label" for="selectGender">Gender</label>
+                            <label class="col-xs-12 col-sm-3 col-md-4 control-label" for="selectGender">*Gender</label>
                             <div class="col-xs-12 col-sm-9 col-md-8">
                                 <select class="form-control" id="selectGender" name="gender">
                                     <option>Male</option>

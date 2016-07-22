@@ -8,7 +8,8 @@ $(document).ready(function () {
     checkFirstNameFlag = true;
     checkLastNameFlag = true;
     checkPhoneFlag = true;
-    checkEmailFlag = true;
+    //checkEmailFlag = true;
+    checkEmailFlag = false;
     checkEmailUsed = 1;
     checkBirthFlag = true;
     checkLicenseFlag = true;
@@ -36,9 +37,20 @@ $(document).ready(function () {
     $('#inputMobile').blur(function () {
         checkPhone();
     });
-    //$('#inputEmail').blur(function () {
-    //    checkEmail();
-    //});
+    $('#inputEmail').blur(function () {
+        var nowEmail = $('#inputEmail').val();
+        if (nowEmail == user['email']) {
+            checkEmailFlag = true;
+            checkEmailUsed = 1
+        } else {
+            checkEmailFlag = false;
+            checkEmailUsed = 1;
+        }
+        tempEmail = nowEmail;
+    });
+    $('#btnEmailCheck').click(function() {
+        checkEmail();
+    });
     $('#inputBirthdayMonth').blur(function (){
         checkBirth();
     });
@@ -58,6 +70,7 @@ $(document).ready(function () {
         checkLicense();
     });
 
+    tempEmail = user['email'];
     if (user.birthday != undefined && user.birthday != null && user.birthday != 0) {
         var birthdayDate = new Date(user.birthday);
         var month = birthdayDate.getMonth() + 1;
@@ -126,9 +139,18 @@ function checkFormEmail() {
 }
 
 function checkForm() {
+    var checkEmailFlag2 = false;
+    if (checkEmailFlag) {
+        checkEmailFlag2 = checkEmailFlag;
+    } else {
+        if (user['email'] == $('#inputEmail').val()) {
+            checkEmailFlag2 = true; //same email
+        }
+    }
+
     var invalidElements = "";
     if (!(checkPasswordFlag && checkPasswordConfirmFlag && checkFirstNameFlag && checkLastNameFlag &&
-        checkPhoneFlag && checkEmailFlag && checkBirthFlag && checkAddressFlag && checkCityFlag)) {
+        checkPhoneFlag && checkEmailFlag2 && checkBirthFlag && checkAddressFlag && checkCityFlag)) {
 
         if (!checkFirstNameFlag) {
             invalidElements += "FirstName";
@@ -139,7 +161,7 @@ function checkForm() {
             else
                 invalidElements += ", LastName"
         }
-        if (!checkBirth) {
+        if (!checkBirthFlag) {
             if (invalidElements == "")
                 invalidElements += "Date of Birth";
             else
@@ -157,7 +179,7 @@ function checkForm() {
             else
                 invalidElements += ", Password"
         }
-        if (!checkEmailFlag) {
+        if (!checkEmailFlag2) {
             if (invalidElements == "")
                 invalidElements += "E-mail";
             else
@@ -230,7 +252,11 @@ function updateUser() {
                 openModal("Your email will be updated completely when your email is authenticated.<br/>" +
                     "Please check your new email and authenticate it.", "Update Success")
             } else {
-                openModal(res['msg'], "Update Failed");
+                if(res['msg'] == 'There is no change.') {
+                    openModal(res['msg'], 'Alert');
+                } else {
+                    openModal(res['msg'], "Update Failed");
+                }
             }
         }
     });
@@ -242,7 +268,8 @@ function resetUser() {
     checkFirstNameFlag = true;
     checkLastNameFlag = true;
     checkPhoneFlag = true;
-    checkEmailFlag = true;
+    //checkEmailFlag = true;
+    checkEmailFlag = false;
     checkEmailUsed = 1;
     checkBirthFlag = true;
     checkLicenseFlag = true;

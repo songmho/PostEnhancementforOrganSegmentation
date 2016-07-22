@@ -260,11 +260,16 @@ function checkPhone() {
 var checkEmailFlag = false;
 var checkEmailUsed = -2;
 var tempEmail = "";
+function checkEmailChanged() {
+
+}
 function checkEmail() {
     var inputEmail = $('#inputEmail');
     var emailRe = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-    if (tempEmail == inputEmail.val() && checkEmailFlag)
+    if (tempEmail == inputEmail.val() && checkEmailFlag) {
+        openModal("You can use this email address.", "Email Check");
         return;
+    }
 
     else {
         tempEmail = inputEmail.val();
