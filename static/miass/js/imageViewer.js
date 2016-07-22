@@ -240,6 +240,7 @@ var graph = null;
 function csvGrpahLoadAndView(csvURL) {
     $('#btnImageControlHelp').hide();
     $('#btnGraphControlHelp').show();
+    $('#rollPeriod').val(1);
 
     showImageViewerLoader(true);
     setTimeout(function() {
