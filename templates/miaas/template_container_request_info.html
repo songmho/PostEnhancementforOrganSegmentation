@@ -1,3 +1,5 @@
+{% load my_filters %}
+
 <div class="form-container form-boxed form-horizontal row">
     {% if user_session.user_type == 'physician' %}
     <div class="col-xs-12 form-group">
@@ -35,7 +37,9 @@
         <label class="col-sm-3 col-md-2 control-label" for="reqMessage" >Request Message</label>
         <div class="col-xs-12 col-sm-9 col-md-10 control-text">
             <div id="reqMessage" class="control-value" >
-                <p>{{ request_detail.request_message }}</p>
+                {% autoescape off %}
+                <p>{{ request_detail.request_message | newline_to_br }}</p>
+                {% endautoescape %}
             </div>
         </div>
     </div>

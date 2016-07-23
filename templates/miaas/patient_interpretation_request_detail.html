@@ -14,6 +14,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'miass/css/imageViewer.css' %}">
 
 {% include 'miaas/template_nav_patient.html' %}
+
 <div class="container">
     <section class="section section-default">
         <div class="row">
@@ -37,7 +38,11 @@
                                     <td><a class="text-primary view-profile" href="#" physician_id="{{ res.physician_id }}">{{ res.physician_id }}</a></td>
                                     <td class="word-break">{{ res.physician_name }}</td>
                                     <td class="word-break">{{ res.medical_field }}</td>
-                                    <td class="word-break">{{ res.response_message }}</td>
+                                    <td class="word-break">
+                                        {% autoescape off %}
+                                        {{ res.response_message | newline_to_br }}
+                                        {% endautoescape %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -59,7 +64,7 @@
 
             {% elif request_detail.status == '2' or request_detail.status == 2 %} {# Candidate Waiting #}
 {#                <div class="col-xs-12 col-table">#}
-                <div class="table-container detail-page-table-container row">
+                <div class="table-container detail-page-table-container col-xs-12 col-form">
                     <div class="table-title col-xs-12">Candidate Physician List</div>
                     <table class="table table-striped table-hover col-xs-12">
                         <thead>
@@ -75,7 +80,11 @@
                                 <td><a class="text-primary view-profile" href="#" physician_id="{{ res.physician_id }}">{{ res.physician_id }}</a></td>
                                 <td class="word-break">{{ res.physician_name }}</td>
                                 <td class="word-break">{{ res.medical_field }}</td>
-                                <td class="word-break">{{ res.response_message }}</td>
+                                <td class="word-break">
+                                    {% autoescape off %}
+                                    {{ res.response_message | newline_to_br }}
+                                    {% endautoescape %}
+                                </td>
                                 <td class="valign vcenter">
                                     <a class="btn btn-success btn-block btn-physician-select" physician_id="{{ res.physician_id }}" >SELECT</a>
                                 </td>
@@ -102,7 +111,7 @@
 
             {% elif request_detail.status == '3' or request_detail.status == 3 %} {# Finding Physician #}
 {#                <div class="col-xs-12 col-table">#}
-                <form id="formRequestEdit">
+                <form id="formRequestEdit" method="post">
                     <div class="col-xs-12 col-form">
                         {% include 'miaas/template_container_image_info.html' %}
 
@@ -110,8 +119,11 @@
                             <div class="col-xs-12 form-group">
                                 <label class="col-sm-3 col-md-2 control-label no-pad-top" for="inputReqSubject" >*Request Subject</label>
                                 <div class="col-xs-12 col-sm-6 col-md-10">
-                                    <textarea type="textarea" id="taSubject" name="txt_request_subject"
-                                              class="form-control" required>{{ request_detail.request_subject }}</textarea>
+{#                                    <textarea type="textarea" id="taSubject" name="txt_request_subject"#}
+{#                                              class="form-control" required>{{ request_detail.request_subject }}</textarea>#}
+                                    <input type="text" id="taSubject" name="txt_request_subject" class="form-control"
+                                           value="{{ request_detail.request_subject }}"
+                                           placeholder="Example) Please interpret my CT image for suspected lung cancer." required />
                                 </div>
                             </div>
 
@@ -119,6 +131,7 @@
                                 <label class="col-sm-3 col-md-2 control-label no-pad-top" for="taMessage" >*Request Message</label>
                                 <div class="col-sm-9 col-md-10">
                                 <textarea type="textarea" id="taMessage" name="message" class="form-control"
+                                          placeholder="Write any messages that you want to tell physicians.&#10; Example) I was recommended to have a serious operation, so I want to receive others’ opinion for this image."
                                           rows="5" required >{{ request_detail.request_message }}</textarea>
                                 </div>
                             </div>
@@ -126,13 +139,13 @@
                     </div>
 
                     <div class="form-btns-container row" accept-charset="UTF-8">
-                        <div class="col-xs-6 col-md-3 col-md-offset-3 form-button">
+                        <div class="col-xs-6 col-md-3 col-md-offset-1 form-button">
                             <a id="btnBack" class="btn btn-lg btn-success btn-block">Back</a>
                         </div>
                         <div class="col-xs-6 col-md-3 form-button">
                             <a class="btn btn-lg btn-danger btn-block btn-request-cancel">Cancel Request</a>
                         </div>
-                        <div class="col-xs-6 col-md-3 form-button">
+                        <div class="col-xs-6 col-md-4 form-button">
                             <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
                         </div>
 
@@ -189,6 +202,13 @@
 <!-- custom javascript -->
 <script>
     listURL = "{% url 'miaas:interpretation_request_list' %}";
+    archiveURL = "{% url 'miaas:archive' %}";
+
+    imageInfo = JSON.parse("{{ image | jsonstr }}");
+    {% if request_detail %}
+        reqInfo = JSON.parse("{{ request_detail | jsonstr }}");
+    {% endif %}
+
     $(document).ready(function() {
         $('.btn-request-cancel').click(function() {
             $('#cancelRequest').modal()
@@ -225,7 +245,7 @@
                     console.log(res);
                     if(res['code'] == 'SUCCESS') {
                         profiles = res['profiles'];
-                        resetProfile();
+                        resetPhysicianProfile();
                         $('#physicianProfileModal').modal()
                     } else {
                         openModal(res['msg'], 'Getting Profile Failed');
@@ -242,9 +262,10 @@
                 method: 'POST',
                 data: JSON.stringify({
                     action: 'patientSelReq',
-                    request_id: {{ request_detail.request_id }},
-                    request_subject: '{{ request_detail.request_subject }}',
-                    patient_id: '{{ user_session.user_id }}',
+                    request_id: reqInfo.request_id,
+                    request_subject: reqInfo.request_subject,
+                    request_message: reqInfo.request_message,
+                    patient_id: "{{ user_session.user_id }}",
                     physician_id: physician_id
                 }),
                 dataType: 'json',
@@ -259,21 +280,32 @@
             });
         });
 
-        $('#formRequestEdit').on('submit', function(e) {
+        $('#formRequestEdit').on('submit', function (e) {
             e.preventDefault();
+
+            var subject = $('#taSubject').val();
+            var message = $('#taMessage').val();
+            if(reqInfo.request_subject == subject && reqInfo.request_message == message) {
+                openModal("There is no change.", "Alert");
+                return;
+            }
+
             $.LoadingOverlay('show');
             $.ajax("/api/interpretation", {
                 method: 'POST',
                 data: JSON.stringify({
                     action: 'reqUpdate',
-                    request_id: {{ request_detail.request_id }},
-                    subject: $('#taSubject').val(),
-                    message: $('#taMessage').val()
+                    request_id: reqInfo.request_id,
+                    subject: subject,
+                    message: message
                 }),
                 dataType: 'json',
                 success: function (res) {
                     $.LoadingOverlay('hide');
                     if (res['code'] == 'SUCCESS') {
+                        reqInfo.request_subject = subject;
+                        reqInfo.request_message = message;
+                        $('#titleSubject').text('Interpretation Request "' + subject + '"');
                         openModal("Success", "Editing Request Succeed")
                     } else {
                         openModal(res['msg'], "Editing Request Failed")
@@ -285,7 +317,7 @@
         setOpenImageViewerListener($('#image-previewer'));
     });
 
-    function resetProfile() {
+    function resetPhysicianProfile() {
         $('#physicianProfileForm input, #physicianProfileForm textarea').each(function() {
             $(this).val('');
         });
@@ -299,9 +331,6 @@
             }
         }
     }
-
-    imageInfo = JSON.parse("{{ image | jsonstr }}");
-    archiveURL = "{% url 'miaas:archive' %}";
 
     $('#btnBack').click(function() {
         $.LoadingOverlay('show');

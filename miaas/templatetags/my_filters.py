@@ -65,8 +65,13 @@ def to_jsonstr(dict):
     return escapejs(json.dumps(dict))
 
 
-timezone_kr = pytz.timezone('Asia/Seoul')
+# when use this filter, need to set autoescape off
+@register.filter(name='newline_to_br')
+def newline_to_br(string):
+    return string.replace('\n', '<br/>')
 
+
+timezone_kr = pytz.timezone('Asia/Seoul')
 
 @register.filter(name='datetime_string')
 def timestamp_to_datetime_string(timestamp):

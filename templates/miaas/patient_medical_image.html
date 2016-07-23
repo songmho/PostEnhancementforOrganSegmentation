@@ -118,7 +118,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-sm-3 col-md-2 control-label" for="imageDescription" >Notice</label>
                         <div class="col-sm-9 col-md-10">
                             <textarea type="textarea" id="imageDescription" name="imageDescription" class="form-control"
-                                      placeholder="Write any notifications that need to be informed to physicians.&#10;Example) This image was taken for suspected lung cancer." rows="5" readonly>{{ image.description }}</textarea>
+                                      placeholder="Write any notifications that need to be informed to physicians.&#10;Example) This image was taken for suspected lung cancer."
+                                      rows="5" readonly>{{ image.description }}</textarea>
                         </div>
                     </div>
 
@@ -178,7 +179,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
                         <label class="col-sm-3 col-md-2 control-label no-pad-top" for="reqMessage" >*Request Message</label>
                         <div class="col-sm-9 col-md-10">
                             <textarea type="textarea" id="reqMessage" name="reqMessage" class="form-control"
-                                      placeholder="Write any messages that you want to tell physicians.&#10; Example) I was recommended to have a serious operation, so I want to receive others’ opinion for this image." rows="5" required></textarea>
+                                      placeholder="Write any messages that you want to tell physicians.&#10; Example) I was recommended to have a serious operation, so I want to receive others’ opinion for this image." rows="5" required>
+                            </textarea>
                         </div>
                     </div>
 
