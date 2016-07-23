@@ -795,7 +795,7 @@ def handle_interpretation_mgt(request):
                 if if_inserted:
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
+                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_CHANGE}))
 
             # To create an interpretation and update request and response
             elif action == 'finishIntpr':

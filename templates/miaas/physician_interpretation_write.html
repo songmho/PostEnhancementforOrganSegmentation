@@ -239,6 +239,9 @@
     $(document).ready(function () {
         tinymce.init({
             selector: 'textarea.interpretation-writer',
+            fontname: 'Helvetica Neue=Helvetica Neue,Helvetica;Arial=Arial;sans-serif=sans-serif',
+            fontsize_formats: '15px 16px 18px 20px 24px 30px 36px',
+            content_css : "{% static 'miass/css/tinymce_custom.css' %}",
             menubar: false,
             plugins: 'table link textcolor autolink autoresize',
             autoresize_bottom_margin: 0,
@@ -350,7 +353,12 @@
                 if (res['code'] == 'SUCCESS') {
                     openModal("Success", "Interpretation is Saved.")
                 } else {
-                    openModal(res['msg'], "Save is Failed.")
+                    if (res['msg'] == 'There is no change.')
+                        openModal(res['msg'], "Alert");
+                    else if (res['msg'] == 'To insert data failed.')
+                        openModal('Saving your interpretation is failed.', "Fail to save interpretation");
+                    else
+                        openModal(res['msg'], "Fail to save interpretation");
                 }
             }
         });
