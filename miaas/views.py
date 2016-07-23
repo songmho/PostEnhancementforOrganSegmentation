@@ -595,6 +595,7 @@ class ArchiveDetailView(ArchiveUploadView):
                 if result.get('image') and isinstance(result.get('intpr'), list):
                     context['image'] = result['image']
                     context['intpr_list'] = result['intpr']
+                    pprint (result['intpr'])
         except:
             context['image'] = None
         return context

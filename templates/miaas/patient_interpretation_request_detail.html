@@ -232,7 +232,6 @@
 
         $('.view-profile').click(function(){
             var physician_id = $(this).attr('physician_id');
-            console.log(physician_id);
             $.LoadingOverlay('show');
             $.ajax("/api/physician_profile", {
                 method: 'GET',
@@ -245,7 +244,7 @@
                     console.log(res);
                     if(res['code'] == 'SUCCESS') {
                         profiles = res['profiles'];
-                        resetPhysicianProfile();
+                        resetPhysicianProfile(profiles);
                         $('#physicianProfileModal').modal()
                     } else {
                         openModal(res['msg'], 'Getting Profile Failed');
@@ -316,21 +315,6 @@
 
         setOpenImageViewerListener($('#image-previewer'));
     });
-
-    function resetPhysicianProfile() {
-        $('#physicianProfileForm input, #physicianProfileForm textarea').each(function() {
-            $(this).val('');
-        });
-        for (var profileName in profiles) {
-            var profile = profiles[profileName];
-            if(profile == null){
-                $('#' + profileName).val("The information isn't provided by the physician.");
-            }
-            else {
-                $('#' + profileName).val(profile);
-            }
-        }
-    }
 
     $('#btnBack').click(function() {
         $.LoadingOverlay('show');

@@ -229,3 +229,21 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    function resetPhysicianProfile(physicianProfiles) {
+        $('#physicianProfileForm output').each(function() {
+            $(this).val("This information isn't provided by the physician.");
+        });
+        for (var profileName in physicianProfiles) {
+            var profile = physicianProfiles[profileName];
+            if(profile == null || !/\S/.test(profile)){
+                $('#' + profileName).val("This information isn't provided by the physician.");
+            }
+            else {
+                $('#' + profileName).val(profile);
+            }
+        }
+    }
+</script>

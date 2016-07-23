@@ -1058,9 +1058,12 @@ class DbManager():
                 # To retrieve data from 'medical_image' table
                 intpr_by_image['image'] = self.retrieve_medical_image_by_id(image_id)
                 # To retrieve data from 'interpretation' table
-                db_query = "SELECT intpr_id, patient_id, physician_id, image_id, " \
-                           "level, fee, timestamp, summary, request_id, " \
-                           "suspected_disease, opinion, recommendation FROM interpretation WHERE image_id=%s"
+                db_query = "SELECT i.intpr_id, i.patient_id, i.physician_id, i.image_id, " \
+                           "i.level, i.fee, i.timestamp, i.summary, i.request_id, " \
+                           "i.suspected_disease, i.opinion, i.recommendation, " \
+                           "p.first_name, p.last_name " \
+                           "FROM interpretation as i LEFT JOIN user p ON i.physician_id = p.user_id " \
+                           "WHERE image_id=%s"
                 cursor.execute(db_query, (image_id))
                 self.connector.commit()
                 for row in cursor:
@@ -1076,6 +1079,9 @@ class DbManager():
                     intpr['suspected_disease'] = row[9]
                     intpr['opinion'] = row[10]
                     intpr['recommendation'] = row[11]
+                    intpr['physician_first_name'] = row[12]
+                    intpr['physician_last_name'] = row[13]
+                    intpr['physician_name'] = row[12] + ' ' + row[13]
                     intpr_list.append(intpr)
                 intpr_by_image['intpr'] = intpr_list
             except Exception as e:

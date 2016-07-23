@@ -63,6 +63,9 @@
 
 <!-- custom javascript -->
 <script>
+    var intprInfo = JSON.parse("{{ intpr | jsonstr }}");
+    var physician = JSON.parse("{{ physician | jsonstr }}");
+
     $(document).ready(function() {
         $('.view-profile').click(function(){
             var physician_id = $(this).attr('physician_id');
@@ -75,9 +78,10 @@
                 dataType: 'json',
                 success: function(res) {
                     $.LoadingOverlay('hide');
+                    console.log(res);
                     if(res['code'] == 'SUCCESS') {
                         profiles = res['profiles'];
-                        resetProfile();
+                        resetPhysicianProfile(profiles);
                         $('#physicianProfileModal').modal()
                     } else {
                         openModal(res['msg'], 'Getting Profile Failed');
@@ -88,17 +92,6 @@
 
         setOpenImageViewerListener($('#image-previewer'));
     });
-
-    function resetProfile() {
-        $('#physicianProfileForm input, #physicianProfileForm textarea').each(function() {
-            $(this).val('');
-        });
-
-        for (var i in profiles) {
-            var profile = profiles[i];
-            $('#'+profile.type).val(profile.value);
-        }
-    }
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");
     archiveURL = "{% url 'miaas:archive' %}";

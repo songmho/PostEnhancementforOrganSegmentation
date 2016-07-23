@@ -535,6 +535,13 @@ body.modal-open {
     }
 }
 
+.modal.modal-profile #physicianProfileForm label,
+.modal.modal-profile #physicianProfileForm output
+{
+    word-break: normal;
+    word-break: break-word;
+}
+
 .popover {
     z-index: 1200 !important;
 }

@@ -276,6 +276,7 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     </form>
 </div>
 
+{% include 'miaas/template_modal_physician_profile.html' %}
 {% include 'miaas/template_modal_uploader.html' %}
 {% include 'miaas/template_modal_imageviewer.html' %}
 
@@ -286,6 +287,29 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     $('#imageType').val("{{ image.image_type }}").attr("selected", "selected");
     $('#takenFrom').val("{{ image.taken_from }}").attr("selected", "selected");
     $('#takenDate').val(new Date(parseInt("{{ image.taken_date }}")).format("yyyy-MM-dd"));
+
+    $('.view-profile').click(function(){
+        var physician_id = $(this).attr('physician_id');
+        $.LoadingOverlay('show');
+        $.ajax("/api/physician_profile", {
+            method: 'GET',
+            data: {
+                user_id: physician_id
+            },
+            dataType: 'json',
+            success: function(res) {
+                $.LoadingOverlay('hide');
+                console.log(res);
+                if(res['code'] == 'SUCCESS') {
+                    profiles = res['profiles'];
+                    resetPhysicianProfile(profiles);
+                    $('#physicianProfileModal').modal()
+                } else {
+                    openModal(res['msg'], 'Getting Profile Failed');
+                }
+            }
+        });
+    });
 
     imageInfo = JSON.parse("{{ image | jsonstr }}");
     intprSize = {{ intpr_list|list_size }};
