@@ -256,7 +256,9 @@ b a.table-page-number {
 }
 
 .table td.word-break {
-    word-break: break-all;
+    /*word-break: break-all;*/
+    word-break: normal;
+    word-break: break-word;
 }
 
 @media (min-width: 768px) {
@@ -364,7 +366,9 @@ a:focus {
 }
 
 .form-container .control-text {
-    word-break: break-all;
+    /*word-break: break-all;*/
+    word-break: normal;
+    word-break: break-word;
 }
 
 .form-container .form-group.deactivate {
@@ -430,7 +434,9 @@ textarea {
 }
 
 .col-title {
-    word-break: break-all;
+    /*word-break: break-all;*/
+    word-break: normal;
+    word-break: break-word;
 }
 
 /* Medical Image */
@@ -496,7 +502,9 @@ body.modal-open {
 }
 
 .modal .modal-body {
-    word-break: break-all;
+    /*word-break: break-all;*/
+    word-break: normal;
+    word-break: break-word;
 }
 
 .modal .modal-progress-body {

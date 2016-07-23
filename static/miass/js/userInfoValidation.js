@@ -7,6 +7,7 @@ function checkID() {
     var idRe = /^[a-z]+[a-z0-9_.\-]{3,19}$/g;
     var inputId = $('#inputId');
     if (tempID == inputId.val() && checkIDFlag) {
+        openModal("You can use this ID.", "Checking ID");
         return
     }
     else {
@@ -260,21 +261,17 @@ function checkPhone() {
 var checkEmailFlag = false;
 var checkEmailUsed = -2;
 var tempEmail = "";
-function checkEmailChanged() {
-
-}
 function checkEmail() {
     var inputEmail = $('#inputEmail');
     var emailRe = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-    if (tempEmail == inputEmail.val() && checkEmailFlag) {
+    if (tempEmail == inputEmail.val() && checkEmailFlag && checkEmailUsed==1) {
         openModal("You can use this email address.", "Email Check");
         return;
-    }
-
-    else {
+    } else {
         tempEmail = inputEmail.val();
         checkEmailFlag = false;
     }
+
     if (!inputEmail.val().match(emailRe)) {
         inputEmail.css("border-color", "red");
         openModal("The form of e-mail address is xxxx@xxxx.xxx", 'Email Check');
@@ -288,8 +285,12 @@ function checkEmail() {
     checkEmailUsed = -2;
     var needEmailCheck = true;
     if (isAccountPage) {   //for account change
-        if (inputEmail.val() == user['email']) needEmailCheck = false;
-        checkEmailUsed = 1;
+        if (inputEmail.val() == user['email']) {
+            needEmailCheck = false;
+            checkEmailUsed = 1;
+            openModal("You can use this email address.", "Email Check");
+            return
+        }
     }
 
     if(needEmailCheck) {
@@ -310,6 +311,8 @@ function checkEmail() {
                 } else {
                     checkEmailUsed = -2;
                 }
+
+                console.log('ffff');
 
                 if (checkEmailUsed == 1) {
                     openModal("You can use this email address.", "Email Check");

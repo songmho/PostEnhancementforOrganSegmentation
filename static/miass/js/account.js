@@ -230,6 +230,8 @@ function updateUser() {
     updatingUser['country'] = $('#selectCountry :selected').val();
     updatingUser['user_type'] = user.user_type;
 
+    console.log(updatingUser);
+
     $.LoadingOverlay('show');
     $.ajax("/api/user", {
         method: 'POST',

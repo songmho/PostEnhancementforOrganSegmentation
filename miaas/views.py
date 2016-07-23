@@ -19,7 +19,7 @@ from miaas import sample_contexts as sctx
 from miaas import cloud_db, constants, cloud_db_copy, email_auth
 
 from image_manager import ImageManager, ImageRetriever
-import logging, json, time
+import logging, json, time, copy
 from pprint import pprint
 
 # get db data -> 404 template, urls in tutorial #3: https://docs.djangoproject.com/en/1.9/intro/tutorial03/
@@ -104,17 +104,6 @@ def find_page(request):
 def account_page(request):
     db = cloud_db.DbManager()
 
-    if request.session.get('user'):
-        user = request.session['user']
-        try:
-            user_type = db.retrieve_user_type(user['user_id'], user['password'])
-            if user_type == 'patient':
-                user = db.retrieve_patient(user['user_id'], user['password'])
-            elif user_type == 'physician':
-                user = db.retrieve_physician(user['user_id'], user['password'])
-        except: pass
-        request.session['user'] = user
-
     context = _get_session_context(request, pw_contains=True)
     return render(request, 'miaas/account.html', context)
 
@@ -138,15 +127,16 @@ def physician_profile_page(request):
 def _get_session_context(request, pw_contains=False):
     context = {}
     if 'user' in request.session.keys():
-        context['user_session'] = request.session['user']
+        context['user_session'] = copy.deepcopy(request.session['user'])
         if context.get('user_session') and not pw_contains:
             context['user_session'].pop('password', None)
+
     if 'intpr_session' in request.session.keys():
         context['intpr_session'] = request.session['intpr_session']
 
     # session expiry for 1 hour
     request.session.set_expiry(60*60)
-        
+
     return context
 
 

@@ -185,7 +185,7 @@ def handle_session_mgt(request):
 
             # set sessions
             request.session['user'] = user
-            # pprint(intpr_session)
+            # pprint(user)
             request.session['intpr_session'] = intpr_session
             # request.session['medical_image'] = {}
             # request.session.create('medical_image')
@@ -345,6 +345,7 @@ def handle_user_mgt(request):
 
                 try:
                     update_user_success = False
+                    pprint (request.session['user'])
                     if user_type == 'patient':
                         update_user_success = db.update_patient(user)
                     elif user_type == 'physician':
