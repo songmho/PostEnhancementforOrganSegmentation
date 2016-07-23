@@ -53,6 +53,14 @@
                                placeholder="+CCC-NNNNNNN">
                     </div>
 
+                    <div id="formGender" class="form-group col-xs-12 col-sm-6">
+                        <label for="selectGender" >Gender *</label>
+                        <select class="form-control" id="selectGender" name="gender" >
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                    </div>
+
                     <div class="form-group col-xs-12">
                         <label for="inputId" >User ID *</label>
                         <input type="text" id="inputId" name="id" maxlength="20"
@@ -125,31 +133,34 @@
                         <div id="btn-basic-next" class="col-xs-6 col-md-4">
                             <button class="btn btn-lg btn-primary btn-block" type="submit">Next</button>
                         </div>
-                    </div>
-                </form>
-
-                <form class="col-xs-12" id="col-signup-detail-patient" name="signupStep3Patient" style="display: none;" accept-charset="UTF-8">
-                    <h2 class="text-primary text-center">Enter additional information.</h2>
-                    <br/>
-                    <div class="form-group col-xs-12">
-                        <label for="selectGender" >Gender *</label>
-                        <select class="form-control" id="selectGender" name="gender" >
-                            <option>Male</option>
-                            <option>Female</option>
-                        </select>
-                    </div>
-
-{#                    <div class="row" class="row-form-btns">#}
-                    <div class="col-xs-12">
-                        <br/>
-                        <div id="btn-patient-prev" class="col-xs-6 col-md-offset-2 col-md-4">
-                            <button class="btn btn-lg btn-primary btn-block" type="button">Prev</button>
-                        </div>
-                        <div id="btn-patient-done" class="col-xs-6 col-md-4">
+                        <div id="btn-patient-done" class="col-xs-6 col-md-4" >
                             <button class="btn btn-lg btn-success btn-block" type="submit">Done</button>
                         </div>
                     </div>
                 </form>
+
+{#                <form class="col-xs-12" id="col-signup-detail-patient" name="signupStep3Patient" style="display: none;" accept-charset="UTF-8">#}
+{#                    <h2 class="text-primary text-center">Enter additional information.</h2>#}
+{#                    <br/>#}
+{#                    <div class="form-group col-xs-12">#}
+{#                        <label for="selectGender" >Gender *</label>#}
+{#                        <select class="form-control" id="selectGender" name="gender" >#}
+{#                            <option>Male</option>#}
+{#                            <option>Female</option>#}
+{#                        </select>#}
+{#                    </div>#}
+{##}
+{#                    <div class="row" class="row-form-btns">#}
+{#                    <div class="col-xs-12">#}
+{#                        <br/>#}
+{#                        <div id="btn-patient-prev" class="col-xs-6 col-md-offset-2 col-md-4">#}
+{#                            <button class="btn btn-lg btn-primary btn-block" type="button">Prev</button>#}
+{#                        </div>#}
+{#                        <div id="btn-patient-done" class="col-xs-6 col-md-4">#}
+{#                            <button class="btn btn-lg btn-success btn-block" type="submit">Done</button>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </form>#}
 
                 <form class="col-xs-12" id="col-signup-detail-physician" name="signupStep3Physician" style="display: none;" accept-charset="UTF-8">
                     <h2 class="text-primary text-center">Enter physician information.</h2>

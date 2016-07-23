@@ -70,6 +70,10 @@ $(document).ready(function () {
         $('#fileCertification').removeAttr('required');
         //$('#selectGender').attr('required', '');
 
+        $('#formGender').show();
+        $('#btn-basic-next').hide();
+        $('#btn-patient-done').show();
+
         $('#col-signup-usertype').hide();
         $('#col-signup-basic').show();
     });
@@ -78,6 +82,11 @@ $(document).ready(function () {
         //$('#selectGender').removeAttr('required');
         //$('#selectField').attr('required', '');
         //$('#inputLicence').attr('required', '');
+
+        $('#formGender').hide();
+        $('#btn-basic-next').show();
+        $('#btn-patient-done').hide();
+
         $('#fileCertification').attr('required', '');
         $('#col-signup-usertype').hide();
         $('#col-signup-basic').show();
@@ -98,20 +107,20 @@ $(document).ready(function () {
         checkAndSetStep3();
     });
 
-    $('#btn-patient-prev').click(function () {
-        $('#col-signup-detail-patient').hide();
-        $('#col-signup-basic').show();
-    });
+    //$('#btn-patient-prev').click(function () {
+    //    $('#col-signup-detail-patient').hide();
+    //    $('#col-signup-basic').show();
+    //});
 
     $('#btn-physician-prev').click(function () {
         $('#col-signup-detail-physician').hide();
         $('#col-signup-basic').show();
     });
 
-    $('#col-signup-detail-patient').on('submit', function (e) {
-        e.preventDefault();
-        signup('patient');
-    });
+    //$('#col-signup-detail-patient').on('submit', function (e) {
+    //    e.preventDefault();
+    //    signup('patient');
+    //});
     $('#col-signup-detail-physician').on('submit', function (e) {
         e.preventDefault();
         signup('physician');
@@ -198,10 +207,12 @@ function setStep3() {
         openModal("Please check these information: " + invalidElements, "Warning");
     }
     else {
-        $('#col-signup-basic').hide();
+        //$('#col-signup-basic').hide();
         if (usertype == 'patient') {
-            $('#col-signup-detail-patient').show();
+            //$('#col-signup-detail-patient').show();
+            signup('patient');
         } else if (usertype == 'physician') {
+            $('#col-signup-basic').hide();
             $('#col-signup-detail-physician').show();
         }
     }
@@ -246,7 +257,8 @@ function signup(usertype) {
             $.LoadingOverlay('hide');
             if (res['code'] == 'SUCCESS') {
                 //location.href = indexPage;
-                $('#col-signup-detail-patient').hide();
+                $('#col-signup-basic').hide();
+                //$('#col-signup-detail-patient').hide();
                 $('#col-signup-detail-physician').hide();
                 $('#col-signup-authentication').show();
             } else {
