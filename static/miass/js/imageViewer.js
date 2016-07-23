@@ -912,7 +912,7 @@ $(cornerstone).bind('CornerstoneImageLoadProgress', function(eventData) {
 });
 
 $(document).ready(function() {
-    $('#rollPeriodLabel').popover({ trigger: "hover" });
+    $('#rollPeriodLabel').popover({ trigger: "hover", html: true });
     $('#btnImageControlHelp').popover({ trigger: "hover" });
     $('#btnGraphControlHelp').popover({ trigger: "hover" })
 
@@ -974,8 +974,8 @@ $(document).ready(function() {
         var period = $(this).val();
         if(period < 0) {
             $(this).val(0)
-        } else if (period > 1000) {
-            $(this).val(1000);
+        } else if (period > 100) {
+            $(this).val(100);
         }
     });
 
