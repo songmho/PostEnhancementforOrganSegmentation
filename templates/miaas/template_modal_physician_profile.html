@@ -242,7 +242,7 @@
                 $('#' + profileName).val("This information isn't provided by the physician.");
             }
             else {
-                $('#' + profileName).val(profile);
+                $('#' + profileName).html(profile.newLineToBrTag());
             }
         }
     }

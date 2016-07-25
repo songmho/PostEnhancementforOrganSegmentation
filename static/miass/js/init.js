@@ -102,6 +102,9 @@ function highlightCurrentMenu() {
     }
 }
 
+String.prototype.newLineToBrTag = function() {
+    return this.replace(/\n/gm, '<br/>');
+};
 
 //Timestamp -> Datetime Format
 String.prototype.string = function(len){var s = '', i = 0; while (i++ < len) { s += this; } return s;};

@@ -87,8 +87,8 @@ function setPastMedicalHistoryTable(pmh) {
             htmlString += "<td>" + pmhRow['type'] + "</td>";
             htmlString += "<td>" + pmhRow['name'] + "</td>";
             htmlString += "<td>" + pmhRow['date'] + "</td>";
-            htmlString += "<td>" + pmhRow['comment'] + "</td>";
-            htmlString += "</tr>"
+            htmlString += "<td>" + pmhRow['comment'].newLineToBrTag() + "</td>";
+            htmlString += "</tr>";
         }
         $('#form-pmh .table-profile-view tbody').append(htmlString);
     } else {
@@ -107,7 +107,7 @@ function setExistingDiseasesTable(ed) {
             htmlString += "<td>" + edRow['name'] + "</td>";
             htmlString += "<td>" + edRow['degree'] + "</td>";
             htmlString += "<td>" + edRow['duration'].replace('|', ' ') + "</td>";
-            htmlString += "<td>" + edRow['comment'] + "</td>";
+            htmlString += "<td>" + edRow['comment'].newLineToBrTag() + "</td>";
             htmlString += "</tr>"
         }
         $('#form-ed .table-profile-view tbody').append(htmlString);
@@ -132,7 +132,7 @@ function setSuspectedDiseasesTable(sd) {
                 htmlString += "<td>" + symptoms[k]['symptom'] + "</td>";
                 htmlString += "<td>" + symptoms[k]['degree'].replace('|', ' ') + "</td>";
                 htmlString += "<td>" + symptoms[k]['duration'].replace('|', ' ') + "</td>";
-                htmlString += "<td>" + symptoms[k]['comment'] + "</td>";
+                htmlString += "<td>" + symptoms[k]['comment'].newLineToBrTag() + "</td>";
                 htmlString += "</tr>"
             }
             $('#form-sd .table-profile-view tbody').append(htmlString);
@@ -155,7 +155,7 @@ function setMedicationsTable(med) {
             htmlString += "<td>" + medRow['intake'].replace('|', ' ') + "</td>";
             htmlString += "<td>" + medRow['frequency'].replace('|', ' ') + "</td>";
             htmlString += "<td>" + medRow['duration'].replace('|', ' ') + "</td>";
-            htmlString += "<td>" + medRow['comment'] + "</td>";
+            htmlString += "<td>" + medRow['comment'].newLineToBrTag() + "</td>";
             htmlString += "</tr>"
         }
         $('#form-med .table-profile-view tbody').append(htmlString);
@@ -173,7 +173,7 @@ function setFamilyMedicalHistoryTable(fmh) {
             var fmhRow = fmh[i];
             var htmlString = "<tr>";
             htmlString += "<td>" + fmhRow['relationship'] + "</td>";
-            htmlString += "<td>" + fmhRow['history'] + "</td>";
+            htmlString += "<td>" + fmhRow['history'].newLineToBrTag() + "</td>";
             htmlString += "</tr>"
         }
         $('#form-fmh .table-profile-view tbody').append(htmlString);
@@ -192,7 +192,7 @@ function setAllergiesTable(alg) {
             var htmlString = "<tr>";
             htmlString += "<td>" + algRow['name'] + "</td>";
             htmlString += "<td>" + algRow['degree'] + "</td>";
-            htmlString += "<td>" + algRow['comment'] + "</td>";
+            htmlString += "<td>" + algRow['comment'].newLineToBrTag() + "</td>";
             htmlString += "</tr>"
         }
         $('#form-alg .table-profile-view tbody').append(htmlString);
