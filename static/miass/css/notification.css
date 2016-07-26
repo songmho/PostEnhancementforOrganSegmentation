@@ -53,13 +53,17 @@
     color: #000;
     font-size: 15px;
 }
+.item-info strong{
+    font-weight: bold;
+    font-style: italic;
+}
 .item-link{
     color: #d76474;
     font-style: italic;
 }
 .item-acceptance-msg{
     margin-top: 5px;
-    padding: 5px;
+    /*padding: 5px;*/
 }
 
 .notifications div.content {

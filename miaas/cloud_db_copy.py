@@ -366,7 +366,8 @@ class DbManager:
 
         return result
 
-
+    def close(self):
+        self.connector.close()
 
 
 if __name__ == '__main__':

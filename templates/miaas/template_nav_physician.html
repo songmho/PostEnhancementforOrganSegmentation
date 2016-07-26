@@ -1,6 +1,5 @@
 {% load staticfiles %}
 {% load my_filters %}
-<link rel="stylesheet" type="text/css" href="{% static 'miass/css/notification.css' %}">
 </head>
 
 <body>
@@ -61,61 +60,52 @@
                                                 <div class="alert alert-custom-new fade in"
                                                      session_id= {{ session.session_id }}>
                                                     <a href="#" class="close" data-dismiss="alert"
-                                                       aria-label="close"
-                                                       session_id= {{ session.session_id }}>&times;</a>
-                                                    <h4 class="item-title">CANCEL <span
-                                                            class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                       aria-label="close" session_id= {{ session.session_id }}>&times;</a>
+                                                    <h4 class="item-title">CANCEL
+                                                        <span class="item-time">{{ session.timestamp|datetime_string }}</span>
                                                     </h4>
-                                                    <p class="item-info"> The request,
-                                                        "{{ session.value.request_subject| less_string }}", that you
-                                                        respond is canceled.</p>
+                                                    <p class="item-info"> The interpretation request,
+                                                        "<span class="item-link">{{ session.value.request_subject| less_string:40 }}</span>", is canceled.</p>
                                                 </div>
                                             {% elif session.status == 1 %}
                                                 <div class="alert alert-custom fade in"
                                                      session_id= {{ session.session_id }}>
                                                     <a href="#" class="close" data-dismiss="alert"
-                                                       aria-label="close"
-                                                       session_id= {{ session.session_id }}>&times;</a>
-                                                    <h4 class="item-title">CANCEL <span
-                                                            class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                       aria-label="close" session_id= {{ session.session_id }}>&times;</a>
+                                                    <h4 class="item-title">CANCEL
+                                                        <span class="item-time">{{ session.timestamp|datetime_string }}</span>
                                                     </h4>
-                                                    <p class="item-info"> The request,
-                                                        "{{ session.value.request_subject| less_string }}", that you
-                                                        respond is canceled.</p>
+                                                    <p class="item-info"> The interpretation request,
+                                                        "<span class="item-link">{{ session.value.request_subject| less_string:40 }}</span>", is canceled.</p>
                                                 </div>
                                             {% endif %}
                                         </div>
-                                    {% endif %}
-                                    {% if session.type == 'select' %}
+                                    {% elif session.type == 'select' %}
                                         <div class="content" href="#">
                                             {% if session.status == 0 %}
                                                 <div class="alert alert-custom-new fade in"
                                                      session_id= {{ session.session_id }}>
                                                     <a href="#" class="close" data-dismiss="alert"
-                                                       aria-label="close"
-                                                       session_id= {{ session.session_id }}>&times;</a>
-                                                    <h4 class="item-title">SELECT <span
-                                                            class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                       aria-label="close" session_id= {{ session.session_id }}>&times;</a>
+                                                    <h4 class="item-title">SELECT
+                                                        <span class="item-time">{{ session.timestamp|datetime_string }}</span>
                                                     </h4>
-                                                    <p class="item-info"> The patient, <a
-                                                            class="item-link"> {{ session.name }}</a>,
-                                                        selected you to get interpretation for the request, "<a
-                                                                class="item-link"> {{ session.value.request_subject| less_string }}</a>".
+                                                    <p class="item-info"> The patient, <strong>{{ session.name }}</strong>,
+                                                        selected you to get interpretation for the request,
+                                                        "<a class="item-link" href="{% url 'miaas:physician_interpretation' %}/write/{{ session.value.request_id }}">{{ session.value.request_subject | less_string:40 }}</a>".
                                                     </p>
                                                 </div>
                                             {% elif session.status == 1 %}
                                                 <div class="alert alert-custom fade in"
                                                      session_id= {{ session.session_id }}>
                                                     <a href="#" class="close" data-dismiss="alert"
-                                                       aria-label="close"
-                                                       session_id= {{ session.session_id }}>&times;</a>
-                                                    <h4 class="item-title">SELECT <span
-                                                            class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                       aria-label="close" session_id= {{ session.session_id }}>&times;</a>
+                                                    <h4 class="item-title">SELECT
+                                                        <span class="item-time">{{ session.timestamp|datetime_string }}</span>
                                                     </h4>
-                                                    <p class="item-info"> The patient, <a
-                                                            class="item-link"> {{ session.name }}</a>,
-                                                        selected you to get interpretation for the request, "<a
-                                                                class="item-link"> {{ session.value.request_subject| less_string }}</a>".
+                                                    <p class="item-info"> The patient, <strong>{{ session.name }}</strong>,
+                                                        selected you to get interpretation for the request,
+                                                        "<a class="item-link" href="{% url 'miaas:physician_interpretation' %}/write/{{ session.value.request_id }}">{{ session.value.request_subject | less_string:40 }}</a>".
                                                     </p>
                                                 </div>
                                             {% endif %}
@@ -154,5 +144,3 @@
     var userId = '{{ user_session.user_id }}';
     var userType = '{{ user_session.user_type }}';
 </script>
-<script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
-<script src="{% static 'miass/js/notification.js' %}"></script>

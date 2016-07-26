@@ -12,6 +12,8 @@ $('body').on('click', function (e) {
     ) {
         $('.notify-dropdown').removeClass('open');
     }
+
+    console.log('asdf');
 });
 
 $('body').on('click', '.alert-custom-new', function(e){
@@ -53,6 +55,11 @@ $('body').on('click', '.close', function(e){
 });
 
 $('#btnRefresh').click(function(e){
+    refreshNotification();
+});
+
+
+function refreshNotification() {
     $('.notifications').LoadingOverlay('show');
     $.ajax("/api/intpr_session", {
         method: 'POST',
@@ -68,6 +75,8 @@ $('#btnRefresh').click(function(e){
             $('#bell').load(document.URL + ' #bell');
         }
     });
+}
+
+$(document).ready(function() {
+    refreshNotification();
 });
-
-

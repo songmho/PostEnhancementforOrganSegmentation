@@ -4,6 +4,12 @@
     </script>
 {% endif %}
 
+{% if redirection %}
+    <script type="text/javascript">
+        location.replace("{% url 'miaas:physician_interpretation' %}/detail/{{ intpr_id }}");
+    </script>
+{% endif %}
+
 {% load staticfiles %}
 {% load my_filters %}
 

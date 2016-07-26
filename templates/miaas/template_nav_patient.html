@@ -1,6 +1,5 @@
 {% load staticfiles %}
 {% load my_filters %}
-<link rel="stylesheet" type="text/css" href="{% static 'miass/css/notification.css' %}">
 </head>
 
 <body>
@@ -53,18 +52,17 @@
                                                 <div class="alert alert-custom-new fade in"
                                                      session_id= {{ session.session_id }}>
                                                     <a href="#" class="close" data-dismiss="alert"
-                                                       aria-label="close"
-                                                       session_id= {{ session.session_id }}>&times;</a>
-                                                    <h4 class="item-title">RESPONSE <span
-                                                            class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                       aria-label="close" session_id={{ session.session_id }}>&times;</a>
+                                                    <h4 class="item-title">RESPONSE
+                                                        <span class="item-time">{{ session.timestamp|datetime_string }}</span>
                                                     </h4>
-                                                    <p class="item-info">A physician respond the request, <a
-                                                            class="item-link">"{{ session.value.request_subject| less_string }}</a>"
+                                                    <p class="item-info">A physician, <strong>{{ session.name }}</strong>, respond the request,
+                                                        "<a class="item-link" href="{% url 'miaas:interpretation_request_list' %}/detail/{{ session.value.request_id }}">{{ session.value.request_subject | less_string:40 }}</a>"
                                                     </p>
                                                     <li class="divider"></li>
                                                     <div class="item-acceptance-msg">
-                                                        <p class="item-info">{{ session.value.acceptance_message| less_string }} </p>
-                                                        <a class="item-link pull-right">-{{ session.name }}-</a>.
+                                                        <p class="item-info">{{ session.value.acceptance_message|less_string }} </p>
+{#                                                        <a class="item-link pull-right">-{{ session.name }}-</a>#}
                                                     </div>
                                                 </div>
                                             {% elif session.status == 1 %}
@@ -76,13 +74,13 @@
                                                     <h4 class="item-title">RESPONSE <span
                                                             class="item-time">{{ session.timestamp|datetime_string }}</span>
                                                     </h4>
-                                                    <p class="item-info">A physician respond the request, <a
-                                                            class="item-link">"{{ session.value.request_subject| less_string }}</a>"
+                                                    <p class="item-info">A physician, <strong>{{ session.name }}</strong>, respond the request,
+                                                        "<a class="item-link" href="{% url 'miaas:interpretation_request_list' %}/detail/{{ session.value.request_id }}">{{ session.value.request_subject| less_string:40 }}</a>"
                                                     </p>
                                                     <li class="divider"></li>
                                                     <div class="item-acceptance-msg">
                                                         <p class="item-info">{{ session.value.acceptance_message| less_string }} </p>
-                                                        <a class="item-link pull-right">-{{ session.name }}-</a>.
+{#                                                        <a class="item-link pull-right">-{{ session.name }}-</a>#}
                                                     </div>
                                                 </div>
                                             {% endif %}
@@ -93,37 +91,31 @@
                                             {% if session.status == 0 %}
                                                 <div class="alert alert-custom-new fade in"
                                                      session_id= {{ session.session_id }}>
-                                                    <a href="#" class="close" data-dismiss="alert"
-                                                       aria-label="close"
+                                                    <a href="#" class="close" data-dismiss="alert" aria-label="close"
                                                        session_id= {{ session.session_id }}>&times;</a>
-                                                    <h4 class="item-title">WRITE <span
-                                                            class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                    <h4 class="item-title">WRITE <span class="item-time">{{ session.timestamp|datetime_string }}</span>
                                                     </h4>
-                                                    <p class="item-info">A physician interpreted for the request, <a
-                                                            class="item-link">"{{ session.value.request_subject| less_string }}</a>"
+                                                    <p class="item-info">The physician, <strong>{{ session.name }}</strong>, interpreted for the request,
+                                                        "<a class="item-link" href="{% url 'miaas:interpretation_request_list' %}/detail/{{ session.value.request_id }}">{{ session.value.request_subject| less_string:40 }}</a>"
                                                     </p>
                                                     <li class="divider"></li>
                                                     <div class="item-acceptance-msg">
-                                                        <p class="item-info">{{ session.value.summary| less_string }} </p>
-                                                        <a class="item-link pull-right">-{{ session.name }}-</a>.
+                                                        <p class="item-info">{{ session.value.summary | less_string }} </p>
                                                     </div>
                                                 </div>
                                             {% elif session.status == 1 %}
                                                 <div class="alert alert-custom fade in"
                                                      session_id= {{ session.session_id }}>
-                                                    <a href="#" class="close" data-dismiss="alert"
-                                                       aria-label="close"
+                                                    <a href="#" class="close" data-dismiss="alert" aria-label="close"
                                                        session_id= {{ session.session_id }}>&times;</a>
-                                                    <h4 class="item-title">WRITE <span
-                                                            class="item-time">{{ session.timestamp|datetime_string }}</span>
+                                                    <h4 class="item-title">WRITE <span class="item-time">{{ session.timestamp|datetime_string }}</span>
                                                     </h4>
-                                                    <p class="item-info">A physician interpreted for the request, <a
-                                                            class="item-link">"{{ session.value.request_subject| less_string }}</a>"
+                                                    <p class="item-info">The physician, <strong>{{ session.name }}</strong>, interpreted for the request,
+                                                        "<a class="item-link" href="{% url 'miaas:interpretation_request_list' %}/detail/{{ session.value.request_id }}">{{ session.value.request_subject| less_string:40 }}</a>"
                                                     </p>
                                                     <li class="divider"></li>
                                                     <div class="item-acceptance-msg">
-                                                        <p class="item-info">{{ session.value.summary| less_string }} </p>
-                                                        <a class="item-link pull-right">-{{ session.name }}-</a>.
+                                                        <p class="item-info">{{ session.value.summary | remove_html_tags | less_string }} </p>
                                                     </div>
                                                 </div>
                                             {% endif %}
@@ -154,11 +146,10 @@
         </div>
     </div>
 </nav>
+
 <!-- scripts -->
 <script>
     var intpr_session = '{{ intpr_session.new }}';
     var userId = '{{ user_session.user_id }}';
     var userType = '{{ user_session.user_type }}';
 </script>
-<script src="{% static 'lib/jquery/jquery-2.2.0.min.js' %}"></script>
-<script src="{% static 'miass/js/notification.js' %}"></script>

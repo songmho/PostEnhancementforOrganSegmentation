@@ -1,6 +1,6 @@
 from django import template
 from django.utils.html import escapejs
-import json, datetime, pytz
+import json, datetime, pytz, re
 from miaas import constants
 import logging
 
@@ -128,5 +128,16 @@ def plus(value, plus):
 
 
 @register.filter(name='less_string')
-def less_string(value):
-    return value[:80] + "..."
+def less_string(string, max_len=120):
+    if len(string) <= max_len:
+        return string
+    return string[:max_len-2] + "..."
+
+@register.filter(name='remove_html_tags')
+def remove_html_tags(string):
+    string = string.replace('&nbsp;', ' ')
+    string = string.replace('<br/>', '')
+    string = string.replace('<br>', '')
+    string = string.replace('<br >', '')
+    string = re.sub('<[^<]+?>', '', string, flags=re.IGNORECASE|re.MULTILINE)
+    return string

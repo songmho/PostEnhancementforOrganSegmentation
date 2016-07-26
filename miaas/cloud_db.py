@@ -1721,6 +1721,18 @@ class DbManager():
                 raise Exception("retrieve_physician_intpr_list Error" + e.message)
         return intprs
 
+    # HT for redirection
+    def retrieve_interpretation_by_request_id(self, request_id):
+        db_query = "SELECT intpr_id FROM interpretation WHERE request_id=%s"
+        with self.connector.cursor() as cursor:
+            try:
+                cursor.execute(db_query, request_id)
+                for row in cursor:
+                    return row[0]
+            except Exception as e:
+                return None
+        return None
+
     ### Session
     def add_session(self, *args):
         """
@@ -1823,3 +1835,6 @@ class DbManager():
                 logger.exception(e)
                 return False
         return True
+
+    def close(self):
+        self.connector.close()

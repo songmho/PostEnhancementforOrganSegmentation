@@ -59,17 +59,22 @@ def handle_intpr_session_mgt(request):
                 intpr_session['sessions'] = db.retrieve_patient_session(data['user_id'])
                 new_flag = 0
                 for session in intpr_session['sessions']:
-                    if session['status'] == 0:
+                    if session['type'] == 'select' or session['type'] == 'cancel':
+                        continue
+                    elif session['status'] == 0:
                         new_flag = 1
                 intpr_session['new'] = new_flag
             elif user_type == 'physician':
                 intpr_session['sessions'] = db.retrieve_physician_session(data['user_id'])
                 new_flag = 0
                 for session in intpr_session['sessions']:
-                    if session['status'] == 0:
+                    if session['type'] == 'response' or session['type'] == 'write':
+                        continue
+                    elif session['status'] == 0:
                         new_flag = 1
                 intpr_session['new'] = new_flag
             request.session['intpr_session'] = intpr_session
+            # pprint (intpr_session)
             return JsonResponse(constants.CODE_SUCCESS)
         except TypeError:
             return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
