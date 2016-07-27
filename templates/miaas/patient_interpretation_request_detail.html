@@ -311,9 +311,9 @@
                         reqInfo.request_subject = subject;
                         reqInfo.request_message = message;
                         $('#titleSubject').text('Interpretation Request "' + subject + '"');
-                        openModal("Success", "Editing Request Succeed")
+                        openModal("The request is successfully updated.", "Update Success")
                     } else {
-                        openModal(res['msg'], "Editing Request Failed")
+                        openModal(res['msg'], "Update Success")
                     }
                 }
             });

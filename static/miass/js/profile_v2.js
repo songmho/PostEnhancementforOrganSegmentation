@@ -492,7 +492,7 @@ function updateProfile() {
                 profiles = newProfiles;
                 openUpdatedModal();
             } else {
-                if (res['msg'] == 'No changed profiles.') {
+                if (res['msg'] == 'No changed profiles.' || res['msg'] == 'There are no changed profiles.') {
                     openModal(res['msg'], 'Alert');
                 } else {
                     openModal(res['msg'], 'Update Failure');

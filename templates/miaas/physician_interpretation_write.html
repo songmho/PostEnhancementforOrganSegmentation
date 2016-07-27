@@ -323,14 +323,14 @@
                     success: function (res) {
                         $.LoadingOverlay('hide');
                         if (res['code'] == 'SUCCESS') {
-                            openModal("Success", "Writing Interpretation Succeed", location.replace(phIntprList))
+                            openModal("Your interpretation writing is successfully submit.", "Interpretation Submit Success", location.replace(phIntprList))
                         } else {
-                            openModal(res['msg'], "Writing Interpretation Failed")
+                            openModal(res['msg'], "Interpretation Submit Failure")
                         }
                     }
                 });
             } else {
-                openModal('Fields are not filled! Please fill all the fields.', 'Writing Failed')
+                openModal('Fields are not filled! Please fill all the fields.', 'Interpretation Submit Failure')
             }
         });
 
@@ -357,14 +357,14 @@
             success: function (res) {
                 $.LoadingOverlay('hide');
                 if (res['code'] == 'SUCCESS') {
-                    openModal("Success", "Interpretation is Saved.")
+                    openModal("Your interpretation writing is successfully saved.", "Save Success")
                 } else {
                     if (res['msg'] == 'There is no change.')
                         openModal(res['msg'], "Alert");
-                    else if (res['msg'] == 'To insert data failed.')
-                        openModal('Saving your interpretation is failed.', "Fail to save interpretation");
+                    else if (res['msg'] == 'To insert data failed.' || res['msg'] == 'To insert data is failed.')
+                        openModal('Saving your interpretation is failed.', "Save Failure");
                     else
-                        openModal(res['msg'], "Fail to save interpretation");
+                        openModal(res['msg'], "Save Failure");
                 }
             }
         });
