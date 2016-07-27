@@ -2,18 +2,24 @@
  * Created by khan on 2016-05-09.
  */
 
+var notifyOpened = false;
 $('.notify-dropdown').on("click", function (event) {
     $(this).parent().toggleClass('open');
+
+    if(notifyOpened == false) {
+        notifyOpened = true;
+        refreshNotification();
+    }
 });
+
 $('body').on('click', function (e) {
     if (!$('.notify-dropdown').is(e.target)
         && $('.notify-dropdown').has(e.target).length === 0
         && $('.open').has(e.target).length === 0
     ) {
         $('.notify-dropdown').removeClass('open');
+        notifyOpened = false;
     }
-
-    console.log('asdf');
 });
 
 $('body').on('click', '.alert-custom-new', function(e){

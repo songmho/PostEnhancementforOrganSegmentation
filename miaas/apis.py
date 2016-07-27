@@ -76,13 +76,16 @@ def handle_intpr_session_mgt(request):
             request.session['intpr_session'] = intpr_session
             # pprint (intpr_session)
             return JsonResponse(constants.CODE_SUCCESS)
-        except TypeError:
+        except TypeError as te:
+            logger.exception(te)
             return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
-        except Exception:
+            logger.exception(e)
+        except Exception as e:
             return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_DB_FAILED}))
 
     elif request.method == 'PUT':
         data = json.loads(request.body)
+        pprint(data)
         try:
             action = data['action']
             if not action:
@@ -97,10 +100,20 @@ def handle_intpr_session_mgt(request):
                         if sessions[i]['session_id'] == int(data['session_id']):
                             sessions[i]['status'] = 1
                             break
+
                     new_flag = 0
-                    for session in intpr_session['sessions']:
-                        if session['status'] == 0:
-                            new_flag = 1
+                    if request.session['user']['user_type'] == 'patient':
+                        for session in intpr_session['sessions']:
+                            if session['type'] == 'select' or session['type'] == 'cancel':
+                                continue
+                            elif session['status'] == 0:
+                                new_flag = 1
+                    elif request.session['user']['user_type'] == 'physician':
+                        for session in intpr_session['sessions']:
+                            if session['type'] == 'response' or session['type'] == 'write':
+                                continue
+                            elif session['status'] == 0:
+                                new_flag = 1
 
                     intpr_session['sessions'] = sessions
                     intpr_session['new'] = new_flag
@@ -119,9 +132,18 @@ def handle_intpr_session_mgt(request):
                             break
 
                     new_flag = 0
-                    for session in intpr_session['sessions']:
-                        if session['status'] == 0:
-                            new_flag = 1
+                    if request.session['user']['user_type'] == 'patient':
+                        for session in intpr_session['sessions']:
+                            if session['type'] == 'select' or session['type'] == 'cancel':
+                                continue
+                            elif session['status'] == 0:
+                                new_flag = 1
+                    elif request.session['user']['user_type'] == 'physician':
+                        for session in intpr_session['sessions']:
+                            if session['type'] == 'response' or session['type'] == 'write':
+                                continue
+                            elif session['status'] == 0:
+                                new_flag = 1
 
                     intpr_session['sessions'] = sessions
                     intpr_session['new'] = new_flag
@@ -129,9 +151,11 @@ def handle_intpr_session_mgt(request):
                     return JsonResponse(constants.CODE_SUCCESS)
                 else:
                     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
-        except TypeError:
+        except TypeError as te:
+            logger.exception(te)
             return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
-        except Exception:
+        except Exception as e:
+            logger.exception(e)
             return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_DB_FAILED}))
 
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))

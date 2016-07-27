@@ -136,8 +136,8 @@ def less_string(string, max_len=120):
 @register.filter(name='remove_html_tags')
 def remove_html_tags(string):
     string = string.replace('&nbsp;', ' ')
-    string = string.replace('<br/>', '')
-    string = string.replace('<br>', '')
-    string = string.replace('<br >', '')
+    string = string.replace('<br/>', ' ')
+    string = string.replace('<br>', ' ')
+    string = string.replace('<br >', ' ')
     string = re.sub('<[^<]+?>', '', string, flags=re.IGNORECASE|re.MULTILINE)
     return string

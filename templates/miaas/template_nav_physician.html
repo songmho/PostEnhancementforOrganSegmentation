@@ -37,7 +37,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown notify-dropdown">
-                    <a class="dropdown notify-dropdown" role="button">
+                    <a class="dropdown notify-dropdown hidden-xs" role="button">
                         <div id='bell'>
                             <i class="glyphicon glyphicon-bell"
                                     {% if intpr_session.new == 0 %}
@@ -46,7 +46,7 @@
                             ></i>
                         </div>
                     </a>
-                    <ul class="dropdown-menu notifications" role="menu">
+                    <ul class="dropdown-menu notifications hidden-xs" role="menu">
                         <div class="notification-heading">
                             <h4 class="menu-title">Notifications</h4>
                         </div>
@@ -65,7 +65,7 @@
                                                         <span class="item-time">{{ session.timestamp|datetime_string }}</span>
                                                     </h4>
                                                     <p class="item-info"> The interpretation request,
-                                                        "<span class="item-link">{{ session.value.request_subject| less_string:40 }}</span>", is canceled.</p>
+                                                        "<span class="item-link">{{ session.value.request_subject| less_string:40 }}</span>", was canceled.</p>
                                                 </div>
                                             {% elif session.status == 1 %}
                                                 <div class="alert alert-custom fade in"
@@ -76,7 +76,7 @@
                                                         <span class="item-time">{{ session.timestamp|datetime_string }}</span>
                                                     </h4>
                                                     <p class="item-info"> The interpretation request,
-                                                        "<span class="item-link">{{ session.value.request_subject| less_string:40 }}</span>", is canceled.</p>
+                                                        "<span class="item-link">{{ session.value.request_subject| less_string:40 }}</span>", was canceled.</p>
                                                 </div>
                                             {% endif %}
                                         </div>

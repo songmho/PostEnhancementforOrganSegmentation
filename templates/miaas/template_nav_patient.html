@@ -28,7 +28,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown notify-dropdown">
-                    <a class="dropdown notify-dropdown" role="button">
+                    <a class="dropdown notify-dropdown hidden-xs" role="button">
                         <div id='bell'>
                             <i class="glyphicon glyphicon-bell"
                                     {% if intpr_session.new == 0 %}
@@ -38,7 +38,7 @@
                         </div>
 
                     </a>
-                    <ul class="dropdown-menu notifications" role="menu">
+                    <ul class="dropdown-menu notifications hidden-xs" role="menu">
                         <div class="notification-heading">
                             <h4 class="menu-title">Notifications</h4>
                         </div>
@@ -56,7 +56,7 @@
                                                     <h4 class="item-title">RESPONSE
                                                         <span class="item-time">{{ session.timestamp|datetime_string }}</span>
                                                     </h4>
-                                                    <p class="item-info">A physician, <strong>{{ session.name }}</strong>, respond the request,
+                                                    <p class="item-info">A physician, <strong>{{ session.name }}</strong>, responded the request,
                                                         "<a class="item-link" href="{% url 'miaas:interpretation_request_list' %}/detail/{{ session.value.request_id }}">{{ session.value.request_subject | less_string:40 }}</a>"
                                                     </p>
                                                     <li class="divider"></li>
@@ -74,7 +74,7 @@
                                                     <h4 class="item-title">RESPONSE <span
                                                             class="item-time">{{ session.timestamp|datetime_string }}</span>
                                                     </h4>
-                                                    <p class="item-info">A physician, <strong>{{ session.name }}</strong>, respond the request,
+                                                    <p class="item-info">A physician, <strong>{{ session.name }}</strong>, responded the request,
                                                         "<a class="item-link" href="{% url 'miaas:interpretation_request_list' %}/detail/{{ session.value.request_id }}">{{ session.value.request_subject| less_string:40 }}</a>"
                                                     </p>
                                                     <li class="divider"></li>
@@ -100,7 +100,7 @@
                                                     </p>
                                                     <li class="divider"></li>
                                                     <div class="item-acceptance-msg">
-                                                        <p class="item-info">{{ session.value.summary | less_string }} </p>
+                                                        <p class="item-info">{{ session.value.summary | remove_html_tags | less_string }} </p>
                                                     </div>
                                                 </div>
                                             {% elif session.status == 1 %}
