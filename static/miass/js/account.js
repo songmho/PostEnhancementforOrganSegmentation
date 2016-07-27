@@ -123,7 +123,7 @@ $(document).ready(function () {
 
 function checkFormEmail() {
     if(checkEmailUsed < 0) {
-        openModal("This email is already used.", "Account Update Fail");
+        openModal("This email is already used.", "Account Update Failure");
     } else if(checkEmailUsed == 0) {
         var dlgMsg = 'This email is already used for ';
         if (usertype == 'patient')
@@ -197,7 +197,7 @@ function checkForm() {
             else
                 invalidElements += ", City";
         }
-        openModal("Please check these information: " + invalidElements, "Account Update Fail");
+        openModal("Please check these information: " + invalidElements, "Account Update Failure");
     } else {
         updateUser();
     }
@@ -257,7 +257,7 @@ function updateUser() {
                 if(res['msg'] == 'There is no change.') {
                     openModal(res['msg'], 'Alert');
                 } else {
-                    openModal(res['msg'], "Update Failed");
+                    openModal(res['msg'], "Update Failure");
                 }
             }
         }

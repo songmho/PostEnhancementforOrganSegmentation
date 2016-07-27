@@ -22,7 +22,7 @@ $(document).ready(function () {
                 console.log(profiles);
                 resetProfile();
             } else {
-                openUpdateFailModal(res['msg'], 'Getting Profile Failed');
+                openUpdateFailModal(res['msg'], 'Profile Get Failure');
             }
         }
     });
@@ -365,43 +365,43 @@ function updateProfile() {
     //check form
     var height = $('#height');
     if (height.val() <= 0 && height.val() != "") {
-        openUpdateFailModal('Height must be larger than 0', 'Update Failed');
+        openUpdateFailModal('Height must be larger than 0.', 'Update Failure');
         height.focus();
         return;
     }
     var weight = $('#weight');
     if (weight.val() <= 0 && weight.val() != "") {
-        openUpdateFailModal('Weight must be larger than 0.', 'Update Failed');
+        openUpdateFailModal('Weight must be larger than 0.', 'Update Failure');
         weight.focus();
         return;
     }
     var drinkingCapacity = $('#drinkingCapacity');
     if (drinkingCapacity.val() < 0 && drinkingCapacity.val() != "") {
-        openUpdateFailModal('Drinking capacity must be equal or larger than 0', 'Update Failed');
+        openUpdateFailModal('Drinking capacity must be equal or larger than 0.', 'Update Failure');
         drinkingCapacity.focus();
         return;
     }
     var drinkingFrequency = $('#drinkingFrequency');
     if (drinkingFrequency.val() < 0 && drinkingFrequency.val() != "") {
-        openUpdateFailModal('Drinking frequency must be equal or larger than 0', 'Update Failed');
+        openUpdateFailModal('Drinking frequency must be equal or larger than 0.', 'Update Failure');
         drinkingFrequency.focus();
         return;
     }
     var sleeping = $('#sleeping');
     if ((sleeping.val() < 0 || sleeping.val() > 24) && sleeping.val() != "") {
-        openUpdateFailModal('Sleeping hours must be larger than 0 and lower than 24.', 'Update Failed');
+        openUpdateFailModal('Sleeping hours must be larger than 0 and lower than 24.', 'Update Failure');
         sleeping.focus();
         return;
     }
     var exercise = $('#exercise');
     if ((exercise.val() < 0 || exercise.val() > 1440) && exercise.val() != "") {
-        openUpdateFailModal('Exercise Time must be larger than 0 and lower than 1440', 'Update Failed');
+        openUpdateFailModal('Exercise Time must be larger than 0 and lower than 1440.', 'Update Failure');
         exercise.focus();
         return;
     }
     var water = $('#water');
     if (water.val() < 0 && water.val() != "") {
-        openUpdateFailModal('Water intake must be larger than 0', 'Update Failed');
+        openUpdateFailModal('Water intake must be larger than 0.', 'Update Failure');
         water.focus();
         return;
     }
@@ -465,7 +465,7 @@ function updateProfile() {
     console.log(detailedProfiles);
     var isProfilesEmpty = checkDetailProfilesEmpty(detailedProfiles);
     if (newProfiles.length == 0 && isProfilesEmpty) {
-        openModal('No Data in Profiles', 'Alert');
+        openModal('There is no data in profile', 'Alert');
         return;
     }
 
@@ -495,7 +495,7 @@ function updateProfile() {
                 if (res['msg'] == 'No changed profiles.') {
                     openModal(res['msg'], 'Alert');
                 } else {
-                    openModal(res['msg'], 'Update Failed');
+                    openModal(res['msg'], 'Update Failure');
                 }
             }
         }

@@ -109,12 +109,12 @@ function showDicomThumbnail(url) {
             //cornerstoneTools.zoomWheel.disable(element);
         }, function(err) {
             console.log(err);
-            openModal(err, "DICOM thumbnail Loading Failed");
+            openModal(err, "DICOM thumbnail Load Failure");
         });
     }
     catch(err) {
         console.log(err);
-        openModal(err, "DICOM thumbnail Loading Failed");
+        openModal(err, "DICOM thumbnail Load Failure");
     }
 }
 

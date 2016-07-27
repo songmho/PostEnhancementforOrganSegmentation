@@ -87,7 +87,7 @@ $(document).ready(function() {
         //console.log(currentTime);
         //console.log(Date.parse(imageDate.val()));
         if (Date.parse(imageDate.val()) > currentTime || Date.parse(imageDate.val()) < minDate) {
-            openModal("Recorded date must be after 1800 and before now.", "Upload Failed");
+            openModal("Recorded date must be after 1800 and before now.", "Image Upload Failure");
             imageDate.focus();
             return;
         }
@@ -101,8 +101,8 @@ $(document).ready(function() {
                 var filenames = getFiles($('#image_file'));
 
                 if (filenames.length > POSSIBLE_MULTIPLE_IMAGE_UPLOAD_NUM) {
-                    openModal("The maximum number of files uploaded at once is 300. Please less then 300 files. <br/>" +
-                        "If you want to upload more files, please compress them as zip file format.", "Too many files are selected");
+                    openModal("Too many files are selected. <br/>The maximum number of files uploaded at once is 300. Please less then 300 files. <br/>" +
+                        "If you want to upload more files, please compress them as zip file format.", "Image Upload Failure");
                     setEditableMode(true, false);
                     return;
                 }
@@ -112,7 +112,7 @@ $(document).ready(function() {
                     if (!checkImageTypeAndExtension(imageType, ext)) {
                         console.log(ext);
                         $('#imageUploadModal').modal('hide');
-                        openModal('Please upload correct image files for image type.', 'Image Type Check');
+                        openModal('Please upload correct image files for image type.', 'Image Upload Failure');
                         setEditableMode(true, false);
                         return;
                     }
@@ -122,7 +122,7 @@ $(document).ready(function() {
                 if (checkImageTypeIsGraphic($('#imageType').val())
                         != checkImageTypeIsGraphic(imageInfo.image_type)) {
                     $('#imageUploadModal').modal('hide');
-                    openModal('Please select correct image type for uploaded image files.', 'Image Type Check');
+                    openModal('Please select correct image type for uploaded image files.', 'Image Upload Failure');
                     setEditableMode(true, false);
                     return;
                 }
@@ -163,11 +163,11 @@ $(document).ready(function() {
                         if (fileChanged && $('#image_file').val()!="") {
                             $('#formUpdateFile').submit();
                         } else {
-                            openModal('Updating image information is succeed.', "Update Image");
+                            openModal('Updating image information is succeed.', "Image Update Success");
                         }
                         //resetViewer();
                     } else {
-                        openModal('Updating image information is failed. <br/>'+res['msg'], "Updating Image Failed");
+                        openModal('Updating image information is failed. <br/>'+res['msg'], "Image Upload Failure");
                         //resetImageInfo();
                         setEditableMode(true, false);
                     }
@@ -177,8 +177,8 @@ $(document).ready(function() {
             var filenames = getFiles($('#image_file'));
 
             if (filenames.length > POSSIBLE_MULTIPLE_IMAGE_UPLOAD_NUM) {
-                openModal("The maximum number of files uploaded at once is 300. Please less then 300 files. <br/>" +
-                    "If you want to upload more files, please compress them as zip file format.", "Too many files are selected");
+                openModal("Too many files are selected. <br/>The maximum number of files uploaded at once is 300. Please less then 300 files. <br/>" +
+                    "If you want to upload more files, please compress them as zip file format.", "Image Upload Failure");
                 setEditableMode(true, false);
                 return;
             }
@@ -199,7 +199,7 @@ $(document).ready(function() {
             if (!checkImageTypeAndExtension(imageType, ext)) {
                 console.log(ext);
                 $('#imageUploadModal').modal('hide');
-                openModal('Please upload correct image files for image type.', 'Image Type Check');
+                openModal('Please upload correct image files for image type.', 'Image Update Failure');
                 setEditableMode(true, false);
                 return;
             }
@@ -254,14 +254,14 @@ $(document).ready(function() {
                     });
                 } else {
                     if (imageInfoFormChanged)
-                        openModal('Image information is successfully update. However, file uploading is failed. <br/>' + res['msg'], 'Upload Failed');
+                        openModal('Image information is successfully update. However, file uploading is failed. <br/>' + res['msg'], 'Image Upload Failure');
                     else
-                        openModal('File uploading failed. <br/>' + res['msg'], 'Update Failed');
+                        openModal('File uploading failed. <br/>' + res['msg'], 'Image Update Failure');
                 }
             }, error: function(res) {
-                openModal(res['msg'], 'Update Failed');
+                openModal(res['msg'], 'Image Update Failure');
             }, timeout: function(res) {
-                openModal(res['msg'], 'Update Failed');
+                openModal(res['msg'], 'Image Update Failure');
             }
         });
     });
@@ -301,7 +301,7 @@ $(document).ready(function() {
                     location.replace(archiveURL);
                 } else {
                     $.LoadingOverlay('hide');
-                    openModal(res['msg'], "Delete Failed");
+                    openModal(res['msg'], "Image Delete Failure");
                 }
             }
         });
@@ -371,9 +371,9 @@ $(document).ready(function() {
             success: function (res) {
                 $.LoadingOverlay('hide');
                 if(res['code'] == 'SUCCESS') {
-                    openModal('Request interpretation success.', "Request Success", location.replace(requestListURL));
+                    openModal('Request interpretation is succeed.', "Request Success", location.replace(requestListURL));
                 } else {
-                    openModal(res['msg'], "Request Failed");
+                    openModal(res['msg'], "Request Failure");
                 }
             }
         });

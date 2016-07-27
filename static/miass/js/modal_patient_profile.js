@@ -52,7 +52,7 @@ function getPatientProfile(callbackFunc) {
                         callbackFunc();
                     }
                 } else {
-                    openModal(res['msg'], 'Getting Patient Profile Failed');
+                    openModal(res['msg'], 'Profile Get Failure');
                 }
             }
         });

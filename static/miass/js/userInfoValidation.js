@@ -7,7 +7,7 @@ function checkID() {
     var idRe = /^[a-z]+[a-z0-9_.\-]{3,19}$/g;
     var inputId = $('#inputId');
     if (tempID == inputId.val() && checkIDFlag) {
-        openModal("You can use this ID.", "Checking ID");
+        openModal("You can use this ID.", "ID Check");
         return
     }
     else {
@@ -16,13 +16,13 @@ function checkID() {
     if (inputId.val().length < 4) {
         checkIDFlag = false;
         inputId.css("border-color", "red");
-        openModal("The length of ID is 4 to 20.", "Checking ID");
+        openModal("The length of ID is 4 to 20.", "ID Check");
         return
     }
     else if (!inputId.val().match(idRe)) {
         checkIDFlag = false;
         inputId.css("border-color", "red");
-        openModal("ID must be started with small letters.<br/> And only small letters, digits, and special letters ('-','_','.') are allowed.", "Checking ID");
+        openModal("ID must be started with small letters.<br/> And only small letters, digits, and special letters ('-','_','.') are allowed.", "ID Check");
         return
     }
     else {
@@ -45,16 +45,16 @@ function checkID() {
             if (res['code'] == 'SUCCESS') {
                 if (!res['existedId'] == false) {
                     inputId.css("border-color", "red");
-                    openModal("ID is already existed.", "Checking ID");
+                    openModal("ID is already existed.", "ID Check");
                     checkIDUsed = false;
                     checkIDFlag = false;
                 } else {
-                    openModal("You can use this ID.", "Checking ID");
+                    openModal("You can use this ID.", "ID Check");
                     checkIDUsed = true;
                 }
             } else {
                 inputId.css("border-color", "red");
-                openModal("Checking ID is failed. <br/>Please try again.", "Checking ID");
+                openModal("Checking ID is failed. <br/>Please try again.", "ID Check Failure");
                 checkIDUsed = false;
                 checkIDFlag = false;
             }
@@ -332,18 +332,20 @@ function checkEmail() {
                 } else { // below -1
                     checkEmailFlag = false;
 
-                    var popoverMsg = 'Unknown error.';
+                    var popoverMsg = 'Unknown error is occurred.';
+                    var msgTitle = 'Email Check Failure';
                     switch (checkEmailUsed) {
                         case -2:
                             popoverMsg = 'Checking email is failed. Please try again.';
                             break;
                         case -1:
                             popoverMsg = 'This email is already used.';
+                            msgTitle = 'Email Check';
                             break;
                     }
 
                     inputEmail.css("border-color", "red");
-                    openModal(popoverMsg, 'EmailCheck');
+                    openModal(popoverMsg, msgTitle);
                 }
             }
         });

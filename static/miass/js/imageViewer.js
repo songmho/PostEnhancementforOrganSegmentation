@@ -181,13 +181,13 @@ function dicomloadAndView(dicomURL) {
         }, function(err) {
             console.log(err);
             showImageViewerLoader(false);
-            openModal('The dicom file is not existed', "DICOM Loading Failed");
+            openModal('The dicom file is not existed', "DICOM Load Failure");
         });
     }
     catch(err) {
         console.log(err);
         showImageViewerLoader(false);
-        openModal(err, "DICOM Loading Failed");
+        openModal(err, "DICOM Load Failure");
     }
 }
 
@@ -739,7 +739,7 @@ function setPlayDicomSequence(images) {
                     showDicomSequenceLoader(false);
                     showImageViewerLoader(false);
                     stopDicomSequence();
-                    openModal(err, "DICOM Loading Failed");
+                    openModal(err, "DICOM Load Failure");
                     return;
                 }
             }
@@ -748,7 +748,7 @@ function setPlayDicomSequence(images) {
         stopDicomSequence();
         showDicomSequenceLoader(false);
         showImageViewerLoader(false);
-        openModal(err, "DICOM Loading Failed");
+        openModal(err, "DICOM Load Failure");
         return;
     }
 }
@@ -1222,7 +1222,7 @@ function setOpenImageViewerListener(elem) {
                     initThumbnail();
                     window.addEventListener("resize", showThumbnail);
                 } else {
-                    openModal(res['msg'], "Image Loading Failed");
+                    openModal(res['msg'], "Image Load Failure");
                 }
             }
         });

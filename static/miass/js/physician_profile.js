@@ -20,7 +20,7 @@ $(document).ready(function() {
                 console.log(profiles);
                 resetProfile();
             } else {
-                openUpdateFailModal(res['msg'], 'Getting Profile Failed');
+                openUpdateFailModal(res['msg'], 'Profile Get Failure');
             }
         }
     });
@@ -76,7 +76,7 @@ function updateProfile() {
                 profiles = newProfiles;
                 openUpdatedModal();
             } else {
-                openUpdateFailModal(res['msg'], 'Update Failed');
+                openUpdateFailModal(res['msg'], 'Update Failure');
             }
         }
     });

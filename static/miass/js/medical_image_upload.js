@@ -14,7 +14,7 @@ $(document).ready(function () {
         console.log(currentTime);
         console.log(Date.parse(imageDate.val()));
         if (Date.parse(imageDate.val()) > currentTime || Date.parse(imageDate.val()) < minDate) {
-            openModal("Recorded date must be after 1800 and before now.", "Upload Failed");
+            openModal("Recorded date must be after 1800 and before now.", "Upload Failure");
             imageDate.focus();
             return;
         }
@@ -23,8 +23,8 @@ $(document).ready(function () {
         var filenames = getFiles($('#image_file'));
 
         if (filenames.length > POSSIBLE_MULTIPLE_IMAGE_UPLOAD_NUM) {
-            openModal("The maximum number of files uploaded at once is 300. Please less then 300 files. <br/>" +
-                "If you want to upload more files, please compress them as zip file format.", "Too many files are selected");
+            openModal("Too many files are selected. <br/>The maximum number of files uploaded at once is 300. Please less then 300 files. <br/>" +
+                "If you want to upload more files, please compress them as zip file format.", "Upload Failure");
             return;
         }
 
@@ -33,7 +33,7 @@ $(document).ready(function () {
             if (!checkImageTypeAndExtension(imageType, ext)) {
                 console.log(ext);
                 $('#imageUploadModal').modal('hide');
-                openModal('Please upload correct image file for image type.', 'Image Type Check');
+                openModal('Please upload correct image file for image type.', 'Upload Failure');
                 return;
             }
         }
@@ -88,7 +88,7 @@ $(document).ready(function () {
                     $.LoadingOverlay('show');
                     location.href = archiveURL;
                 } else {
-                    openModal(res['msg'], "Upload Failed");
+                    openModal(res['msg'], "Upload Failure");
                 }
             }
         });

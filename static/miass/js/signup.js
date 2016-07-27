@@ -129,10 +129,10 @@ $(document).ready(function () {
 
 function checkAndSetStep3() {
     if (!checkIDUsed) {
-        openModal("Please check user ID.", "Signup");
+        openModal("Please check user ID.", "Warning");
         return;
     } else if (checkEmailUsed < 0) {
-        openModal("Please check email address.", "Signup");
+        openModal("Please check email address.", "Warning");
         return;
     } else if (checkEmailUsed == 0) {
         var dlgMsg = 'This email is already used for ';

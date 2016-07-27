@@ -22,7 +22,7 @@ $(document).ready(function() {
                 $('#signinNeedAuthModal').modal('hide');
                 $.LoadingOverlay('hide');
                 if(res['code'] == "SUCCESS") {
-                    openModal("The email will be sent soon. Please wait a minute.", "Resend Authentication Email");
+                    openModal("The email will be sent soon. Please wait a minute.", "Authentication Email Resend");
                 } else {
                     openModal(res['msg'], "Resending Error");
                 }
