@@ -84,5 +84,5 @@ function refreshNotification() {
 }
 
 $(document).ready(function() {
-    refreshNotification();
+    // refreshNotification();
 });

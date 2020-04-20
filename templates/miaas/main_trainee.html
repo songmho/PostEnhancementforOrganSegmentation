@@ -1,0 +1,152 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BOK Assessment Service</title>
+</head>
+<body>
+<h4 hidden id="received_first_name">{{ varr.first_name.value }}</h4>
+<h4 hidden id="received_last_name">{{ varr.last_name.value }}</h4>
+<h4 hidden id="received_email">{{ varr.email.value }}</h4>
+<h4 hidden id="received_cur_role">{{ varr.cur_role.value }}</h4>
+<h4 hidden id="received_identification_number">{{ varr.identification_number.value }}</h4>
+<header>
+    <nav class="navbar navbar-expand-sm navbar-dark default-color" id="nav" style="background-color: #272b30;">
+        <a class="navbar-brand" href="#"><h3 class="title">BOKAS</h3></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+{#                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>#}
+{#                </li>#}
+{#                <li class="nav-item">#}
+{#                    <a class="nav-link" href="#">Features</a>#}
+{#                </li>#}
+{#                <li class="nav-item">#}
+{#                    <a class="nav-link" href="#">Pricing</a>#}
+{#                </li>#}
+{#                <li class="nav-item">#}
+{#                    <a class="nav-link" href="test_session">Test Session</a>#}
+{#                </li>#}
+            </ul>
+            <ul class="navbar-nav nav-flex-icons">
+                <div class="sign text-center center-block mx-auto" id="">
+{#                    <li class="nav-item">#}
+                        <a style="color: #e8e8e8;" id="btn_txt"></a>
+{#                    </li>#}
+                </div>
+                <div class="sign_border sign" id="btn_signout">
+{#                    <li class="nav-item">#}
+                        <small style="color: #e8e8e8;" id="">Log Out</small>
+{#                    </li>#}
+                </div>
+            </ul>
+        </div>
+    </nav>
+</header>
+{#<div class="container">#}
+<div class="row">
+    <div class="col-sm-2 col-md-2 no-padding">
+        <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
+            <!-- Bootstrap List Group -->
+            <ul class="list-group">
+                <!-- Separator with title -->
+                <li class="sidebar-title list-group-item sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
+                    <b>Profile Management</b>
+                </li>
+                <!-- /END Separator -->
+                <!-- Menu with submenu -->
+                <a id="btn_browse_profile" data-toggle="collapse" aria-expanded="false" class="sidebar-primary list-group-item list-group-item-action flex-column align-items-center">
+                    <div class="d-flex w-100 justify-content-start align-items-center">
+                        <span class="fa fa-dashboard fa-fw mr-1"></span>
+                        <span class="menu-collapsed">Browse Profile</span>
+                        <span class="submenu-icon ml-auto"></span>
+                    </div>
+                </a>
+
+                <a id="btn_modify_profile" data-toggle="collapse" aria-expanded="false" class="sidebar-primary list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-start align-items-center">
+                        <span class="fa fa-user fa-fw mr-1"></span>
+                        <span class="menu-collapsed">Modify Profile</span>
+                        <span class="submenu-icon ml-auto"></span>
+                    </div>
+                </a>
+
+
+                <!-- Separator with title -->
+                <li class="sidebar-title list-group-item sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
+                    <b>Test Management</b>
+                </li>
+                <!-- /END Separator -->
+                <a id="btn_generate_report" data-toggle="collapse" aria-expanded="false" class="sidebar-primary list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-start align-items-center">
+                        <span class="fa fa-calendar fa-fw mr-1"></span>
+                        <span class="menu-collapsed">Generate Report</span>
+                    </div>
+                </a>
+
+                <!-- /END Separator -->
+            </ul><!-- List Group END-->
+        </div>
+    </div>
+    <div class="col-sm-10 col-md-10 no-padding" id="work_space">
+
+    </div>
+
+    <div class="modal" id="modal_sign_out" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Sign Out</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Do you want to sign out?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="btn_signout_yes">Yes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn_signout_no">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="modal_withdrawal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Withdrawal</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Do you want to withdrawal BOKAS?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="btn_withdrawal_yes">Yes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn_withdrawal_no">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{#</div>#}
+
+
+
+</body>
+    <script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
+    <script src="{% static "js/constants.js" %}"></script>
+    <script src="{% static "js/main_trainee.js" %}"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</html>

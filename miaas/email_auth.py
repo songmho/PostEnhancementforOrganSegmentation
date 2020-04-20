@@ -1,9 +1,10 @@
 from django.core.mail import send_mail
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import render_to_string
 import string, random, logging
-import cloud_db
+
+from miaas import cloud_db
 # mail install http://greenyant.blogspot.kr/2015/06/django-email.html
 # MAC: sudo postfix start
 # LINux: sudo apt-get install sendmail

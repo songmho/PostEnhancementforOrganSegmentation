@@ -4,6 +4,8 @@ CODE_WAIT = {"code": "WAIT"}
 CODE_FAILURE = {"code": "FAILURE"}
 
 CNT_CONTENTS_IN_PAGE = 10
+HOST_ADDR = '203.253.21.226'
+LOCALHOST = 'localhost'
 
 INTPRT_STATUS = {
     3: 'Finding Physician',

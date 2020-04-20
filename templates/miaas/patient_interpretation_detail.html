@@ -4,8 +4,8 @@
     </script>
 {% endif %}
 
-
-{% load my_filters %}{% load staticfiles %}
+{% load my_filters %}
+{% load static %}
 
 {% include 'miaas/template_header.html' %}
 
@@ -27,23 +27,23 @@
                 {% include 'miaas/template_container_image_info.html' %}
                 {% include 'miaas/template_container_request_info.html' %}
 
-{#                <div class="form-container form-boxed form-horizontal row">#}
-{#                    <div class="col-xs-12 form-group">#}
-{#                        <label class="col-sm-3 col-md-2 control-label no-pad-top" for="inputReqSubject" >Request Subject</label>#}
-{#                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">#}
-{#                            <span id="reqSubject" >{{ request_detail.request_subject }}</span>#}
-{#                        </div>#}
-{#                    </div>#}
-{##}
-{#                    <div class="col-xs-12 form-group">#}
-{#                        <label class="col-sm-3 col-md-2 control-label" for="reqMessage" >Request Message</label>#}
-{#                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">#}
-{#                            <div id="reqMessage" >#}
-{#                                <p>{{ request_detail.request_message }}</p>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
+                <div class="form-container form-boxed form-horizontal row">
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label no-pad-top" for="inputReqSubject" >Request Subject</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <span id="reqSubject" >{{ request_detail.request_subject }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 form-group">
+                        <label class="col-sm-3 col-md-2 control-label" for="reqMessage" >Request Message</label>
+                        <div class="col-xs-12 col-sm-9 col-md-10 control-text">
+                            <div id="reqMessage" >
+                                <p>{{ request_detail.request_message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="form-btns-container row">
                     <div class="col-xs-12 col-md-4 col-md-offset-4 form-button">

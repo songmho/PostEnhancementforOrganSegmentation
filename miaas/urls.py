@@ -6,12 +6,14 @@ from . import views, apis
 app_name = 'miaas'
 urlpatterns = [
     # url(r'^$', views.main_page, name='main'),
+    # url(r'^$', views.index_page, name='index'),
+    # url(r'^sign_in$', views.render_page, {"page": "preview.html"}, name='index'),
     url(r'^$', views.index_page, name='index'),
     url(r'^main$', views.main_page, name='main'),
     # url(r'^main2$', views.main2_page, name='main2'),
     # url(r'^$', views.IndexView.as_view(), name='index'),
 
-    url(r'^signin$', views.main_page, name='signin'),
+    url(r'^signin$', views.render_page, name='signin'),
     # url(r'^signin$', views.signin_page, name='signin'),
     url(r'^contact_us$', views.contact_us_page, name='contact_us'),
     url(r'^signup$', views.signup_page, name='signup'),
@@ -67,5 +69,15 @@ urlpatterns = [
     url(r'^auth/(?P<user_id>[-._a-z0-9]+)/(?P<auth_code>[a-zA-Z0-9]+)$', views.auth_email_page, name='auth_email'),
     url(r'^auth/update/(?P<user_id>[-._a-z0-9]+)/(?P<auth_code>[a-zA-Z0-9]+)$', views.auth_change_email_page, name='auth_email_update'),
 
-    url(r'^', views.page_not_found_view)
+    url(r'^api/sign_in', apis.sign_in),
+    url(r'^api/sign_up', apis.sign_up),
+    url(r'^api/withdrawal', apis.withdrawal),
+
+    url(r'^', views.page_not_found_view),
+
+
+    # url(r'^api/register_test_item', apis.register_test_item),
+    # url(r'^api/invite_user', apis.invite_user),
+    # url(r'^api/check_invitation_code', apis.check_invitation_code),
+    # url(r'^api/generate_invitation_code', apis.generate_invitation_code),
 ]

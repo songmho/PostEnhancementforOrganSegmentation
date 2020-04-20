@@ -1,10 +1,9 @@
-{% if not user_session or user_session.user_type != 'physician' %}
+{% if not user_session or user_session.user_type != 'Physician' %}
     <script type="text/javascript">
         location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
     </script>
 {% endif %}
-
-{% load staticfiles %}
+{% load static %}
 {% load my_filters %}
 
 {% include 'miaas/template_header.html' %}

@@ -1,6 +1,6 @@
 import logging
 from pymysql import DataError, IntegrityError, NotSupportedError, OperationalError, ProgrammingError
-from pandas import json
+import json
 from pprint import pprint
 
 import pymysql
@@ -70,10 +70,10 @@ class DbManager:
     FIND_USER = "find_user"
 
     def __init__(self):
-        host = 'rainbowdb.czg2t6iatylv.us-west-2.rds.amazonaws.com'
-        user = 'smartylab'
+        host = '203.253.21.226'
+        user = 'root'
         port = 3306
-        password = 'lovejesus'
+        password = 'root'
         dbName = 'miaas'
         try:
             self.connector = pymysql.connect(host=host, port=port, user=user, passwd=password, db=dbName,

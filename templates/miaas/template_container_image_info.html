@@ -30,7 +30,7 @@
     <div class="col-xs-12 form-group">
         <label class="col-xs-12 col-sm-3 col-md-2 control-label">Recorded Date</label>
         <div class="col-xs-12 col-sm-9 col-md-4 control-text">
-            <span id="takenDate" class="control-value">1992-07-06</span>
+            <span id="takenDate" class="control-value">1992-02-20</span>
         </div>
     </div>
 
@@ -79,8 +79,8 @@
     $(document).ready(function() {
         $('#takenDate').text(dateToString({{ image.taken_date }}));
     });
-
     function dateToString(data) {
+        console.log(data)
         var date = new Date(data);
         var year = date.getFullYear();
         var month = (1 + date.getMonth()).toString();

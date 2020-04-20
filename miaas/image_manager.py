@@ -7,7 +7,7 @@ import dicom
 import csv
 import re
 from miaas.utils import edf_to_csv
-from . import cloud_db, constants, dicom_reader
+from miaas import cloud_db, constants, dicom_reader
 
 logging.basicConfig(
     format="[%(name)s][%(asctime)s] %(message)s",

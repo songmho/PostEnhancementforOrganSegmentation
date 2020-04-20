@@ -1,13 +1,15 @@
+from django.views.decorators.csrf import csrf_exempt
+
 from miaas import sample_contexts
 from miaas.utils.utils import timestamp_to_date_string, get_interpretation_status
 from django.http import Http404
 
 __author__ = 'hanter'
 
-from django.shortcuts import render, get_object_or_404, render_to_response, redirect
+from django.shortcuts import render, get_object_or_404,  redirect
 from django.template import RequestContext
 from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -16,11 +18,38 @@ from django.views.generic.edit import FormView
 from .forms import UploadForm
 
 from miaas import sample_contexts as sctx
-from miaas import cloud_db, constants, cloud_db_copy, email_auth
-
+from miaas import cloud_db
+from miaas import constants, cloud_db_copy, email_auth
+import sys
+import os
+sys.path.append("./miaas")
 from image_manager import ImageManager, ImageRetriever
 import logging, json, time, copy
 from pprint import pprint
+from miaas.forms import CurrentProblem, CurrentTestSession, Login, CurrentProgram, CurrentCourse, CurrentOffering
+
+
+@csrf_exempt
+def render_page(request):
+    context = _get_session_context(request)
+    if request.method == "POST":
+        form = Login(request.POST)
+        result = form.get_info()
+        # print(">>>> ", result)
+        #
+        # if result['cur_role'] == "Patient":
+        #     archive_page(request)
+        #     # return render(request, "miaas/preview.html", {"varr": form}, context)
+        # elif result['cur_role'] == "Physician":
+        #     physician_interpretation_page(request)
+        #     # return render(request, "miaas/preview.html", {"varr": form}, context)
+        # elif result['cur_role'] == "Staff":
+        #     return render(request, "miaas/preview.html", {"varr": form}, context)
+        # else:
+            # return render(request, "preview.html")
+            # print("HI")
+
+    return render(request, "miaas/preview.html", context)
 
 # get db data -> 404 template, urls in tutorial #3: https://docs.djangoproject.com/en/1.9/intro/tutorial03/
 # form, db class -> tutorial #4
@@ -48,6 +77,10 @@ def main2_page(request):
 
 
 def main_page(request):
+    try:
+        print("main", request)
+    except:
+        print("main Not Yet")
     context = _get_session_context(request)
     # context = {
     #     'session': sctx.default_session,
@@ -56,6 +89,13 @@ def main_page(request):
 
 
 def index_page(request):
+    # request.session['user'] = {'session_id': 1, 'patient_id': 1, 'physician_id': 1,
+    #                            'user_id':"user_id", 'password':"password"}
+    # print("index", request.session['user'])
+    try:
+        print("signin", request.session['user'])
+    except:
+        print("signin Not yet")
     context = _get_session_context(request)
     # context = {
     #     'session': sctx.default_session,
@@ -65,6 +105,10 @@ def index_page(request):
 
 # login reference: https://www.fir3net.com/Web-Development/Django/django.html
 def signin_page(request):
+    try:
+        print("signin", request)
+    except:
+        print("main Not Yet")
     context = _get_session_context(request)
     return render(request, 'miaas/signin.html', context)
 
@@ -181,19 +225,27 @@ def patient_interpretation_detail_page(request, intpr_id):
     if not intpr_id or int(intpr_id) < 0:
         return patient_interpretation_list_page(request)
     if request.session.get('user'):
-        try:
-            db = cloud_db_copy.DbManager()
-            intpr, physician, request_detail, image = db.retrieve_detail(db.PATIENT_INTPR_DETAIL, intpr_id)
-            if image['patient_id'] != request.session['user']['user_id']:
-                return render(request, 'miaas/404.html', context="")
-            context['intpr'] = intpr
-            context['physician'] = physician
-            context['request_detail'] = request_detail
-            context['image'] = image
-        except Exception as e:
-            # print e
-            return render(request, 'miaas/404.html', context="")
-    logger.info('interpretation_detail_page get: %s' % request.GET)
+        # try:
+        #     db = cloud_db_copy.DbManager()
+        #     intpr, physician, request_detail, image = db.retrieve_detail(db.PATIENT_INTPR_DETAIL, intpr_id)
+        #     if image['patient_id'] != request.session['user']['user_id']:
+        #         return render(request, 'miaas/404.html', context={"":""})
+        #     context['intpr'] = intpr
+        #     context['physician'] = physician
+        #     context['request_detail'] = request_detail
+        #     context['image'] = image
+        # except Exception as e:
+        #     # print e
+        #     return render(request, 'miaas/404.html', context={"":""})
+
+    # intpr, physician, request_detail, image = db.retrieve_detail(db.PATIENT_INTPR_DETAIL, intpr_id)
+
+        context['intpr'] = {'type': 1, "value": "test", "timestampe": 1587097427000, 'level':1,
+                            "intpr_level_string": "hi"}
+        context['physician'] = {'physician_name': "John Johns", 'patient_name': "Simpson Brown"}
+        context['request_detail'] = {}
+        context['image'] = {'image_dir': './ecg.csv', "image_id": 1, 'image_cnt': 300}
+        logger.info('interpretation_detail_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_detail.html', context)
 
 
@@ -201,34 +253,55 @@ def patient_interpretation_request_detail_page(request, request_id):
     context = _get_session_context(request)
     if request.GET.get('lastPage'):
         context['lastPage'] = request.GET['lastPage']
-
+    print("Last Page", request.GET.get('lastPage'))
     if not request_id or int(request_id) < 0:
         return patient_request_list_page(request)
     if request.session.get('user'):
-        try:
-            db = cloud_db_copy.DbManager()
-            cdb = None
-            request_detail, image = db.retrieve_detail(db.PATIENT_REQUEST_DETAIL, request_id)
-            if image['patient_id'] != request.session['user']['user_id']:
-                return patient_request_list_page(request)
-            if request_detail['status'] == 0:
-                cdb = cloud_db.DbManager()
-                intpr_id = cdb.retrieve_interpretation_by_request_id(request_detail['request_id'])
-                if intpr_id:
-                    context['redirection'] = True
-                    context['intpr_id'] = intpr_id
-                else:
-                    raise Exception()
-            else:
-                responses = db.retrieve_list(db.REQUEST_RESPONSE_LIST, request_detail['request_id'])
-                context['image'] = image
-                context['request_detail'] = request_detail
-                context['responses'] = responses
-        except Exception:
-            return render(request, 'miaas/404.html', context="")
-        finally:
-            db.close()
-            if cdb: cdb.close()
+        # try:
+        #     db = cloud_db_copy.DbManager()
+        #     cdb = None
+        #     request_detail, image = db.retrieve_detail(db.PATIENT_REQUEST_DETAIL, request_id)
+        #     if image['patient_id'] != request.session['user']['user_id']:
+        #         return patient_request_list_page(request)
+        #     if request_detail['status'] == 0:
+        #         cdb = cloud_db.DbManager()
+        #         intpr_id = cdb.retrieve_interpretation_by_request_id(request_detail['request_id'])
+        #         if intpr_id:
+        #             context['redirection'] = True
+        #             context['intpr_id'] = intpr_id
+        #         else:
+        #             print("Patient interpretation request detail page111")
+        #             raise Exception()
+        #     else:
+        #         responses = db.retrieve_list(db.REQUEST_RESPONSE_LIST, request_detail['request_id'])
+        #         context['image'] = image
+        #         context['request_detail'] = request_detail
+        #         context['responses'] = responses
+        # except Exception:
+        #     print("Patient interpretation request detail page")
+        #     return render(request, 'miaas/404.html', context={"":""})
+        # finally:
+        #     db.close()
+        #     if cdb: cdb.close()
+
+        request_detail= {'status': 1, 'request_subject': "Cancer", "patient_name": "Simpson Brown",
+                         'request_message': "Could you check my medical image?"}
+        image = {'patient_id': 1, 'image_dir': './ecg.csv', "image_id": 1, 'image_cnt':300,
+                 "uploaded_date":1587097427000, "image_subject": "Cancer", "image_type":    "ECG",
+                 "taken_date": 1587097427000, "interpr_num": 1, 'taken_from': "National Hospital",
+                 "physician": "John Johns", "place": "National Hospital", "medical_department": "Internal Medical",
+                 "description": "It may have some tumors."}
+        responses = [{"physician_id":1, "physician_name": "John Johns", "medical_field": "Internal Medical",
+                     "phone_number": "+21-32-3226-4356", 'email':"Johns@dr.com",
+                            "response_message":"Do surgery."},
+                     {"physician_id": 2, "physician_name": "Kim Jun", "medical_field": "Internal Medical",
+                      "phone_number": "+21-12-1236-3451", 'email': "junjun@dr.com",
+                      "response_message": "We can take a time."}
+                     ]
+        context['image'] = image
+        context['request_detail'] = request_detail
+        context['responses'] = responses
+
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_request_detail.html', context)
 
@@ -241,19 +314,22 @@ def physician_request_search_detail_page(request, request_id):
 
     if not request_id or int(request_id) < 0:
         return physician_interpretation_search(request)
-    if request.session.get('user'):
-        try:
-            db = cloud_db_copy.DbManager()
-            request_detail, patient, image, intpr_temp = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
-            if request_detail['status'] == 0:
-                raise Exception()
-            context['request_detail'] = request_detail
-            context['patient'] = patient
-            context['image'] = image
-            # pprint(context)
-        except Exception:
-            return render(request, 'miaas/404.html', context="")
+    # if request.session.get('user'):
+    #     try:
+    #         db = cloud_db_copy.DbManager()
+    #         request_detail, patient, image, intpr_temp = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
+    #         if request_detail['status'] == 0:
+    #             raise Exception()
+    #         context['request_detail'] = request_detail
+    #         context['patient'] = patient
+    #         context['image'] = image
+    #         # pprint(context)
+    #     except Exception:
+    #         return render(request, 'miaas/404.html', context={"":""})
 
+    context['request_detail'] = {}
+    context['patient'] = {}
+    context['image'] = {'image_dir': './ecg.csv', "image_id": 1, 'image_cnt':300}
     logger.info('physician_request_search_detail_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_search_detail.html', context)
 
@@ -266,28 +342,33 @@ def physician_interpretation_write(request, request_id):
     if not request_id or int(request_id) < 0:
         return physician_interpretation_response_page(request)
     if request.session.get('user'):
-        try:
-            db = cloud_db_copy.DbManager()
-            cdb = None
-            request_detail, patient, image, intpr_temp = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
-            if request_detail['status'] == 0:
-                cdb = cloud_db.DbManager()
-                intpr_id = cdb.retrieve_interpretation_by_request_id(request_detail['request_id'])
-                if intpr_id:
-                    context['redirection'] = True
-                    context['intpr_id'] = intpr_id
-                else:
-                    raise Exception()
-            else:
-                context['request_detail'] = request_detail
-                context['patient'] = patient
-                context['image'] = image
-                context['intpr_temp'] = intpr_temp
-        except Exception:
-            return render(request, 'miaas/404.html', context="")
-        finally:
-            db.close()
-            if cdb: cdb.close()
+        # try:
+        #     db = cloud_db_copy.DbManager()
+        #     cdb = None
+        #     request_detail, patient, image, intpr_temp = db.retrieve_detail(db.PHYSICIAN_REQUEST_DETAIL, request_id)
+        #     if request_detail['status'] == 0:
+        #         cdb = cloud_db.DbManager()
+        #         intpr_id = cdb.retrieve_interpretation_by_request_id(request_detail['request_id'])
+        #         if intpr_id:
+        #             context['redirection'] = True
+        #             context['intpr_id'] = intpr_id
+        #         else:
+        #             raise Exception()
+        #     else:
+        #         context['request_detail'] = request_detail
+        #         context['patient'] = patient
+        #         context['image'] = image
+        #         context['intpr_temp'] = intpr_temp
+        # except Exception:
+        #     return render(request, 'miaas/404.html', context={"":""})
+        # finally:
+        #     db.close()
+        #     if cdb: cdb.close()
+
+        context['request_detail'] = {}
+        context['patient'] = {}
+        context['image'] = {'image_dir': './ecg.csv', "image_id": 1, 'image_cnt':300}
+        context['intpr_temp'] = {}
     logger.info('interpretation_request_detail_page get: %s' % request.GET)
     return render(request, 'miaas/physician_interpretation_write.html', context)
 
@@ -300,16 +381,23 @@ def physician_interpretation_detail_page(request, intpr_id):
     if not intpr_id or int(intpr_id) < 0:
         return physician_interpretation_page(request)
     if request.session.get('user'):
-        try:
-            db = cloud_db_copy.DbManager()
-            intpr, patient, request_detail, image = db.retrieve_detail(db.PHYSICIAN_INTPR_DETAIL, intpr_id)
-            context['intpr'] = intpr
-            context['patient'] = patient
-            context['request_detail'] = request_detail
-            context['image'] = image
-        except Exception:
-            return render(request, 'miaas/404.html', context="")
+        pass
+        # try:
+        #     db = cloud_db_copy.DbManager()
+        #     intpr, patient, request_detail, image = db.retrieve_detail(db.PHYSICIAN_INTPR_DETAIL, intpr_id)
+        #     context['intpr'] = intpr
+        #     context['patient'] = patient
+        #     context['request_detail'] = request_detail
+        #     context['image'] = image
+        # except Exception:
+        #     return render(request, 'miaas/404.html', context={"":""})
     # logger.info('physician_interpretation_detail_page get: %s' % request.GET)
+    context['intpr'] = {'physician_id': 1, 'level': 1, 'intpr_level_string': "Waiting Interpretation",
+                        "suspected_disease": "liver cancer", "opinion": "Biology Treatment",
+                        "recommendation": "Biology Treatment", "summary": "None"}
+    context['patient'] = {}
+    context['request_detail'] = {}
+    context['image'] = {'image_dir': './ecg.csv', "image_id": 1, 'image_cnt':300}
     return render(request, 'miaas/physician_interpretation_detail.html', context)
 
 
@@ -325,26 +413,71 @@ def patient_interpretation_list_page(request):
 
     dt_list = []
     if request.session.get('user'):
-        try:
-            # Retrieve lists.
-            db = cloud_db_copy.DbManager()
-            results = db.retrieve_list(db.PATIENT_INTPR_LIST, request.session['user']['user_id'])
-            for r in results:
-                temp = []
-                temp.append(r['request_date'])
-                temp.append(r['interpret_date'])
-                temp.append(r['request_subject'])
-                temp.append(r['image_subject'])
-                temp.append(r['image_type'])
-                temp.append(r['level'])
-                temp.append(r['intpr_id'])
-                if len(temp):
-                    dt_list.append(temp)
-            # Render the page
-            if len(dt_list):
-                context['dt_list'] = json.dumps(dt_list)
-        except Exception:
-            return render(request, 'miaas/404.html', context="")
+        # try:
+        #     # Retrieve lists.
+        #     db = cloud_db_copy.DbManager()
+        #     results = db.retrieve_list(db.PATIENT_INTPR_LIST, request.session['user']['user_id'])
+        #     for r in results:
+        #         temp = []
+        #         temp.append(r['request_date'])
+        #         temp.append(r['interpret_date'])
+        #         temp.append(r['request_subject'])
+        #         temp.append(r['image_subject'])
+        #         temp.append(r['image_type'])
+        #         temp.append(r['level'])
+        #         temp.append(r['intpr_id'])
+        #         if len(temp):
+        #             dt_list.append(temp)
+        #     # Render the page
+        #     if len(dt_list):
+        #         context['dt_list'] = json.dumps(dt_list)
+        # except Exception:
+        #     return render(request, 'miaas/404.html', context={"":""})
+        pass
+
+    temp = []
+    temp.append(1587097427000)
+    temp.append('Test1')
+    temp.append('Test1')
+    temp.append(1587097427000)
+    temp.append(1)
+    temp.append(1)
+    if len(temp):
+        dt_list.append(temp)
+
+    temp = []
+    temp.append(1587097427000)
+    temp.append('Test2')
+    temp.append('Test2')
+    temp.append(1587097427000)
+    temp.append(2)
+    temp.append(2)
+    if len(temp):
+        dt_list.append(temp)
+
+    temp = []
+    temp.append(1587097427000)
+    temp.append('Test3')
+    temp.append('Test3')
+    temp.append(1587097427000)
+    temp.append(0)
+    temp.append(3)
+    if len(temp):
+        dt_list.append(temp)
+
+    temp = []
+    temp.append(1587097427000)
+    temp.append('Test4')
+    temp.append('Test4')
+    temp.append(1587097427000)
+    temp.append(3)
+    temp.append(4)
+    if len(temp):
+        dt_list.append(temp)
+
+    # Render the page
+    if len(dt_list):
+        context['dt_list'] = json.dumps(dt_list)
     logger.info('interpret get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_list.html', context)
 
@@ -356,28 +489,72 @@ def patient_request_list_page(request):
 
     dt_list = []
     if request.session.get('user'):
-        try:
-            # Retrieve lists.
-            db = cloud_db_copy.DbManager()
-            results = db.retrieve_list(db.PATIENT_REQUEST_LIST, request.session['user']['user_id'])
-            for r in results:
-                temp = []
-                temp.append(r['request_date'])
-                temp.append(r['request_subject'])
-                temp.append(r['image_subject'])
-                temp.append(r['image_type'])
-                temp.append(r['level'])
-                temp.append(get_interpretation_status(r['status']))
-                temp.append(r['request_id'])
-                if len(temp):
-                    dt_list.append(temp)
+        # try:
+        #     # Retrieve lists.
+        #     db = cloud_db_copy.DbManager()
+        #     results = db.retrieve_list(db.PATIENT_REQUEST_LIST, request.session['user']['user_id'])
+        #     for r in results:
+        #         temp = []
+        #         temp.append(r['request_date'])
+        #         temp.append(r['request_subject'])
+        #         temp.append(r['image_subject'])
+        #         temp.append(r['image_type'])
+        #         temp.append(r['level'])
+        #         temp.append(get_interpretation_status(r['status']))
+        #         temp.append(r['request_id'])
+        #         if len(temp):
+        #             dt_list.append(temp)
+        #
+        #     # Render the page
+        #     if len(dt_list):
+        #         context['dt_list'] = json.dumps(dt_list)
+        # except Exception:
+        #     return render(request, 'miaas/404.html', context={"":""})
+        pass
 
-            # Render the page
-            if len(dt_list):
-                context['dt_list'] = json.dumps(dt_list)
-        except Exception:
-            return render(request, 'miaas/404.html', context="")
+    temp = []
+    temp.append(1587097427000)
+    temp.append('image_subject')
+    temp.append('image_type')
+    temp.append(1587097427000)
+    temp.append(1)
+    temp.append(1)
+    if len(temp):
+        dt_list.append(temp)
 
+    temp = []
+    temp.append(1587097427000)
+    temp.append('Test2')
+    temp.append('Test2')
+    temp.append(1587097427000)
+    temp.append(2)
+    temp.append(2)
+    if len(temp):
+        dt_list.append(temp)
+
+    temp = []
+    temp.append(1587097427000)
+    temp.append('Test3')
+    temp.append('Test3')
+    temp.append(1587097427000)
+    temp.append(3)
+    temp.append(3)
+    if len(temp):
+        dt_list.append(temp)
+
+    temp = []
+    temp.append(1587097427000)
+    temp.append('Test4')
+    temp.append('Test4')
+    temp.append(1587097427000)
+    temp.append(4)
+    temp.append(4)
+    if len(temp):
+        dt_list.append(temp)
+
+    # Render the page
+    if len(dt_list):
+        context['dt_list'] = json.dumps(dt_list)
     logger.info('patient_request_list_page get: %s' % request.GET)
     return render(request, 'miaas/patient_interpretation_request_list.html', context)
 
@@ -386,30 +563,70 @@ def archive_page(request):
     context = _get_session_context(request)
     if request.GET.get('page'):
         context['page'] = request.GET['page']
-
+    print("archive_page", request.GET.get('page'), request.GET.get('user'))
     dt_list = []
     if request.session.get('user'):
-        try:
+        # try:
             # Retrieve lists.
-            db = cloud_db_copy.DbManager()
-            results = db.retrieve_list(db.PATIENT_IMAGE_LIST, request.session['user']['user_id'])
-            for r in results:
-                temp = []
-                temp.append(r['uploaded_date'])
-                temp.append(r['image_subject'])
-                temp.append(r['image_type'])
-                temp.append(r['recorded_date'])
-                temp.append(r['intpr_num'])
-                temp.append(r['image_id'])
-                if len(temp):
-                    dt_list.append(temp)
+        #     db = cloud_db_copy.DbManager()
+        #     results = db.retrieve_list(db.PATIENT_IMAGE_LIST, request.session['user']['user_id'])
+        #     for r in results:
+        #         temp = []
+        #         temp.append(r['uploaded_date'])
+        #         temp.append(r['image_subject'])
+        #         temp.append(r['image_type'])
+        #         temp.append(r['recorded_date'])
+        #         temp.append(r['intpr_num'])
+        #         temp.append(r['image_id'])
+        #         if len(temp):
+        #             dt_list.append(temp)
+        #
+        #     # Render the page
+        #     if len(dt_list):
+        #         context['dt_list'] = json.dumps(dt_list)
+        # except Exception:
+        #     return render(request, 'miaas/404.html', context={"":""})
 
-            # Render the page
-            if len(dt_list):
-                context['dt_list'] = json.dumps(dt_list)
-        except Exception:
-            return render(request, 'miaas/404.html', context="")
+        temp = []
+        temp.append(1587097427000)
+        temp.append('Test1')
+        temp.append('Test1')
+        temp.append(1587097427000)
+        temp.append(1)
+        temp.append(1)
+        if len(temp):
+            dt_list.append(temp)
+        temp = []
+        temp.append(1587097427000)
+        temp.append('Test2')
+        temp.append('Test2')
+        temp.append(1587097427000)
+        temp.append(2)
+        temp.append(2)
+        if len(temp):
+            dt_list.append(temp)
+        temp = []
+        temp.append(1587097427000)
+        temp.append('Test3')
+        temp.append('Test3')
+        temp.append(1587097427000)
+        temp.append(3)
+        temp.append(3)
+        if len(temp):
+            dt_list.append(temp)
+        temp = []
+        temp.append(1587097427000)
+        temp.append('Test4')
+        temp.append('Test4')
+        temp.append(1587097427000)
+        temp.append(4)
+        temp.append(4)
+        if len(temp):
+            dt_list.append(temp)
 
+        # Render the page
+        if len(dt_list):
+            context['dt_list'] = json.dumps(dt_list)
     logger.info('archive get: %s' % request.GET)
     return render(request, 'miaas/patient_archive.html', context)
 
@@ -422,25 +639,67 @@ def physician_interpretation_search(request):
 
     dt_list = []
     if request.session.get('user'):
-        try:
-            # Retrieve lists.
-            db = cloud_db_copy.DbManager()
-            results = db.retrieve_list(db.PHYSICIAN_SEARCH_REQUEST_LIST, request.session['user']['user_id'])
-            for r in results:
-                temp = []
-                temp.append(r['request_date'])
-                temp.append(r['patient_id'])
-                temp.append(r['request_subject'])
-                temp.append(r['image_subject'])
-                temp.append(r['image_type'])
-                temp.append(r['level'])
-                temp.append(r['request_id'])
-                if len(temp):
-                    dt_list.append(temp)
-        except Exception:
-            return render(request, 'miaas/404.html', context="")
+        # try:
+        #     # Retrieve lists.
+        #     db = cloud_db_copy.DbManager()
+        #     results = db.retrieve_list(db.PHYSICIAN_SEARCH_REQUEST_LIST, request.session['user']['user_id'])
+        #     for r in results:
+        #         temp = []
+        #         temp.append(r['request_date'])
+        #         temp.append(r['patient_id'])
+        #         temp.append(r['request_subject'])
+        #         temp.append(r['image_subject'])
+        #         temp.append(r['image_type'])
+        #         temp.append(r['level'])
+        #         temp.append(r['request_id'])
+        #         if len(temp):
+        #             dt_list.append(temp)
+        # except Exception:
+        #     return render(request, 'miaas/404.html', context={"":""})
 
+        temp = []
+        temp.append(1587097427000)
+        temp.append(1)
+        temp.append('request_subject')
+        temp.append('test1')
+        temp.append('test1')
+        temp.append('level')
+        temp.append(1)
+        if len(temp):
+            dt_list.append(temp)
+
+        temp = []
+        temp.append(1587097427000)
+        temp.append(1)
+        temp.append('request_subject')
+        temp.append('test2')
+        temp.append('test2')
+        temp.append('level')
+        temp.append(2)
+        if len(temp):
+            dt_list.append(temp)
+        temp = []
+        temp.append(1587097427000)
+        temp.append(1)
+        temp.append('request_subject')
+        temp.append('test3')
+        temp.append('test3')
+        temp.append('level')
+        temp.append(3)
+        if len(temp):
+            dt_list.append(temp)
+        temp = []
+        temp.append(1587097427000)
+        temp.append(1)
+        temp.append('request_subject')
+        temp.append('test4')
+        temp.append('test4')
+        temp.append('level')
+        temp.append(4)
+        if len(temp):
+            dt_list.append(temp)
         # Render the page
+        print("len: ", len(dt_list))
         if len(dt_list):
             context['dt_list'] = json.dumps(dt_list)
     logger.info('physician_interpretation_search get: %s' % request.GET)
@@ -455,25 +714,73 @@ def physician_interpretation_response_page(request):
     dt_list = []
     if request.session.get('user'):
         # Retrieve lists.
-        try:
-            db = cloud_db_copy.DbManager()
-            results = db.retrieve_list(db.PHYSICIAN_RESPONSE_LIST, request.session['user']['user_id'])
-            for r in results:
-                temp = []
-                temp.append(r['request_date'])
-                temp.append(r['response_date'])
-                temp.append(r['patient_id'])
-                temp.append(r['request_subject'])
-                temp.append(r['image_subject'])
-                temp.append(r['image_type'])
-                temp.append(r['level'])
-                temp.append(get_interpretation_status(r['status']))
-                temp.append(r['request_id'])
-                if len(temp):
-                    dt_list.append(temp)
-        except Exception:
-            return render(request, 'miaas/404.html', context="")
-
+        # try:
+            # db = cloud_db_copy.DbManager()
+            # results = db.retrieve_list(db.PHYSICIAN_RESPONSE_LIST, request.session['user']['user_id'])
+            # for r in results:
+        #         temp = []
+        #         temp.append(r['request_date'])
+        #         temp.append(r['response_date'])
+        #         temp.append(r['patient_id'])
+        #         temp.append(r['request_subject'])
+        #         temp.append(r['image_subject'])
+        #         temp.append(r['image_type'])
+        #         temp.append(r['level'])
+        #         temp.append(get_interpretation_status(r['status']))
+        #         temp.append(r['request_id'])
+        #         if len(temp):
+        #             dt_list.append(temp)
+        # except Exception:
+        #     return render(request, 'miaas/404.html', context={"":""})
+        temp = []
+        temp.append(1587097427000)
+        temp.append(1587097427000)
+        temp.append(1)
+        temp.append('request_subject')
+        temp.append('image_subject')
+        temp.append('image_type')
+        temp.append(1)
+        temp.append("Waiting Interpretation")
+        temp.append(1)
+        if len(temp):
+            dt_list.append(temp)
+        temp = []
+        temp.append(1587097427000)
+        temp.append(1587097427000)
+        temp.append(1)
+        temp.append('Test2')
+        temp.append('Test2')
+        temp.append('Test2')
+        temp.append(2)
+        temp.append("Candidate Waiting")
+        temp.append(2)
+        if len(temp):
+            dt_list.append(temp)
+        temp = []
+        temp.append(1587097427000)
+        temp.append(1587097427000)
+        temp.append(1)
+        temp.append('Test3')
+        temp.append('Test3')
+        temp.append('Test3')
+        temp.append(0)
+        temp.append("Interpreted")
+        temp.append(2)
+        if len(temp):
+            dt_list.append(temp)
+        temp = []
+        temp.append(1587097427000)
+        temp.append(1587097427000)
+        temp.append(1)
+        temp.append('Test4')
+        temp.append('Test4')
+        temp.append('Test4')
+        temp.append(3)
+        temp.append("Finding Physician")
+        temp.append(2)
+        if len(temp):
+            dt_list.append(temp)
+        print("INter List :", len(dt_list))
         # Render the page
         if len(dt_list):
             context['dt_list'] = json.dumps(dt_list)
@@ -488,24 +795,69 @@ def physician_interpretation_page(request):
 
     dt_list = []
     if request.session.get('user'):
-        try:
-            # Retrieve lists.
-            db = cloud_db_copy.DbManager()
-            results = db.retrieve_list(db.PHYSICIAN_INTPR_LIST, request.session['user']['user_id'])
-            for r in results:
-                temp = []
-                temp.append(r['request_date'])
-                temp.append(r['interpret_date'])
-                temp.append(r['patient_id'])
-                temp.append(r['image_subject'])
-                temp.append(r['image_type'])
-                temp.append(r['level'])
-                temp.append(r['intpr_id'])
-                if len(temp):
-                    dt_list.append(temp)
-        except Exception:
-            return render(request, 'miaas/404.html', context="")
+        # try:
+        #     # Retrieve lists.
+        #     db = cloud_db_copy.DbManager()
+        #     results = db.retrieve_list(db.PHYSICIAN_INTPR_LIST, request.session['user']['user_id'])
+        #     for r in results:
+        #         temp = []
+        #         temp.append(r['request_date'])
+        #         temp.append(r['interpret_date'])
+        #         temp.append(r['patient_id'])
+        #         temp.append(r['image_subject'])
+        #         temp.append(r['image_type'])
+        #         temp.append(r['level'])
+        #         temp.append(r['intpr_id'])
+        #         if len(temp):
+        #             dt_list.append(temp)
+        # except Exception:
+        #     return render(request, 'miaas/404.html', context={"":""})
         # Render the page
+
+        temp = []
+        temp.append(1587097427000)
+        temp.append(1587097427000)
+        temp.append(1)
+        temp.append('image_subject')
+        temp.append('image_type')
+        temp.append(1)
+        temp.append(1)
+        if len(temp):
+            dt_list.append(temp)
+
+        temp = []
+        temp.append(1587097427000)
+        temp.append(1587097427000)
+        temp.append(1)
+        temp.append('Test2')
+        temp.append('Test2')
+        temp.append(2)
+        temp.append(2)
+        if len(temp):
+            dt_list.append(temp)
+
+        temp = []
+        temp.append(1587097427000)
+        temp.append(1587097427000)
+        temp.append(2)
+        temp.append('Test3')
+        temp.append('Test3')
+        temp.append(3)
+        temp.append(3)
+        if len(temp):
+            dt_list.append(temp)
+
+        temp = []
+        temp.append(1587097427000)
+        temp.append(1587097427000)
+        temp.append(3)
+        temp.append('Test4')
+        temp.append('Test4')
+        temp.append(0)
+        temp.append(4)
+        if len(temp):
+            dt_list.append(temp)
+
         if len(dt_list):
             context['dt_list'] = json.dumps(dt_list)
     logger.info('physician_interpretation_page get: %s' % request.GET)
@@ -513,7 +865,7 @@ def physician_interpretation_page(request):
 
 
 def page_not_found_view(request):
-    return render(request, 'miaas/404.html', context="")
+    return render(request, 'miaas/404.html', context={"":""})
 
 
 class ArchiveUploadView(FormView):
@@ -596,20 +948,30 @@ class ArchiveDetailView(ArchiveUploadView):
             context['lastPage'] = self.request.GET['lastPage']
         image_id = self.kwargs['image_id']
 
-        try:
-            if not image_id or int(image_id) < 0:
-                context['image'] = None
-            else:
-                db = cloud_db.DbManager()
-                result = db.retrieve_image_and_intpr(image_id)
-                # logger.info(result)
-
-                if result.get('image') and isinstance(result.get('intpr'), list):
-                    context['image'] = result['image']
-                    context['intpr_list'] = result['intpr']
-                    pprint (result['intpr'])
-        except:
-            context['image'] = None
+        # try:
+        #     if not image_id or int(image_id) < 0:
+        #         context['image'] = None
+        #     else:
+        #         db = cloud_db.DbManager()
+        #         result = db.retrieve_image_and_intpr(image_id)
+        #         # logger.info(result)
+        #
+        #         if result.get('image') and isinstance(result.get('intpr'), list):
+        #             context['image'] = result['image']
+        #             context['intpr_list'] = result['intpr']
+        #             pprint (result['intpr'])
+        # except:
+        #     context['image'] = None
+        context['image'] = {'image_dir': './ecg.csv', "image_id": 1, 'image_cnt': 300, 'user_id':1, "subject": "Cancer",
+                            "image_type": "ECG", "taken_from": 'National Hospital', "physician": "John",
+                            "place": "National Hospital", "description": "", "size": 300, 'timestamp':1587097427000,
+                            "intpr_num":1,"taken_date":1587097427000, 'medical_department':"Internal Medicine"}
+        context['intpr_list'] = [{'intpr_id':1, 'physician_id':1, 'patient_id':1, 'image_id':1,
+                                  'level': 1, 'fee':300, 'timestamp':1587097427000, 'summary':'Tumors in Liver',
+                                  'request_id':1, 'suspected_disease': 'Liver Cancer',
+                                  'opinion': "The parts of tumor look serious.",
+                                  'recommendation': 'Urgent treatment'}] # List
+        context['is_list'] = []
         return context
 
 

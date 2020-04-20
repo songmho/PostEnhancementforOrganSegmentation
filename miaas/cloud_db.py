@@ -1,5 +1,5 @@
 import time
-from pandas import json
+import json
 
 from miaas import cloud_db_copy
 
@@ -18,10 +18,10 @@ logger = logging.getLogger(__name__)
 
 class DbManager():
     def __init__(self):
-        host = 'rainbowdb.czg2t6iatylv.us-west-2.rds.amazonaws.com'
-        user = 'smartylab'
+        host = '203.253.21.226'
+        user = 'root'
         port = 3306
-        password = 'lovejesus'
+        password = 'root'
         dbName = 'miaas'
         try:
             self.connector = pymysql.connect(host=host, port=port, user=user, passwd=password, db=dbName,

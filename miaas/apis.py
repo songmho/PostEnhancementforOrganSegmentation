@@ -1,14 +1,19 @@
+import copy
 import json
 import logging
 import time
 from pprint import pprint
 
 from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.cache import cache
 
 import constants, cloud_db, email_auth
 from image_manager import ImageManager, ImageRetriever
+from miaas.users import User, Staff, Physician, Patient
+from miaas.sessions import Session
+from miaas.smtp import MailSender
+from miaas.generate_random import InvitationCodeGenerator
 
 MSG_DB_FAILED = "Handling DB requests are failed."
 MSG_NO_USER_LOGGEDIN = "There is no loggged in  user."
@@ -40,6 +45,168 @@ logging.basicConfig(
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+
+
+@csrf_exempt
+def sign_in(request):
+    sess = Session()
+    try:
+        if request.method == "POST":
+            data = json.loads(request.body.decode('utf-8'))
+            input_id = data['id']
+            input_pwd = data['pwd']
+            role = data['role']
+            if role == "Patient":
+                s = Patient()
+                result_s = s.retrieve_patient(email=input_id, pwd=input_pwd)
+                result_s[0]['user_type'] = "Patient"
+                # Container.current_user = result_s
+                request.session['user'] = result_s[0]
+                print(request.session.get('user'))
+                result = sess.generate_session(result_s[0]['identification_number'])
+                if result:
+                    return JsonResponse({"state": True, "data": result_s})
+            elif role == "Physician":
+                s = Physician()
+                result_s = s.retrieve_physician(email=input_id, pwd=input_pwd)
+                result_s[0]['user_type'] = "Physician"
+                # Container.current_user = result_s
+                request.session['user'] = result_s[0]
+                print(request.session.get('user'))
+                result = sess.generate_session(result_s[0]['identification_number'])
+                if result:
+                    return JsonResponse({"state": True, "data": result_s})
+            elif role == "Staff":
+                s = Staff()
+                result_s = s.retrieve_staff(email=input_id, pwd=input_pwd)
+                result_s[0]['user_type'] = "Staff"
+                # Container.current_user = result_s
+                request.session['user'] = result_s[0]
+                print(request.session.get('user'))
+                result = sess.generate_session(result_s[0]['identification_number'])
+                if result:
+                    return JsonResponse({"state": True, "data": result_s})
+            return JsonResponse({"state": False, "data": None})
+    except:
+        return JsonResponse({"state": False, "data": None})
+
+
+@csrf_exempt
+def load_curr_user_info(request):
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        email = data['email']
+        first_name = data['first_name']
+        last_name = data['last_name']
+        role = data['cur_role']
+        id = data['identification_number']
+        result = {}
+        print(role)
+        if role == "Staff":
+            s = Staff()
+            result = s.retrieve_staff(email=email, first_name=first_name, last_name=last_name)
+            print(result)
+        elif role == "Trainee":
+            t = Patient()
+            result = t.retrieve_patient(email=email, first_name=first_name, last_name=last_name)
+            print(result)
+        elif role == "Evaluator":
+            e = Physician()
+            result = e.retrieve_physician(email=email, first_name=first_name, last_name=last_name)
+            print(result)
+        print(result)
+        return JsonResponse(result[0])
+
+
+@csrf_exempt
+def generate_invitation_code(request):
+    if request.method == "POST":
+        icg = InvitationCodeGenerator()
+
+        user = User()
+        query = user.retrieve_user()
+        list_code = []
+        for q in query:
+            data = q['invitation_code']
+            if(data not in list_code) and data is not None:
+                list_code.append(data)
+
+        result = icg.get_invitation_code(list_code)
+        return JsonResponse({"result": result})
+
+@csrf_exempt
+def invite_user(request):
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        fir_name = data['first_name']
+        last_name =data["last_name"]
+        email = data['email']
+        inv_code = data['invitation_code']
+        roles = data['role']
+        user = User()
+        result = user.register_user(first_name=fir_name, last_name=last_name, identification_form="", affiliation="",
+                                    email=email, phone_number="", pwd="", role=' '.join(roles), invitation_code=inv_code)
+        if result > -1:
+            ms = MailSender()
+            result = ms.send_mail(fir_name=fir_name, last_name= last_name, list_role=roles,
+                         email=email, invite_code=inv_code)
+            return JsonResponse({"result": result})
+        else:
+            return JsonResponse({"result": False})
+
+@csrf_exempt
+def sign_up(request):
+    if request.method == "POST":
+        result = None
+        data = json.loads(request.body.decode('utf-8'))
+        print("role", data['role'])
+        if "Evaluator" in data['role']:
+            e = Physician()
+            result = e.register_physician(first_name=data['first_name'], last_name=data['last_name'], identification_form="",
+                                          email=data["email"], affiliation=data["affiliation"], phone_number=data["phone_number"],
+                                          qualification=data["qualification"], evaluation_history="", rank=data["rank"], identification_number=data["identification_number"],
+                                          department=data["department"], work_phone=data["work_phone"], work_email=data["work_email"], pwd=data["pwd"])
+        if "Staff" in data['role']:
+            s = Staff()
+            result = s.register_staff(first_name=data['first_name'], last_name=data['last_name'], identification_form="",
+                              email=data["email"], affiliation=data["affiliation"], phone_number=data["phone_number"],
+                              leader_role=data['leader_role'], rank=data["rank"], department=data["department"], identification_number=data["identification_number"],
+                             work_phone=data["work_phone"], work_email=data["work_email"], pwd=data["pwd"])
+        if "Trainee" in data['role']:
+            t = Patient()
+            result = t.register_patient(first_name=data['first_name'], last_name=data['last_name'], identification_form="",
+                                        email=data["email"], affiliation=data["affiliation"], phone_number=data["phone_number"],
+                                        qualification=data['qualification'], rank=data["rank"], department=data["department"], identification_number=data["identification_number"],
+                                        work_phone=data["work_phone"], work_email=data["work_email"], pwd=data["pwd"])
+        if result == -1 or result is None:
+            return JsonResponse({'state': False})
+        else:
+            return JsonResponse({'state': True})
+
+
+@csrf_exempt
+def withdrawal(request):
+    if request.method == "POST":
+        result = False
+        data = json.loads(request.body.decode('utf-8'))
+        data = data['current_user']
+        if data['role'] == "Evaluator":
+            e = Physician()
+            e.identification_number = data["identification_number"]
+            result = e.delete_physician()
+        elif data['role'] == "Staff":
+            s = Staff()
+            s.identification_number = data["identification_number"]
+            result = s.delete_staff()
+        elif data['role'] == "Trainee":
+            t = Patient()
+            t.identification_number = data["identification_number"]
+            result = t.delete_patient()
+
+        if result is True:
+            return JsonResponse({'state': True})
+        else:
+            return JsonResponse({'state': False})
 
 
 @csrf_exempt
@@ -168,66 +335,83 @@ def handle_session_mgt(request):
     :param request:
     :return:
     """
-    db = cloud_db.DbManager()
+    # db = cloud_db.DbManager()
     try:
         if request.method == 'POST':
             ### login(signin) ###
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
+            # if len(request.body) == 0:
+            #     raise Exception(MSG_NODATA)
             data = json.loads(request.body)
-
-            if not data.get('user_id') or not data.get('password'):
-                raise Exception(MSG_INVALID_PARAMS)
-            if request.session.get('user'):
-                raise Exception(MSG_ALREADY_LOGGEDIN)
+            #
+            # if not data.get('user_id') or not data.get('password'):
+            #     raise Exception(MSG_INVALID_PARAMS)
+            # if request.session.get('user'):
+            #     raise Exception(MSG_ALREADY_LOGGEDIN)
+            # user_id = data['user_id']
+            # password = data['password']
+            #
+            # authenticated = db.check_authentication(user_id)
+            # if authenticated is None:
+            #     raise Exception(MSG_UNKNOWN_ERROR)
+            # elif authenticated is False:
+            #     return JsonResponse(constants.CODE_NEED_AUTH)
+            #
+            # user = {}
+            # intpr_session = {}
+            # user_type = db.retrieve_user_type(user_id, password)
+            # if user_type is None:
+            #     raise Exception(MSG_INVALID_IDPW)
+            # elif user_type == 'patient':
+            #     user = db.retrieve_patient(user_id, password)
+            #     intpr_session['sessions'] = db.retrieve_patient_session(data['user_id'])
+            # elif user_type == 'physician':
+            #     user = db.retrieve_physician(user_id, password)
+            #     intpr_session['sessions'] = db.retrieve_physician_session(data['user_id'])
+            # else:
+            #     raise Exception(MSG_INVALID_IDPW)
+            # if not user.get('user_id'):
+            #     raise Exception(MSG_INVALID_IDPW)
+            #
+            # # intpr session check
+            # new_flag = 0
+            # for session in intpr_session['sessions']:
+            #     if session['status'] == 0:
+            #         new_flag = 1
+            # intpr_session['new'] = new_flag
+            #
+            # # set sessions
+            # request.session['user'] = user
+            # # pprint(user)
+            # request.session['intpr_session'] = intpr_session
+            # # request.session['medical_image'] = {}
+            # # request.session.create('medical_image')
+            # logger.info('user %s logged in.' % user['user_id'])
             user_id = data['user_id']
             password = data['password']
-
-            authenticated = db.check_authentication(user_id)
-            if authenticated is None:
-                raise Exception(MSG_UNKNOWN_ERROR)
-            elif authenticated is False:
-                return JsonResponse(constants.CODE_NEED_AUTH)
-
-            user = {}
-            intpr_session = {}
-            user_type = db.retrieve_user_type(user_id, password)
-            if user_type is None:
-                raise Exception(MSG_INVALID_IDPW)
-            elif user_type == 'patient':
-                user = db.retrieve_patient(user_id, password)
-                intpr_session['sessions'] = db.retrieve_patient_session(data['user_id'])
-            elif user_type == 'physician':
-                user = db.retrieve_physician(user_id, password)
-                intpr_session['sessions'] = db.retrieve_physician_session(data['user_id'])
+            if user_id == "patient":
+                request.session['user'] = {'session_id': 1, 'patient_id': 1, 'physician_id': 1,
+                                           'user_id': "user_id", 'password': "password", 'user_type': 'patient',
+                                           'first_name': 'Brown', 'last_name': 'Simpson', "name": "Brown Simpson"}
+            elif user_id == "physician":
+                request.session['user'] = {'session_id': 1, 'patient_id': 1, 'physician_id': 1,
+                                       'user_id': "user_id", 'password': "password", 'user_type': 'physician',
+                                           'first_name': 'John', 'last_name': 'Johns', "user_name": "John Johns", "name": "John Johns"}
             else:
                 raise Exception(MSG_INVALID_IDPW)
-            if not user.get('user_id'):
-                raise Exception(MSG_INVALID_IDPW)
-
-            # intpr session check
-            new_flag = 0
-            for session in intpr_session['sessions']:
-                if session['status'] == 0:
-                    new_flag = 1
-            intpr_session['new'] = new_flag
-
-            # set sessions
-            request.session['user'] = user
-            # pprint(user)
-            request.session['intpr_session'] = intpr_session
-            # request.session['medical_image'] = {}
-            # request.session.create('medical_image')
-            logger.info('user %s logged in.' % user['user_id'])
-
             return JsonResponse(constants.CODE_SUCCESS)
 
         elif request.method == 'DELETE':
             ### Logout ###
             if request.session.get('user'):
                 # del request.session['user']
-                request.session.clear()
-                return JsonResponse(constants.CODE_SUCCESS)
+                print(request.session.get('user'))
+                sess = Session()
+                result = sess.expire_session(request.session.get('user')['identification_number'])
+                if result:
+                    request.session.clear()
+                    return JsonResponse(constants.CODE_SUCCESS)
+                else:
+                    raise Exception(MSG_NO_USER_LOGGEDIN)
             else:
                 raise Exception(MSG_NO_USER_LOGGEDIN)
 
@@ -1061,6 +1245,7 @@ def handle_payment_mgt(request):
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 
+@csrf_exempt
 def update_session(old_user, updated_user):
     for key, value in updated_user.items():
         if key in old_user:

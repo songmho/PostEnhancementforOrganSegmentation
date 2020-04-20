@@ -7,6 +7,6 @@ _testFolder2 = "/Users/hanter/Downloads/dicom_ex/WRIX/WRIX/WRIST RIGHT/SCOUT 3-P
 
 import os, path, glob
 
-print os.listdir(_testFolder)
-print os.listdir(_testFolder2)
+print(os.listdir(_testFolder))
+print(os.listdir(_testFolder2))
 

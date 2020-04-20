@@ -3,8 +3,7 @@
 location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 </script>
 {% endif %}
-
-{% load staticfiles %}
+{% load static %}
 {% load my_filters %}
 
 {% include 'miaas/template_header.html' %}
@@ -18,7 +17,8 @@ location.replace({{ "'" }}{% url 'miaas:index' %}{{ "'" }});
 
 <div class="container">
     <section class="section section-default">
-    {% if image and intpr_list|is_list %}
+{#    {% if image and intpr_list|is_list %}#}
+    {% if 1 %}
         <div class="row">
             <div class="col-xs-12 col-title">
                 <h2 class="text-primary" id="titleSubject">{{ image.subject }}</h2>
