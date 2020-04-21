@@ -53,7 +53,7 @@ def sign_out(request):
         if request.method == "POST":
             c = request.session.get('user')
             result = sess.expire_session(c['identification_number'])
-            print(result)
+            print("sign out", result)
             if result:
                 return JsonResponse({"state": True})
     except:

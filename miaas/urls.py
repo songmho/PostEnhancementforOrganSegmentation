@@ -14,7 +14,6 @@ urlpatterns = [
     # url(r'^$', views.IndexView.as_view(), name='index'),
 
     url(r'^signin$', views.render_page, name='signin'),
-    url(r'^signout$', apis.sign_out, name='signout'),
     # url(r'^signin$', views.signin_page, name='signin'),
     url(r'^contact_us$', views.contact_us_page, name='contact_us'),
     url(r'^signup$', views.signup_page, name='signup'),
@@ -73,6 +72,7 @@ urlpatterns = [
     url(r'^api/sign_in', apis.sign_in),
     url(r'^api/sign_up', apis.sign_up),
     url(r'^api/withdrawal', apis.withdrawal),
+    url(r'^/api/signout$', apis.sign_out, name='signout'),
 
     url(r'^', views.page_not_found_view),
 
