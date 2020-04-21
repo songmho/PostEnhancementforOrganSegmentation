@@ -46,46 +46,73 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+@csrf_exempt
+def sign_out(request):
+    sess = Session()
+    try:
+        if request.method == "POST":
+            c = request.session.get('user')
+            result = sess.expire_session(c['identification_number'])
+            print(result)
+            if result:
+                return JsonResponse({"state": True})
+    except:
+        return JsonResponse({"state":False})
+    return JsonResponse({"state":False})
 
 @csrf_exempt
 def sign_in(request):
+
     sess = Session()
     try:
         if request.method == "POST":
             data = json.loads(request.body.decode('utf-8'))
             input_id = data['id']
             input_pwd = data['pwd']
-            role = data['role']
-            if role == "Patient":
-                s = Patient()
-                result_s = s.retrieve_patient(email=input_id, pwd=input_pwd)
-                result_s[0]['user_type'] = "Patient"
-                # Container.current_user = result_s
-                request.session['user'] = result_s[0]
-                print(request.session.get('user'))
-                result = sess.generate_session(result_s[0]['identification_number'])
-                if result:
-                    return JsonResponse({"state": True, "data": result_s})
-            elif role == "Physician":
-                s = Physician()
-                result_s = s.retrieve_physician(email=input_id, pwd=input_pwd)
-                result_s[0]['user_type'] = "Physician"
-                # Container.current_user = result_s
-                request.session['user'] = result_s[0]
-                print(request.session.get('user'))
-                result = sess.generate_session(result_s[0]['identification_number'])
-                if result:
-                    return JsonResponse({"state": True, "data": result_s})
-            elif role == "Staff":
-                s = Staff()
-                result_s = s.retrieve_staff(email=input_id, pwd=input_pwd)
-                result_s[0]['user_type'] = "Staff"
-                # Container.current_user = result_s
-                request.session['user'] = result_s[0]
-                print(request.session.get('user'))
-                result = sess.generate_session(result_s[0]['identification_number'])
-                if result:
-                    return JsonResponse({"state": True, "data": result_s})
+
+            u = User()
+            results = u.retrieve_user(email=input_id, pwd=input_pwd)
+            print(results)
+            cur_users = request.session.get('user')
+            print(">>>>", cur_users, request.session.keys())
+            request.session['user'] = results[0]
+            cur_users = request.session.get('user')
+            print(">>>>", cur_users)
+            result = sess.generate_session(results[0]['identification_number'])
+            print(result)
+            if result:
+                    return JsonResponse({"state": True, "data": results[0]})
+
+            # if role == "Patient":
+            #     s = Patient()
+            #     result_s = s.retrieve_patient(email=input_id, pwd=input_pwd)
+            #     result_s[0]['user_type'] = "Patient"
+            #     # Container.current_user = result_s
+            #     request.session['user'] = result_s[0]
+            #     print(request.session.get('user'))
+            #     result = sess.generate_session(result_s[0]['identification_number'])
+            #     if result:
+            #         return JsonResponse({"state": True, "data": result_s})
+            # elif role == "Physician":
+            #     s = Physician()
+            #     result_s = s.retrieve_physician(email=input_id, pwd=input_pwd)
+            #     result_s[0]['user_type'] = "Physician"
+            #     # Container.current_user = result_s
+            #     request.session['user'] = result_s[0]
+            #     print(request.session.get('user'))
+            #     result = sess.generate_session(result_s[0]['identification_number'])
+            #     if result:
+            #         return JsonResponse({"state": True, "data": result_s})
+            # elif role == "Staff":
+            #     s = Staff()
+            #     result_s = s.retrieve_staff(email=input_id, pwd=input_pwd)
+            #     result_s[0]['user_type'] = "Staff"
+            #     # Container.current_user = result_s
+            #     request.session['user'] = result_s[0]
+            #     print(request.session.get('user'))
+            #     result = sess.generate_session(result_s[0]['identification_number'])
+            #     if result:
+            #         return JsonResponse({"state": True, "data": result_s})
             return JsonResponse({"state": False, "data": None})
     except:
         return JsonResponse({"state": False, "data": None})

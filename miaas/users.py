@@ -49,8 +49,7 @@ class User:
             self.invitation_code = invitation_code
         return result
 
-    def retrieve_user(self, first_name=None, last_name=None, identification_form=None, email=None, affiliation=None,
-                      phone_number=None, pwd=None, invitation_code=None):
+    def retrieve_user(self, first_name=None, last_name=None, email=None, phone_number=None, pwd=None, invitation_code=None):
         """
         To retrieve user using input information
         :param first_name: string, user's first name
@@ -61,8 +60,8 @@ class User:
         :param phone_number: string, user's phone number
         :return: list, list of found users
         """
-        result = self.db.retrieve_user(id=None, first_name=first_name, last_name=last_name, identification_form=identification_form,
-                                       email= email, affiliation=affiliation, phone_number=phone_number, pwd=pwd, invitation_code=invitation_code)
+        result = self.db.retrieve_user(id=None, first_name=first_name, last_name=last_name, phone_number=phone_number,
+                                       email=email, pwd=pwd, invitation_code=invitation_code)
 
         return result
 

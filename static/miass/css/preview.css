@@ -1,11 +1,13 @@
 .title{
-    color: #ff540a;
+    color: #ffffff;
     font-weight: bold;
     padding-top: 0;
     padding-bottom: 0;
+    background: #ff0000;
+    margin-left: 16px;
 }
 .is-invalid-radio{
-    color: #ff540a;
+    color: #0066ff;
     font-weight:bold;
 }
 #nav{
@@ -27,7 +29,14 @@
 .sign{
     color:#e8e8e8;
 }
-#btn_signup{
+
+.btn_white{
+    background-color: #ffffff;
+}
+
+#signInView{
+    height: 260px;
+    width: 278px;
 }
 
 /* GLOBAL STYLES
@@ -89,7 +98,7 @@ body {
 ------------------------- */
 
 .featurette-divider {
-  margin: 5rem 0; /* Space out the Bootstrap <hr> more */
+  margin: 2rem 0; /* Space out the Bootstrap <hr> more */
 }
 
 /* Thin out the marketing headings */
@@ -100,11 +109,29 @@ body {
 }
 
 #btn-accent{
-    background-color: #ff540a;
+    background-color: #0066ff;
     color: #FFFFFF;
-    border-color: #ff540a;
+    border-color: #0066ff;
 }
 
+.inner-addon {
+    position: relative;
+}
+
+/* style icon */
+.inner-addon .glyphicon {
+  position: absolute;
+  padding: 10px;
+  pointer-events: none;
+}
+
+/* align icon */
+.left-addon .glyphicon  { left:  0px;}
+.right-addon .glyphicon { right: 0px;}
+
+/* add padding  */
+.left-addon input  { padding-left:  30px; }
+.right-addon input { padding-right: 30px; }
 /* RESPONSIVE CSS
 -------------------------------------------------- */
 
@@ -125,4 +152,22 @@ body {
   .featurette-heading {
     margin-top: 7rem;
   }
+}
+
+@font-face {
+    font-family: 'Gabriola';
+    src: url("../font/Gabriola.ttf") format("truetype");
+}
+
+.txt_font{
+    font-family: Gabriola;
+    font-weight: bold;
+    font-style: normal;
+    font-size: 20px;
+}
+
+.login_body {
+    padding: 0;
+    font-size: 16px;
+    background-color: #0066ff;
 }

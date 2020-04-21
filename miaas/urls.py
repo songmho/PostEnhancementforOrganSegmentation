@@ -9,11 +9,12 @@ urlpatterns = [
     # url(r'^$', views.index_page, name='index'),
     # url(r'^sign_in$', views.render_page, {"page": "preview.html"}, name='index'),
     url(r'^$', views.index_page, name='index'),
-    url(r'^main$', views.main_page, name='main'),
+    url(r'^main$', views.index_page, name='main'),
     # url(r'^main2$', views.main2_page, name='main2'),
     # url(r'^$', views.IndexView.as_view(), name='index'),
 
     url(r'^signin$', views.render_page, name='signin'),
+    url(r'^signout$', apis.sign_out, name='signout'),
     # url(r'^signin$', views.signin_page, name='signin'),
     url(r'^contact_us$', views.contact_us_page, name='contact_us'),
     url(r'^signup$', views.signup_page, name='signup'),

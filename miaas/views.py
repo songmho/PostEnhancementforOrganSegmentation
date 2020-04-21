@@ -85,7 +85,7 @@ def main_page(request):
     # context = {
     #     'session': sctx.default_session,
     # }
-    return render(request, 'miaas/main.html', context)
+    return render(request, 'miaas/main_legacy.html', context)
 
 
 def index_page(request):
@@ -93,14 +93,18 @@ def index_page(request):
     #                            'user_id':"user_id", 'password':"password"}
     # print("index", request.session['user'])
     try:
+        if request.session.get('user'):
+            context = _get_session_context(request)
+            return render(request, 'miaas/index.html', context)
         print("signin", request.session['user'])
     except:
         print("signin Not yet")
-    context = _get_session_context(request)
+        return render(request, 'miaas/preview.html')
     # context = {
     #     'session': sctx.default_session,
     # }
-    return render(request, 'miaas/index.html', context)
+    context = _get_session_context(request)
+    return render(request, 'miaas/preview.html', context)
 
 
 # login reference: https://www.fir3net.com/Web-Development/Django/django.html
@@ -138,7 +142,7 @@ def contact_us_page(request):
 
 
 def signup_page(request):
-    return render(request, 'miaas/signup.html', None)
+    return render(request, 'miaas/sign_up.html', None)
 
 
 def find_page(request):

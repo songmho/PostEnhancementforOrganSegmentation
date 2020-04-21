@@ -1,4 +1,3 @@
-var current_user_info;
 (function () {
     // if (get_current_user() !== null){
     //     s_data = get_current_user();
@@ -36,26 +35,20 @@ var current_user_info;
         form.submit();
     }
 
-    $('#btn_signin').click(function () {
-        $("#txt_role_err").attr("hidden",true);
-        $("#txt_acc_err").attr("hidden",true);
-        $('#modal_login').modal();
-        $('#modal_login').on('shown.bs.modal', function () {
-            $('#btn_sign_in').click(function () {
-                state = true;
-                if($("#input_sign_in_id").val()===""){
-                    state = false;
-                    $("#input_sign_in_id").addClass("is-invalid");
-                } if($("#input_sign_in_pwd").val()==="") {
-                    state = false;
-                    $("#input_sign_in_pwd").addClass("is-invalid");
-               }
-                if (state) {
-                    login();
-                }
-            });
-        });
+    $('#btn_sign_in').click(function () {
+        state = true;
+        if($("#input_sign_in_id").val()===""){
+            state = false;
+            $("#input_sign_in_id").addClass("is-invalid");
+        } if($("#input_sign_in_pwd").val()==="") {
+            state = false;
+            $("#input_sign_in_pwd").addClass("is-invalid");
+       }
+        if (state) {
+            login();
+        }
     });
+
     $("#input_sign_in_id").keydown(function (key) {
         if(key.keyCode==13){
             if($("#input_sign_in_id").val()===""){
@@ -172,14 +165,13 @@ var current_user_info;
             async: true,
             data: JSON.stringify({
                 'id': $("#input_sign_in_id").val(), 'pwd': $("#input_sign_in_pwd").val(),
-                'role': $('input[name="signin_role"]:checked').val()
             }),
             success: function (data) {
                 console.log(data);
                 if (data['state'] === true) { // success to log in
                     current_user_info = data;
                     $('#modal_login').modal("hide");
-                    s_data = data['data'][0];
+                    s_data = data['data'];
                     openWindowWithPost('.', {
                         'first_name': s_data['first_name'],
                         'last_name': s_data['last_name'],
@@ -207,7 +199,7 @@ var current_user_info;
     }
 
     $('#btn_signup').click(function () {
-       $('#modal_sign_up_1').modal();
+       $('#modal_sign_up').modal();
     });
 
     $('#modal_login').on('hidden.bs.modal', function () {
@@ -218,7 +210,7 @@ var current_user_info;
         $("#input_sign_in_pwd").removeClass("is-invalid");
     });
 
-    $('#modal_sign_up_1').on('hidden.bs.modal', function () {
+    $('#modal_sign_up').on('hidden.bs.modal', function () {
        $("#txt_first_name").val("");
        $("#txt_last_name").val("");
        $("#txt_email").val("");
@@ -232,8 +224,6 @@ var current_user_info;
        $("#txt_department").val("");
        $("#txt_work_phone").val("");
        $("#txt_work_email").val("");
-       $('input[name="inlineRadioOptions"]').prop('checked', false);
-
 
        $("#txt_first_name").removeClass("is-invalid");
        $("#txt_last_name").removeClass("is-invalid");
@@ -246,14 +236,17 @@ var current_user_info;
 
     $('#btn_close').click(function () {
         console.log("btn_close Clicked!");
-        $("#modal_sign_up_1").modal("hide");
+        $("#modal_sign_up").modal("hide");
     });
 
-    $("#btn_finish").click(function () {
-            signup();
+    $("#btn_go_sign_up").click(function () {
+        console.log("btn_finish Clicked!");
+        location.href= "signup";
+            // signup();
     });
-    $("input[name='inlineRadioOptions']").change(function () {
-        $("input[name='inlineRadioOptions']").each(function () {
+
+   $('input[name="signup_role"]').change(function () {
+        $("input[name='signup_role']").each(function () {
            var value = $(this).val();
            var checked = $(this).prop('checked');
            if (checked){
@@ -270,7 +263,7 @@ var current_user_info;
                }
            }
         });
-    });
+   });
 
     function signup() {
         if ($("#txt_invitation_code").val()!==""){
@@ -310,7 +303,11 @@ var current_user_info;
             } if ($('#txt_phone').val() === "") {
                 state = false;
                 $("#txt_phone").addClass("is-invalid");
+            } if ($('input[name="signup_role"]:checked').val()) {
+                state = false;
+
             }
+
             // if ($('#txt_qualification').val() === "") {
             //     state = false;
             //     $("#txt_qualification").addClass("is-invalid");

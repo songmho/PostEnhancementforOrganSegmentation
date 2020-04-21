@@ -1,0 +1,67 @@
+{% load static %}
+{% load my_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm justify-content-center px-0" id="nav" style="background-color: #0066FF;">
+            <div  style="background-color: #ff0000; " class="my-auto mx-0 mr-5 py-0 px-4 h-100  row">
+                <h3 class="navbar-brand title txt_font my-auto my-0 py-0" style="font-size: 27px;" id="nav_main">MIAS</h3>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="nav-item dropdown my-auto py-0 pl-1">
+                    <li role="button" type="button" class="btn dropdown text-white txt_font my-0 py-0" data-toggle="dropdown" style="font-size: 25px;">
+                        Images
+                    </li>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item txt_font" href="#" id="nav_register_img">Register Images</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_browse_img">Browse Images</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_annotate_img">Annotate Images</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_remove_img">Remove Images</a>
+                    </div>
+                </ul>
+
+                <ul class="nav-item dropdown my-auto py-0  pl-1">
+                    <li role="button" type="button" class="btn dropdown text-white txt_font my-0 py-0" data-toggle="dropdown" style="font-size: 25px;">
+                        Diagnosis
+                    </li>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item txt_font" href="#" id="nav_brain_abnormality">Brain Abnormality</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_liver_abnormality">Liver Abnormality</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_lung_abnormality">Lung Abnormality</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_breast_abnormality">Breast Abnormality</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_stomach_abnormality">Stomach Abnormality</a>
+                    </div>
+                </ul>
+
+                <ul class="nav-item dropdown my-auto py-0  pl-1">
+                    <li role="button" type="button" class="btn dropdown text-white txt_font my-0 py-0" data-toggle="dropdown" style="font-size: 25px;">
+                        Treatment
+                    </li>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item txt_font" id="nav_load_diagnosis" href="#">Load Diagnosis</a>
+                      <a class="dropdown-item txt_font" id="nav_recommend_treatments" href="#">Recommend Treatments</a>
+                      <a class="dropdown-item txt_font" id="nav_retrieve_diagnosis" href="#">Retrieve Diagnosis</a>
+                    </div>
+                </ul>
+
+            </div>
+
+{#            {% if user %}#}
+{#                <script type="text/javascript">#}
+{#                    console.log("No");#}
+{#                </script>#}
+{#                {% include 'miaas/sign_in.html' %}#}
+{#            {% endif %}#}
+        </nav>
+    </header>
+</body>
+
+<script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
+<script src="{% static "miass/js/header.js" %}"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</html>
