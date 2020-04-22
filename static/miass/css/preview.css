@@ -122,7 +122,7 @@ body {
 .input-icon {
   position: absolute;
   left: .6rem;
-  top: .8rem;
+  top: .7rem;
   /* Keep icon in center of input, regardless of the input height */
 }
 
@@ -146,9 +146,6 @@ textarea.form-control {
   padding-left: 2rem;
 }
 
-.btn {
-  margin-right: 10em;
-}
 
 
 @media (min-width: 40em) {
