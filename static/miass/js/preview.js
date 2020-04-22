@@ -42,26 +42,17 @@
 
 
     $(document).ready(function () {
-        console.log("0");
         try {
+            console.log("hihih");
             c_u = get_current_user();
-            console.log(c_u);
             if (c_u == null) {
-                $("#main_container").load("view/sign_in", function () {
-
-                });
-                console.log("1");
+                $("#main_container").load("view/sign_in");
             } else {
-                console.log("2");
-                $("#main_container").load("view/main", function () {
-
-                });
+                $("#main_container").load("view/main");
             }
         } catch (e) {
-            console.log("3");
-            $("#main_container").load("view/sign_in", function () {
-
-            });
+            $("#main_container").load("view/sign_in");
         }
+
     });
 })(jQuery);

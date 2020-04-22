@@ -130,11 +130,9 @@ body {
   vertical-align: middle;
 }
 
-input {
-  padding-right: 30px;
-}
 
-input.form-control {
+input.form-control-signin {
+  padding-right: 30px;
   padding-left: 2rem;
 }
 

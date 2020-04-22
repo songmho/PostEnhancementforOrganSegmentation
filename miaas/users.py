@@ -123,6 +123,7 @@ class Physician(User):
         self.db = DBPhysician()
 
     def register_physician(self, first_name, last_name, email, phone_number, pwd, role, active):
+        print(">>>", role)
         result = self.db.register_physician(first_name, last_name, email, phone_number, pwd, role, active)
 
         return result
@@ -304,25 +305,18 @@ class DBUser:
         """
         sql = "INSERT INTO users (first_name, last_name, email, phone_number, pwd, role, active)" \
               "VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        is_register = False
         already_regist = self.retrieve_user(email=email)
         if len(already_regist) > 0:
-            is_register = False
+            return False
         else:
-            # try:
-            with self.conn.cursor() as cursor:
-                cursor.execute(sql, (str(first_name), str(last_name), str(email),
-                                     str(phone_number), str(pwd), str(role), active))
-            self.conn.commit()
-            is_register = True
-            # except:
-            #     is_register = False
-
-            if is_register:
-                return self.retrieve_user(first_name=first_name, last_name=last_name, email=email,
-                                          pwd=pwd, role=role)[0]["identification_number"]
-            else:
-                return -1
+            try:
+                with self.conn.cursor() as cursor:
+                    cursor.execute(sql, (str(first_name), str(last_name), str(email),
+                                         str(phone_number), str(pwd), str(role), active))
+                self.conn.commit()
+                return True
+            except:
+                return False
 
     def retrieve_user(self, identification_number=None, first_name=None, last_name=None, email=None,
                       phone_number=None, pwd=None, role=None, active=None):
@@ -347,27 +341,27 @@ class DBUser:
             if any([first_name, last_name, email, phone_number, pwd, role, active]):
                 sql += " AND "
         if first_name is not None:
-            sql += "first_name='" + first_name + "'"
+            sql += "first_name='" + str(first_name) + "'"
             if any([last_name, email, phone_number, pwd, role, active]):
                 sql += " AND "
         if last_name is not None:
-            sql += "last_name='" + last_name + "'"
+            sql += "last_name='" + str(last_name) + "'"
             if any([email, phone_number, pwd, role, active]):
                 sql += " AND "
         if email is not None:
-            sql += "email='" + email + "'"
+            sql += "email='" + str(email) + "'"
             if any([phone_number, pwd, role, active]):
                 sql += " AND "
         if phone_number is not None:
-            sql += "phone_number='" + phone_number + "'"
+            sql += "phone_number='" + str(phone_number) + "'"
             if any([pwd, role, active]):
                 sql += " AND "
         if pwd is not None:
-            sql += "pwd='" + pwd + "'"
+            sql += "pwd='" + str(pwd) + "'"
             if any([role, active]):
                 sql += " AND "
         if role is not None:
-            sql += "role='" + role + "'"
+            sql += "role='" + str(role) + "'"
             if any([active]):
                 sql += " AND "
         if active is not None:
@@ -375,6 +369,7 @@ class DBUser:
 
         try:
             with self.conn.cursor() as cursor:
+                print(sql)
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 return result
@@ -475,17 +470,19 @@ class DBPhysician(DBUser):
         :param work_email: string, evaluator's email in work place
         :return: boolean, state of registration
         """
-        identification_number = super().register_user(first_name, last_name, email, phone_number, pwd, role, active)
+        result = super().retrieve_user(first_name=first_name, last_name=last_name, email=email, phone_number=phone_number, pwd=pwd, role=role)
+        print(result)
+        identification_number = result[0]["identification_number"]
         sql = "INSERT INTO physician (identification_number) " \
               "VALUES (%s)"
 
-        try:
-            with self.conn.cursor() as cursor:
-                cursor.execute(sql, identification_number)
-            self.conn.commit()
-            return identification_number
-        except:
-            return -1
+        # try:
+        with self.conn.cursor() as cursor:
+            cursor.execute(sql, identification_number)
+        self.conn.commit()
+        return True
+        # except:
+        #     return False
 
     def retrieve_physician(self, identification_number=None, id=None, first_name=None, last_name=None, email=None,
                            phone_number=None, pwd=None, role=None, active=None):
@@ -628,8 +625,9 @@ class DBPatient(DBUser):
         :param work_email: string, evaluator's email in work place
         :return: Boolean, state of registration
         """
-        identification_number = super().register_user(first_name, last_name, email, phone_number, pwd, role, active)
-
+        result = super().retrieve_user(first_name=first_name, last_name=last_name, email=email, phone_number=phone_number, pwd=pwd, role=role)
+        print(result)
+        identification_number = result[0]["identification_number"]
         sql = "INSERT INTO patient (identification_number) " \
               "VALUES (%s)"
 
@@ -637,9 +635,9 @@ class DBPatient(DBUser):
             with self.conn.cursor() as cursor:
                 cursor.execute(sql, identification_number)
             self.conn.commit()
-            return identification_number
+            return True
         except:
-            return -1
+            return False
 
     def retrieve_patient(self, identification_number=None, id=None, first_name=None, last_name=None, email=None,
                          phone_number=None, pwd=None, role=None, active=None):
@@ -777,7 +775,10 @@ class DBStaff(DBUser):
         :param work_email:
         :return:
         """
-        identification_number = super().register_user(first_name, last_name, email, phone_number, pwd, role, active)
+
+        result = super().retrieve_user(first_name=first_name, last_name=last_name, email=email, phone_number=phone_number, pwd=pwd, role=role)
+        print(result)
+        identification_number = result[0]["identification_number"]
         sql = "INSERT INTO staff (identification_number) " \
               "VALUES (%s)"
 
@@ -785,9 +786,9 @@ class DBStaff(DBUser):
             with self.conn.cursor() as cursor:
                 cursor.execute(sql, identification_number)
             self.conn.commit()
-            return identification_number
+            return True
         except:
-            return -1
+            return False
 
     def retrieve_staff(self, identification_number=None, id=None, first_name=None, last_name=None, email=None,
                        phone_number=None, pwd=None, role=None, active=None):

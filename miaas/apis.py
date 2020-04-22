@@ -49,22 +49,23 @@ logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def sign_out(request):
-    try:
-        sess = Session()
-        if request.method == "POST":
-            data = json.loads(request.body.decode('utf-8'))
-            input_id = data['id']
-            input_pwd = data['pwd']
-            ids = data['identification_number']
-            print(">>> ", ids)
-            result = sess.expire_session(ids)
-            print("sign out", result)
-            if result:
-                return JsonResponse({"state": True})
-    except:
-        print("sign out    ", False)
-        return JsonResponse({"state":False})
-    print("sign out    ", False)
+    # try:
+    sess = Session()
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        print(data)
+        ids = data['identification_number']
+        print(">>> ", ids)
+        result = sess.expire_session(ids)
+        print("sign out", result)
+        if result:
+            return JsonResponse({"state": True})
+    # except:
+    #     print("sign out    ", False)
+    #     return JsonResponse({"state":False})
+    # print("sign out    ", False)
+    else:
+        print("what")
     return JsonResponse({"state":False})
 
 
@@ -192,31 +193,31 @@ def invite_user(request):
 @csrf_exempt
 def sign_up(request):
     if request.method == "POST":
-        result = None
         data = json.loads(request.body.decode('utf-8'))
+        print(data['role'])
+        data['role'] = " ".join(data['role'])
         print("role", data['role'])
-        if "Evaluator" in data['role']:
-            e = Physician()
-            result = e.register_physician(first_name=data['first_name'], last_name=data['last_name'], identification_form="",
-                                          email=data["email"], affiliation=data["affiliation"], phone_number=data["phone_number"],
-                                          qualification=data["qualification"], evaluation_history="", rank=data["rank"], identification_number=data["identification_number"],
-                                          department=data["department"], work_phone=data["work_phone"], work_email=data["work_email"], pwd=data["pwd"])
-        if "Staff" in data['role']:
-            s = Staff()
-            result = s.register_staff(first_name=data['first_name'], last_name=data['last_name'], identification_form="",
-                              email=data["email"], affiliation=data["affiliation"], phone_number=data["phone_number"],
-                              leader_role=data['leader_role'], rank=data["rank"], department=data["department"], identification_number=data["identification_number"],
-                             work_phone=data["work_phone"], work_email=data["work_email"], pwd=data["pwd"])
-        if "Trainee" in data['role']:
-            t = Patient()
-            result = t.register_patient(first_name=data['first_name'], last_name=data['last_name'], identification_form="",
-                                        email=data["email"], affiliation=data["affiliation"], phone_number=data["phone_number"],
-                                        qualification=data['qualification'], rank=data["rank"], department=data["department"], identification_number=data["identification_number"],
-                                        work_phone=data["work_phone"], work_email=data["work_email"], pwd=data["pwd"])
-        if result == -1 or result is None:
-            return JsonResponse({'state': False})
-        else:
+        u = User()
+        result = u.register_user(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
+                        phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
+        if result:
+            if "Physician" in data['role']:
+                u = Physician()
+                result = u.register_physician(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
+                                phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
+            if "Patient" in data['role']:
+                u = Patient()
+                result = u.register_patient(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
+                                phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
+            if "Staff" in data['role']:
+                s = Staff()
+                result = s.register_staff(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
+                                phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
+
+        if result:
             return JsonResponse({'state': True})
+        else:
+            return JsonResponse({'state': False})
 
 
 @csrf_exempt
