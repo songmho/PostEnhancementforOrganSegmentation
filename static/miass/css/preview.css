@@ -35,7 +35,7 @@
 }
 
 #signInView{
-    height: 260px;
+    height: 270px;
     width: 278px;
 }
 
@@ -114,26 +114,39 @@ body {
     border-color: #0066ff;
 }
 
-.inner-addon {
-    position: relative;
+.bigicon {
+  font-size: 35px;
+  color: #000000;
 }
 
-/* style icon */
-.inner-addon .glyphicon {
+.input-icon {
   position: absolute;
-  padding: 10px;
-  pointer-events: none;
+  left: .3rem;
+  top: .5rem;
+  /* Keep icon in center of input, regardless of the input height */
 }
 
-/* align icon */
-.left-addon .glyphicon  { left:  0px;}
-.right-addon .glyphicon { right: 0px;}
+#message {
+  vertical-align: middle;
+}
 
-/* add padding  */
-.left-addon input  { padding-left:  30px; }
-.right-addon input { padding-right: 30px; }
-/* RESPONSIVE CSS
--------------------------------------------------- */
+input {
+  padding-right: 30px;
+}
+
+input.form-control {
+  padding-left: 2rem;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+textarea.form-control {
+  padding-left: 2rem;
+}
+
+
 
 @media (min-width: 40em) {
   /* Bump up size of carousel content */
@@ -170,4 +183,15 @@ body {
     padding: 0;
     font-size: 16px;
     background-color: #0066ff;
+}
+.glyphicon{
+    font-family: "Glyphicons Halflings";
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('../font/glyphicons-halflings-regular.eot');
+  /*src: url('../font/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../font/glyphicons-halflings-regular.woff') format('woff'), url('../font/glyphicons-halflings-regular.ttf') format('truetype'), url('../font/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');*/
 }
