@@ -70,11 +70,9 @@
                 }),
                 success: function (data) {
                     if(data['state']){
-                        console.log("Add");
+                        location.replace("./main")
                     }else{
-                        console.log("Error");
                     }
-                    location.replace("./main")
                 }, error: function (err) {
 
                 }

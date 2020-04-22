@@ -1,0 +1,11 @@
+@font-face {
+    font-family: 'Gabriola';
+    src: url("../font/Gabriola.ttf") format("truetype");
+}
+
+.txt_font{
+    font-family: Gabriola;
+    font-weight: bold;
+    font-style: normal;
+    font-size: 20px;
+}

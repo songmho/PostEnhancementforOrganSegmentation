@@ -21,9 +21,10 @@ class User:
         self.pwd = None
         self.role = None
         self.active = None
+        self.activation_code = None
         self.db = DBUser()
 
-    def register_user(self, first_name, last_name, email, phone_number, pwd, role, active):
+    def register_user(self, first_name, last_name, email, phone_number, pwd, role, active, activation_code):
         """
         To register user data
         :param first_name: string, user's first name
@@ -33,10 +34,11 @@ class User:
         :param pwd: string, user's password
         :param role: string, role of the user. physician, patient, staff.
         :param active: boolean, whether account is activated or not
+        :param activation_code: string, activation code
         :return: boolean, state of registering
         """
         # result is identification_number of user table
-        result = self.db.register_user(first_name, last_name, email, phone_number, pwd, role, active)
+        result = self.db.register_user(first_name, last_name, email, phone_number, pwd, role, active, activation_code)
         if result != 1:
             self.identification_number = result
             self.first_name = first_name
@@ -46,10 +48,11 @@ class User:
             self.pwd = pwd
             self.role = role
             self.active = active
+            self.activation_code = activation_code
         return result
 
     def retrieve_user(self, identification_number=None, first_name=None, last_name=None, email=None, phone_number=None,
-                      pwd=None, role=None, active=None):
+                      pwd=None, role=None, active=None, activation_code=None):
         """
         To retrieve user using input information
         :param identification_number: int, user's identification_number
@@ -64,11 +67,11 @@ class User:
         """
         result = self.db.retrieve_user(identification_number=identification_number, first_name=first_name,
                                        last_name=last_name, email=email,
-                                       phone_number=phone_number, pwd=pwd, role=role, active=active)
+                                       phone_number=phone_number, pwd=pwd, role=role, active=active, activation_code=activation_code)
         return result
 
     def modify_user(self, identification_number, first_name=None, last_name=None, email=None, phone_number=None,
-                    pwd=None, role=None, active=None):
+                    pwd=None, role=None, active=None, activation_code=None):
         """
         To modify user information
         :param identification_number: int, user's identification_number
@@ -83,7 +86,7 @@ class User:
         """
         result = self.db.modify_user(identification_number=identification_number, first_name=first_name,
                                      last_name=last_name, email=email,
-                                     phone_number=phone_number, pwd=pwd, role=role, active=active)
+                                     phone_number=phone_number, pwd=pwd, role=role, active=active, activation_code=activation_code)
         if result:
             if first_name is not None:
                 self.first_name = first_name
@@ -99,6 +102,8 @@ class User:
                 self.role = role
             if active is not None:
                 self.active = active
+            if activation_code is not None:
+                self.activation_code = activation_code
         return result
 
     def delete_user(self):
@@ -291,7 +296,7 @@ class DBUser:
         except Exception as e:
             self.conn = None
 
-    def register_user(self, first_name, last_name, email, phone_number, pwd, role, active):
+    def register_user(self, first_name, last_name, email, phone_number, pwd, role, active, activation_code):
         """
         To register user data
         :param first_name: string, user's first name
@@ -301,10 +306,11 @@ class DBUser:
         :param pwd: string, user's password
         :param role: string, role of the user. physician, patient, staff.
         :param active: boolean, whether account is activated or not
+        :param activation_code: string, activation code
         :return: boolean, state of registering
         """
-        sql = "INSERT INTO users (first_name, last_name, email, phone_number, pwd, role, active)" \
-              "VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO users (first_name, last_name, email, phone_number, pwd, role, active, activation_code)" \
+              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
         already_regist = self.retrieve_user(email=email)
         if len(already_regist) > 0:
             return False
@@ -312,14 +318,14 @@ class DBUser:
             try:
                 with self.conn.cursor() as cursor:
                     cursor.execute(sql, (str(first_name), str(last_name), str(email),
-                                         str(phone_number), str(pwd), str(role), active))
+                                         str(phone_number), str(pwd), str(role), active, str(activation_code)))
                 self.conn.commit()
                 return True
             except:
                 return False
 
     def retrieve_user(self, identification_number=None, first_name=None, last_name=None, email=None,
-                      phone_number=None, pwd=None, role=None, active=None):
+                      phone_number=None, pwd=None, role=None, active=None, activation_code=None):
         """
         To retrieve users about input data
         :param identification_number: int, user's identification_number
@@ -330,6 +336,7 @@ class DBUser:
         :param pwd: string, user's password
         :param role: string, role of the user. Physician, Patient, Staff.
         :param active: boolean, membership certification
+        :param activation_code: string, activation code
         :return: list, list of found users
         """
         sql = "SELECT * FROM users"
@@ -338,34 +345,38 @@ class DBUser:
             sql += " WHERE "
         if identification_number is not None:
             sql += "identification_number=" + str(identification_number)
-            if any([first_name, last_name, email, phone_number, pwd, role, active]):
+            if any([first_name, last_name, email, phone_number, pwd, role, active, activation_code]):
                 sql += " AND "
         if first_name is not None:
             sql += "first_name='" + str(first_name) + "'"
-            if any([last_name, email, phone_number, pwd, role, active]):
+            if any([last_name, email, phone_number, pwd, role, active, activation_code]):
                 sql += " AND "
         if last_name is not None:
             sql += "last_name='" + str(last_name) + "'"
-            if any([email, phone_number, pwd, role, active]):
+            if any([email, phone_number, pwd, role, active, activation_code]):
                 sql += " AND "
         if email is not None:
             sql += "email='" + str(email) + "'"
-            if any([phone_number, pwd, role, active]):
+            if any([phone_number, pwd, role, active, activation_code]):
                 sql += " AND "
         if phone_number is not None:
             sql += "phone_number='" + str(phone_number) + "'"
-            if any([pwd, role, active]):
+            if any([pwd, role, active, activation_code]):
                 sql += " AND "
         if pwd is not None:
             sql += "pwd='" + str(pwd) + "'"
-            if any([role, active]):
+            if any([role, active, activation_code]):
                 sql += " AND "
         if role is not None:
             sql += "role='" + str(role) + "'"
-            if any([active]):
+            if any([active, activation_code]):
                 sql += " AND "
         if active is not None:
             sql += "active=" + str(active) + ""
+            if any([activation_code]):
+                sql += " AND "
+        if activation_code is not None:
+            sql += "activation_code='" + str(activation_code) + "'"
 
         try:
             with self.conn.cursor() as cursor:
@@ -377,7 +388,7 @@ class DBUser:
             return []
 
     def modify_user(self, identification_number, first_name=None, last_name=None, email=None, phone_number=None,
-                    pwd=None, role=None, active=None):
+                    pwd=None, role=None, active=None, activation_code=None):
         """
         To modify user information about input data
         :param identification_number: int, user's identification_number
@@ -388,35 +399,40 @@ class DBUser:
         :param pwd: string, user's password
         :param role: string, role of the user. Physician, Patient, Staff.
         :param active: boolean, whether account is activated or not
+        :param activation_code: sting, activation code
         :return: 'True' if successful, or 'False'.
         """
         sql = "UPDATE users SET "
         if first_name is not None:
             sql += "first_name='" + first_name + "'"
-            if any([last_name, email, phone_number, pwd, role, active]):
+            if any([last_name, email, phone_number, pwd, role, active, activation_code]):
                 sql += ", "
         if last_name is not None:
             sql += "last_name='" + last_name + "'"
-            if any([email, phone_number, pwd, role, active]):
+            if any([email, phone_number, pwd, role, active, activation_code]):
                 sql += ", "
         if email is not None:
             sql += "email='" + email + "'"
-            if any([phone_number, pwd, role, active]):
+            if any([phone_number, pwd, role, active, activation_code]):
                 sql += ", "
         if phone_number is not None:
             sql += "phone_number='" + phone_number + "'"
-            if any([pwd, role, active]):
+            if any([pwd, role, active, activation_code]):
                 sql += ", "
         if pwd is not None:
             sql += "pwd='" + pwd + "'"
-            if any([role, active]):
+            if any([role, active, activation_code]):
                 sql += ", "
         if role is not None:
             sql += "role='" + role + "'"
-            if any([active]):
+            if any([active, activation_code]):
                 sql += ", "
         if active is not None:
             sql += "active=" + str(active) + ""
+            if any([active]):
+                sql += ", "
+        if activation_code is not None:
+            sql += "activation_code='" + str(activation_code) + "'"
 
         sql += " WHERE identification_number=" + str(identification_number)
 

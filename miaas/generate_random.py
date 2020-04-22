@@ -8,7 +8,7 @@ import random
 import string
 
 
-class InvitationCodeGenerator:
+class ActivationKeyGenerator:
     """
     Class for generating inviting code
     """
@@ -23,7 +23,7 @@ class InvitationCodeGenerator:
         self.size = size
         self.created_code = None
 
-    def get_invitation_code(self, list_made=[]):
+    def get_key(self, list_made=[]):
         """
         To return invitation code not to overlapped
         :param list_made: list, list of invitation code already made
@@ -37,8 +37,8 @@ class InvitationCodeGenerator:
 
 
 if __name__ == '__main__':
-    icg = InvitationCodeGenerator(size=6, chars=string.ascii_uppercase+string.ascii_lowercase+string.digits)
+    icg = ActivationKeyGenerator(size=6, chars=string.ascii_uppercase + string.ascii_lowercase + string.digits)
     print(string.ascii_uppercase+string.ascii_lowercase+string.digits)
     print(len(string.ascii_uppercase+string.ascii_lowercase+string.digits))
     for i in range(30):
-        print(icg.get_invitation_code())
+        print(icg.get_key())
