@@ -46,19 +46,27 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 @csrf_exempt
 def sign_out(request):
-    sess = Session()
     try:
+        sess = Session()
         if request.method == "POST":
-            c = request.session.get('user')
-            result = sess.expire_session(c['identification_number'])
+            data = json.loads(request.body.decode('utf-8'))
+            input_id = data['id']
+            input_pwd = data['pwd']
+            ids = data['identification_number']
+            print(">>> ", ids)
+            result = sess.expire_session(ids)
             print("sign out", result)
             if result:
                 return JsonResponse({"state": True})
     except:
+        print("sign out    ", False)
         return JsonResponse({"state":False})
+    print("sign out    ", False)
     return JsonResponse({"state":False})
+
 
 @csrf_exempt
 def sign_in(request):

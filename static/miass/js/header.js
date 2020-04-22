@@ -1,6 +1,8 @@
 (function () {
     $("#nav_register_img").click(function () {
-        console.log("hi");
+        $("#main_container").load("view/register_image", function () {
+
+        });
     });
 
     $("#nav_browse_img").click(function () {

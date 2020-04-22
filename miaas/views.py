@@ -95,6 +95,8 @@ def sign_in_page(request):
 def main(request):
     return render(request, "miaas/main.html")
 
+def register_image(request):
+    return render(request, "miaas/register_image.html")
 
 def index_page(request):
     # request.session['user'] = {'session_id': 1, 'patient_id': 1, 'physician_id': 1,
