@@ -121,8 +121,8 @@ body {
 
 .input-icon {
   position: absolute;
-  left: .6rem;
-  top: .7rem;
+  left: .3rem;
+  top: .5rem;
   /* Keep icon in center of input, regardless of the input height */
 }
 
