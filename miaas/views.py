@@ -88,6 +88,14 @@ def main_page(request):
     return render(request, 'miaas/main_legacy.html', context)
 
 
+def sign_in_page(request):
+    return render(request, "miaas/sign_in.html")
+
+
+def main(request):
+    return render(request, "miaas/main.html")
+
+
 def index_page(request):
     # request.session['user'] = {'session_id': 1, 'patient_id': 1, 'physician_id': 1,
     #                            'user_id':"user_id", 'password':"password"}

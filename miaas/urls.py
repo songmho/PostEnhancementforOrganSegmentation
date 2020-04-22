@@ -73,7 +73,8 @@ urlpatterns = [
     url(r'^api/sign_up', apis.sign_up),
     url(r'^api/withdrawal', apis.withdrawal),
     url(r'^/api/signout$', apis.sign_out, name='signout'),
-
+    url(r'^view/sign_in', views.sign_in_page),
+    url(r'^view/main', views.main),
     url(r'^', views.page_not_found_view),
 
 

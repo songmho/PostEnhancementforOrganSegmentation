@@ -10,11 +10,11 @@
 </head>
 <body>
 <!--Main Navigation-->
-
-
 {% include 'miaas/header.html' %}
+<div id="main_container">
+    {#{% include 'miaas/sign_in.html' %}#}
+</div>
 <!--Main Navigation-->
-{% include 'miaas/sign_in.html' %}
 <!--Main Layout-->
 {#{% if not user %}#}
 {#    <script type="text/javascript">#}
@@ -29,121 +29,12 @@
 {#{% endif %}#}
 <!--Main Layout-->
 
-<div class="modal fade" id="modal_login" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Welcome to MIAS</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form action="." method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <div class="col-form-label">
-                    <label for="radio_sign_role" class="col-form-label">Role</label>
-                    <label id="txt_role_err" class="is-invalid-radio" hidden>Check the Role.</label>
-                </div>
-                <div id="radio_sign_role">
-                    <label class="radio-inline col-md-3">
-                        <input type="radio" name="signin_role" id="radio_sign_in_patient" value="Patient" required/>Patient
-                    </label>
-                    <label class="radio-inline col-md-3">
-                        <input type="radio" name="signin_role" id="radio_sign_in_physician" value="Physician"/>Physician
-                    </label>
-                    <label class="radio-inline col-md-3">
-                        <input type="radio" name="signin_role" id="radio_sign_in_staff" value="Staff"/>Staff
-                    </label>
-                    <div id="txt_acc_err" class="is-invalid-radio" hidden>
-                      Please check account.
-                    </div>
-                </div>
-                <label for="input_problem_name" class="col-form-label">ID </label>
-                <input type="text" class="form-control" id="input_sign_in_id" required>
-                <label for="input_course" class="col-form-label">Password </label>
-                <input type="password" class="form-control" id="input_sign_in_pwd" required>
-                <a for="input_forgot_pw" class="col-form-label" href="">Forgot your password? </a>
-                <div hidden>
-                    <label for="input_course_adf" class="col-form-label">Password </label>
-                    <input type="password" class="form-control" id="input_sign_in_pwd" required>
-                </div>
-
-            </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="btn_sign_in">Enter</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<div class="modal" id="modal_sign_up" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Sign Up</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form>
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="txt_first_name">First Name: </label>
-                <input type="text" class="form-control" id="txt_first_name" required>
-
-                <label for="txt_last_name">Last Name: </label>
-                <input type="text" class="form-control" id="txt_last_name" required>
-
-                <label for="txt_email">email: </label>
-                <input type="text" class="form-control" id="txt_email" required>
-
-                <label for="txt_pwd">Password: </label>
-                <input type="password" class="form-control" id="txt_pwd" required>
-                <label for="txt_pwd_check">Password Check: </label>
-                <input type="password" class="form-control " id="txt_pwd_check" required>
-
-                <label for="txt_phone">Phone Number: </label>
-                <input type="text" class="form-control" id="txt_phone">
-
-                <label for="txt_phone">User Type: </label>
-                <div id="radio_sign_role">
-                    <label class="radio-inline col-md-4">
-                        <input type="radio" name="signup_role" id="radio_sign_up_patient" value="Patient" required/>Patient
-                    </label>
-                    <label class="radio-inline col-md-4">
-                        <input type="radio" name="signup_role" id="radio_sign_up_physician" value="Physician"/>Physician
-                    </label>
-                </div>
-            </div>
-
-
-            <label><b>Please check your email after finishing sign up.</b></label>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="btn_finish">Sign Up</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn_close">Close</button>
-      </div>
-    </div>
-  </div>
-    <form id="form_sending_data">
-    {% csrf_token %}
-    </form>
-</div>
-
 </body>
 
-<script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
 <script src="{% static "miass/js/constants.js" %}"></script>
 <script src="{% static "miass/js/preview.js" %}"></script>
-<script src="{% static "miass/js/session.js" %}"></script>
+<script src="{% static "miass/js/sessions.js" %}"></script>
+<script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
