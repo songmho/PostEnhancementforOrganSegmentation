@@ -13,7 +13,7 @@ from image_manager import ImageManager, ImageRetriever
 from miaas.users import User, Staff, Physician, Patient
 from miaas.sessions import Session
 from miaas.smtp import MailSender
-from miaas.generate_random import InvitationCodeGenerator
+from miaas.generate_random import ActivationKeyGenerator
 
 MSG_DB_FAILED = "Handling DB requests are failed."
 MSG_NO_USER_LOGGEDIN = "There is no loggged in  user."
@@ -67,6 +67,76 @@ def sign_out(request):
     else:
         print("what")
     return JsonResponse({"state":False})
+
+
+@csrf_exempt
+def retrieve_user(request):
+    if request.method == "POST":
+        u = User()
+        data = json.loads(request.body.decode('utf-8'))
+        print(data)
+        email = data['email']
+        result = u.retrieve_user(email=email)
+        if (len(result) > 0):
+            return JsonResponse({"state":True, "data":result})
+        else:
+            return JsonResponse({"state":False, "data":[]})
+
+
+@csrf_exempt
+def send_activate_mail(request):
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        snder = MailSender()
+        result = snder.send_new_pwd(fir_name=data['first_name'], last_name=data['last_name'], email=data['email'],
+                                   url="")
+        if result:
+            return JsonResponse({"state": True, "data": result})
+        else:
+            return JsonResponse({"state": False, "data": []})
+
+
+@csrf_exempt
+def change_pwd(request):
+    if request.method == "POST":
+        u = User()
+        data = json.loads(request.body.decode('utf-8'))
+        print(data)
+        email = data['email']
+        result = u.retrieve_user(email=email)
+        if len(result) > 0:
+            result = result[0]
+            pg = ActivationKeyGenerator(size=8)
+            new_pwd = pg.get_key()
+            rs = u.modify_user(identification_number=result['identification_number'], pwd=new_pwd)
+            snder = MailSender()
+            if rs:
+                result = snder.send_new_pwd(fir_name=result['first_name'], last_name=result['last_name'],
+                                            email=result['email'], new_pwd=new_pwd)
+                print(result, rs)
+                if result:
+                    return JsonResponse({"state": True, "data": result})
+                else:
+                    return JsonResponse({"state": False, "data": []})
+            else:
+                print(rs)
+                return JsonResponse({"state": False, "data": []})
+        else:
+            print('adf')
+            return JsonResponse({"state": False, "data": []})
+
+@csrf_exempt
+def modify_user_info(request):
+    if request.method == "POST":
+        u = User()
+        data = json.loads(request.body.decode('utf-8'))
+        print(data)
+        email = data['email']
+        result = u.retrieve_user(email=email)
+        if (len(result) > 0):
+            return JsonResponse({"state":True, "data":result})
+        else:
+            return JsonResponse({"state":False, "data":[]})
 
 
 @csrf_exempt
@@ -157,7 +227,7 @@ def load_curr_user_info(request):
 @csrf_exempt
 def generate_invitation_code(request):
     if request.method == "POST":
-        icg = InvitationCodeGenerator()
+        icg = ActivationKeyGenerator()
 
         user = User()
         query = user.retrieve_user()
@@ -167,7 +237,7 @@ def generate_invitation_code(request):
             if(data not in list_code) and data is not None:
                 list_code.append(data)
 
-        result = icg.get_invitation_code(list_code)
+        result = icg.get_key(list_code)
         return JsonResponse({"result": result})
 
 @csrf_exempt
@@ -198,8 +268,10 @@ def sign_up(request):
         data['role'] = " ".join(data['role'])
         print("role", data['role'])
         u = User()
+        akg = ActivationKeyGenerator()
+        a_k = akg.get_key(45)
         result = u.register_user(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
-                        phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
+                        phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0, activation_code=a_k)
         if result:
             if "Physician" in data['role']:
                 u = Physician()
@@ -215,6 +287,10 @@ def sign_up(request):
                                 phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
 
         if result:
+            snder = MailSender()
+            result = snder.send_activate_mail(fir_name=data['first_name'], last_name=data['last_name'], email=data['email'],
+                               key=a_k)
+            print("Result of Sending Mail", result)
             return JsonResponse({'state': True})
         else:
             return JsonResponse({'state': False})

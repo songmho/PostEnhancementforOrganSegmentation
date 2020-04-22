@@ -51,6 +51,12 @@ def render_page(request):
 
     return render(request, "miaas/preview.html", context)
 
+@csrf_exempt
+def activate_user(request):
+    if request.method == "GET":
+        pass
+
+
 # get db data -> 404 template, urls in tutorial #3: https://docs.djangoproject.com/en/1.9/intro/tutorial03/
 # form, db class -> tutorial #4
 
@@ -97,6 +103,9 @@ def main(request):
 
 def register_image(request):
     return render(request, "miaas/register_image.html")
+
+def forgot_password(request):
+    return render(request, "miaas/forgot_password.html")
 
 def index_page(request):
     # request.session['user'] = {'session_id': 1, 'patient_id': 1, 'physician_id': 1,

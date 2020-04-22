@@ -66,6 +66,7 @@ urlpatterns = [
     url(r'^api/test$', apis.handle_test),
     url(r'^json_res/success$', views.json_response_success),
 
+    url(r'^activate/(?P<user_id>[-._a-z0-9]+)&(P<auth_code>[a-zA-Z0-9]+)$', views.activate_user, name='auth_email'),
     url(r'^auth/(?P<user_id>[-._a-z0-9]+)/(?P<auth_code>[a-zA-Z0-9]+)$', views.auth_email_page, name='auth_email'),
     url(r'^auth/update/(?P<user_id>[-._a-z0-9]+)/(?P<auth_code>[a-zA-Z0-9]+)$', views.auth_change_email_page, name='auth_email_update'),
 
@@ -73,9 +74,18 @@ urlpatterns = [
     url(r'^api/sign_up', apis.sign_up),
     url(r'^api/withdrawal', apis.withdrawal),
     url(r'^api/signout', apis.sign_out),
+    url(r'^api/retrieve_user', apis.retrieve_user),
+    url(r'^api/modify_user_info', apis.modify_user_info),
+    url(r'^api/change_pwd', apis.change_pwd),
+
+    url(r'^api/send_activate_mail', apis.send_activate_mail),
+    url(r'^api/change_pwd', apis.change_pwd),
+
+
     url(r'^view/sign_in', views.sign_in_page),
     url(r'^view/register_image', views.register_image),
     url(r'^view/main', views.main),
+    url(r'^forgot_password', views.forgot_password),
     url(r'^', views.page_not_found_view),
 
 
