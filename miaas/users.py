@@ -67,7 +67,7 @@ class User:
                                        phone_number=phone_number, pwd=pwd, role=role, active=active)
         return result
 
-    def modify_user(self, identification_number=None, first_name=None, last_name=None, email=None, phone_number=None,
+    def modify_user(self, identification_number, first_name=None, last_name=None, email=None, phone_number=None,
                     pwd=None, role=None, active=None):
         """
         To modify user information
@@ -381,7 +381,7 @@ class DBUser:
         except:
             return []
 
-    def modify_user(self, identification_number=None, first_name=None, last_name=None, email=None, phone_number=None,
+    def modify_user(self, identification_number, first_name=None, last_name=None, email=None, phone_number=None,
                     pwd=None, role=None, active=None):
         """
         To modify user information about input data
