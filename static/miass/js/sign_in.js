@@ -61,67 +61,6 @@ function openWindowWithPost(url, data) {
     });
 
     function login(){
-        // console.log($('input[name="signin_role"]:checked').val() );
-        // var csrftoken = getCookie('csrftoken');
-        // $.ajaxSetup({
-        //     url: '/api/sign_in',
-        //     type: 'POST',
-        //     async: true,
-        //     data: JSON.stringify({
-        //         'id': $("#input_sign_in_id").val(), 'pwd': $("#input_sign_in_pwd").val(),
-        //         'role': $('input[name="signin_role"]:checked').val()
-        //     }),
-        //     beforeSend: function(xhr, settings) {
-        //        console.log(settings.type);
-        //         if (!csrfSafeMethod(settings.type) && !this.crossDomain){
-        //             xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        //         }
-        //     },
-        //     success: function (data) {
-        //        console.log(data);
-        //         if (data['state'] === true) { // success to log in
-        //             current_user_info = data;
-        //             set_current_user(data['data'][0]);
-        //             console.log("Current User: ", get_current_user());
-        //
-        //             $('#modal_login').modal("hide");
-        //             s_data = get_current_user();
-        //             remove_current_page();
-        //             if(s_data['role']=="Author"){
-        //                 set_current_page(20);
-        //             }else if(s_data['role']=="Staff"){
-        //                 set_current_page(0);
-        //             }else if(s_data['role']=="Evaluator"){
-        //                 set_current_page(30);
-        //             }else if(s_data['role']=="Trainee"){
-        //                 set_current_page(40);
-        //             }
-        //             set_login_time(Math.floor(+new Date()/1000));
-        //             openWindowWithPost('.', {
-        //                 'first_name': s_data['first_name'],
-        //                 'last_name': s_data['last_name'],
-        //                 'email': s_data['email'],
-        //                 'cur_role':s_data['role'],
-        //                 'identification_number': s_data['identification_number'],
-        //             });
-        //             // window.location.reload();
-        //         } else {                      // fail to log in
-        //         $("#input_sign_in_id").addClass("is-invalid");
-        //         $("#input_sign_in_pwd").addClass("is-invalid");
-        //         if($('input[name="signin_role"]:checked').val() === undefined)
-        //             $("#txt_role_err").removeAttr("hidden");
-        //         }
-        //     },
-        //     error: function (err) {
-        //         $("#input_sign_in_id").addClass("is-invalid");
-        //         $("#input_sign_in_pwd").addClass("is-invalid");
-        //         if($('input[name="signin_role"]:checked').val() === undefined)
-        //             $("#txt_role_err").removeAttr("hidden");
-        //
-        //     }
-        //
-        // });
-
         $.ajax({
             url: '/api/sign_in',
             method: 'POST',
@@ -143,6 +82,13 @@ function openWindowWithPost(url, data) {
                         'identification_number': s_data['identification_number'],
                     });
                     set_current_user(s_data);
+                    var rememberMe = $("input[id='chk_remember']").is(":checked");
+
+                    if (rememberMe){
+                        set_remember(s_data);
+                    } else{
+                        remove_remember();
+                    }
                 } else {                      // fail to log in
                 $("#input_sign_in_id").addClass("is-invalid");
                 $("#input_sign_in_pwd").addClass("is-invalid");
@@ -167,4 +113,18 @@ function openWindowWithPost(url, data) {
         location.href= "signup";
             // signup();
     });
+
+    $(document).ready(function () {
+        try{
+            r_u = get_remember();
+            if (r_u != null){
+                $('#input_sign_in_id').val(r_u["email"]);
+                $('#input_sign_in_pwd').val(r_u["pwd"]);
+                $("input[id='chk_remember']").prop("checked", true);
+            }
+        } catch (e) {
+        }
+
+    });
+
 })(jQuery);

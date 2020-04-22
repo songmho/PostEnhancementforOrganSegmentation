@@ -6,7 +6,7 @@
             method: 'POST',
             async: true,
             data: JSON.stringify({
-                'id': c_u["id"],
+                'email': c_u["email"],
                 'pwd': c_u["pwd"],
                 'identification_number':c_u["identification_number"]
             }),
