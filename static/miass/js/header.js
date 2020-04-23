@@ -1,8 +1,6 @@
 (function () {
     $("#nav_register_img").click(function () {
-        $("#main_container").load("view/register_image", function () {
-
-        });
+        location.replace("view/register_image");
     });
 
     $("#nav_browse_img").click(function () {
@@ -44,7 +42,7 @@
     });
 
     $('#nav_main').click(function () {
-        location.replace("main")
+        location.replace("/")
     });
 
     $('#nav_log_out').click(function () {
