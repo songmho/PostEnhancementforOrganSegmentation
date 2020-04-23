@@ -1,8 +1,6 @@
 .title{
     color: #ffffff;
     font-weight: bold;
-    padding-top: 0;
-    padding-bottom: 0;
 }
 .is-invalid-radio{
     color: #0066ff;
@@ -23,7 +21,17 @@
     text-align: center;
 }
 
+#img_profile{
+    background-color: #efefef;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+}
 
+#body_img_profile{
+    width: 150px;
+    height: 150px;
+}
 .sign{
     color:#e8e8e8;
 }
@@ -178,9 +186,20 @@ textarea.form-control {
     letter-spacing: 5px;
 }
 
+.txt_nav_button{
+    font-variant: small-caps;
+}
+
+
 .login_body {
     padding: 0;
     font-size: 16px;
+    background-color: #0066ff;
+}
+#drop_profile{
+    /*background-color: #0066ff;*/
+}
+#profile_body{
     background-color: #0066ff;
 }
 .glyphicon{

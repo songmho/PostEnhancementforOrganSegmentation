@@ -6,6 +6,9 @@
     });
 
     $("#nav_browse_img").click(function () {
+        $("#main_container").load("view/browse_image", function () {
+
+        });
     });
 
     $("#nav_annotate_img").click(function () {
@@ -43,7 +46,8 @@
     $('#nav_main').click(function () {
         location.replace("main")
     });
-    $('#txt_role').click(function () {
+
+    $('#nav_log_out').click(function () {
         c_u = get_current_user();
         console.log("hi", c_u);
          $.ajax("/api/signout", {
@@ -74,9 +78,9 @@
             c_u = get_current_user();
             console.log(c_u);
             if (c_u == null) {
-                $("#txt_role").prop("hidden", true);
+                $("#nav_user").prop("hidden", true);
             } else {
-                $("#txt_role").prop("hidden", false);
+                $("#nav_user").prop("hidden", false);
                 var sen = c_u['first_name']+" "+c_u['last_name']+" ("+c_u["role"]+")";
                 console.log(sen);
                 $("#txt_role").last().html(sen);
@@ -84,7 +88,7 @@
             }
         } catch (e) {
             console.log(c_u);
-            $("#txt_role").prop("hidden", true);
+            $("#nav_user").prop("hidden", true);
         }
 
     });
