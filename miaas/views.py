@@ -104,6 +104,9 @@ def main(request):
 def register_image(request):
     return render(request, "miaas/register_image.html")
 
+def browse_image(request):
+    return render(request, "miaas/browse_image.html")
+
 def forgot_password(request):
     return render(request, "miaas/forgot_password.html")
 

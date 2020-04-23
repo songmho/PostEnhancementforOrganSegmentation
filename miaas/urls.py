@@ -84,6 +84,7 @@ urlpatterns = [
 
     url(r'^view/sign_in', views.sign_in_page),
     url(r'^view/register_image', views.register_image),
+    url(r'^view/browse_image', views.browse_image),
     url(r'^view/main', views.main),
     url(r'^forgot_password', views.forgot_password),
     url(r'^', views.page_not_found_view),
