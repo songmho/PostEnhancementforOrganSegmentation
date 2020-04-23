@@ -19,39 +19,41 @@
             <div class="page-header">
                 <h2>Input Images</h2>
             </div>
+            <!-- Input Information-->
             <form>
                 <div class="form-group input-group">
-                    <span class="input-group-addon">Uploader ID</span>
-                    <input type="text" class="form-control">
+                    <label for="uploader_id">Uploader ID</label>
+                    <input type="text" class="form-control" id="uploader_id" required>
                 </div>
                 <div class="form-group input-group">
-                    <span class="input-group-addon">Taken Date</span>
-                    <input type="text" class="form-control">
+                    <label for="taken_date">Taken Date</label>
+                    <input type="text" class="form-control" id="taken_date" required>
                 </div>
                 <div class="form-group input-group">
-                    <span class="input-group-addon">Taken Place</span>
-                    <input type="text" class="form-control">
+                    <label for="taken_place">Taken Place</label>
+                    <input type="text" class="form-control" id="taken_place" required>
                 </div>
                 <div class="form-group input-group">
-                    <span class="input-group-addon">Image Path</span>
-                    <input type="text" class="form-control">
+                    <label for="image_path">Image Path</label>
+                    <input type="text" class="form-control" id="image_path" required>
                 </div>
             </form>
+            <!-- Image Upload-->
             <form>
                 <div class="form-group input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroupFileAddon01">Medical Image</span>
                     </div>
                     <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="inputGroupFile01" onchange="getfolder(event)"
+                        <label class="custom-file-label" for="image_folder">Click Here to Upload Image Folder</label>
+                        <input type="file" class="custom-file-input" id="image_folder"
                                webkitdirectory mozdirectory msdirectory odirectory directory multiple
                                aria-describedby="inputGroupFileAddon01">
-                        <label class="custom-file-label" for="inputGroupFile01">Click Here to Upload Image Folder</label>
                     </div>
                 </div>
             </form>
 
-            <input type="submit" class="btn" value="Submit">
+            <input type="submit" class="btn" id="btn_submit" value="Submit">
 
         </div>
     </div>
