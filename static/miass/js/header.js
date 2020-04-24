@@ -1,4 +1,7 @@
 (function () {
+    $('#btn_images').click(function () {
+        console.log("hgihihih");
+    });
     $("#nav_register_img").click(function () {
         location.replace("view/register_image");
     });

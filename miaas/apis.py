@@ -11,6 +11,7 @@ from django.core.cache import cache
 import constants, cloud_db, email_auth
 from image_manager import ImageManager, ImageRetriever
 from miaas.users import User, Staff, Physician, Patient
+from miaas.images import Image
 from miaas.sessions import Session
 from miaas.smtp import MailSender
 from miaas.generate_random import ActivationKeyGenerator
@@ -77,6 +78,18 @@ def retrieve_user(request):
         print(data)
         email = data['email']
         result = u.retrieve_user(email=email)
+        if (len(result) > 0):
+            return JsonResponse({"state":True, "data":result})
+        else:
+            return JsonResponse({"state":False, "data":[]})
+
+@csrf_exempt
+def retrieve_images(request):
+    if request.method == "POST":
+        i = Image()
+        data = json.loads(request.body.decode('utf-8'))
+        result = i.retrieve_images()
+
         if (len(result) > 0):
             return JsonResponse({"state":True, "data":result})
         else:

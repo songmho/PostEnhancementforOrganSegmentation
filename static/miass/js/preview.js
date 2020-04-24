@@ -43,7 +43,6 @@
 
     $(document).ready(function () {
         try {
-            console.log("hihih");
             c_u = get_current_user();
             if (c_u == null) {
                 $("#main_container").load("view/sign_in");

@@ -6,7 +6,7 @@ Description: Code for CRUD with images
 import pymysql
 import constants
 
-class Images:
+class Image:
     def __init__(self):
         self.db = DBImages()
         self.img_path = None
@@ -27,7 +27,6 @@ class Images:
 
     def delete_images(self, imag_id):
         self.db.delete_images(imag_id=imag_id)
-
 
 class DBImages:
     def __init__(self):
@@ -102,7 +101,7 @@ class DBImages:
 
 
 if __name__ == '__main__':
-    img = Images()
+    img = Image()
 
     # register
     # print(img.register_images(uploader_id=1, img_path='E:\dataset', img_datetime='2020.04.22'))

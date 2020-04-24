@@ -3,7 +3,6 @@ __author__ = 'hanter'
 from django.conf.urls import url
 from . import views, apis
 
-app_name = 'miaas'
 urlpatterns = [
     # url(r'^$', views.main_page, name='main'),
     # url(r'^$', views.index_page, name='index'),
@@ -87,11 +86,15 @@ urlpatterns = [
     url(r'^view/browse_image', views.browse_image),
     url(r'^view/main', views.main),
     url(r'^forgot_password', views.forgot_password),
-    url(r'^', views.page_not_found_view),
+
+    url(r'^api/retrieve_images', apis.retrieve_images),
 
 
     # url(r'^api/register_test_item', apis.register_test_item),
     # url(r'^api/invite_user', apis.invite_user),
     # url(r'^api/check_invitation_code', apis.check_invitation_code),
     # url(r'^api/generate_invitation_code', apis.generate_invitation_code),
+
+    url(r'^', views.page_not_found_view),
 ]
+app_name = 'miaas'
