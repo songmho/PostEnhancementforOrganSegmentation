@@ -87,6 +87,8 @@ var path = "";
         var fileName = e.target.files[0];
         $('#img_slider').attr('min', 0);
         $('#img_slider').attr('max', fileList.length-1);
+        $('#txt_max_num').text(fileList.length);
+        $('#txt_num').text(1);
 
 
         console.log("name: ", $('#btn_img_loader').prop('files'));
@@ -102,8 +104,8 @@ var path = "";
         fileReader.onload = function () {
             $('#img_preview').attr("src",fileReader.result);
         };
-        $('#txt_num').attr("value", $('#img_slider').val());
-        $('#txt_num').text($('#img_slider').val());
+        var num = Number($('#img_slider').val())+1;
+        $('#txt_num').text(num);
     });
 
 })(jQuery);

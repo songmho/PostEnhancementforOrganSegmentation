@@ -62,7 +62,6 @@ def upload_images(request):
             try:
                 for c, x in enumerate(request.FILES.getlist("files")):
                     def process(f):
-                        print(x)
                         with open('D:/2. Project/Python/mias/media/' + str(x), 'wb+') as destination:
                             for chunk in f.chunks():
                                 destination.write(chunk)
@@ -79,27 +78,16 @@ def upload_txt(request):
         data = json.loads(request.body.decode('utf-8'))
         i = Image()
         uploader_id = data['uploader_id']
-        print(1)
         img_path = data['img_path']
-        print(2)
         img_type = data['img_type']
-        print(3)
         acq_date = data['acquisition_date']
-        print(4)
         first_name = data['fir_name']
-        print(5)
         last_name = data['last_name']
-        print(6)
         birthday = data['birthday']
-        print(7)
         gender = data['gender']
-        print(8)
         examination_source = data['examination_source']
-        print(9)
         interpretation = data['interpretation']
-        print(10)
         description = data['description']
-        print("DTat", data)
 
         result = i.register_images( uploader_id, img_type, img_path, acq_date, first_name, last_name, birthday, gender,
                         examination_source, interpretation, description)
@@ -108,8 +96,7 @@ def upload_txt(request):
         else:
             return JsonResponse({"state": False})
     else:
-        print("what")
-    return JsonResponse({"state": False})
+        return JsonResponse({"state": False})
 
 @csrf_exempt
 def sign_out(request):

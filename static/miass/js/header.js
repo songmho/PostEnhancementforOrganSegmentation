@@ -62,7 +62,7 @@
             success: function(data) {
                 if (data['state'] === true) { // success to log in
                     remove_current_user();
-                    location.reload();
+                    location.replace("/main")
                 }
                 else{
 
