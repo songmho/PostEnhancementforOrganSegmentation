@@ -15,6 +15,7 @@ from miaas.images import Image
 from miaas.sessions import Session
 from miaas.smtp import MailSender
 from miaas.generate_random import ActivationKeyGenerator
+from miaas.forms import TestForm
 
 MSG_DB_FAILED = "Handling DB requests are failed."
 MSG_NO_USER_LOGGEDIN = "There is no loggged in  user."
@@ -45,8 +46,70 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()],
     level=logging.INFO
 )
+
 logger = logging.getLogger(__name__)
 
+
+def upload_images(request):
+    if request.method == "POST":
+        print(request.body)
+        print(request.FILES.getlist("files"))
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            result = upload_txt(request)
+            return result
+        except:
+            try:
+                for c, x in enumerate(request.FILES.getlist("files")):
+                    def process(f):
+                        print(x)
+                        with open('D:/2. Project/Python/mias/media/' + str(x), 'wb+') as destination:
+                            for chunk in f.chunks():
+                                destination.write(chunk)
+                    process(x)
+                return JsonResponse({"state": True, "path":'D:/2. Project/Python/mias/media/' })
+            except:
+                return JsonResponse({"state": False})
+    else:
+        return JsonResponse({"state": False})
+
+
+def upload_txt(request):
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        i = Image()
+        uploader_id = data['uploader_id']
+        print(1)
+        img_path = data['img_path']
+        print(2)
+        img_type = data['img_type']
+        print(3)
+        acq_date = data['acquisition_date']
+        print(4)
+        first_name = data['fir_name']
+        print(5)
+        last_name = data['last_name']
+        print(6)
+        birthday = data['birthday']
+        print(7)
+        gender = data['gender']
+        print(8)
+        examination_source = data['examination_source']
+        print(9)
+        interpretation = data['interpretation']
+        print(10)
+        description = data['description']
+        print("DTat", data)
+
+        result = i.register_images( uploader_id, img_type, img_path, acq_date, first_name, last_name, birthday, gender,
+                        examination_source, interpretation, description)
+        if result:
+            return JsonResponse({"state": True})
+        else:
+            return JsonResponse({"state": False})
+    else:
+        print("what")
+    return JsonResponse({"state": False})
 
 @csrf_exempt
 def sign_out(request):
@@ -83,6 +146,7 @@ def retrieve_user(request):
         else:
             return JsonResponse({"state":False, "data":[]})
 
+
 @csrf_exempt
 def retrieve_images(request):
     if request.method == "POST":
@@ -91,9 +155,9 @@ def retrieve_images(request):
         result = i.retrieve_images()
 
         if (len(result) > 0):
-            return JsonResponse({"state":True, "data":result})
+            return JsonResponse({"state": True, "data": result})
         else:
-            return JsonResponse({"state":False, "data":[]})
+            return JsonResponse({"state": False, "data": []})
 
 
 @csrf_exempt

@@ -6,13 +6,16 @@ Description: Code for CRUD with images
 import pymysql
 import constants
 
+
 class Image:
     def __init__(self):
         self.db = DBImages()
         self.img_path = None
 
-    def register_images(self, uploader_id, img_path, img_datetime):
-        result = self.db.register_images(uploader_id, img_path, img_datetime)
+    def register_images(self, uploader_id, img_type, img_path, acq_date, first_name, last_name, birthday, gender,
+                        examination_source, interpretation, description):
+        result = self.db.register_images(uploader_id, img_type, img_path, acq_date, first_name, last_name, birthday, gender,
+                        examination_source, interpretation, description)
         return result
 
     def retrieve_images(self, uploader_id=None, img_id=None, img_path=None, img_datetime=None):
@@ -39,18 +42,21 @@ class DBImages:
         except Exception as e:
             self.conn = None
 
-    def register_images(self, uploader_id, dicom_img_path, img_datetime):
-        sql = "INSERT INTO images (uploader_id, img_path, img_datetime)" \
-              "VALUES (%s, %s, %s)"
-        with self.conn.cursor() as cursor:
-            cursor.execute(sql, (str(uploader_id), str(dicom_img_path), str(img_datetime)))
-        self.conn.commit()
-        is_register = True
-
-        if is_register:
-            return self.retrieve_images()[0]["uploader_id"]
-        else:
-            return -1
+    def register_images(self, uploader_id, img_type, img_path, acq_date, first_name, last_name, birthday, gender,
+                        examination_source, interpretation, description):
+        sql = "INSERT INTO images (uploader_id, img_type, img_path, acquisition_date," \
+              " first_name, last_name, birthday, gender, examination_source, interpretation, description)" \
+              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        print(">>>> ",sql)
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(sql, (uploader_id, str(img_type), str(img_path), str(acq_date), str(first_name),
+                                     str(last_name), str(birthday), str(gender), str(examination_source), str(interpretation),
+                                     str(description)))
+            self.conn.commit()
+            return True
+        except:
+            return False
 
     def retrieve_images(self, uploader_id=None, img_id=None, img_path=None, img_datetime=None):
         sql = "SELECT * FROM images"

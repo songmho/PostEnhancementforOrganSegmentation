@@ -32,7 +32,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['203.253.21.226', '0.0.0.0', 'localhost', '127.0.0.1', "desktop-h0utqi4", "203.253.21.227"]
 
-
+DATA_UPLOAD_MAX_MEMORY_SIZE = 524288000
 # Application definition
 
 INSTALLED_APPS = [

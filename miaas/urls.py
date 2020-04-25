@@ -89,7 +89,10 @@ urlpatterns = [
 
     url(r'^api/retrieve_images', apis.retrieve_images),
 
-
+    url(r'^form', views.Form),
+    url(r'^upload', views.Upload),
+    url(r'^api/upload', apis.upload_images),
+    url(r'^api/upload_txt', apis.upload_txt),
     # url(r'^api/register_test_item', apis.register_test_item),
     # url(r'^api/invite_user', apis.invite_user),
     # url(r'^api/check_invitation_code', apis.check_invitation_code),

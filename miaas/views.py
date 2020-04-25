@@ -29,6 +29,22 @@ from pprint import pprint
 from miaas.forms import CurrentProblem, CurrentTestSession, Login, CurrentProgram, CurrentCourse, CurrentOffering
 
 
+def Form(request):
+    return render(request, "miaas/form.html", {})
+
+
+def Upload(request):
+    print(request.FILES.getlist("files"), request.method)
+    for c, x in enumerate(request.FILES.getlist("files")):
+        def process(f):
+            print(x)
+            with open('D:/2. Project/Python/mias/media/' + str(x), 'wb+') as destination:
+                for chunk in f.chunks():
+                    destination.write(chunk)
+        process(x)
+    return HttpResponse("File(s) uploaded!")
+
+
 @csrf_exempt
 def render_page(request):
     context = _get_session_context(request)
