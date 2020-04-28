@@ -70,7 +70,7 @@
                 }),
                 success: function (data) {
                     if(data['state']){
-                        location.replace("./main")
+                        location.replace(SERVER_ADDRESS+"./main");
                     }else{
                     }
                 }, error: function (err) {

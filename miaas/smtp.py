@@ -1,5 +1,9 @@
 import smtplib
 from email.mime.text import MIMEText
+
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+
 from . import constants
 
 
@@ -25,13 +29,15 @@ class MailSender:
         except:
             return False
 
-    def send_new_pwd(self, fir_name, last_name, email, new_pwd):
+    def send_new_pwd(self, fir_name, last_name, email, u_id):
         try:
-
+            id = urlsafe_base64_encode(force_bytes(u_id))
+            email_encode = urlsafe_base64_encode(force_bytes(email))
+            url = "http://"+constants.HOST_ADDR+"/change_password/"+id+"/"+email_encode
             msg = MIMEText('Hi '+fir_name+" "+last_name+"\n\n"+
                            "We heard that you lost MIAS account passowrd."+
-                           "You can access your account using the following password:\n"+
-                           new_pwd+"\n\n"+
+                           "You can change your password using the following link: \n"+
+                           url+"\n\n"+
                             "Thanks, \nThe MIAS Team")
             msg['Subject'] = "[MIAS] Please reset your password"
 
@@ -42,12 +48,14 @@ class MailSender:
         except:
             return False
 
-    def send_activate_mail(self, fir_name, last_name, email, a_k):
+    def send_activate_mail(self, fir_name, last_name, email, u_id, key):
         try:
-            url = constants.HOST_ADDR+"/activate?email="+email+"&activation_key="+a_k
+            id = urlsafe_base64_encode(force_bytes(u_id))
+            url = "http://"+constants.HOST_ADDR+"/activate/"+id+"/"+key
+            # url = "http://127.0.0.1:8000/"+"/activate?email="+id+"&activation_key="+key
             msg = MIMEText('Hi '+fir_name+" "+last_name+"\n\n"+
                            "Thank you for signing up for the MIAS. We are really happy to meet you!"+
-                           "In order to activate your account follow the "+
+                           "In order to activate your account using the following link: "+
                             url+"\n\n"+
                             "Thanks, \nThe MIAS Team")
             msg['Subject'] = "[MIAS] Activation your account"
@@ -58,3 +66,7 @@ class MailSender:
             return True
         except:
             return False
+
+if __name__ == '__main__':
+    ms = MailSender()
+    print(ms.send_activate_mail("test", "test", "songmho@gmail.com", 3, "Test"))

@@ -65,8 +65,9 @@ urlpatterns = [
     url(r'^api/test$', apis.handle_test),
     url(r'^json_res/success$', views.json_response_success),
 
-    url(r'^activate/(?P<user_id>[-._a-z0-9]+)&(P<auth_code>[a-zA-Z0-9]+)$', views.activate_user, name='auth_email'),
-    url(r'^auth/(?P<user_id>[-._a-z0-9]+)/(?P<auth_code>[a-zA-Z0-9]+)$', views.auth_email_page, name='auth_email'),
+    url(r'^activate/(?P<user_id>[-._a-zA-Z0-9]+)/(?P<auth_code>[a-zA-Z0-9]+)$', views.activate_user, name='auth_email'),
+    url(r'^change_password/(?P<user_id>[-._a-zA-Z0-9]+)/(?P<email>[a-zA-Z0-9]+)$', views.change_pwd, name='change_pwd'),
+    url(r'^auth/(?P<user_id>[-._a-zA-Z0-9]+)/(?P<auth_code>[a-zA-Z0-9]+)$', views.auth_email_page, name='auth_email'),
     url(r'^auth/update/(?P<user_id>[-._a-z0-9]+)/(?P<auth_code>[a-zA-Z0-9]+)$', views.auth_change_email_page, name='auth_email_update'),
 
     url(r'^api/sign_in', apis.sign_in),

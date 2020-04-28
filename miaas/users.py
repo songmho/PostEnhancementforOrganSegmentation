@@ -3,7 +3,7 @@ Date: 2019.10.11
 Programmer: MH
 Description: Code for user class and related classes
 """
-import constants
+from . import constants
 import pymysql
 
 
@@ -39,7 +39,7 @@ class User:
         """
         # result is identification_number of user table
         result = self.db.register_user(first_name, last_name, email, phone_number, pwd, role, active, activation_code)
-        if result != 1:
+        if result:
             self.identification_number = result
             self.first_name = first_name
             self.last_name = last_name

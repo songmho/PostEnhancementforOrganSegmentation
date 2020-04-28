@@ -169,24 +169,18 @@ def change_pwd(request):
         email = data['email']
         result = u.retrieve_user(email=email)
         if len(result) > 0:
-            result = result[0]
-            pg = ActivationKeyGenerator(size=8)
-            new_pwd = pg.get_key()
-            rs = u.modify_user(identification_number=result['identification_number'], pwd=new_pwd)
+            data = result[0]
             snder = MailSender()
-            if rs:
-                result = snder.send_new_pwd(fir_name=result['first_name'], last_name=result['last_name'],
-                                            email=result['email'], new_pwd=new_pwd)
-                print(result, rs)
+            if data:
+                result = snder.send_new_pwd(fir_name=data['first_name'], last_name=data['last_name'],
+                                                  email=data['email'], u_id=data['identification_number'])
                 if result:
                     return JsonResponse({"state": True, "data": result})
                 else:
                     return JsonResponse({"state": False, "data": []})
             else:
-                print(rs)
                 return JsonResponse({"state": False, "data": []})
         else:
-            print('adf')
             return JsonResponse({"state": False, "data": []})
 
 @csrf_exempt
@@ -226,36 +220,6 @@ def sign_in(request):
             if result:
                     return JsonResponse({"state": True, "data": results[0]})
 
-            # if role == "Patient":
-            #     s = Patient()
-            #     result_s = s.retrieve_patient(email=input_id, pwd=input_pwd)
-            #     result_s[0]['user_type'] = "Patient"
-            #     # Container.current_user = result_s
-            #     request.session['user'] = result_s[0]
-            #     print(request.session.get('user'))
-            #     result = sess.generate_session(result_s[0]['identification_number'])
-            #     if result:
-            #         return JsonResponse({"state": True, "data": result_s})
-            # elif role == "Physician":
-            #     s = Physician()
-            #     result_s = s.retrieve_physician(email=input_id, pwd=input_pwd)
-            #     result_s[0]['user_type'] = "Physician"
-            #     # Container.current_user = result_s
-            #     request.session['user'] = result_s[0]
-            #     print(request.session.get('user'))
-            #     result = sess.generate_session(result_s[0]['identification_number'])
-            #     if result:
-            #         return JsonResponse({"state": True, "data": result_s})
-            # elif role == "Staff":
-            #     s = Staff()
-            #     result_s = s.retrieve_staff(email=input_id, pwd=input_pwd)
-            #     result_s[0]['user_type'] = "Staff"
-            #     # Container.current_user = result_s
-            #     request.session['user'] = result_s[0]
-            #     print(request.session.get('user'))
-            #     result = sess.generate_session(result_s[0]['identification_number'])
-            #     if result:
-            #         return JsonResponse({"state": True, "data": result_s})
             return JsonResponse({"state": False, "data": None})
     except:
         return JsonResponse({"state": False, "data": None})
@@ -316,7 +280,7 @@ def invite_user(request):
         user = User()
         result = user.register_user(first_name=fir_name, last_name=last_name, identification_form="", affiliation="",
                                     email=email, phone_number="", pwd="", role=' '.join(roles), invitation_code=inv_code)
-        if result > -1:
+        if result:
             ms = MailSender()
             result = ms.send_mail(fir_name=fir_name, last_name= last_name, list_role=roles,
                          email=email, invite_code=inv_code)
@@ -333,9 +297,12 @@ def sign_up(request):
         print("role", data['role'])
         u = User()
         akg = ActivationKeyGenerator()
-        a_k = akg.get_key(45)
+        a_k = akg.get_key()
         result = u.register_user(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
                         phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0, activation_code=a_k)
+        u_id = u.retrieve_user(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
+                        phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'])[0]['identification_number']
+
         if result:
             if "Physician" in data['role']:
                 u = Physician()
@@ -352,8 +319,9 @@ def sign_up(request):
 
         if result:
             snder = MailSender()
+
             result = snder.send_activate_mail(fir_name=data['first_name'], last_name=data['last_name'], email=data['email'],
-                               key=a_k)
+                               u_id= u_id, key=a_k)
             print("Result of Sending Mail", result)
             return JsonResponse({'state': True})
         else:

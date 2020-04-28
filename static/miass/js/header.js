@@ -1,15 +1,13 @@
 (function () {
     $('#btn_images').click(function () {
-        console.log("hgihihih");
     });
     $("#nav_register_img").click(function () {
-        location.replace("view/register_image");
+        location.replace(SERVER_ADDRESS+"/view/register_image");
     });
 
     $("#nav_browse_img").click(function () {
-        $("#main_container").load("view/browse_image", function () {
+        location.replace(SERVER_ADDRESS+"/view/browse_image");
 
-        });
     });
 
     $("#nav_annotate_img").click(function () {
@@ -45,12 +43,11 @@
     });
 
     $('#nav_main').click(function () {
-        location.replace("/")
+        location.replace(SERVER_ADDRESS);
     });
 
     $('#nav_log_out').click(function () {
         c_u = get_current_user();
-        console.log("hi", c_u);
          $.ajax("/api/signout", {
             method: 'POST',
             async: true,
@@ -88,7 +85,6 @@
 
             }
         } catch (e) {
-            console.log(c_u);
             $("#nav_user").prop("hidden", true);
         }
 

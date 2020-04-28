@@ -1,3 +1,4 @@
+from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.csrf import csrf_exempt
 
 from miaas import sample_contexts
@@ -16,6 +17,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from django.views.generic.edit import FormView
 from .forms import UploadForm
+from .users import User
 
 from miaas import sample_contexts as sctx
 from miaas import cloud_db
@@ -67,11 +69,30 @@ def render_page(request):
 
     return render(request, "miaas/preview.html", context)
 
-@csrf_exempt
-def activate_user(request):
-    if request.method == "GET":
-        pass
 
+@csrf_exempt
+def activate_user(request, user_id, auth_code):
+    if request.method == "GET":
+        user_id = urlsafe_base64_decode(user_id)
+        user_id = int(user_id)
+
+        u = User()
+        u.modify_user(identification_number=user_id, active=1, activation_code="")
+        return render(request, "miaas/success_activate.html")
+
+
+def change_pwd(request, user_id, email):
+    if request.method == "GET":
+        user_id = urlsafe_base64_decode(user_id)
+        user_id = int(user_id)
+
+        email = urlsafe_base64_decode(email)
+        email = str(email)
+
+        u = User()
+        result = u.retrieve_user(identification_number=user_id, email=email)
+        context = {'user': result[0]}
+        return render(request, "miaas/reset_pwd.html", context=context)
 
 # get db data -> 404 template, urls in tutorial #3: https://docs.djangoproject.com/en/1.9/intro/tutorial03/
 # form, db class -> tutorial #4
