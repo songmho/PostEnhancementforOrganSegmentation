@@ -5,6 +5,7 @@
 
 <link rel="stylesheet" href="{% static 'miass/css/register_image.css' %}">
 <link rel="stylesheet" href="{% static 'miass/css/preview.css' %}">
+<link rel="stylesheet" href="{% static 'miass/css/bootstrap-datepicker.css' %}">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -60,7 +61,13 @@
                                     <input type="text" id="txt_Birthday" class="form-control" >
 
                                     <label for="txt_gender">Gender </label>
-                                    <input type="text" class="form-control" id="txt_gender" >
+                                    <div class="row mx-0">
+                                        <input type="radio" class="my-auto mr-1 ml-2" name="rdo_gender" id="rdo_male" value="Male">
+                                        <label for="rdo_male" class="my-auto">Male</label>
+
+                                        <input type="radio" class="ml-4 my-auto mr-1" name="rdo_gender" id="rdo_female" value="Female" >
+                                        <label for="rdo_female" class="my-auto">Female</label>
+                                    </div>
                                 </div>
                             </form>
 {#                        <div class="mt-5">#}
@@ -68,7 +75,17 @@
                             <form autocomplete="off" id="signup_form" >
                                 <div class="form-group">
                                     <label for="txt_img_type" >Image Type <span style="color:red">*</span></label>
-                                    <input type="text" class="form-control" id="txt_img_type" required>
+{#                                    <input type="text" class="form-control" id="txt_img_type" required>#}
+                                    <select class="form-control" id="txt_img_type">
+                                        <option selected disabled hidden></option>
+                                        <option>CT</option>
+                                        <option>MRI</option>
+                                        <option>X-Ray</option>
+                                        <option>Ultrasound</option>
+                                        <option>EEG</option>
+                                        <option>ECG</option>
+                                        <option>Normal Images</option>
+                                    </select>
 
                                     <label for="txt_acq_date" >Acquisition Date <span style="color:red">*</span></label>
                                     <input type="text" class="form-control" id="txt_acq_date" required>
@@ -103,6 +120,7 @@
 <script src="{% static "miass/js/sessions.js" %}"></script>
 <script src="{% static "miass/js/header.js" %}"></script>
 <script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
+<script src="{% static "miass/js/bootstrap-datepicker.js" %}"></script>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
