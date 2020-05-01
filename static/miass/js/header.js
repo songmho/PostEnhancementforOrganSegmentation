@@ -71,22 +71,55 @@
         });
     });
 
+    $("#btn_change").click(function () {
+        var a = $("input[name='role']:checked").val();
+        console.log(a);
+        set_current_role(a);
+
+        location.reload();
+    });
+
     $(document).ready(function () {
-        try {
+        // try {
             c_u = get_current_user();
-            console.log(c_u);
+            var c_r = get_current_role();
             if (c_u == null) {
                 $("#nav_user").prop("hidden", true);
             } else {
                 $("#nav_user").prop("hidden", false);
-                var sen = c_u['first_name']+" "+c_u['last_name']+" ("+c_u["role"]+")";
-                console.log(sen);
+                var sen = c_u['first_name']+" "+c_u['last_name']+" ("+c_r+")";
                 $("#txt_role").last().html(sen);
 
+                var roles = c_u['role'].split(' ');
+                console.log(roles);
+                for (r in roles){
+                    if (roles[r]==="Patient"){
+                        $("#div_patient").prop("hidden", false);
+                        $("#div_physician").prop("hidden", true);
+                        $("#div_staff").prop("hidden", true);
+                        if (roles[r]===c_r){
+                            $("#rdo_patient").attr('checked', true);
+                        }
+                    } else if(roles[r]==="Physician"){
+                        $("#div_patient").prop("hidden", false);
+                        $("#div_physician").prop("hidden", true);
+                        $("#div_staff").prop("hidden", false);
+                        if (roles[r]===c_r){
+                            $("#rdo_physician").attr('checked', true);
+                        }
+                    } else if(roles[r]==="Staff"){
+                        $("#div_patient").prop("hidden", false);
+                        $("#div_physician").prop("hidden", false);
+                        $("#div_staff").prop("hidden", true);
+                        if (roles[r]===c_r){
+                            $("#rdo_staff").attr('checked', true);
+                        }
+                    }
+                }
             }
-        } catch (e) {
-            $("#nav_user").prop("hidden", true);
-        }
+        // } catch (e) {
+        //     $("#nav_user").prop("hidden", true);
+        // }
 
     });
 

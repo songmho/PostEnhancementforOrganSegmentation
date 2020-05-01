@@ -234,6 +234,7 @@ def sign_in(request):
             cur_users = request.session.get('user')
             request.session['user'] = results[0]
             cur_users = request.session.get('user')
+            results[0]['birthday'] = results[0]['birthday'].strftime('%Y-%m-%d')
             print(">>>>", cur_users, results[0]['active']==1)
             if results[0]['active'] == 1:
                 result = sess.generate_session(results[0]['identification_number'])

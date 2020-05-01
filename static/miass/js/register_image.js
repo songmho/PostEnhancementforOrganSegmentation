@@ -171,5 +171,23 @@ var path = "";
         $('#txt_num').text(num);
     });
 
+    $(document).ready(function () {
+        var cur_r = get_current_role();
+        var cur_u = get_current_user();
+        if (cur_r === "Patient"){
+            $("#txt_fir_name").val(cur_u['first_name']);
+            $("#txt_last_name").val(cur_u['last_name']);
+            $("#txt_Birthday").val(cur_u['birthday']);
+            var g = cur_u['gender'];
+            if (g === "Male"){
+                $('#rdo_male').attr('checked', true);
+                $('#rdo_female').attr('checked', false);
+            }else{
+                $('#rdo_male').attr('checked', false);
+                $('#rdo_female').attr('checked', true);
+            }
+        }
+    });
+
 })(jQuery);
 

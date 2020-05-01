@@ -56,7 +56,7 @@
                             </div>
                         </div>
                         <a class="dropdown-item txt_font mx-auto" id="nav_profile" href="#">Update Profile</a>
-                        <a class="dropdown-item txt_font" id="nav_change_role" href="#">Change Role</a>
+                        <a class="dropdown-item txt_font" id="nav_change_role" href="#" data-target="#modal_chg_role" data-toggle="modal">Change Role</a>
                         <a class="dropdown-item txt_font" id="nav_log_out" href="#">Logout</a>
                     </div>
                 </ul>
@@ -64,6 +64,47 @@
         </nav>
     </header>
 {#</body>#}
+
+
+<!-- Modal -->
+<div class="modal fade" id="modal_chg_role" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Change Role</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form>
+                    <p>Choose the role to change. </p>
+                    <div id="div_patient" hidden>
+                        <input type="radio" id="rdo_patient" name="role" value="Patient">
+                        <label for="rdo_patient">Patient</label>
+                    </div>
+                    <div id="div_physician" hidden>
+                        <input type="radio" id="rdo_physician" name="role" value="Physician">
+                        <label for="rdo_physician">Physician</label>
+                    </div>
+                    <div id="div_staff" hidden>
+                        <input type="radio" id="rdo_staff" name="role" value="Physician">
+                        <label for="rdo_staff">Staff</label>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="btn_change">Change</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 <script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
 {#<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">#}
