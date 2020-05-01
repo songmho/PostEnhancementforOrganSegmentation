@@ -87,11 +87,12 @@ def change_pwd(request, user_id, email):
         user_id = int(user_id)
 
         email = urlsafe_base64_decode(email)
-        email = str(email)
-
+        email = email.decode('utf-8')
+        print(user_id, email)
         u = User()
         result = u.retrieve_user(identification_number=user_id, email=email)
         context = {'user': result[0]}
+        print(context)
         return render(request, "miaas/reset_pwd.html", context=context)
 
 # get db data -> 404 template, urls in tutorial #3: https://docs.djangoproject.com/en/1.9/intro/tutorial03/

@@ -76,10 +76,11 @@ urlpatterns = [
     url(r'^api/signout', apis.sign_out),
     url(r'^api/retrieve_user', apis.retrieve_user),
     url(r'^api/modify_user_info', apis.modify_user_info),
-    url(r'^api/change_pwd', apis.change_pwd),
+    url(r'^api/forgot_pwd', apis.forgot_pwd),
+    url(r'^api/reset_pwd', apis.reset_pwd),
 
     url(r'^api/send_activate_mail', apis.send_activate_mail),
-    url(r'^api/change_pwd', apis.change_pwd),
+    url(r'^api/change_pwd', apis.forgot_pwd),
 
 
     url(r'^view/sign_in', views.sign_in_page),

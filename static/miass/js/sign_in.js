@@ -24,7 +24,6 @@ function openWindowWithPost(url, data) {
     }
 
     $('#btn_sign_in').click(function () {
-        console.log("hi");
         state = true;
         if($("#input_sign_in_id").val()===""){
             state = false;

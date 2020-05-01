@@ -380,7 +380,6 @@ class DBUser:
 
         try:
             with self.conn.cursor() as cursor:
-                print(sql)
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 return result

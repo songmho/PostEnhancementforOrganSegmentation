@@ -161,13 +161,14 @@ def send_activate_mail(request):
 
 
 @csrf_exempt
-def change_pwd(request):
+def forgot_pwd(request):
     if request.method == "POST":
         u = User()
         data = json.loads(request.body.decode('utf-8'))
         print(data)
         email = data['email']
         result = u.retrieve_user(email=email)
+        print(result)
         if len(result) > 0:
             data = result[0]
             snder = MailSender()
@@ -178,6 +179,26 @@ def change_pwd(request):
                     return JsonResponse({"state": True, "data": result})
                 else:
                     return JsonResponse({"state": False, "data": []})
+            else:
+                return JsonResponse({"state": False, "data": []})
+        else:
+            return JsonResponse({"state": False, "data": []})
+
+@csrf_exempt
+def reset_pwd(request):
+    if request.method == "POST":
+        u = User()
+        data = json.loads(request.body.decode('utf-8'))
+        print(data)
+        id = data['id']
+        email = data['email']
+        pwd = data['pwd']
+
+        result = u.retrieve_user(identification_number=id, email=email)
+        if len(result) > 0:
+            result = u.modify_user(identification_number=id, pwd=pwd)
+            if result:
+                return JsonResponse({"state": True, "data": result})
             else:
                 return JsonResponse({"state": False, "data": []})
         else:
@@ -211,18 +232,21 @@ def sign_in(request):
             results = u.retrieve_user(email=input_id, pwd=input_pwd)
             print(results)
             cur_users = request.session.get('user')
-            print(">>>>", cur_users, request.session.keys())
             request.session['user'] = results[0]
             cur_users = request.session.get('user')
-            print(">>>>", cur_users)
-            result = sess.generate_session(results[0]['identification_number'])
-            print(result)
-            if result:
-                    return JsonResponse({"state": True, "data": results[0]})
+            print(">>>>", cur_users, results[0]['active']==1)
+            if results[0]['active'] == 1:
+                result = sess.generate_session(results[0]['identification_number'])
+                print(result)
+                if result:
+                        return JsonResponse({"state": True, "data": results[0]})
+                else:
+                    return JsonResponse({"state": False, "data": ["Check session"]})
+            else:
+                return JsonResponse({"state": False, "data": ["Activate account"]})
 
-            return JsonResponse({"state": False, "data": None})
     except:
-        return JsonResponse({"state": False, "data": None})
+        return JsonResponse({"state": False, "data": ["Check ID or PWD"]})
 
 
 @csrf_exempt
