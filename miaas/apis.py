@@ -148,6 +148,19 @@ def retrieve_images(request):
 
 
 @csrf_exempt
+def remove_image(request):
+    if request.method == "POST":
+        i = Image()
+        data = json.loads(request.body.decode('utf-8'))
+        trg_id = data["id"]
+        result = i.delete_images(img_id=trg_id)
+        if result:
+            return JsonResponse({"state": True, "data": []})
+        else:
+            return JsonResponse({"state": False, "data": []})
+
+
+@csrf_exempt
 def send_activate_mail(request):
     if request.method == "POST":
         data = json.loads(request.body.decode('utf-8'))

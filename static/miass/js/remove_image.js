@@ -7,7 +7,32 @@
         // console.log($(this).text());
         var tr = $(this);
         var tds = tr.children();
-        location.replace(SERVER_ADDRESS+"/view/diagnose/"+tds.eq(1).text());
+        // console.log(tds.eq(1).text());
+    });
+
+    $(document.body).delegate("#list_image button", 'click', function () {
+        var trgId = $(this).eq(0).attr('id');
+        $("#modalRmvImg").modal('show');
+        $("#modalRmvImg").on('shown.bs.modal', function (event) {
+            $('#btnYes').click(function () {
+                $.ajax({
+                    url: "/api/remove_image",
+                    method: 'POST',
+                    async: true,
+                    data: JSON.stringify({
+                        "id": trgId,
+                    }),
+                    success: function (data) {
+                        if (data['state'])
+                            location.reload();
+
+                        $("#modalRmvImg").modal('hide');
+                    }, error: function (err) {
+
+                    }
+                });
+            });
+        });
     });
 
     $(document).ready(function () {
@@ -31,6 +56,7 @@
                         "<td>"+data[i]["img_type"]+"</td>\n" +
                         "<td>"+data[i]["acquisition_date"]+"</td>\n" +
                         "<td>"+data[i]["examination_source"]+"</td>\n" +
+                        "<td> <button  class='checkBtn'  id='"+data[i]["img_id"]+"'> Remove </button></td>\n" +
                         "</tr>" +
                         "");
                 }

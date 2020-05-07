@@ -18,7 +18,7 @@
     {% include 'miaas/header.html' %}
     <div class="container">
         <div class="mt-5">
-        <table class="table table-hover">
+        <table class="table table-hover" id="list_image">
             <thead>
                 <tr>
                     <th scope="col"></th>
@@ -27,42 +27,48 @@
                     <th scope="col">Image Type</th>
                     <th scope="col">Acquisition Date</th>
                     <th scope="col">Examination Source</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
 
             <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Jacob</td>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-            </tr>
-            <tr>
-                <th scope="row">5</th>
-                <td colspan="4">Larry the Bird</td>
-                <td>@twitter</td>
-            </tr>
+
             </tbody>
         </table>
 
         </div>
     </div>
 
+    <div class="modal fade" id="modalRmvImg" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alert</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p>Do you want to remove the medical image?</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="btnYes">Yes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnNo">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 </body>
+
+
+
 <script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
 <script src="{% static "miass/js/constants.js" %}"></script>
-<script src="{% static "miass/js/browse_image.js" %}"></script>
+<script src="{% static "miass/js/remove_image.js" %}"></script>
 <script src="{% static "miass/js/sessions.js" %}"></script>
 <script src="{% static "miass/js/header.js" %}"></script>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">

@@ -86,10 +86,14 @@ urlpatterns = [
     url(r'^view/sign_in', views.sign_in_page),
     url(r'^view/register_image', views.register_image),
     url(r'^view/browse_image', views.browse_image),
+    url(r'^view/annotate_image', views.annotate_image),
+    url(r'^view/remove_image', views.remove_image),
+    url(r'^view/diagnose/(?P<img_id>[-._a-z0-9]+)', views.diagnose),
     url(r'^view/main', views.main),
     url(r'^forgot_password', views.forgot_password),
 
     url(r'^api/retrieve_images', apis.retrieve_images),
+    url(r'^api/remove_image', apis.remove_image),
 
     url(r'^form', views.Form),
     url(r'^upload', views.Upload),

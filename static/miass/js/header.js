@@ -11,9 +11,11 @@
     });
 
     $("#nav_annotate_img").click(function () {
+        location.replace(SERVER_ADDRESS+"/view/annotate_image");
     });
 
     $("#nav_remove_img").click(function () {
+        location.replace(SERVER_ADDRESS+"/view/remove_image");
     });
 
 

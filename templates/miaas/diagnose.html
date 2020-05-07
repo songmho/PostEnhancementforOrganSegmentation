@@ -1,0 +1,38 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <link rel="stylesheet" href="{% static 'miass/css/preview.css' %}">
+    <link rel="stylesheet" href="{% static 'miass/css/diagnose.css' %}">
+    <head>
+    </head>
+    <body>
+        {% include 'miaas/header.html' %}
+
+        <div class="sidenav" id="navigator" >
+            <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
+            <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
+            <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
+            <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
+            <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
+            <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
+        </div>
+        <div class="main">
+            <img class="w-100 h-100" id="main_viewer">
+        </div>
+
+
+    </body>
+    <script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
+    <script src="{% static "miass/js/dicom/dicomParser.js" %}"></script>
+    <script src="{% static "miass/js/dicom/cornerstone.js" %}"></script>
+    <script src="{% static "miass/js/dicom/cornerstoneWADOImageLoader.js" %}"></script>
+    <script src="{% static "miass/js/constants.js" %}"></script>
+    <script src="{% static "miass/js/diagnose.js" %}"></script>
+    <script src="{% static "miass/js/sessions.js" %}"></script>
+    <script src="{% static "miass/js/header.js" %}"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</html>

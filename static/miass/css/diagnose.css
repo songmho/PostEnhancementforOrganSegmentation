@@ -1,0 +1,31 @@
+html, body{
+    height: 100%;
+    overflow: hidden;
+}
+
+.sidenav {
+    height: 100%; /* Full-height: remove this if you want "auto" height */
+    width: 280px; /* Set the width of the sidebar */
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    z-index: 1; /* Stay on top */
+}
+
+.main {
+    margin-left: 280px;
+    height: 100%; /* Full-height: remove this if you want "auto" height */
+    /*width: 100%;*/
+    min-height: 100%;
+    /*min-width: 100%;*/
+    border: #0c0c0c;
+}
+
+
+.thumb_img{
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#main_viewer {
+
+}

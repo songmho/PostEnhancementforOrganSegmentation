@@ -3,6 +3,9 @@ Date: 2020.04.22
 Programmer: DY
 Description: Code for CRUD with images
 """
+import os
+import shutil
+
 import pymysql
 import constants
 
@@ -23,13 +26,26 @@ class Image:
                                          img_path=img_path, img_datetime=img_datetime)
         return result
 
-    def modify_images(self, imag_id, img_path=None, img_datetime=None):
-        result = self.db.modify_images(imag_id=imag_id, img_path=img_path,
+    def modify_images(self, img_id, img_path=None, img_datetime=None):
+        result = self.db.modify_images(imag_id=img_id, img_path=img_path,
                                        img_datetime=img_datetime)
         return result
 
-    def delete_images(self, imag_id):
-        self.db.delete_images(imag_id=imag_id)
+    def delete_images(self, img_id):
+        try:
+            # To need to change the part of showing data
+            data = self.db.retrieve_images(img_id=img_id)
+            print(img_id, data[0]["img_path"])
+            shutil.rmtree(data[0]["img_path"])
+
+            result = os.path.exists(data[0]["img_path"])
+            if not result:  # when folder is removed
+                result = self.db.delete_images(img_id=img_id)
+                return result
+            return False
+        except:
+            return False
+
 
 class DBImages:
     def __init__(self):

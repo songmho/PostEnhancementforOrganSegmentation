@@ -140,10 +140,20 @@ def main(request):
     return render(request, "miaas/main.html")
 
 def register_image(request):
-    return render(request, "miaas/register_image.html")
+    return render(request, "miaas/image_register.html")
 
 def browse_image(request):
-    return render(request, "miaas/browse_image.html")
+    return render(request, "miaas/image_browse.html")
+
+def diagnose(request, img_id):
+    context = {'img_id': img_id}
+    return render(request, "miaas/diagnose.html", context)
+
+def annotate_image(request):
+    return render(request, "miaas/image_annotate.html")
+
+def remove_image(request):
+    return render(request, "miaas/image_remove.html")
 
 def forgot_password(request):
     return render(request, "miaas/forgot_password.html")
