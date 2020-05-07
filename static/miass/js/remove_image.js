@@ -47,7 +47,7 @@
                 data = data["data"]
                 for (var i in data){
                     var id = Number(i)+1;
-                    $("#list_image tbody").append("" +
+                    var row = "" +
                         "<tr>" +
                         "<th scope=\'row\'>"+id+"</th>\n" +
                         "<td id='img_id' hidden>"+data[i]["img_id"]+"</td>\n" +
@@ -55,10 +55,19 @@
                         "<td>"+data[i]["last_name"]+"</td>\n" +
                         "<td>"+data[i]["img_type"]+"</td>\n" +
                         "<td>"+data[i]["acquisition_date"]+"</td>\n" +
-                        "<td>"+data[i]["examination_source"]+"</td>\n" +
-                        "<td> <button  class='checkBtn'  id='"+data[i]["img_id"]+"'> Remove </button></td>\n" +
-                        "</tr>" +
-                        "");
+                        "<td>"+data[i]["examination_source"]+"</td>\n"
+                    try{
+                        if (get_current_user()['identification_number'] === data[i]['uploader_id']){
+                            row += "<td> <button  class='checkBtn'  id='"+data[i]["img_id"]+"'> Remove </button></td>\n" +
+                            "</tr>";
+                        }else{
+                            row += "<td> </td>" +"</tr>";
+                        }
+                    } catch (e) {
+                           row += "<td> </td>" +"</tr>";
+                    }
+
+                    $("#list_image tbody").append(row);
                 }
             }, error: function (err) {
 
