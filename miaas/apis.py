@@ -1,6 +1,7 @@
 import copy
 import json
 import logging
+import os
 import time
 from pprint import pprint
 
@@ -60,13 +61,16 @@ def upload_images(request):
             return result
         except:
             try:
+                t = str(int(time.time()))
+                if not os.path.isdir('D:/2. Project/Python/mias/media/'+t):
+                    os.mkdir('D:/2. Project/Python/mias/media/'+t)
                 for c, x in enumerate(request.FILES.getlist("files")):
                     def process(f):
-                        with open('D:/2. Project/Python/mias/media/' + str(x), 'wb+') as destination:
+                        with open('D:/2. Project/Python/mias/media/'+t +'/'+ str(x), 'wb+') as destination:
                             for chunk in f.chunks():
                                 destination.write(chunk)
                     process(x)
-                return JsonResponse({"state": True, "path":'D:/2. Project/Python/mias/media/' })
+                return JsonResponse({"state": True, "path":'D:/2. Project/Python/mias/media/'+t +'/' })
             except:
                 return JsonResponse({"state": False})
     else:

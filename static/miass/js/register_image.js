@@ -125,7 +125,7 @@ var path = "";
                     url: '/api/upload_txt/',
                     data: JSON.stringify({"fir_name": fir_name, "last_name": last_name, "birthday": birthday,
                         "gender": gender, "img_path":path, "acquisition_date": acq_date, "examination_source":exam_src, "interpretation":interpretation,
-                        "description": description, 'uploader_id':1, "img_type":img_type}),
+                        "description": description, 'uploader_id':get_current_user()['identification_number'], "img_type":img_type}),
                     async: false,
                     success: function (data) {
                         if(data['state']){
