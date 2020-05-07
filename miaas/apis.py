@@ -53,24 +53,22 @@ logger = logging.getLogger(__name__)
 
 def upload_images(request):
     if request.method == "POST":
-        print(request.body)
-        print(request.FILES.getlist("files"))
         try:
             data = json.loads(request.body.decode('utf-8'))
             result = upload_txt(request)
-            return result
+            return JsonResponse({"state": result})
         except:
             try:
                 t = str(int(time.time()))
-                if not os.path.isdir('D:/2. Project/Python/mias/media/'+t):
-                    os.mkdir('D:/2. Project/Python/mias/media/'+t)
+                if not os.path.isdir('D:/Projects/MIAS_Project/mias/media/'+t):
+                    os.mkdir('D:/Projects/MIAS_Project/mias/media/'+t)
                 for c, x in enumerate(request.FILES.getlist("files")):
                     def process(f):
-                        with open('D:/2. Project/Python/mias/media/'+t +'/'+ str(x), 'wb+') as destination:
+                        with open('D:/Projects/MIAS_Project/mias/media/'+t +'/'+ str(x), 'wb+') as destination:
                             for chunk in f.chunks():
                                 destination.write(chunk)
                     process(x)
-                return JsonResponse({"state": True, "path":'D:/2. Project/Python/mias/media/'+t +'/' })
+                return JsonResponse({"state": True, "path": 'D:/Projects/MIAS_Project/mias/media/'+t +'/' })
             except:
                 return JsonResponse({"state": False})
     else:
@@ -92,8 +90,7 @@ def upload_txt(request):
         examination_source = data['examination_source']
         interpretation = data['interpretation']
         description = data['description']
-
-        result = i.register_images( uploader_id, img_type, img_path, acq_date, first_name, last_name, birthday, gender,
+        result = i.register_images(uploader_id, img_type, img_path, acq_date, first_name, last_name, birthday, gender,
                         examination_source, interpretation, description)
         if result:
             return JsonResponse({"state": True})
@@ -101,6 +98,7 @@ def upload_txt(request):
             return JsonResponse({"state": False})
     else:
         return JsonResponse({"state": False})
+
 
 @csrf_exempt
 def sign_out(request):
