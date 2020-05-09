@@ -87,7 +87,7 @@
             is_possible = false;
             $("#slct_role").addClass("is-invalid");
             $('#txt_chk_role').prop("hidden", false);
-        } if (pwd !== pwd_check){
+        } if (pwd !== pwd_check && pwd_check !== ""){
             is_possible = false;
             $('#txt_pwd').addClass("is-invalid");
             $('#txt_pwd_check').addClass("is-invalid");
