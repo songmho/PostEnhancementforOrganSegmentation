@@ -45,7 +45,6 @@
         $('#txt_pwd_check').removeClass("is-invalid");
         $('#txt_phone').removeClass("is-invalid");
         // $("#txt_role").removeClass("is-invalid");
-        $("#slct_role").addClass("is-invalid");
         $('input[name="signup_role"]').removeClass("is-invalid");
         var is_possible = true;
         var fir_name = $("#txt_first_name").val();
