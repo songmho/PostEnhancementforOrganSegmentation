@@ -14,9 +14,14 @@ from image_manager import ImageManager, ImageRetriever
 from miaas.users import User, Staff, Physician, Patient
 from miaas.images import Image
 from miaas.sessions import Session
-from miaas.smtp import MailSender
+from miaas.mias_smtp import MailSender
 from miaas.generate_random import ActivationKeyGenerator
 from miaas.forms import TestForm
+
+from miaas import container
+
+from miaas.apps import MedicalImageConfig
+
 
 MSG_DB_FAILED = "Handling DB requests are failed."
 MSG_NO_USER_LOGGEDIN = "There is no loggged in  user."
@@ -166,7 +171,9 @@ def remove_image(request):
 def send_activate_mail(request):
     if request.method == "POST":
         data = json.loads(request.body.decode('utf-8'))
+        container.mias_container.s.send_new_pwd()
         snder = MailSender()
+
         result = snder.send_new_pwd(fir_name=data['first_name'], last_name=data['last_name'], email=data['email'],
                                    url="")
         if result:
@@ -186,10 +193,16 @@ def forgot_pwd(request):
         print(result)
         if len(result) > 0:
             data = result[0]
-            snder = MailSender()
+            # snder = MailSender()
             if data:
-                result = snder.send_new_pwd(fir_name=data['first_name'], last_name=data['last_name'],
+                result = container.mias_container.s.send_new_pwd(fir_name=data['first_name'], last_name=data['last_name'],
                                                   email=data['email'], u_id=data['identification_number'])
+                if not result:
+                    container.mias_container.reset()
+                    result = container.mias_container.s.send_new_pwd(fir_name=data['first_name'],
+                                                                     last_name=data['last_name'],
+                                                                     email=data['email'],
+                                                                     u_id=data['identification_number'])
                 if result:
                     return JsonResponse({"state": True, "data": result})
                 else:
@@ -237,19 +250,26 @@ def modify_user_info(request):
 def sign_in(request):
 
     sess = Session()
-    try:
-        if request.method == "POST":
-            data = json.loads(request.body.decode('utf-8'))
-            input_id = data['id']
-            input_pwd = data['pwd']
+    # try:
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        input_id = data['id']
+        input_pwd = data['pwd']
 
-            u = User()
-            results = u.retrieve_user(email=input_id, pwd=input_pwd)
-            print(results)
+        u = User()
+        print(input_id, input_pwd)
+        results = u.retrieve_user(email=input_id, pwd=input_pwd)
+        print(results)
+        if len(results) == 0:
+            return JsonResponse({"state": False, "data": ["Check ID or Password"]})
+        else:
             cur_users = request.session.get('user')
             request.session['user'] = results[0]
             cur_users = request.session.get('user')
-            results[0]['birthday'] = results[0]['birthday'].strftime('%Y-%m-%d')
+            try:
+                results[0]['birthday'] = results[0]['birthday'].strftime('%Y-%m-%d')
+            except:
+                results[0]['birthday'] = "1990-01-01"
             print(">>>>", cur_users, results[0]['active']==1)
             if results[0]['active'] == 1:
                 result = sess.generate_session(results[0]['identification_number'])
@@ -257,12 +277,12 @@ def sign_in(request):
                 if result:
                         return JsonResponse({"state": True, "data": results[0]})
                 else:
-                    return JsonResponse({"state": False, "data": ["Check session"]})
+                    return JsonResponse({"state": False, "data": ["Check Session"]})
             else:
-                return JsonResponse({"state": False, "data": ["Activate account"]})
-
-    except:
-        return JsonResponse({"state": False, "data": ["Check ID or PWD"]})
+                return JsonResponse({"state": False, "data": ["Activate Account"]})
+    #
+    # except:
+    #     return JsonResponse({"state": False, "data": ["Check ID or PWD"]})
 
 
 @csrf_exempt
@@ -339,7 +359,8 @@ def sign_up(request):
         akg = ActivationKeyGenerator()
         a_k = akg.get_key()
         result = u.register_user(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
-                        phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0, activation_code=a_k)
+                        phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0,
+                                 activation_code=a_k, gender=data['gender'], birthday=data['birthday'])
         u_id = u.retrieve_user(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
                         phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'])[0]['identification_number']
 
@@ -358,10 +379,18 @@ def sign_up(request):
                                 phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
 
         if result:
-            snder = MailSender()
+            # snder = MailSender()
 
-            result = snder.send_activate_mail(fir_name=data['first_name'], last_name=data['last_name'], email=data['email'],
+            result = container.mias_container.s.send_activate_mail(fir_name=data['first_name'], last_name=data['last_name'], email=data['email'],
                                u_id= u_id, key=a_k)
+            if not result:
+                container.mias_container.reset()
+                result = container.mias_container.s.send_activate_mail(fir_name=data['first_name'],
+                                                                 last_name=data['last_name'],
+                                                                 email=data['email'],
+                                                                 u_id=data['identification_number'])
+            # result = snder.send_activate_mail(fir_name=data['first_name'], last_name=data['last_name'], email=data['email'],
+            #                    u_id= u_id, key=a_k)
             print("Result of Sending Mail", result)
             return JsonResponse({'state': True})
         else:

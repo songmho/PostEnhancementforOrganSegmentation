@@ -60,6 +60,7 @@ function openWindowWithPost(url, data) {
     });
 
     function login(){
+        $("#txt_login_result").css('visibility', 'hidden');
         $.ajax({
             url: '/api/sign_in',
             method: 'POST',
@@ -95,6 +96,8 @@ function openWindowWithPost(url, data) {
                 if($('input[name="signin_role"]:checked').val() === undefined)
                     $("#txt_role_err").removeAttr("hidden");
                 }
+                $("#txt_login_result").css('visibility', 'visible');
+                $("#txt_login_result").text(data['data'][0]);
             },
             error: function (err) {
                 $("#input_sign_in_id").addClass("is-invalid");
@@ -102,6 +105,8 @@ function openWindowWithPost(url, data) {
                 $('#txt_acc_err').removeAttr("hidden");
                 if($('input[name="signin_role"]:checked').val() === undefined)
                     $("#txt_role_err").removeAttr("hidden");
+                $("#txt_login_result").css('visibility', 'visible');
+                $("#txt_login_result").text(data['data'][0]);
             }
         });
 

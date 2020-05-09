@@ -4,7 +4,8 @@ from email.mime.text import MIMEText
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-from . import constants
+# from . import constants
+from miaas import constants
 
 
 class MailSender:
@@ -24,7 +25,7 @@ class MailSender:
 
             self.session.sendmail(self.from_user, email, msg.as_string())
 
-            self.session.quit()
+            # self.session.quit()
             return True
         except:
             return False
@@ -33,7 +34,7 @@ class MailSender:
         try:
             id = urlsafe_base64_encode(force_bytes(u_id))
             email_encode = urlsafe_base64_encode(force_bytes(email))
-            url = "http://"+constants.HOST_ADDR+"/change_password/"+id+"/"+email_encode
+            url = "http://"+constants.HOST_ADDR+":8000"+"/change_password/"+id+"/"+email_encode
             msg = MIMEText('Hi '+fir_name+" "+last_name+"\n\n"+
                            "We heard that you lost MIAS account passowrd."+
                            "You can change your password using the following link: \n"+
@@ -43,15 +44,16 @@ class MailSender:
 
             self.session.sendmail(self.from_user, email, msg.as_string())
 
-            self.session.quit()
+            # self.session.quit()
             return True
-        except:
+        except Exception as e:
+            print(e)
             return False
 
     def send_activate_mail(self, fir_name, last_name, email, u_id, key):
         try:
             id = urlsafe_base64_encode(force_bytes(u_id))
-            url = "http://"+constants.HOST_ADDR+"/activate/"+id+"/"+key
+            url = "http://"+constants.HOST_ADDR+":8000"+"/activate/"+id+"/"+key
             # url = "http://127.0.0.1:8000/"+"/activate?email="+id+"&activation_key="+key
             msg = MIMEText('Hi '+fir_name+" "+last_name+"\n\n"+
                            "Thank you for signing up for the MIAS. We are really happy to meet you!"+
@@ -62,10 +64,11 @@ class MailSender:
 
             self.session.sendmail(self.from_user, email, msg.as_string())
 
-            self.session.quit()
+            # self.session.quit()
             return True
         except:
             return False
+
 
 if __name__ == '__main__':
     ms = MailSender()

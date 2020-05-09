@@ -24,7 +24,7 @@ class User:
         self.activation_code = None
         self.db = DBUser()
 
-    def register_user(self, first_name, last_name, email, phone_number, pwd, role, active, activation_code):
+    def register_user(self, first_name, last_name, email, phone_number, pwd, role, active, activation_code, gender, birthday):
         """
         To register user data
         :param first_name: string, user's first name
@@ -38,7 +38,7 @@ class User:
         :return: boolean, state of registering
         """
         # result is identification_number of user table
-        result = self.db.register_user(first_name, last_name, email, phone_number, pwd, role, active, activation_code)
+        result = self.db.register_user(first_name, last_name, email, phone_number, pwd, role, active, activation_code, gender, birthday)
         if result:
             self.identification_number = result
             self.first_name = first_name
@@ -296,7 +296,7 @@ class DBUser:
         except Exception as e:
             self.conn = None
 
-    def register_user(self, first_name, last_name, email, phone_number, pwd, role, active, activation_code):
+    def register_user(self, first_name, last_name, email, phone_number, pwd, role, active, activation_code, gender, birthday):
         """
         To register user data
         :param first_name: string, user's first name
@@ -309,8 +309,8 @@ class DBUser:
         :param activation_code: string, activation code
         :return: boolean, state of registering
         """
-        sql = "INSERT INTO users (first_name, last_name, email, phone_number, pwd, role, active, activation_code)" \
-              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO users (first_name, last_name, email, phone_number, pwd, role, active, activation_code, gender, birthday)" \
+              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         already_regist = self.retrieve_user(email=email)
         if len(already_regist) > 0:
             return False
@@ -318,7 +318,7 @@ class DBUser:
             try:
                 with self.conn.cursor() as cursor:
                     cursor.execute(sql, (str(first_name), str(last_name), str(email),
-                                         str(phone_number), str(pwd), str(role), active, str(activation_code)))
+                                         str(phone_number), str(pwd), str(role), active, str(activation_code), str(gender), str(birthday)))
                 self.conn.commit()
                 return True
             except:

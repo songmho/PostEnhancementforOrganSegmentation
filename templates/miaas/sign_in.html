@@ -9,6 +9,43 @@
 <main role="main">
     <div class="py-0 jumbotron-codeline mx-0 h-50" style="background-color: #4d94ff">
         <div class="js-experiment-homepage-signup-container-xl p-responsive position-relative container-lg">
+
+        <div class="col-3 float-sm-right mx-0 px-0">
+            <div class="login_body pt-2 pb-4 px-3 signInView float-right"  id="signInView" >
+
+                <span style="color:red; visibility: hidden; font-weight: bold;" id="txt_login_result" class="mb-2 mx-2">&nbsp;Select role</span>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" class="form-control form-control-signin rounded-pill  w-100" placeholder="user name" id="input_sign_in_id" required>
+{#                            <label for="input_sign_in_id" class="bigicon input-icon" src="{% static 'miass/images/person-24px.svg' %}"></label>#}
+                        <img src="{% static 'miass/images/person-24px.svg' %}"  class="bigicon input-icon">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="password" class="form-control form-control-signin rounded-pill mt-2 w-100" placeholder="password" id="input_sign_in_pwd" required>
+                        <img src="{% static 'miass/images/vpn_key-24px.svg' %}"  class="bigicon input-icon">
+                    </div>
+                </div>
+
+                <div class="mt-2">
+                    <input type="checkbox" id="chk_remember" class="ml-2 my-auto">
+                    <label for="chk_remember" class="mb-0 text-white">Remember me</label>
+                </div>
+                <div class="mx-auto w-100 mt-3">
+                    <button class="col-5 rounded-pill txt_font btn_white" id="btn_sign_in">
+                        Login
+                    </button>
+                    <span class="col-2"></span>
+                    <button class="col-5 rounded-pill txt_font btn_white" id="btn_go_sign_up">
+                        Sign Up
+                    </button>
+                </div>
+                <div style="text-align: center" class="mt-3"> <a class="col-form-label text-white" href="forgot_password" style="font-size: 13px;"> <u>Forgot password?</u> </a></div>
+
+            </div>
+        </div>
     </div>
 
     <div class="container marketing">
@@ -18,40 +55,7 @@
                 <h4 class="text-muted mb-4">...</h4>
             </div>
 
-            <div class="col-3 float-sm-right">
-                <div class="login_body py-4 px-3 signInView"  id="signInView" >
-                    <div class="form-group">
-                        <div class="input-wrapper">
-                            <input type="text" class="form-control form-control-signin rounded-pill  w-100" placeholder="user name" id="input_sign_in_id" required>
-{#                            <label for="input_sign_in_id" class="bigicon input-icon" src="{% static 'miass/images/person-24px.svg' %}"></label>#}
-                            <img src="{% static 'miass/images/person-24px.svg' %}"  class="bigicon input-icon">
-                        </div>
-                    </div>
 
-                    <div class="form-group">
-                        <div class="input-wrapper">
-                            <input type="password" class="form-control form-control-signin rounded-pill mt-2 w-100" placeholder="password" id="input_sign_in_pwd" required>
-                            <img src="{% static 'miass/images/vpn_key-24px.svg' %}"  class="bigicon input-icon">
-                        </div>
-                    </div>
-
-                    <div class="mt-2">
-                        <input type="checkbox" id="chk_remember" class="ml-2 my-auto">
-                        <label for="chk_remember" class="mb-0 text-white">Remember me</label>
-                    </div>
-                    <div class="mx-auto w-100 mt-3">
-                        <button class="col-5 rounded-pill txt_font btn_white" id="btn_sign_in">
-                            Login
-                        </button>
-                        <span class="col-2"></span>
-                        <button class="col-5 rounded-pill txt_font btn_white" id="btn_go_sign_up">
-                            Sign Up
-                        </button>
-                    </div>
-                    <div style="text-align: center" class="mt-3"> <a class="col-form-label text-white" href="forgot_password" style="font-size: 13px;"> <u>Forgot password?</u> </a></div>
-
-                </div>
-            </div>
 
         </div>
     <!-- START THE FEATURETTES -->
