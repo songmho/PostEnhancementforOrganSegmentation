@@ -136,9 +136,9 @@ def retrieve_user(request):
         email = data['email']
         result = u.retrieve_user(email=email)
         if (len(result) > 0):
-            return JsonResponse({"state":True, "data":result})
+            return JsonResponse({"state": True, "data": result})
         else:
-            return JsonResponse({"state":False, "data":[]})
+            return JsonResponse({"state": False, "data": []})
 
 
 @csrf_exempt

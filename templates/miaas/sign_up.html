@@ -75,30 +75,36 @@
             <div class="w-50 mx-auto mt-5 text-center">
                 <label><b>Please check your email after finishing sign up.</b></label>
                 <button type="button" class="btn btn-primary w-50 " id="btn_sign_up">Create account</button>
+                <button class="btn btn-primary w-50" type="button" id="btn_loading" disabled hidden>
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&ensp;Creating ...
+                </button>
+{#                <button class="spinner-border spinner-border-sm w-50 " role="status" aria-hidden="true">#}
+{#                    </button>#}
             </div>
 
         </div>
 
     </div>
 
-    <div class="modal fade" id="modal_signup" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog" role="document">
+<div class="modal fade" id="modal_signup" tabindex="-1" role="dialog"">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Confirm</h5>
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Note</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+                <span aria-hidden="true">&times;</span>
             </button>
-          </div>
-          <div class="modal-body">
-            Your Account is created. Before using the account, please check an email we sent for activating account.
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="btn_yes">Yes</button>
-          </div>
+            </div>
+            <div class="modal-body">
+                We sent an email to your email. You can change your password following the email. Please check your email.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btn_yes">Yes</button>
+            </div>
         </div>
-      </div>
     </div>
+</div>
+
 </body>
 
 <script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>

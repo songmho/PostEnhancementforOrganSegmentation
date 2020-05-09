@@ -10,6 +10,9 @@
         }
 
         if(is_possible){
+            $('#btn_send').prop("hidden", true);
+            $('#btn_loading').prop("hidden", false);
+
             $.ajax({
                 url: "/api/forgot_pwd",
                 method: 'POST',
@@ -19,13 +22,18 @@
                 }),
                 success: function (data) {
                     if(data['state']){
-                        console.log("fir");
-                        location.replace(SERVER_ADDRESS+"/main");
+                        $("#modal_forgot_pwd").modal('show');
+                        $('#btn_send').prop("hidden", false);
+                        $('#btn_loading').prop("hidden", true);
                     }else{
+                        $('#btn_send').prop("hidden", false);
+                        $('#btn_loading').prop("hidden", true);
                         is_possible = false;
                         $('#txt_user_name').addClass("is-invalid");
                     }
                 }, error: function (err) {
+                    $('#btn_send').prop("hidden", false);
+                    $('#btn_loading').prop("hidden", true);
                     is_possible = false;
                     $('#txt_user_name').addClass("is-invalid");
                 }
@@ -56,7 +64,7 @@
         if(is_possible){
             var id = $("#id").text();
             var email = $("#email").text();
-            console.log(txt_pwd, txt_pwd_check, id, email, $("#id").text());
+
             $.ajax({
                 url: "/api/reset_pwd",
                 method: 'POST',
@@ -68,7 +76,7 @@
                 }),
                 success: function (data) {
                     if(data['state']){
-                        location.replace(SERVER_ADDRESS+"/main");
+                        is_possible = true;
                         // Need to add modal for changing success
                     }else{
                         is_possible = false;
@@ -80,5 +88,9 @@
                 }
             });
         }
+    });
+
+    $("#btn_yes").on('click', function () {
+        location.replace(SERVER_ADDRESS+"/main");
     });
 })(jQuery);

@@ -99,6 +99,8 @@
 
 
         if (is_possible){
+            $('#btn_sign_up').prop("hidden", true);
+            $('#btn_loading').prop("hidden", false);
             console.log("Add Sign up query");
             role = [role];
             $.ajax({
@@ -120,6 +122,8 @@
                 success: function (data) {
                     if(data['state']){
                         $("#modal_signup").modal('show');
+                        $('#btn_loading').prop("hidden", true);
+                        $('#btn_sign_up').prop("hidden", false);
                     }else{
                     }
                 }, error: function (err) {

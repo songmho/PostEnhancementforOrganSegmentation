@@ -2,8 +2,8 @@
  * Created by hanter on 2016. 4. 14..
  */
 
-var SERVER_ADDRESS = 'http://localhost:8000';
-// var SERVER_ADDRESS = 'http://203.253.21.226:8000';
+// var SERVER_ADDRESS = 'http://localhost:8000';
+var SERVER_ADDRESS = 'http://203.253.21.226:8000';
 
 var POSSIBLE_MULTIPLE_IMAGE_UPLOAD_NUM = 300;
 
