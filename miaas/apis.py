@@ -381,14 +381,13 @@ def sign_up(request):
         if result:
             # snder = MailSender()
 
-            result = container.mias_container.s.send_activate_mail(fir_name=data['first_name'], last_name=data['last_name'], email=data['email'],
-                               u_id= u_id, key=a_k)
+            result = container.mias_container.s.send_activate_mail(fir_name=data['first_name'], last_name=data['last_name'],
+                                                                   email=data['email'], u_id=u_id, key=a_k)
             if not result:
                 container.mias_container.reset()
                 result = container.mias_container.s.send_activate_mail(fir_name=data['first_name'],
-                                                                 last_name=data['last_name'],
-                                                                 email=data['email'],
-                                                                 u_id=data['identification_number'])
+                                                                       last_name=data['last_name'],
+                                                                       email=data['email'], u_id=u_id, key=a_k)
             # result = snder.send_activate_mail(fir_name=data['first_name'], last_name=data['last_name'], email=data['email'],
             #                    u_id= u_id, key=a_k)
             print("Result of Sending Mail", result)
