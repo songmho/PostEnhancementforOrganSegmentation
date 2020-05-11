@@ -58,24 +58,39 @@ logger = logging.getLogger(__name__)
 
 def upload_images(request):
     if request.method == "POST":
+        data = json.loads(request.POST.get("data"))
+        uploader_id = data['uploader_id']
+        img_type = data['img_type']
+        acq_date = data['acquisition_date']
+        first_name = data['fir_name']
+        last_name = data['last_name']
+        birthday = data['birthday']
+        gender = data['gender']
+        examination_source = data['examination_source']
+        interpretation = data['interpretation']
+        description = data['description']
+
         try:
-            data = json.loads(request.body.decode('utf-8'))
-            result = upload_txt(request)
-            return JsonResponse({"state": result})
-        except:
-            try:
-                t = str(int(time.time()))
-                if not os.path.isdir('D:/Projects/MIAS_Project/mias/media/'+t):
-                    os.mkdir('D:/Projects/MIAS_Project/mias/media/'+t)
-                for c, x in enumerate(request.FILES.getlist("files")):
-                    def process(f):
-                        with open('D:/Projects/MIAS_Project/mias/media/'+t +'/'+ str(x), 'wb+') as destination:
-                            for chunk in f.chunks():
-                                destination.write(chunk)
-                    process(x)
-                return JsonResponse({"state": True, "path": 'D:/Projects/MIAS_Project/mias/media/'+t +'/' })
-            except:
+            t = str(int(time.time()))
+            t_folder = 'D:/2. Project/Python/mias/media/'+str(uploader_id)+"_"+t
+            if not os.path.isdir(t_folder):
+                os.mkdir(t_folder)
+            for c, x in enumerate(request.FILES.getlist("files")):
+                def process(f):
+                    with open(t_folder+'/' + str(f), 'wb+') as destination:
+                        for chunk in f.chunks():
+                            destination.write(chunk)
+                process(x)
+
+            i = Image()
+            result = i.register_images(uploader_id, img_type, t_folder+'/', acq_date, first_name, last_name,
+                                       birthday, gender, examination_source, interpretation, description)
+            if result:
+                return JsonResponse({"state": True})
+            else:
                 return JsonResponse({"state": False})
+        except:
+            return JsonResponse({"state": False})
     else:
         return JsonResponse({"state": False})
 
@@ -96,7 +111,7 @@ def upload_txt(request):
         interpretation = data['interpretation']
         description = data['description']
         result = i.register_images(uploader_id, img_type, img_path, acq_date, first_name, last_name, birthday, gender,
-                        examination_source, interpretation, description)
+                                   examination_source, interpretation, description)
         if result:
             return JsonResponse({"state": True})
         else:
@@ -111,11 +126,8 @@ def sign_out(request):
     sess = Session()
     if request.method == "POST":
         data = json.loads(request.body.decode('utf-8'))
-        print(data)
         ids = data['identification_number']
-        print(">>> ", ids)
         result = sess.expire_session(ids)
-        print("sign out", result)
         if result:
             return JsonResponse({"state": True})
     # except:
@@ -146,8 +158,11 @@ def retrieve_images(request):
     if request.method == "POST":
         i = Image()
         data = json.loads(request.body.decode('utf-8'))
-        result = i.retrieve_images()
-
+        print(data)
+        if data["uid"] is not None:
+            result = i.retrieve_images(uploader_id=data["uid"])
+        else:
+            result = i.retrieve_images()
         if (len(result) > 0):
             return JsonResponse({"state": True, "data": result})
         else:

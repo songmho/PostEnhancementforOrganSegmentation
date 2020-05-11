@@ -13,9 +13,9 @@
 
     {% include 'miaas/header.html' %}
     <div class="container">
-            <div class="mt-5 w-100 row">
+            <div class="mt-5 w-100 mx-0 row">
                 <div class="w-100 row">
-                    <div class="col-6 h-100">
+                    <div class="col-7 h-100">
                         <h1 class="txt_font text-white w-50 pl-2" style="font-size: 28px; background-color: #0066ff">Medical Image</h1>
                         <div class="mb-3">
                             <form id="form_upload" enctype="multipart/form-data">
@@ -32,9 +32,6 @@
                         <h5 >  /  </h5>&nbsp
                         <h5 id="txt_max_num">--</h5>
                         </span>
-                        <div class="pull-right mt-2">
-                            <button type="button" class="btn btn-primary float-right w-25" id="btn_submit">Upload</button>
-                        </div>
                     </div>
 
                     <div class="col-5">
@@ -43,16 +40,16 @@
                             <form autocomplete="off" id="signup_form">
                                 <div class="form-group">
                                     <span>
-                                        <label for="txt_fir_name" >First Name <span style="color:red">*</span></label>
+                                        <label for="txt_fir_name" class="mb-1 mt-2">First Name <span style="color:red">*</span></label>
                                         <input type="text" class="form-control" id="txt_fir_name" required>
                                     </span>
-                                    <label for="txt_last_name" >Last Name <span style="color:red">*</span></label>
+                                    <label for="txt_last_name" class="mb-1 mt-2">Last Name <span style="color:red">*</span></label>
                                     <input type="text" class="form-control" id="txt_last_name" required>
 
-                                    <label for="txt_birthday" >Birthday </label>
+                                    <label for="txt_birthday" class="mb-1 mt-2">Birthday </label>
                                     <input type="text" id="txt_Birthday" class="form-control" >
 
-                                    <label for="txt_gender">Gender </label>
+                                    <label for="txt_gender"  class="mb-1 mt-2">Gender </label>
                                     <div class="row mx-0">
                                         <input type="radio" class="my-auto mr-1 ml-2" name="rdo_gender" id="rdo_male" value="Male">
                                         <label for="rdo_male" class="my-auto">Male</label>
@@ -63,10 +60,11 @@
                                 </div>
                             </form>
 {#                        <div class="mt-5">#}
-                            <h1 class="txt_font text-white w-50 pl-2" style="font-size: 28px; background-color: #0066ff">Image Information</h1>
+
+                            <h1 class="txt_font text-white w-50 pl-2 mt-5" style="font-size: 28px; background-color: #0066ff">Image Information</h1>
                             <form autocomplete="off" id="signup_form" >
                                 <div class="form-group">
-                                    <label for="txt_img_type" >Image Type <span style="color:red">*</span></label>
+                                    <label for="txt_img_type"  class="mb-1 mt-2">Image Type <span style="color:red">*</span></label>
 {#                                    <input type="text" class="form-control" id="txt_img_type" required>#}
                                     <select class="form-control" id="txt_img_type">
                                         <option selected disabled hidden></option>
@@ -79,21 +77,24 @@
                                         <option>Normal Images</option>
                                     </select>
 
-                                    <label for="txt_acq_date" >Acquisition Date <span style="color:red">*</span></label>
+                                    <label for="txt_acq_date"  class="mb-1 mt-2">Acquisition Date <span style="color:red">*</span></label>
                                     <input type="text" class="form-control" id="txt_acq_date" required>
 
-                                    <label for="txt_exam_src" >Examination Source <span style="color:red">*</span></label>
+                                    <label for="txt_exam_src"  class="mb-1 mt-2">Examination Source <span style="color:red">*</span></label>
                                     <input type="text" class="form-control" id="txt_exam_src" required>
 
-                                    <label for="txt_interpret" >Interpretation </label>
+                                    <label for="txt_interpret"  class="mb-1 mt-2">Interpretation </label>
                                     <input type="text" id="txt_interpret" class="form-control">
 
-                                    <label for="txt_desc">Description </label>
+                                    <label for="txt_desc"  class="mb-1 mt-2">Description </label>
                                     <input type="text" class="form-control" id="txt_desc" >
                                 </div>
                             </form>
 {#                        </div>#}
-
+                            <div class="pull-right mt-2">
+                                <button type="button" class="btn btn-danger float-right w-25" id="btn_reset">Cancel</button>
+                                <button type="button" class="btn btn-primary float-right w-25  mr-3" id="btn_submit">Upload</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -101,6 +102,44 @@
 
     </div>
 
+<div class="modal fade" id="modal_reg_img" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Note</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body" id="modal_body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btn_yes">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_cancel_reg_img" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Alert</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body" id="modal_body">
+                Do you want to cancel uploading the medical image?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btn_cancel_yes">Yes</button>
+                <button type="button" class="btn btn-danger" id="btn_cancel_no">No</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 </body>

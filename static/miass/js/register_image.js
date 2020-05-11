@@ -1,4 +1,4 @@
-var is_uploaded= false;
+var is_uploaded= true;
 var path = "";
 (function () {
     // function getfolder(e) {
@@ -67,6 +67,10 @@ var path = "";
         });
     });
 
+    $("#btn_reset").click(function () {
+        $("#modal_cancel_reg_img").modal("show");
+    });
+
     $("#btn_submit").click(function () {
         var fir_name = $("#txt_fir_name").val();
         var last_name = $("#txt_last_name").val();
@@ -86,14 +90,23 @@ var path = "";
         if (gender === undefined){
             gender = "";
         }
-        console.log(birthday, acq_date, img_type);
-        if (img_type==="" || fir_name==="" || last_name === "" || acq_date==="" || exam_src==="" ) {
-        $("#txt_fir_name").addClass("is-invalid");
-        $("#txt_last_name").addClass("is-invalid");
-        $("#txt_img_type").addClass("is-invalid");
-        $("#txt_acq_date").addClass("is-invalid");
-        $("#txt_exam_src").addClass("is-invalid");
 
+        data = {"fir_name": fir_name, "last_name": last_name, "birthday": birthday, "gender": gender,
+            "acquisition_date": acq_date, "examination_source":exam_src, "interpretation":interpretation,
+            "description": description, 'uploader_id':get_current_user()['identification_number'], "img_type":img_type}
+
+        file_data.append("data", JSON.stringify(data))
+
+        if (img_type==="" || img_type===null) {
+            $("#txt_img_type").addClass("is-invalid");
+        } if (fir_name==="") {
+            $("#txt_fir_name").addClass("is-invalid");
+        } if (last_name === "") {
+            $("#txt_last_name").addClass("is-invalid");
+        } if (acq_date==="") {
+            $("#txt_acq_date").addClass("is-invalid");
+        } if (exam_src==="" ) {
+            $("#txt_exam_src").addClass("is-invalid");
         }else{
             $.ajax({
                 type:"POST",
@@ -107,42 +120,40 @@ var path = "";
                 async: false,
                 success: function (data) {
                     if(data['state']){
-                        is_uploaded = true;
-                        path= data['path'];
+                        console.log(data['state']);
+                        $("#modal_body").text("Upload is finished");
+                        $("#modal_reg_img").modal("show");
+                        // location.reload();
                     }else{
+                        $("#modal_body").text("Uploading files is fail.");
+                        $("#modal_reg_img").modal("show");
                         is_uploaded = false;
 
                     }
                 }, error: function (err) {
-                        is_uploaded = false;
-
+                    $("#modal_body").text("Uploading files is fail.");
+                    $("#modal_reg_img").modal("show");
+                    is_uploaded = false;
                 }
             });
 
-            if (is_uploaded){
-                $.ajax({
-                    type:"POST",
-                    url: '/api/upload_txt/',
-                    data: JSON.stringify({"fir_name": fir_name, "last_name": last_name, "birthday": birthday,
-                        "gender": gender, "img_path":path, "acquisition_date": acq_date, "examination_source":exam_src, "interpretation":interpretation,
-                        "description": description, 'uploader_id':get_current_user()['identification_number'], "img_type":img_type}),
-                    async: false,
-                    success: function (data) {
-                        if(data['state']){
-                            location.reload();
-                        }else{
-                        }
-                    },
-                    error: function (e) {
-                    }
-                });
-            }
-
         }
-
-
     });
 
+    $('#btn_yes').click(function () {
+        if(is_uploaded){
+            location.reload();
+        }
+        location.reload();
+    })
+
+    $("#btn_cancel_yes").click(function () {
+        location.reload();
+    });
+
+    $("#btn_cancel_no").click(function () {
+        $("#modal_cancel_reg_img").modal("hide");
+    });
     // $("#image_folder").
     $('#btn_img_loader').on('change', function (e) {
         var fileList = this.files;

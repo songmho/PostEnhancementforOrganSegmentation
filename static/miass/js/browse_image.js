@@ -3,11 +3,11 @@
     //     console.log($(this).text());
     // });
 
-    $(document.body).delegate('#list_image tr', 'click', function () {
+    $(document.body).delegate('#list_body tr', 'click', function () {
         // console.log($(this).text());
         var tr = $(this);
         var tds = tr.children();
-        location.replace(SERVER_ADDRESS+"/view/diagnose/"+tds.eq(1).text());
+        location.href = SERVER_ADDRESS+"/view/diagnose/"+tds.eq(1).text();
     });
 
     $(document).ready(function () {
@@ -16,7 +16,7 @@
             method: 'POST',
             async: true,
             data: JSON.stringify({
-
+                "uid": null,
             }),
             success: function (data) {
                 data = data["data"]

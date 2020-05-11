@@ -41,7 +41,7 @@
             method: 'POST',
             async: true,
             data: JSON.stringify({
-
+                "uid": get_current_user()["identification_number"]
             }),
             success: function (data) {
                 data = data["data"]
@@ -58,7 +58,7 @@
                         "<td>"+data[i]["examination_source"]+"</td>\n"
                     try{
                         if (get_current_user()['identification_number'] === data[i]['uploader_id']){
-                            row += "<td> <button  class='checkBtn'  id='"+data[i]["img_id"]+"'> Remove </button></td>\n" +
+                            row += "<td> <button  class='btn btn-danger checkBtn'  id='"+data[i]["img_id"]+"'> Remove </button></td>\n" +
                             "</tr>";
                         }else{
                             row += "<td> </td>" +"</tr>";

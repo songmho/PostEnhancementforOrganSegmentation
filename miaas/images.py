@@ -63,7 +63,6 @@ class DBImages:
         sql = "INSERT INTO images (uploader_id, img_type, img_path, acquisition_date," \
               " first_name, last_name, birthday, gender, examination_source, interpretation, description)" \
               "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        print(">>>> ",sql)
         try:
             with self.conn.cursor() as cursor:
                 cursor.execute(sql, (uploader_id, str(img_type), str(img_path), str(acq_date), str(first_name),
