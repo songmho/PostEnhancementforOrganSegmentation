@@ -13,5 +13,17 @@
     /*height: 512px;*/
     width: 100%;
     height: 100%;
+    position: absolute;
     object-fit: contain;
+}
+
+#img_dicom{
+    background-color: #efefef;
+    /*width: 512px;*/
+    /*height: 512px;*/
+    width: 100%;
+    min-height: 100%;
+    /*height: auto;*/
+    position: relative;
+    /*object-fit: contain;*/
 }

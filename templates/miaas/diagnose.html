@@ -5,6 +5,7 @@
 
     <link rel="stylesheet" href="{% static 'miass/css/preview.css' %}">
     <link rel="stylesheet" href="{% static 'miass/css/diagnose.css' %}">
+    <link rel="stylesheet" href="{% static 'miass/css/dicom/cornerstone.min.css' %}">
     <head>
     </head>
     <body>
@@ -19,19 +20,36 @@
             <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
         </div>
         <div class="main">
-            <img class="w-100 h-100" id="main_viewer">
+            <form id="form" class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <input type="file" id="selectFile" >
+                    </div>
+                </div>
+            </form>
+{#            <div id="dicomImage"#}
+{#                style="width:512px;height:512px;top:0px;left:0px; position:absolute">#}
+{#            </div>#}
+{#            <img class="w-100 h-100" id="main_viewer">#}
+            <div class="w-100 h-100" id="main_viewer"></div>
         </div>
 
 
     </body>
-    <script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
-    <script src="{% static "miass/js/dicom/dicomParser.js" %}"></script>
-    <script src="{% static "miass/js/dicom/cornerstone.js" %}"></script>
+    <script src="{% static "miass/js/dicom/cornerstone.min.js" %}"></script>
+    <script src="{% static "miass/js/dicom/cornerstoneMath.min.js" %}"></script>
+    <script src="{% static "miass/js/dicom/cornerstoneTools.min.js" %}"></script>
+    <script src="{% static "miass/js/dicom/dicomParser.min.js" %}"></script>
     <script src="{% static "miass/js/dicom/cornerstoneWADOImageLoader.js" %}"></script>
+    <script src="{% static "miass/js/dicom/uids.js" %}"></script>
+    <script src="{% static "miass/js/dicom/initializeWebWorkers.js" %}"></script>
+
+    <script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
     <script src="{% static "miass/js/constants.js" %}"></script>
-    <script src="{% static "miass/js/diagnose.js" %}"></script>
     <script src="{% static "miass/js/sessions.js" %}"></script>
     <script src="{% static "miass/js/header.js" %}"></script>
+    <script src="{% static "miass/js/diagnose.js" %}"></script>
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
