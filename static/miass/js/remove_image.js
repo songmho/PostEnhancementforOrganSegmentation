@@ -48,9 +48,9 @@
                 for (var i in data){
                     var id = Number(i)+1;
                     var row = "" +
-                        "<tr>" +
-                        "<th scope=\'row\'>"+id+"</th>\n" +
-                        "<td id='img_id' hidden>"+data[i]["img_id"]+"</td>\n" +
+                        "<tr id='img_id'>"+data[i]["img_id"] +
+                        "<td scope=\'row\'>"+id+"</td>\n" +
+                        // "<td id='img_id' hidden>"+data[i]["img_id"]+"</td>\n" +
                         "<td>"+data[i]["first_name"]+"</td>\n" +
                         "<td>"+data[i]["last_name"]+"</td>\n" +
                         "<td>"+data[i]["img_type"]+"</td>\n" +
@@ -69,6 +69,11 @@
 
                     $("#list_image tbody").append(row);
                 }
+
+                $('#list_image').DataTable({
+                    responsive: true,
+                    search: true
+                });
             }, error: function (err) {
 
             }

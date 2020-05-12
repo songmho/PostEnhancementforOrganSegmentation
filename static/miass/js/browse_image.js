@@ -6,8 +6,9 @@
     $(document.body).delegate('#list_body tr', 'click', function () {
         // console.log($(this).text());
         var tr = $(this);
-        var tds = tr.children();
-        location.href = SERVER_ADDRESS+"/view/diagnose/"+tds.eq(1).text();
+
+        // var tds = tr.children();
+        location.href = SERVER_ADDRESS+"/view/diagnose/"+tr.text();
     });
 
     $(document).ready(function () {
@@ -23,9 +24,9 @@
                 for (var i in data){
                     var id = Number(i)+1;
                     $("#list_image tbody").append("" +
-                        "<tr>" +
-                        "<th scope=\'row\'>"+id+"</th>\n" +
-                        "<td id='img_id' hidden>"+data[i]["img_id"]+"</td>\n" +
+                        "<tr id='img_id'>" +data[i]["img_id"]+
+                        "<td scope=\'row\'>"+id+"</td>\n" +
+                        // "<td id='img_id' hidden>"+data[i]["img_id"]+"</td>\n" +
                         "<td>"+data[i]["first_name"]+"</td>\n" +
                         "<td>"+data[i]["last_name"]+"</td>\n" +
                         "<td>"+data[i]["img_type"]+"</td>\n" +
@@ -34,9 +35,18 @@
                         "</tr>" +
                         "");
                 }
+
+                var table = $('#list_image').DataTable({
+                    responsive: true,
+                    search: true
+                });
+                $('#myInput').on( 'keyup', function () {
+                    table.search( this.value ).draw();
+} );
             }, error: function (err) {
 
             }
         });
+
     });
 })(jQuery);
