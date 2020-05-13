@@ -8,7 +8,7 @@
         var tr = $(this);
 
         // var tds = tr.children();
-        location.href = SERVER_ADDRESS+"/view/diagnose/"+tr.text();
+        location.href = SERVER_ADDRESS+"/view/diagnose/"+tr.attr('id');
     });
 
     $(document).ready(function () {
@@ -24,7 +24,7 @@
                 for (var i in data){
                     var id = Number(i)+1;
                     $("#list_image tbody").append("" +
-                        "<tr id='img_id'>" +data[i]["img_id"]+
+                        "<tr id="+data[i]['img_id']+">" +
                         "<td scope=\'row\'>"+id+"</td>\n" +
                         // "<td id='img_id' hidden>"+data[i]["img_id"]+"</td>\n" +
                         "<td>"+data[i]["first_name"]+"</td>\n" +

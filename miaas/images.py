@@ -21,9 +21,9 @@ class Image:
                         examination_source, interpretation, description)
         return result
 
-    def retrieve_images(self, uploader_id=None, img_id=None, img_path=None, img_datetime=None):
+    def retrieve_images(self, uploader_id=None, img_id=None, img_path=None):
         result = self.db.retrieve_images(uploader_id=uploader_id, img_id=img_id,
-                                         img_path=img_path, img_datetime=img_datetime)
+                                         img_path=img_path)
         return result
 
     def modify_images(self, img_id, img_path=None, img_datetime=None):
@@ -73,24 +73,20 @@ class DBImages:
         except:
             return False
 
-    def retrieve_images(self, uploader_id=None, img_id=None, img_path=None, img_datetime=None):
+    def retrieve_images(self, uploader_id=None, img_id=None, img_path=None):
         sql = "SELECT * FROM images"
-        if any([uploader_id, img_id, img_path, img_datetime]):  # if more than one inputs are not none, any() returns true
+        if any([uploader_id, img_id, img_path]):  # if more than one inputs are not none, any() returns true
             sql += " WHERE "
         if uploader_id is not None:
             sql += "uploader_id=" + str(uploader_id)
-            if any([img_id, img_path, img_datetime]):
+            if any([img_id, img_path]):
                 sql += " AND "
         if img_id is not None:
             sql += "img_id=" + str(img_id)
-            if any([img_path, img_datetime]):
+            if any([img_path]):
                 sql += " AND "
         if img_path is not None:
             sql += "img_path='" + img_path + "'"
-            if any([img_datetime]):
-                sql += " AND "
-        if img_datetime is not None:
-            sql += "img_datetime='" + img_datetime + "'"
 
         try:
             with self.conn.cursor() as cursor:

@@ -15,7 +15,6 @@ html, body{
     margin-left: 280px;
     height: 100%; /* Full-height: remove this if you want "auto" height */
     /*width: 100%;*/
-    min-height: 100%;
     /*min-width: 100%;*/
     border: #0c0c0c;
 }
@@ -27,5 +26,15 @@ html, body{
 }
 
 #main_viewer {
+    width: auto;
+    position: relative;
+    display: block;
+}
 
+#main_body{
+    background-color: #000000;
+}
+h5{
+    color:#ffffff;
+    display: inline;
 }

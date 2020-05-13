@@ -1,3 +1,4 @@
+import base64
 import copy
 import json
 import logging
@@ -17,10 +18,12 @@ from miaas.sessions import Session
 from miaas.mias_smtp import MailSender
 from miaas.generate_random import ActivationKeyGenerator
 from miaas.forms import TestForm
+from django.test import Client
 
 from miaas import container
 
 from miaas.apps import MedicalImageConfig
+from django.http import FileResponse
 
 
 MSG_DB_FAILED = "Handling DB requests are failed."
@@ -72,7 +75,7 @@ def upload_images(request):
 
         try:
             t = str(int(time.time()))
-            t_folder = 'D:/2. Project/Python/mias/media/'+str(uploader_id)+"_"+t
+            t_folder = '../media/'+str(uploader_id)+"_"+t
             if not os.path.isdir(t_folder):
                 os.mkdir(t_folder)
             for c, x in enumerate(request.FILES.getlist("files")):
@@ -94,6 +97,51 @@ def upload_images(request):
     else:
         return JsonResponse({"state": False})
 
+def test(request):
+    if request.method == "POST":
+        print(request.POST)
+
+def get_max_img_count(request):
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        img_id = data['img_id']
+        try:
+            i = Image()
+            result = i.retrieve_images(img_id=img_id)
+            img_path = result[0]['img_path']
+            result = len(os.listdir(img_path))
+            return JsonResponse({"state": True, "data": result})
+        except:
+            return JsonResponse({"state": False, "data": 0})
+
+
+
+def send_images(request):
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        # data = json.loads()
+        # print(request.POST.get("data"))
+        # data = request.POST.get("data")
+        img_id = data['img_id']
+        img_loc = data['img_loc']
+        try:
+            i = Image()
+            result = i.retrieve_images(img_id=img_id)
+            img_path = result[0]['img_path']
+            # responce = HttpResponse(mimetype="application/force-download")
+            file_list = os.listdir(img_path)
+
+            with open(img_path+file_list[img_loc], 'rb') as f:
+
+                file_data = base64.b64encode(f.read())
+            # return JsonResponse({"state":True, "data": b64})
+            # file_data = "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAa0lEQVQoU2NkgIKmQ37/6+w2MYK4xpnX/h9piWDgFL4E54MZhBSdna7FyEiMIpBhYBNxWQcyCWYjTjchKwK5nRGbw9EVga3+/lbvP7LvsCkCGYbiRlyKdtW2QDwD0oFPkbDUMogbCSkCGQYAka1/qtQO9d8AAAAASUVORK5CYII="
+            # file_data = file_data + "="
+            return HttpResponse(file_data, content_type="image/png")
+        except:
+            return JsonResponse({"state": False})
+    else:
+        return JsonResponse({"state": False})
 
 def upload_txt(request):
     if request.method == "POST":

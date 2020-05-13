@@ -10,28 +10,30 @@
     </head>
     <body>
         {% include 'miaas/header.html' %}
-
+        <div id="cur_id" hidden>{{ img_id }}</div>
         <div class="sidenav" id="navigator" >
-            <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
-            <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
-            <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
-            <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
-            <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
-            <img class="mx-3 my-1 thumb_img" height="240px" width="240px">
+            <img id="thum_1" class="mx-2 my-1 thumb_img" height="260px" width="260px">
         </div>
-        <div class="main">
-            <form id="form" class="form-horizontal">
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        <input type="file" id="selectFile" >
-                    </div>
-                </div>
-            </form>
+        <div class="main h-100 py-5" id="main_body">
+{#            <form id="form" class="form-horizontal">#}
+{#                <div class="form-group">#}
+{#                    <div class="col-sm-3">#}
+{#                        <input type="file" id="selectFile" >#}
+{#                    </div>#}
+{#                </div>#}
+{#            </form>#}
 {#            <div id="dicomImage"#}
 {#                style="width:512px;height:512px;top:0px;left:0px; position:absolute">#}
 {#            </div>#}
-{#            <img class="w-100 h-100" id="main_viewer">#}
-            <div class="w-100 h-100" id="main_viewer"></div>
+            <img class="h-75  mx-auto" id="main_viewer">
+{#            <div class="w-100 h-100" id="main_viewer"></div>#}
+            <div align="right" class="mr-5">
+                <span class="center-block mx-auto pull-right">
+                    <h5 id="txt_num">--</h5>
+                    <h5 >  /  </h5>
+                    <h5 id="txt_max_num">--</h5>
+                </span>
+            </div>
         </div>
 
 
