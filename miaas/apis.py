@@ -75,7 +75,7 @@ def upload_images(request):
 
         try:
             t = str(int(time.time()))
-            t_folder = '../media/'+str(uploader_id)+"_"+t
+            t_folder = 'D:\\2. Project\\Python\\mias\\media\\'+str(uploader_id)+"_"+t
             if not os.path.isdir(t_folder):
                 os.mkdir(t_folder)
             for c, x in enumerate(request.FILES.getlist("files")):
@@ -109,39 +109,60 @@ def get_max_img_count(request):
             i = Image()
             result = i.retrieve_images(img_id=img_id)
             img_path = result[0]['img_path']
-            result = len(os.listdir(img_path))
-            return JsonResponse({"state": True, "data": result})
+            file_list = os.listdir(img_path)
+            result = len(file_list)
+            extension = file_list[0].split(".")[-1]
+            return JsonResponse({"state": True, "data": {"length": result, "extension": extension}})
         except:
             return JsonResponse({"state": False, "data": 0})
-
 
 
 def send_images(request):
     if request.method == "POST":
         data = json.loads(request.body.decode('utf-8'))
-        # data = json.loads()
-        # print(request.POST.get("data"))
-        # data = request.POST.get("data")
         img_id = data['img_id']
         img_loc = data['img_loc']
         try:
             i = Image()
             result = i.retrieve_images(img_id=img_id)
             img_path = result[0]['img_path']
-            # responce = HttpResponse(mimetype="application/force-download")
             file_list = os.listdir(img_path)
+            extension = file_list[img_loc].split(".")[-1]
+            print(img_path+file_list[img_loc])
+            if extension == "dcm":
+                with open(img_path+file_list[img_loc], 'rb') as f:
 
-            with open(img_path+file_list[img_loc], 'rb') as f:
+                    file_data = f.read()
+                    # file_data = base64.b64encode(f.read())
+                return HttpResponse(file_data, content_type="application/dicom")
+            else:
 
-                file_data = base64.b64encode(f.read())
-            # return JsonResponse({"state":True, "data": b64})
-            # file_data = "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAa0lEQVQoU2NkgIKmQ37/6+w2MYK4xpnX/h9piWDgFL4E54MZhBSdna7FyEiMIpBhYBNxWQcyCWYjTjchKwK5nRGbw9EVga3+/lbvP7LvsCkCGYbiRlyKdtW2QDwD0oFPkbDUMogbCSkCGQYAka1/qtQO9d8AAAAASUVORK5CYII="
-            # file_data = file_data + "="
-            return HttpResponse(file_data, content_type="image/png")
+                with open(img_path+file_list[img_loc], 'rb') as f:
+
+                    file_data = base64.b64encode(f.read())
+                return HttpResponse(file_data, content_type="image/png")
         except:
             return JsonResponse({"state": False})
     else:
         return JsonResponse({"state": False})
+
+
+def send_dicom(request, img_id, img_loc):
+    if request.method == "GET":
+        img_loc = int(img_loc)
+        i = Image()
+        result = i.retrieve_images(img_id=img_id)
+        img_path = result[0]['img_path']
+        file_list = os.listdir(img_path)
+        extension = file_list[img_loc].split(".")[-1]
+        if extension == "dcm":
+            with open(img_path+file_list[img_loc], 'rb') as f:
+
+                file_data = f.read()
+            return HttpResponse(file_data, content_type="application/dicom")
+        else:
+            return JsonResponse({"state": False})
+
 
 def upload_txt(request):
     if request.method == "POST":

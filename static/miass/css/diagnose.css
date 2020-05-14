@@ -17,18 +17,29 @@ html, body{
     /*width: 100%;*/
     /*min-width: 100%;*/
     border: #0c0c0c;
+    position: relative;
 }
-
+#img_box{
+    position: relative;
+}
 
 .thumb_img{
     margin-left: 20px;
     margin-right: 20px;
 }
 
-#main_viewer {
+#main_viewer_img {
     width: auto;
     position: relative;
+    object-fit: contain;
     display: block;
+}
+
+#main_viewer_dicom{
+    position: absolute;
+    top:0px;
+    width: 100%;
+    min-height: 100%;
 }
 
 #main_body{

@@ -99,6 +99,7 @@ urlpatterns = [
     url(r'^upload', views.Upload),
     url(r'^api/upload', apis.upload_images),
     url(r'^api/send_images', apis.send_images),
+    url(r'^api/send_dicom/(?P<img_id>[0-9]+)/(?P<img_loc>[0-9]+)$', apis.send_dicom),
     url(r'^api/get_max_img_count', apis.get_max_img_count),
     url(r'^api/upload_txt', apis.upload_txt),
     url(r'^api/test123', apis.test),
