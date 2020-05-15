@@ -1,3 +1,4 @@
+var is_sign = false;
 (function () {
     $(function () {
         $("#txt_birthday").datepicker({
@@ -25,12 +26,12 @@
                 weekStart : 0 ,//달력 시작 요일 선택하는 것 기본값은 0인 일요일
                 language : "ko"	//달력의 언어 선택, 그에 맞는 js로 교체해줘야한다.
         }).on("changeDate", function (e) {
-            console.log("Selected Date: ", e);
         });
     });
 
 
     $("#btn_sign_up").click(function () {
+        $("#txt_chk_gen").prop("hidden", true);
         $('#txt_chk_fir_name').prop("hidden", true);
         $('#txt_chk_last_name').prop("hidden", true);
         $('#txt_chk_pwd').prop("hidden", true);
@@ -95,13 +96,15 @@
             $('#txt_chk_pwd_re').prop("hidden", false);
             $('#txt_chk_pwd').text("Check password.");
             $('#txt_chk_pwd').prop("hidden", false);
+        } if (gender === "" || gender===undefined){
+            is_possible = false;
+            $("#txt_chk_gen").prop("hidden", false);
         }
 
 
         if (is_possible){
             $('#btn_sign_up').prop("hidden", true);
             $('#btn_loading').prop("hidden", false);
-            console.log("Add Sign up query");
             role = [role];
             $.ajax({
                 url: "/api/sign_up",
@@ -120,14 +123,20 @@
 
                 }),
                 success: function (data) {
+                    is_sign = data['state'];
+
                     if(data['state']){
+                        $("#modal_signup_text").text(data['data']);
                         $("#modal_signup").modal('show');
                         $('#btn_loading').prop("hidden", true);
                         $('#btn_sign_up').prop("hidden", false);
                     }else{
+                        $("#modal_signup_text").text(data['data']);
+                        $("#modal_signup").modal('show');
+                        $('#btn_loading').prop("hidden", true);
+                        $('#btn_sign_up').prop("hidden", false);
                     }
                 }, error: function (err) {
-
                 }
             });
 
@@ -135,7 +144,13 @@
     });
 
     $("#btn_yes").on('click', function () {
-        location.replace(SERVER_ADDRESS+"/main");
+        if (is_sign){
+            location.replace(SERVER_ADDRESS+"/main");
+        }
+        else{
+            $("#modal_signup").modal('hide');
+        }
+
     });
 
 })(jQuery);

@@ -75,7 +75,7 @@ def upload_images(request):
 
         try:
             t = str(int(time.time()))
-            t_folder = 'D:\\2. Project\\Python\\mias\\media\\'+str(uploader_id)+"_"+t
+            t_folder = 'D:\Projects\MIAS_Project\mias\media'+str(uploader_id)+"_"+t
             if not os.path.isdir(t_folder):
                 os.mkdir(t_folder)
             for c, x in enumerate(request.FILES.getlist("files")):
@@ -198,13 +198,14 @@ def sign_out(request):
         ids = data['identification_number']
         result = sess.expire_session(ids)
         if result:
+            print("logged out")
             return JsonResponse({"state": True})
     # except:
     #     print("sign out    ", False)
     #     return JsonResponse({"state":False})
     # print("sign out    ", False)
-    else:
-        print("what")
+        else:
+            print("what")
     return JsonResponse({"state":False})
 
 
@@ -347,7 +348,6 @@ def sign_in(request):
         if len(results) == 0:
             return JsonResponse({"state": False, "data": ["Check ID or Password"]})
         else:
-            cur_users = request.session.get('user')
             request.session['user'] = results[0]
             cur_users = request.session.get('user')
             try:
@@ -364,7 +364,7 @@ def sign_in(request):
                     return JsonResponse({"state": False, "data": ["Check Session"]})
             else:
                 return JsonResponse({"state": False, "data": ["Activate Account"]})
-    #
+
     # except:
     #     return JsonResponse({"state": False, "data": ["Check ID or PWD"]})
 
@@ -435,7 +435,9 @@ def invite_user(request):
 @csrf_exempt
 def sign_up(request):
     if request.method == "POST":
+        # try:
         data = json.loads(request.body.decode('utf-8'))
+        print(data)
         print(data['role'])
         data['role'] = " ".join(data['role'])
         print("role", data['role'])
@@ -445,9 +447,7 @@ def sign_up(request):
         result = u.register_user(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
                         phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0,
                                  activation_code=a_k, gender=data['gender'], birthday=data['birthday'])
-        u_id = u.retrieve_user(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
-                        phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'])[0]['identification_number']
-
+        print("sign_up", result)
         if result:
             if "Physician" in data['role']:
                 u = Physician()
@@ -461,23 +461,48 @@ def sign_up(request):
                 s = Staff()
                 result = s.register_staff(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
                                 phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
+            if result:
+                # snder = MailSender()
 
-        if result:
-            # snder = MailSender()
-
-            result = container.mias_container.s.send_activate_mail(fir_name=data['first_name'], last_name=data['last_name'],
-                                                                   email=data['email'], u_id=u_id, key=a_k)
-            if not result:
-                container.mias_container.reset()
-                result = container.mias_container.s.send_activate_mail(fir_name=data['first_name'],
-                                                                       last_name=data['last_name'],
+                u_id = u.retrieve_user(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
+                                       phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'])[0][
+                    'identification_number']
+                result = container.mias_container.s.send_activate_mail(fir_name=data['first_name'], last_name=data['last_name'],
                                                                        email=data['email'], u_id=u_id, key=a_k)
-            # result = snder.send_activate_mail(fir_name=data['first_name'], last_name=data['last_name'], email=data['email'],
-            #                    u_id= u_id, key=a_k)
-            print("Result of Sending Mail", result)
-            return JsonResponse({'state': True})
+                if not result:
+                    container.mias_container.reset()
+                    result = container.mias_container.s.send_activate_mail(fir_name=data['first_name'],
+                                                                           last_name=data['last_name'],
+                                                                           email=data['email'], u_id=u_id, key=a_k)
+                # result = snder.send_activate_mail(fir_name=data['first_name'], last_name=data['last_name'], email=data['email'],
+                #                    u_id= u_id, key=a_k)
+                print("Result of Sending Mail", result)
+                return JsonResponse({'state': True, "data": "We sent an email to your email. You can change your"
+                                                            " password following the email. Please check your email."})
+            else:
+                return JsonResponse({'state': False, "data": "Check your information again. Your email is already signed up."})
+
         else:
-            return JsonResponse({'state': False})
+            return JsonResponse({'state': False, "data": "Check your information again. Your email is already signed up."})
+            # if "Physician" in data['role']:
+            #     u = Physician()
+            #     result = u.register_physician(email=data["email"])
+            # if "Patient" in data['role']:
+            #     u = Patient()
+            #     result = u.register_patient(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
+            #                     phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
+            # if "Staff" in data['role']:
+            #     s = Staff()
+            #     result = s.register_staff(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
+            #                     phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
+            #
+            # if result:
+            #     return JsonResponse({'state': True, "data": "Because your account was already made, only current role is added."})
+            # else:
+            #     return JsonResponse(
+            #         {'state': False, "data": "Check your input information. It's already recorded."})
+        # except:
+        #     return JsonResponse({'state': False, "data": "Check your information again."})
 
 
 @csrf_exempt

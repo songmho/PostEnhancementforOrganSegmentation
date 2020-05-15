@@ -1,7 +1,8 @@
 function set_current_user(c_u) {
     // sessionStorage.setItem("current_user", JSON.stringify(c_u));
     sessionStorage.setItem("current_user", JSON.stringify(c_u));
-    sessionStorage.setItem("current_role", JSON.stringify("Patient"));
+    var c_r = s_data['role'].split(' ')[0];
+    sessionStorage.setItem("current_role", JSON.stringify(c_r));
 }
 
 function get_current_user() {

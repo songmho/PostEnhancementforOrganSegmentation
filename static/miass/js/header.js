@@ -94,25 +94,23 @@
 
                 var roles = c_u['role'].split(' ');
                 console.log(roles);
+
+                $("#div_patient").prop("hidden", true);
+                $("#div_physician").prop("hidden", true);
+                $("#div_staff").prop("hidden", true);
                 for (r in roles){
                     if (roles[r]==="Patient"){
                         $("#div_patient").prop("hidden", false);
-                        $("#div_physician").prop("hidden", true);
-                        $("#div_staff").prop("hidden", true);
                         if (roles[r]===c_r){
                             $("#rdo_patient").attr('checked', true);
                         }
-                    } else if(roles[r]==="Physician"){
-                        $("#div_patient").prop("hidden", false);
-                        $("#div_physician").prop("hidden", true);
-                        $("#div_staff").prop("hidden", false);
+                    } if(roles[r]==="Physician"){
+                        $("#div_physician").prop("hidden", false);
                         if (roles[r]===c_r){
                             $("#rdo_physician").attr('checked', true);
                         }
-                    } else if(roles[r]==="Staff"){
-                        $("#div_patient").prop("hidden", false);
-                        $("#div_physician").prop("hidden", false);
-                        $("#div_staff").prop("hidden", true);
+                    } if(roles[r]==="Staff"){
+                        $("#div_staff").prop("hidden", false);
                         if (roles[r]===c_r){
                             $("#rdo_staff").attr('checked', true);
                         }
@@ -125,4 +123,16 @@
 
     });
 
+    $(window).bind("beforeunload", function () {
+        var identification_number = get_current_user()['identification_number'];
+        $.ajax({
+           type: "POST",
+           url: "/api/signout",
+            async: false,
+            data: JSON.stringify({
+                "identification_number": identification_number
+            }),success: function (data) {},
+        error: function (err) {}
+        });
+    })
 })(jQuery);

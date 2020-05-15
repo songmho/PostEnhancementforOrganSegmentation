@@ -52,7 +52,8 @@
 
                     <label for="txt_birthday" class="mb-1">Birthday </label>
                     <input type="text" class="form-control" id="txt_birthday">
-                    <label for="txt_gender" class="mt-2 mb-1">Gender </label>
+                    <label for="txt_gender" class="mt-2 mb-1">Gender<span style="color:red">*</span>
+                                <span style="color:red" id="txt_chk_gen" hidden>&nbsp;Check gender</span> </label>
                     <div id="txt_gender">
                       <label class="col-5"><input type="radio" name="rdo_gender" value="Male" class="mr-2"/>Male</label>
                       <label class="col-5"><input type="radio" name="rdo_gender" value="Female" class="mr-2"/>Female</label>
@@ -95,8 +96,8 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             </div>
-            <div class="modal-body">
-                We sent an email to your email. You can change your password following the email. Please check your email.
+            <div class="modal-body" id="modal_signup_text">
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="btn_yes">Yes</button>

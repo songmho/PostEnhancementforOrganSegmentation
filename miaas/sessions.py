@@ -43,7 +43,7 @@ class Session:
             s_t = time.mktime(t_tuple)
             diff = time.time() - s_t
             if last_session['expired_time'] is None:
-                if diff > 10*60:    # 10 min
+                if diff > 3*60:    # 3 min
                     # To expire current session
                     self.expire_session(u_id)
                 else:
