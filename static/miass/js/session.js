@@ -47,21 +47,24 @@
        closing_window = false;
     });
 
-    window.addEventListener("beforeunload", function () {
-        if(closing_window){
-            var identification_number = get_current_user()['identification_number'];
-            $.ajax({
-               type: "POST",
-               url: "/api/signout",
-               cache:  "false",
-               async: false,
-               data: JSON.stringify({
-                    "identification_number": identification_number
-                }),success: function (data) {},
-            error: function (err) {}
-            });
+    $(document).ready(function () {
+        $(window).on("unload", function () {
+            if(closing_window){
+                var identification_number = get_current_user()['identification_number'];
+                $.ajax({
+                   type: "POST",
+                   url: "/api/signout",
+                   cache:  "false",
+                   async: false,
+                   data: JSON.stringify({
+                        "identification_number": identification_number
+                    }),success: function (data) {},
+                error: function (err) {}
+                });
 
-        }
+            }
+            // return "Exit";
+        });
     });
 
 })(jQuery);

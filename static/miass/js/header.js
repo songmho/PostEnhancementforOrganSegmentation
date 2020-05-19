@@ -73,6 +73,10 @@
         });
     });
 
+    $("#nav_profile").click(function () {
+        location.replace("/view/update_profile")
+    });
+
     $("#btn_change").click(function () {
         var a = $("input[name='role']:checked").val();
         console.log(a);
@@ -123,7 +127,7 @@
 
     });
 
-    $(window).bind("beforeunload", function () {
+    $(window).bind("unload", function () {
         var identification_number = get_current_user()['identification_number'];
         $.ajax({
            type: "POST",
@@ -134,5 +138,6 @@
             }),success: function (data) {},
         error: function (err) {}
         });
+
     })
 })(jQuery);

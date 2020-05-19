@@ -212,24 +212,32 @@ var cur_img_type = "Normal";
     });
 
     $(document).ready(function () {
+        console.log(get_current_user());
         resizeCanvas();
         var cur_r = get_current_role();
         var cur_u = get_current_user();
+        if (cur_u === null){
+            $("#modal_chk_login").modal("show");
+        }
         if (cur_r === "Patient"){
             $("#txt_fir_name").val(cur_u['first_name']);
             $("#txt_last_name").val(cur_u['last_name']);
             $("#txt_Birthday").val(cur_u['birthday']);
             var g = cur_u['gender'];
-            if (g === "Male"){
+            if (g === "Male"){      // If the user's gender is Male
                 $('#rdo_male').attr('checked', true);
                 $('#rdo_female').attr('checked', false);
-            }else{
+            }else if (g ==="Female"){       // If the user's gender is Female
                 $('#rdo_male').attr('checked', false);
                 $('#rdo_female').attr('checked', true);
             }
         }
     });
 
+    $("#btn_chk_yes").click(function () {
+        $("#modal_chk_login").modal('hide');
+        location.replace("/main")
+    });
 })(jQuery);
 
 cornerstoneWADOImageLoader.external.cornerston = cornerstone;

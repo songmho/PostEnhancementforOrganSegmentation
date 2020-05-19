@@ -80,7 +80,7 @@ def upload_images(request):
                 os.mkdir(t_folder)
             for c, x in enumerate(request.FILES.getlist("files")):
                 def process(f):
-                    with open(t_folder+'/' + str(f), 'wb+') as destination:
+                    with open(t_folder+'/' + str(f).zfill(5), 'wb+') as destination:
                         for chunk in f.chunks():
                             destination.write(chunk)
                 process(x)
@@ -353,7 +353,7 @@ def sign_in(request):
             try:
                 results[0]['birthday'] = results[0]['birthday'].strftime('%Y-%m-%d')
             except:
-                results[0]['birthday'] = "1990-01-01"
+                results[0]['birthday'] = ""
             print(">>>>", cur_users, results[0]['active']==1)
             if results[0]['active'] == 1:
                 result = sess.generate_session(results[0]['identification_number'])

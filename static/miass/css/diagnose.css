@@ -13,11 +13,10 @@ html, body{
 
 .main {
     margin-left: 280px;
-    height: 100%; /* Full-height: remove this if you want "auto" height */
+    /*height: 100%; !* Full-height: remove this if you want "auto" height *!*/
     /*width: 100%;*/
     /*min-width: 100%;*/
     border: #0c0c0c;
-    position: relative;
 }
 #img_box{
     position: relative;

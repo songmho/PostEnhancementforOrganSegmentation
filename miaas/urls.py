@@ -84,6 +84,7 @@ urlpatterns = [
 
 
     url(r'^view/sign_in', views.sign_in_page),
+    url(r'^view/update_profile', views.update_profile),
     url(r'^view/register_image', views.register_image),
     url(r'^view/browse_image', views.browse_image),
     url(r'^view/annotate_image', views.annotate_image),

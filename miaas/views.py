@@ -69,6 +69,9 @@ def render_page(request):
 
     return render(request, "miaas/preview.html", context)
 
+def update_profile(request):
+
+    return render(request, "miaas/update_profile.html")
 
 @csrf_exempt
 def activate_user(request, user_id, auth_code):

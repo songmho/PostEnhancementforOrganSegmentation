@@ -1,6 +1,6 @@
 cornerstoneWADOImageLoader.external.cornerston = cornerstone;
 
-var images = [];
+var images = {};
 var cur = 0;
 var id = 0;
 var max = 0;
@@ -44,9 +44,9 @@ function loadAndViewImage(imageId) {
     const element = document.getElementById('main_viewer_dicom');
     const start = new Date().getTime();
     cornerstone.loadImage(imageId).then(function(image) {
-        console.log(image);
-        images.push(image);
-        if (images.length === 1){
+        instance_num = parseInt(image.data.string('x00200013'));    // To parse dicom image's instance number
+        images[instance_num] = image;
+        if (Object.keys(images).length === 1){
             const viewport = cornerstone.getDefaultViewportForImage(element, image);
             // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
             // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
@@ -164,6 +164,7 @@ function resizeCanvas(){
             }),
             success: function (data) {
                 if (data !== undefined){
+                    console.log(data);
                     images.push(data);
                     if (loc === 0){
                         $("#thum_1").attr("src", "data:image/png;base64,"+images[0]);
@@ -192,6 +193,7 @@ function resizeCanvas(){
                 max = data['data']['length'];
                 extension = data['data']['extension'];
                 if (extension === "dcm"){
+                    images = {};
                     $('#main_viewer_dicom').css('z-index', 100);
                     $('#main_viewer_img').css('z-index', 1);
                     for (var i=0;i<max; i++){
@@ -200,6 +202,7 @@ function resizeCanvas(){
                         loadAndViewImage(url);
                     }
                 }else{
+                    images = [];
                     $('#main_viewer_img').css('z-index', 100);
                     $('#main_viewer_dicom').css('z-index', 1);
                     for(var i=0; i<max; i++){
@@ -210,6 +213,40 @@ function resizeCanvas(){
 
            }
         });
+    });
+    $("#btn-left").on("click", function () {
+        if (cur-1<0){
+            cur = 0;
+        }else {
+            cur -= 1;
+        }
+
+        $("#txt_num").text(cur+1);
+        if (extension === "dcm"){
+            const viewport = cornerstone.getDefaultViewportForImage(element, images[cur]);
+            // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
+            // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
+            cornerstone.displayImage(element, images[cur], viewport);
+        }else
+            $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[cur]);
+
+    });
+
+    $("#btn-right").on("click", function () {
+        if (cur < max-1){
+            cur+= 1;
+        } else{
+            cur = max-1;
+        }
+        $("#txt_num").text(cur+1);
+        if (extension === "dcm"){
+            const viewport = cornerstone.getDefaultViewportForImage(element, images[cur]);
+            // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
+            // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
+            cornerstone.displayImage(element, images[cur], viewport);
+        }else
+            $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[cur]);
+
     });
 
     $(document).keydown(function (event) {
@@ -243,6 +280,6 @@ function resizeCanvas(){
             }else
                 $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[cur]);
         }
-        console.log("Current Image Location: ", cur,"(",images.length,")"," Max Image Number: ", max, "Event: ", event.keyCode);
+        console.log("Current Image Location: ", cur,"(",images.length,")"," Max Image Number: ", max, "Event: ", event.keyCode, images[cur]['imageId']);
     });
 })(jQuery);
