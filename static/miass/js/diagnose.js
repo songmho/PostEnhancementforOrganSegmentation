@@ -77,7 +77,10 @@ function loadAndViewImage(imageId) {
             cornerstone.displayImage(preview, image, viewport_preview);
         }
         else if(Object.keys(images).length === max){
-            $('.loader').hide(300);
+            var elems = document.querySelectorAll(".loader");
+            for (var i=elems.length-1; i >=0; i--){
+                elems[i].style.display = 'none';
+            }
 
             proto_name = images['1'].data.string('x00181030');
             if (proto_name !== undefined)

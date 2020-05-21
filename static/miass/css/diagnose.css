@@ -54,6 +54,7 @@ html, body{
 h5{
     color:#ffffff;
     display: inline;
+    font-size: 3vw;
 }
 
 .txt-white{
@@ -61,7 +62,7 @@ h5{
 }
 
 #div-data{
-    height: 10%;
+    height: 5%;
     width: 100%;
 }
 #div-img{
@@ -72,6 +73,6 @@ h5{
     position: absolute;
 }
 #div-footer{
-    height: 10%;
+    height: 15%;
     width: 100%;
 }
