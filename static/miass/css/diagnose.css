@@ -20,6 +20,9 @@ html, body{
 }
 #img_box{
     position: relative;
+    height: 100%;
+    /*top: 50%;*/
+    /*transform: translateY(-50%);*/
 }
 
 .thumb_img{
@@ -29,9 +32,13 @@ html, body{
 
 #main_viewer_img {
     width: auto;
-    position: relative;
+    position: absolute;
     object-fit: contain;
     display: block;
+    margin-left: 50%;
+    left:50%;
+    transform: translateX(-50%);
+    /*margin-left: -50%;*/
 }
 
 #main_viewer_dicom{
@@ -47,4 +54,24 @@ html, body{
 h5{
     color:#ffffff;
     display: inline;
+}
+
+.txt-white{
+    color: white;
+}
+
+#div-data{
+    height: 10%;
+    width: 100%;
+}
+#div-img{
+    height: 80%;
+    width: 100%;
+}
+#div-summary{
+    position: absolute;
+}
+#div-footer{
+    height: 10%;
+    width: 100%;
 }

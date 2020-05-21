@@ -6,6 +6,24 @@ var id = 0;
 var max = 0;
 var extension = 0;
 
+function formatDate(value){
+  if(value){
+    Number.prototype.padLeft = function(base,chr){
+      var len = (String(base || 10).length - String(this).length)+1;
+      return len > 0? new Array(len).join(chr || '0')+this : this;
+    }
+    var d = new Date(value),
+    dformat = [ (d.getMonth()+1).padLeft(),
+                 d.getDate().padLeft(),
+                 d.getFullYear()].join('/')+
+              ' ' +
+              [ d.getHours().padLeft(),
+                d.getMinutes().padLeft(),
+                d.getSeconds().padLeft()].join(':');
+    return dformat;
+  }
+}
+
 function handleFileSelect(evt) {
     evt.stopPropagation();
     evt.preventDefault();
@@ -46,6 +64,7 @@ function loadAndViewImage(imageId) {
     cornerstone.loadImage(imageId).then(function(image) {
         instance_num = parseInt(image.data.string('x00200013'));    // To parse dicom image's instance number
         images[instance_num] = image;
+        console.log(instance_num);
         if (Object.keys(images).length === 1){
             const viewport = cornerstone.getDefaultViewportForImage(element, image);
             // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
@@ -56,7 +75,66 @@ function loadAndViewImage(imageId) {
             const preview = document.getElementById('thum_1_dicom');
             const viewport_preview = cornerstone.getDefaultViewportForImage(preview, image);
             cornerstone.displayImage(preview, image, viewport_preview);
+        }
+        else if(Object.keys(images).length === max){
+            $('.loader').hide(300);
 
+            proto_name = images['1'].data.string('x00181030');
+            if (proto_name !== undefined)
+                document.getElementById('txt_protocol_name').innerHTML = proto_name;
+            else
+                document.getElementById("sp_proto_name").setAttribute("hidden", true);
+
+            taken_date = images['1'].data.string('x00080022');
+            taken_time = images['1'].data.string('x00080032');
+            if (taken_date !== undefined)
+                document.getElementById('txt_taken_date').innerHTML = set_date(taken_date, taken_time);
+            else
+                document.getElementById('txt_taken_date').innerHTML = "Not Recorded";
+
+            // study_desc = images['1'].data.string('x00081030');
+            // if (study_desc !== undefined)
+            //     document.getElementById('txt_study_desc').innerHTML = study_desc;
+            // else
+            //     document.getElementById("sp_study_desc").setAttribute("hidden", true);
+            //
+            // series_desc = images['1'].data.string('x0008103E');
+            // if (series_desc !== undefined)
+            //     document.getElementById('txt_series_desc').innerHTML = series_desc;
+            // else
+            //     document.getElementById("sp_series_desc").setAttribute("hidden", true);
+
+            name = images['1'].data.string('x00100010');
+            if (name !== undefined)
+                document.getElementById('txt_pat_name').innerHTML = name;
+            else
+                document.getElementById('txt_pat_name').innerHTML= "Not Recorded";
+
+            gender = images['1'].data.string('x00100040');
+            if (gender !== undefined){
+                if (gender === "F")
+                    document.getElementById('txt_pat_gender').innerHTML = "Female";
+                else if (gender === "M")
+                    document.getElementById('txt_pat_gender').innerHTML = "Male";
+            } else
+                    document.getElementById('txt_pat_gender').innerHTML= "Not Recorded";
+            birth = images['1'].data.string('x00100030');
+            if (birth !== undefined)
+                document.getElementById('txt_pat_birthday').innerHTML = birth;
+            else
+                document.getElementById('txt_pat_birthday').innerHTML= "Not Recorded";
+            age = images['1'].data.string('x00101010');
+            if (age !== undefined)
+                document.getElementById('txt_pat_age').innerHTML = set_age(age);
+            else
+                document.getElementById('txt_pat_age').innerHTML = "Not Recorded";
+            slice_loc = images['1'].data.string('x00201041');
+            if (slice_loc !== undefined)
+                document.getElementById('txt_slice_loc').innerHTML = slice_loc;
+            else
+                document.getElementById('txt_slice_loc').innerHTML = "Not Recorded";
+
+            document.getElementById("div_info").removeAttribute("hidden");
         }
         if(loaded === false) {
             cornerstoneTools.mouseInput.enable(element);
@@ -131,7 +209,7 @@ function loadAndViewImage(imageId) {
 cornerstone.events.addEventListener('cornerstoneimageloadprogress', function(event) {
     const eventData = event.detail;
     // const loadProgress = document.getElementById('loadProgress');
-    console.log(`Image Load Progress: ${eventData.percentComplete}%`);
+    // console.log(`Image Load Progress: ${eventData.percentComplete}%`);
     // loadProgress.textContent = `Image Load Progress: ${eventData.percentComplete}%`;
 });
 
@@ -141,8 +219,7 @@ cornerstone.enable(element);
 
 function resizeCanvas(){
     var ele = document.getElementById("main_viewer_img");
-    element.style.height = ele.clientWidth+"px";
-    console.log(element.clientWidth, element.style.width)
+    element.style.height = ele.clientHeight+"px";
     cornerstone.resize(element, true);
 }
 
@@ -164,7 +241,6 @@ function resizeCanvas(){
             }),
             success: function (data) {
                 if (data !== undefined){
-                    console.log(data);
                     images.push(data);
                     if (loc === 0){
                         $("#thum_1").attr("src", "data:image/png;base64,"+images[0]);
@@ -201,6 +277,7 @@ function resizeCanvas(){
                         // image enable the dicomImage element and activate a few tools
                         loadAndViewImage(url);
                     }
+
                 }else{
                     images = [];
                     $('#main_viewer_img').css('z-index', 100);
@@ -208,6 +285,8 @@ function resizeCanvas(){
                     for(var i=0; i<max; i++){
                         loadImg(i);
                     }
+
+                    $('.loader').hide(300);
                 }
                 }, error: function (err) {
 
@@ -220,16 +299,7 @@ function resizeCanvas(){
         }else {
             cur -= 1;
         }
-
-        $("#txt_num").text(cur+1);
-        if (extension === "dcm"){
-            const viewport = cornerstone.getDefaultViewportForImage(element, images[cur]);
-            // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
-            // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
-            cornerstone.displayImage(element, images[cur], viewport);
-        }else
-            $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[cur]);
-
+        load_image_info();
     });
 
     $("#btn-right").on("click", function () {
@@ -238,15 +308,7 @@ function resizeCanvas(){
         } else{
             cur = max-1;
         }
-        $("#txt_num").text(cur+1);
-        if (extension === "dcm"){
-            const viewport = cornerstone.getDefaultViewportForImage(element, images[cur]);
-            // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
-            // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
-            cornerstone.displayImage(element, images[cur], viewport);
-        }else
-            $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[cur]);
-
+        load_image_info();
     });
 
     $(document).keydown(function (event) {
@@ -256,30 +318,89 @@ function resizeCanvas(){
             }else {
                 cur -= 1;
             }
-
-            $("#txt_num").text(cur+1);
-            if (extension === "dcm"){
-                const viewport = cornerstone.getDefaultViewportForImage(element, images[cur]);
-                // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
-                // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
-                cornerstone.displayImage(element, images[cur], viewport);
-            }else
-                $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[cur]);
+            load_image_info();
         } else if(event.keyCode === 39){ // Right
             if (cur < max-1){
                 cur+= 1;
             } else{
                 cur = max-1;
             }
-            $("#txt_num").text(cur+1);
-            if (extension === "dcm"){
-                const viewport = cornerstone.getDefaultViewportForImage(element, images[cur]);
-                // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
-                // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
-                cornerstone.displayImage(element, images[cur], viewport);
-            }else
-                $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[cur]);
+            load_image_info();
         }
-        console.log("Current Image Location: ", cur,"(",images.length,")"," Max Image Number: ", max, "Event: ", event.keyCode, images[cur]['imageId']);
     });
+
+    function load_image_info() {
+        $("#txt_num").text(cur+1);
+        if (extension === "dcm"){
+            const viewport = cornerstone.getDefaultViewportForImage(element, images[cur]);
+            // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
+            // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
+            cornerstone.displayImage(element, images[cur], viewport);
+            var proto_name = images[cur].data.string('x00181030');
+            var name = images[cur].data.string('x00100010');
+            var gender = images[cur].data.string('x00100040');
+            var birth = images[cur].data.string('x00100030');
+            var age = images[cur].data.string('x00101010');
+            var slc_loc = images[cur].data.string('x00201041');
+            var taken_day = images[cur].data.string('x00080022');
+            var taken_time = images[cur].data.string('x00080032');
+            console.log(set_date(taken_day, taken_time));
+
+            if (proto_name !== undefined)
+                $('#txt_protocol_name').text(proto_name);
+            else
+                $("#txt_protocol_name").text("Not Recorded");
+            if (name !== undefined)
+                $('#txt_pat_name').text(name);
+            else
+                $("#txt_pat_name").text("Not Recorded");
+
+            if (gender !== undefined){
+                if (gender === "F"){
+                    $('#txt_pat_gender').text("Female");
+                }else {
+                    $('#txt_pat_gender').text("Male");
+                }
+            }
+            else
+                $("#txt_pat_gender").text("Not Recorded");
+            if (birth !== undefined)
+                $('#txt_pat_birthday').text(birth);
+            else
+                $("#txt_pat_birthday").text("Not Recorded");
+            if (age !== undefined)
+                $('#txt_pat_age').text(set_age(age));
+            else
+                $("#txt_pat_age").text("Not Recorded");
+            if (slc_loc !== undefined)
+                $('#txt_slice_loc').text(slc_loc);
+            else
+                $("#txt_slice_loc").text("Not Recorded");
+
+            if (taken_day !== undefined )
+                $("#txt_taken_date").text(set_date(taken_day, taken_time));
+            else
+                $("#txt_taken_date").text("Not Recorded");
+        }else
+            $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[cur]);
+
+    }
 })(jQuery);
+
+function set_date(day, time) {
+    var ld = day.split("");
+    var lt = time.split("");
+    var result = ld[4]+ld[5]+"/"+ld[6]+ld[7]+"/"+ld[0]+ld[1]+ld[2]+ld[3]+" "+lt[0]+lt[1]+":"+lt[2]+lt[3]+":"+lt[4]+lt[5]
+    return result
+}
+
+function set_age(a){
+    var as = a.split('');
+    if (as[0] === '0'){
+        if (as[1] === '0')
+            return as[2]
+        else
+            return as[1]+as[2]
+    }else
+        return as[0]+as[1]+as[2]
+}

@@ -14,39 +14,69 @@
         <div class="sidenav" id="navigator" >
             <img id="thum_1" class="mx-2 my-1 thumb_img" height="260px" width="260px">
         </div>
-        <div class="main h-100 py-5" id="main_body">
-{#            <form id="form" class="form-horizontal">#}
-{#                <div class="form-group">#}
-{#                    <div class="col-sm-3">#}
-{#                        <input type="file" id="selectFile" >#}
+        <div class="main h-100" id="main_body">
+            <div id="div-data" class="">
+{#                <div style="position: relative; z-index: 101; margin-left: 20%; margin-right: 20%;" >#}
+{#                    <div class="txt-white ml-3">#}
+{#                        Test#}
+{#                    </div>#}
+{#                    <div class="text-white float-right mr-3">#}
+{#                        Test#}
 {#                    </div>#}
 {#                </div>#}
-{#            </form>#}
-{#            <div id="dicomImage"#}
-{#                style="width:512px;height:512px;top:0px;left:0px; position:absolute">#}
-{#            </div>#}
-            <div class="w-100 h-100" id="img_box">
-                <img class="h-75  mx-auto" id="main_viewer_img"  style="z-index: 1">
-                <div class="w-100 h-100 content" id="main_viewer_dicom" style="z-index: 100"></div>
-            </div>
-            <div class="row">
-                <div class=" mx-auto" style="display: inline-block">
-                    <span>
-                        <img class="float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_left.svg' %}"  id="btn-left">
-                        <div  class="mx-3 float-left"  style="width: 80px">
-                                <div style="text-align: center">
-                                <h5 id="txt_num">--</h5>
-                                <h5 >  /  </h5>
-                                <h5 id="txt_max_num">--</h5>
-                                </div>
+
+            </div >
+            <div id="div-img"  class="" style="z-index: 1">
+                <div class="" id="img_box">
+                    <img class="h-100  mx-auto" id="main_viewer_img"  style="z-index: 1">
+                    <div class="w-100 h-100 content" id="main_viewer_dicom" style="z-index: 100">
+                        <div id="div_info" class="text-white h-100 w-75" style="z-index: 200; position:absolute;
+                                                            left:50%; transform: translateX(-50%);" hidden>
+                            <div style="position: absolute; left: 10%;">
+                                <span id="sp_proto_name"><h5>Protocol Name:</h5>&ensp;<h5 id="txt_protocol_name"></h5></span><br>
                             </div>
-                        <img class="mr-3 float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right.svg' %}" id="btn-right">
-                    </span>
+
+                            <div class="float-right" style="position: absolute; right: 10%;">
+                                <span id="sp_name"><h5>Patient Name:</h5>&ensp;<h5 id="txt_pat_name"></h5></span><br>
+                                <span id="sp_gender"><h5>Gender:</h5>&ensp;<h5 id="txt_pat_gender"></h5></span><br>
+                                <span id="sp_birth"><h5>Birthday:</h5>&ensp;<h5 id="txt_pat_birthday"></h5></span><br>
+                                <span id="sp_age"><h5>Age:</h5>&ensp;<h5 id="txt_pat_age"></h5><br></span>
+                            </div>
+                            <div style="position: absolute; left: 10%; top: 90%;">
+                                <span id="sp_slc_loc"><h5>Slice Location:</h5>&ensp;<h5 id="txt_slice_loc"></h5></span>
+                            </div>
+                            <div style="position: absolute; right: 10%; top: 90%;">
+                                <span id="sp_taken_date"><h5>Taken Date:</h5>&ensp;<h5 id="txt_taken_date"></h5></span><br>
+{#                                <span id="sp_study_desc"><h5>Study Description:</h5>&ensp;<h5 id="txt_study_desc"></h5></span><br>#}
+{#                                <span id="sp_series_desc"><h5>Series Description:</h5>&ensp;<h5 id="txt_series_desc"></h5></span><br>#}
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+            </div >
+            <div id="div-footer" class="">
+                <div id="div_indicator" class="row mt-4">
+                    <div class=" mx-auto" style="display: inline-block">
+                        <span>
+                            <img class="float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_left.svg' %}"  id="btn-left">
+                            <div  class="mx-3 float-left"  style="width: 80px">
+                                    <div style="text-align: center">
+                                    <h5 id="txt_num">--</h5>
+                                    <h5 >  /  </h5>
+                                    <h5 id="txt_max_num">--</h5>
+                                    </div>
+                                </div>
+                            <img class="mr-3 float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right.svg' %}" id="btn-right">
+                        </span>
+                    </div>
+                </div>
+
             </div>
 
         </div>
 
+        {% include 'miaas/spinner.html' %}
 
     </body>
     <script src="{% static "miass/js/dicom/cornerstone.min.js" %}"></script>
