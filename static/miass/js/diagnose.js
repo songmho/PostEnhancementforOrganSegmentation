@@ -64,23 +64,19 @@ function loadAndViewImage(imageId) {
     cornerstone.loadImage(imageId).then(function(image) {
         instance_num = parseInt(image.data.string('x00200013'));    // To parse dicom image's instance number
         images[instance_num] = image;
-        console.log(instance_num);
-        if (Object.keys(images).length === 1){
-            const viewport = cornerstone.getDefaultViewportForImage(element, image);
-            // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
-            // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
-            cornerstone.displayImage(element, image, viewport);
+        if(Object.keys(images).length === max){
+            var elems = document.querySelectorAll(".loader");
+            console.log(">>>>", elems, elems.length);
+            [].forEach.call(document.querySelectorAll('.loader'), function (el) {
+              el.style.visibility = 'hidden';
+            });
+
             document.getElementById('txt_num').innerHTML = cur+1;
             document.getElementById('txt_max_num').innerHTML = max;
-            const preview = document.getElementById('thum_1_dicom');
-            const viewport_preview = cornerstone.getDefaultViewportForImage(preview, image);
-            cornerstone.displayImage(preview, image, viewport_preview);
-        }
-        else if(Object.keys(images).length === max){
-            var elems = document.querySelectorAll(".loader");
-            for (var i=elems.length-1; i >=0; i--){
-                elems[i].style.display = 'none';
-            }
+            const viewport = cornerstone.getDefaultViewportForImage(element, images['1']);
+            // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
+            // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
+            cornerstone.displayImage(element, images['1'], viewport);
 
             proto_name = images['1'].data.string('x00181030');
             if (proto_name !== undefined)
@@ -107,9 +103,9 @@ function loadAndViewImage(imageId) {
             // else
             //     document.getElementById("sp_series_desc").setAttribute("hidden", true);
 
-            name = images['1'].data.string('x00100010');
-            if (name !== undefined)
-                document.getElementById('txt_pat_name').innerHTML = name;
+            pat_name = images['1'].data.string('x00100010');
+            if (pat_name !== undefined)
+                document.getElementById('txt_pat_name').innerHTML = pat_name;
             else
                 document.getElementById('txt_pat_name').innerHTML= "Not Recorded";
 
@@ -261,6 +257,12 @@ function resizeCanvas(){
         resizeCanvas();
         id = $("#cur_id").text();
 
+        // $(window).on('load', function () {
+        //     setTimeout(function () {
+        //         $('.loader').hide();
+        //     }, 3000);
+        // });
+
         $.ajax({
            url: "/api/get_max_img_count",
            method: 'POST',
@@ -289,7 +291,7 @@ function resizeCanvas(){
                         loadImg(i);
                     }
 
-                    $('.loader').hide(300);
+                    remove_spinner();
                 }
                 }, error: function (err) {
 
@@ -387,6 +389,9 @@ function resizeCanvas(){
         }else
             $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[cur]);
 
+    }
+    function remove_spinner(){
+        $('.loader').hide(300);
     }
 })(jQuery);
 

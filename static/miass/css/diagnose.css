@@ -31,7 +31,8 @@ html, body{
 }
 
 #main_viewer_img {
-    width: auto;
+    height: auto;
+    width: 100%;
     position: absolute;
     object-fit: contain;
     display: block;
