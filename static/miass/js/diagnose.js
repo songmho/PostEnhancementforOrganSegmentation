@@ -5,6 +5,8 @@ var cur = 0;
 var id = 0;
 var max = 0;
 var extension = 0;
+var isPlay = false;
+var isStopped = true;
 
 function formatDate(value){
   if(value){
@@ -60,7 +62,6 @@ cornerstoneWADOImageLoader.configure({
 let loaded = false;
 function loadAndViewImage(imageId) {
     const element = document.getElementById('main_viewer_dicom');
-    const start = new Date().getTime();
     cornerstone.loadImage(imageId).then(function(image) {
         instance_num = parseInt(image.data.string('x00200013'));    // To parse dicom image's instance number
         images[instance_num] = image;
@@ -225,6 +226,33 @@ function resizeCanvas(){
 /// Jquery Part
 (function () {
 
+    $("#main_viewer_img").on('mousewheel DOMMouseScroll', function (e) {
+        var E = e.originalEvent;
+        var delta = 0;
+        // if (E.detail){
+        //     delta = E.detail*-40;
+        //     if (delta<0){
+        //         $("#main_viewer_img").width($("#main_viewer_img").width()/1.02)
+        //         $("#main_viewer_img").height($("#main_viewer_img").height()/1.02)
+        //     }else{
+        //         $("#main_viewer_img").width($("#main_viewer_img").width()*1.02)
+        //         $("#main_viewer_img").height($("#main_viewer_img").height()*1.02)
+        //
+        //     }
+        // }else{
+        //     delta = E.wheelDelta;
+        //         console.log($("#main_viewer_img").width(), $("#main_viewer_img").height());
+        //     if (delta<0){
+        //         $("#main_viewer_img").width($("#main_viewer_img").width()/1.02);
+        //         $("#main_viewer_img").height($("#main_viewer_img").height()/1.02);
+        //     }else{
+        //         $("#main_viewer_img").width($("#main_viewer_img").width()*1.02);
+        //         $("#main_viewer_img").height($("#main_viewer_img").height()*1.02);
+        //
+        //     }
+        // }
+    });
+
     $(window).resize(function () {
         resizeCanvas();
     });
@@ -272,6 +300,10 @@ function resizeCanvas(){
            }),
            success: function (data) {
                 max = data['data']['length'];
+
+                $('#img_slider').attr('min', 0);
+                $('#img_slider').attr('max', max-1);
+
                 extension = data['data']['extension'];
                 if (extension === "dcm"){
                     images = {};
@@ -298,6 +330,45 @@ function resizeCanvas(){
            }
         });
     });
+
+    $("#btn-play_pause").on("click", function () {
+        if (isPlay){    // already play (play -> pause)
+            $("#img_play").css("display", "block");
+            $("#img_pause").css("display", "none");
+            isPlay = false;
+        } else {        // pause (pause -> play)
+            $("#img_play").css("display", "none");
+            $("#img_pause").css("display", "block");
+            isPlay = true;
+            function play(){
+                setTimeout(function () {
+                    if(isPlay && cur < max-1){
+                        console.log(isPlay);
+                        cur = cur+1;
+                        load_image_info();
+
+                        play();
+                    }
+                }, 300);
+            }
+            play();
+        }
+    });
+    $("#btn-stop").on("click", function () {
+        isPlay = false;
+        console.log("bye");
+        cur = 0;
+        load_image_info();
+
+    });
+
+    $('#img_slider').on("input", function () {
+        cur =  Number($('#img_slider').val());
+        load_image_info();
+        $('#txt_num').text(cur+1);
+    });
+
+
     $("#btn-left").on("click", function () {
         if (cur-1<0){
             cur = 0;
@@ -335,20 +406,21 @@ function resizeCanvas(){
     });
 
     function load_image_info() {
+        $('#img_slider').val(cur);
         $("#txt_num").text(cur+1);
         if (extension === "dcm"){
-            const viewport = cornerstone.getDefaultViewportForImage(element, images[cur]);
+            const viewport = cornerstone.getDefaultViewportForImage(element, images[cur+1]);
             // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
             // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
-            cornerstone.displayImage(element, images[cur], viewport);
-            var proto_name = images[cur].data.string('x00181030');
-            var name = images[cur].data.string('x00100010');
-            var gender = images[cur].data.string('x00100040');
-            var birth = images[cur].data.string('x00100030');
-            var age = images[cur].data.string('x00101010');
-            var slc_loc = images[cur].data.string('x00201041');
-            var taken_day = images[cur].data.string('x00080022');
-            var taken_time = images[cur].data.string('x00080032');
+            cornerstone.displayImage(element, images[cur+1], viewport);
+            var proto_name = images[cur+1].data.string('x00181030');
+            var name = images[cur+1].data.string('x00100010');
+            var gender = images[cur+1].data.string('x00100040');
+            var birth = images[cur+1].data.string('x00100030');
+            var age = images[cur+1].data.string('x00101010');
+            var slc_loc = images[cur+1].data.string('x00201041');
+            var taken_day = images[cur+1].data.string('x00080022');
+            var taken_time = images[cur+1].data.string('x00080032');
             console.log(set_date(taken_day, taken_time));
 
             if (proto_name !== undefined)

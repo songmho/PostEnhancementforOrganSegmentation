@@ -31,7 +31,7 @@ html, body{
 }
 
 #main_viewer_img {
-    height: auto;
+    height: 100%;
     width: 100%;
     position: absolute;
     object-fit: contain;
@@ -55,7 +55,12 @@ html, body{
 h5{
     color:#ffffff;
     display: inline;
-    font-size: 3vw;
+
+}
+.txt_info{
+    color: #fff;
+    font-size: 1.0vw;
+    display: inline;
 }
 
 .txt-white{
@@ -76,4 +81,13 @@ h5{
 #div-footer{
     height: 15%;
     width: 100%;
+    z-index: 200;
+}
+
+#img_slider{
+    width: 85%;
+}
+
+#div_indicator{
+
 }

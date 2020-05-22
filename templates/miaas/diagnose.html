@@ -28,25 +28,25 @@
             </div >
             <div id="div-img"  class="" style="z-index: 1">
                 <div class="" id="img_box">
-                    <img class="h-100  mx-auto" id="main_viewer_img"  style="z-index: 1">
+                    <img class="mx-auto" id="main_viewer_img"  style="z-index: 1" src="{% static 'miass/images/transparent.png' %}">
                     <div class="w-100 h-100 content" id="main_viewer_dicom" style="z-index: 100">
                         <div id="div_info" class="text-white h-100 w-75" style="z-index: 200; position:absolute;
                                                             left:50%; transform: translateX(-50%);" hidden>
                             <div style="position: absolute; left: 10%;">
-                                <span id="sp_proto_name"><h5>Protocol Name:</h5>&ensp;<h5 id="txt_protocol_name"></h5></span><br>
+                                <span id="sp_proto_name"><h6 class="txt_info">Protocol Name:</h6>&ensp;<h6 class="txt_info" id="txt_protocol_name"></h6></span><br>
                             </div>
 
                             <div class="float-right" style="position: absolute; right: 10%;">
-                                <span id="sp_name"><h5>Patient Name:</h5>&ensp;<h5 id="txt_pat_name"></h5></span><br>
-                                <span id="sp_gender"><h5>Gender:</h5>&ensp;<h5 id="txt_pat_gender"></h5></span><br>
-                                <span id="sp_birth"><h5>Birthday:</h5>&ensp;<h5 id="txt_pat_birthday"></h5></span><br>
-                                <span id="sp_age"><h5>Age:</h5>&ensp;<h5 id="txt_pat_age"></h5><br></span>
+                                <span id="sp_name"><h6 class="txt_info">Patient Name:</h6>&ensp;<h6 class="txt_info" id="txt_pat_name"></h6></span><br>
+                                <span id="sp_gender"><h6 class="txt_info">Gender:</h6>&ensp;<h6 class="txt_info" id="txt_pat_gender"></h6></span><br>
+                                <span id="sp_birth"><h6 class="txt_info">Birthday:</h6>&ensp;<h6 class="txt_info" id="txt_pat_birthday"></h6></span><br>
+                                <span id="sp_age"><h6 class="txt_info">Age:</h6>&ensp;<h6 class="txt_info" id="txt_pat_age"></h6><br></span>
                             </div>
                             <div style="position: absolute; left: 10%; top: 90%;">
-                                <span id="sp_slc_loc"><h5>Slice Location:</h5>&ensp;<h5 id="txt_slice_loc"></h5></span>
+                                <span id="sp_slc_loc"><h6 class="txt_info">Slice Location:</h6>&ensp;<h6 class="txt_info" id="txt_slice_loc"></h6></span>
                             </div>
                             <div style="position: absolute; right: 10%; top: 90%;">
-                                <span id="sp_taken_date"><h5>Taken Date:</h5>&ensp;<h5 id="txt_taken_date"></h5></span><br>
+                                <span id="sp_taken_date"><h6 class="txt_info">Acquisition Date:</h6>&ensp;<h6 class="txt_info" id="txt_taken_date"></h6></span><br>
 {#                                <span id="sp_study_desc"><h5>Study Description:</h5>&ensp;<h5 id="txt_study_desc"></h5></span><br>#}
 {#                                <span id="sp_series_desc"><h5>Series Description:</h5>&ensp;<h5 id="txt_series_desc"></h5></span><br>#}
                             </div>
@@ -55,19 +55,29 @@
                 </div>
 
             </div >
-            <div id="div-footer" class="">
-                <div id="div_indicator" class="row mt-4">
-                    <div class=" mx-auto" style="display: inline-block">
-                        <span>
-                            <img class="float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_left.svg' %}"  id="btn-left">
-                            <div  class="mx-3 float-left"  style="width: 100px">
-                                    <div style="text-align: center">
-                                    <h5 id="txt_num">--</h5>
-                                    <h5 >  /  </h5>
-                                    <h5 id="txt_max_num">--</h5>
-                                    </div>
+            <div id="div-footer" class="justify-content-center">
+
+                <div id="div_indicator" class="row mt-4 mx-auto container" style="text-align:center;">
+                    <div class=" px-2 w-100 mx-auto justify-content-center" style="display: inline-block;">
+                        <span class="my-auto">
+                            <div id="btn-play_pause">
+                                <img class="float-left  my-auto " style="width: 30px; height: 30px;" src="{% static 'miass/images/play.svg' %}" id="img_play">
+                                <img class="float-left  my-auto " style="width: 30px; height: 30px; display: none;" src="{% static 'miass/images/pause.svg' %}"  id="img_pause">
+                            </div>
+                            <img class="float-left  my-auto " style="width: 30px; height: 30px;" src="{% static 'miass/images/stop.svg' %}"  id="btn-stop">
+
+                            <input id="img_slider" class="mt-2 my-1 float-left" type="range" min="0" max="70" data-slider-step="1" value="0"/>
+
+{#                            <img class="float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_left.svg' %}"  id="btn-left">#}
+{#                            <img class="mr-3 float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right.svg' %}" id="btn-right">#}
+                            <div  class="float-left"  style="width: 100px">
+                                <div style="text-align: center">
+                                <h5 id="txt_num">---</h5>
+                                <h5 >  /  </h5>
+                                <h5 id="txt_max_num">---</h5>
                                 </div>
-                            <img class="mr-3 float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right.svg' %}" id="btn-right">
+                            </div>
+
                         </span>
                     </div>
                 </div>

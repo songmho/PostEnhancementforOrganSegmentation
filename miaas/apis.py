@@ -75,7 +75,7 @@ def upload_images(request):
 
         try:
             t = str(int(time.time()))
-            t_folder = 'D:\Projects\MIAS_Project\mias\media'+str(uploader_id)+"_"+t
+            t_folder = 'D:\\Projects\\MIAS_Project\\mias\\media\\'+str(uploader_id)+"_"+t
             if not os.path.isdir(t_folder):
                 os.mkdir(t_folder)
             for c, x in enumerate(request.FILES.getlist("files")):
