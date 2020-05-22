@@ -58,7 +58,7 @@
             <div id="div-footer" class="justify-content-center">
 
                 <div id="div_indicator" class="row mt-4 mx-auto container" style="text-align:center;">
-                    <div class=" px-2 w-100 mx-auto justify-content-center" style="display: inline-block;">
+                    <div class=" w-100 mx-auto justify-content-center" style="display: inline-block;">
                         <span class="my-auto">
                             <div id="btn-play_pause">
                                 <img class="float-left  my-auto " style="width: 30px; height: 30px;" src="{% static 'miass/images/play.svg' %}" id="img_play">
@@ -66,15 +66,15 @@
                             </div>
                             <img class="float-left  my-auto " style="width: 30px; height: 30px;" src="{% static 'miass/images/stop.svg' %}"  id="btn-stop">
 
-                            <input id="img_slider" class="mt-2 my-1 float-left" type="range" min="0" max="70" data-slider-step="1" value="0"/>
+                            <input id="img_slider" class=" float-left" type="range" min="0" max="70" data-slider-step="1" value="0"/>
 
 {#                            <img class="float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_left.svg' %}"  id="btn-left">#}
 {#                            <img class="mr-3 float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right.svg' %}" id="btn-right">#}
-                            <div  class="float-left"  style="width: 100px">
+                            <div  class="float-left ml-2 text-white" id="txt_indicator">
                                 <div style="text-align: center">
-                                <h5 id="txt_num">---</h5>
-                                <h5 >  /  </h5>
-                                <h5 id="txt_max_num">---</h5>
+                                <h5 id="txt_num" class="txt_slice">--</h5>
+                                <h5  class="txt_slice">  /  </h5>
+                                <h5 id="txt_max_num"  class="txt_slice">--</h5>
                                 </div>
                             </div>
 

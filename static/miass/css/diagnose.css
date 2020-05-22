@@ -85,9 +85,21 @@ h5{
 }
 
 #img_slider{
-    width: 85%;
+    width: 80%;
+    margin-top: 5px;
+    margin-bottom: 4px;
 }
 
 #div_indicator{
 
+}
+
+.txt_slice{
+    /*font-size: 1.0vw;*/
+    display: inline;
+
+}
+
+#txt_indicator{
+    margin-top: 2px;
 }

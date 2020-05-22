@@ -348,6 +348,10 @@ function resizeCanvas(){
                         load_image_info();
 
                         play();
+                    } else{
+                        $("#img_play").css("display", "block");
+                        $("#img_pause").css("display", "none");
+                        isPlay = false;
                     }
                 }, 300);
             }
