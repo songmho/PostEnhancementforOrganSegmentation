@@ -59,6 +59,34 @@ cornerstoneWADOImageLoader.configure({
     useWebWorkers: true,
 });
 
+var elementMain = document.getElementById("main_viewer_dicom");
+elementMain.addEventListener('mousedown',e => {
+    // console.log(cornerstoneTools.freehand.getConfiguration());
+    // cornerstoneTools.freehand.measurementData;
+    var markings = cornerstoneTools.getToolState(elementMain, 'freehand');
+    var data = markings.data[0];
+    // if (data.handles.points.length === 1){
+    //
+    // }else{
+    //     // data.handles.
+    // }
+    console.log(data['handles'], markings.data.length);
+});
+
+var isActive = true;
+var btnImgInfo = document.getElementById("btn_img_info");
+btnImgInfo.addEventListener('mousedown', e => {
+    console.log(isActive);
+    if (isActive){
+        isActive = false;
+        cornerstoneTools.freehand.disable(element);
+    }else{
+        isActive = true;
+        // cornerstoneTools.freehand.activate(element, 1);
+        cornerstoneTools.freehand.enable(element);
+    }
+});
+
 let loaded = false;
 function loadAndViewImage(imageId) {
     const element = document.getElementById('main_viewer_dicom');
@@ -136,12 +164,24 @@ function loadAndViewImage(imageId) {
             document.getElementById("div_info").removeAttribute("hidden");
         }
         if(loaded === false) {
+
+            // cornerstoneTools.init();
+            // const LehgthTool = conerstone.LengthTool;
+            //
+            // const FreehandRoITool = cornerstoneTools.FreehandDrawTool;
+            // cornerstoneTools.addTool(FreehandRoITool);
             cornerstoneTools.mouseInput.enable(element);
+            // cornerstoneTools.setToolActive('FreehandRoi', {mouseButtonMask: 1})
+            cornerstoneTools.freehand.activate(element, 1);
+
+            cornerstoneTools.zoom.activate(element, 2);
+            cornerstoneTools.zoomWheel.activate(element);
             cornerstoneTools.mouseWheelInput.enable(element);
-            cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
-            cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
-            cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
-            cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
+            // cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
+            // cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
+            // cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
+            // cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
+
 
             // cornerstoneTools.imageStats.enable(element);
             loaded = true;
@@ -390,9 +430,9 @@ function resizeCanvas(){
         load_image_info();
     });
 
-    $("#btn_img_info").on("click", function () {
-        $('#modal_info').modal("show");
-    });
+    // $("#btn_img_info").on("click", function () {
+    //     $('#modal_info').modal("show");
+    // });
 
     $(document).keydown(function (event) {
         if (event.keyCode === 37){ // Left
