@@ -90,6 +90,7 @@ urlpatterns = [
     url(r'^view/annotate_image', views.annotate_image),
     url(r'^view/remove_image', views.remove_image),
     url(r'^view/diagnose/(?P<img_id>[a-zA-Z0-9]+)$', views.diagnose),
+    url(r'^view/annotate/(?P<img_id>[a-zA-Z0-9]+)$', views.annotate),
     url(r'^view/main', views.main),
     url(r'^forgot_password', views.forgot_password),
 

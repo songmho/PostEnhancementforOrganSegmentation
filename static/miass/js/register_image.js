@@ -15,7 +15,7 @@ var cur_img_type = "Normal";
 
     $(function () {
         $("#txt_Birthday").datepicker({
-            format: "yyyy-mm-dd",	//데이터 포맷 형식(yyyy : 년 mm : 월 dd : 일 )
+            format: "dd/mm/yyyy",	//데이터 포맷 형식(yyyy : 년 mm : 월 dd : 일 )
                 // startDate: '-10d',	//달력에서 선택 할 수 있는 가장 빠른 날짜. 이전으로는 선택 불가능 ( d : 일 m : 달 y : 년 w : 주)
                 // endDate: '+10d',	//달력에서 선택 할 수 있는 가장 느린 날짜. 이후로 선택 불가 ( d : 일 m : 달 y : 년 w : 주)
                 autoclose : true,	//사용자가 날짜를 클릭하면 자동 캘린더가 닫히는 옵션
@@ -39,13 +39,12 @@ var cur_img_type = "Normal";
                 weekStart : 0 ,//달력 시작 요일 선택하는 것 기본값은 0인 일요일
                 language : "ko"	//달력의 언어 선택, 그에 맞는 js로 교체해줘야한다.
         }).on("changeDate", function (e) {
-            console.log("Selected Date: ", e);
         });
     });
 
     $(function () {
         $("#txt_acq_date").datepicker({
-            format: "yyyy-mm-dd",	//데이터 포맷 형식(yyyy : 년 mm : 월 dd : 일 )
+            format: "dd/mm/yyyy",	//데이터 포맷 형식(yyyy : 년 mm : 월 dd : 일 )
                 // startDate: '-10d',	//달력에서 선택 할 수 있는 가장 빠른 날짜. 이전으로는 선택 불가능 ( d : 일 m : 달 y : 년 w : 주)
                 // endDate: '+10d',	//달력에서 선택 할 수 있는 가장 느린 날짜. 이후로 선택 불가 ( d : 일 m : 달 y : 년 w : 주)
                 autoclose : true,	//사용자가 날짜를 클릭하면 자동 캘린더가 닫히는 옵션
@@ -69,7 +68,6 @@ var cur_img_type = "Normal";
                 weekStart : 0 ,//달력 시작 요일 선택하는 것 기본값은 0인 일요일
                 language : "ko"	//달력의 언어 선택, 그에 맞는 js로 교체해줘야한다.
         }).on("changeDate", function (e) {
-            console.log("Selected Date: ", e);
         });
     });
 
@@ -126,7 +124,6 @@ var cur_img_type = "Normal";
                 async: false,
                 success: function (data) {
                     if(data['state']){
-                        console.log(data['state']);
                         $("#modal_body").text("Upload is finished");
                         $("#modal_reg_img").modal("show");
                         // location.reload();
@@ -169,7 +166,7 @@ var cur_img_type = "Normal";
         $('#img_slider').attr('max', fileList.length-1);
         $('#txt_max_num').text(fileList.length);
         $('#txt_num').text(1);
-
+        console.log(">>>>> ", $('#btn_img_loader').prop('files')[0]);
         if ($('#btn_img_loader').prop('files')[0]["name"].split(".")[1] === "dcm"){
             cur_img_type = "DCM";
             console.log("DCM");
@@ -212,7 +209,6 @@ var cur_img_type = "Normal";
     });
 
     $(document).ready(function () {
-        console.log(get_current_user());
         resizeCanvas();
         var cur_r = get_current_role();
         var cur_u = get_current_user();
@@ -275,12 +271,16 @@ cornerstoneWADOImageLoader.configure({
     useWebWorkers: true,
 });
 
+function get_date(date){
+    console.log("date:", date);
+    var l = date.split("");
+    return l[6]+l[7]+"/"+l[4]+l[5]+"/"+l[0]+l[1]+l[2]+l[3]
+}
+
 let loaded = false;
 function loadAndViewImage(imageId) {
     const element = document.getElementById('img_dicom');
-    const start = new Date().getTime();
     cornerstone.loadImage(imageId).then(function(image) {
-        console.log(image);
         const viewport = cornerstone.getDefaultViewportForImage(element, image);
         // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
         // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
@@ -293,8 +293,39 @@ function loadAndViewImage(imageId) {
             cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
             cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
 
-            cornerstoneTools.imageStats.enable(element);        // Code for displaying information
+            // cornerstoneTools.imageStats.enable(element);        // Code for displaying information
             loaded = true;
+        }
+
+        var dcm_birth = image.data.string("x00100030");     // To road patient's birthday data
+        var dcm_gender = image.data.string("x00100040");    // To road patient's gender
+        var dcm_modality = image.data.string("x00080060");  // To road the image's modality
+        var dcm_acq_date = image.data.string("x00080022");      // To road acquisition date
+
+        if (dcm_birth !== undefined){
+            document.getElementById('txt_Birthday').value = get_date(dcm_birth);
+        }
+        if (dcm_gender !== undefined){
+            if (dcm_gender === 'F')
+                document.getElementById("rdo_female").checked = true;
+            else if (dcm_gender === 'M')
+                document.getElementById("rdo_male").checked = true;
+        }
+        if (dcm_modality !== undefined){
+            if (dcm_modality === "CT")
+                document.getElementById("txt_img_type").options[1].selected = "selected";
+            else if (dcm_modality === "MR")
+                document.getElementById("txt_img_type").options[2].selected = "selected";
+            else if (dcm_modality === "BMD" || dcm_modality === "PX")        //Bone Densitometry (x-ray), Panoramic X-Ray
+                document.getElementById("txt_img_type").options[3].selected = "selected";
+            else if (dcm_modality === "BDUS" || dcm_modality === "US")  // Bone Densitometry (Ultrasound), Ultrasound
+                document.getElementById("txt_img_type").options[4].selected = "selected";
+            else if (dcm_modality === 'ECG')
+                document.getElementById("txt_img_type").options[6].selected = "selected";
+
+        }
+        if (dcm_acq_date !== undefined){
+            document.getElementById("txt_acq_date").value = get_date(dcm_acq_date);
         }
 
         function getTransferSyntax() {
@@ -366,9 +397,6 @@ cornerstone.enable(element);
 
 function setDicomImage(file){
     const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
-    console.log("Image ID: ", cornerstoneWADOImageLoader.wadouri.fileManager.get(imageId));
-    console.log("Image ID: ", cornerstoneWADOImageLoader.wadouri.fileManager);
-    console.log("Image ID: ", imageId);
 
     loadAndViewImage(imageId);
 

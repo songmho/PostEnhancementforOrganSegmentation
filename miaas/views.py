@@ -71,7 +71,7 @@ def render_page(request):
 
 def update_profile(request):
 
-    return render(request, "miaas/update_profile.html")
+    return render(request, "miaas/profile_managment.html")
 
 @csrf_exempt
 def activate_user(request, user_id, auth_code):
@@ -151,6 +151,10 @@ def browse_image(request):
 def diagnose(request, img_id):
     context = {'img_id': img_id}
     return render(request, "miaas/diagnose.html", context)
+
+def annotate(request, img_id):
+    context = {'img_id': img_id}
+    return render(request, "miaas/annotate.html", context)
 
 def annotate_image(request):
     return render(request, "miaas/image_annotate.html")
