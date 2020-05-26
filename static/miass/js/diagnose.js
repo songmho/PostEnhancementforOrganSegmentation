@@ -201,6 +201,8 @@ function resizeCanvas(){
                         // image enable the dicomImage element and activate a few tools
                         loadAndViewImage(url);
                     }
+
+                    $('.loader').hide(300);
                 }else{
                     images = [];
                     $('#main_viewer_img').css('z-index', 100);
@@ -208,6 +210,8 @@ function resizeCanvas(){
                     for(var i=0; i<max; i++){
                         loadImg(i);
                     }
+
+                    $('.loader').hide(300);
                 }
                 }, error: function (err) {
 
