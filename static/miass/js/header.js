@@ -74,7 +74,7 @@
     });
 
     $("#nav_profile").click(function () {
-        location.replace("/view/update_profile")
+        location.replace("/view/browse_profile")
     });
 
     $("#btn_change").click(function () {

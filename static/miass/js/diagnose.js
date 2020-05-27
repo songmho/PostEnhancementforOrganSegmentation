@@ -87,7 +87,7 @@ function loadAndViewImage(imageId) {
             taken_date = images['1'].data.string('x00080022');
             taken_time = images['1'].data.string('x00080032');
             if (taken_date !== undefined)
-                document.getElementById('txt_taken_date').innerHTML = set_date(taken_date, taken_time);
+                document.getElementById('txt_taken_date').innerHTML = get_date(taken_date, taken_time);
             else
                 document.getElementById('txt_taken_date').innerHTML = "Not Recorded";
 
@@ -124,7 +124,7 @@ function loadAndViewImage(imageId) {
                 document.getElementById('txt_pat_birthday').innerHTML= "Not Recorded";
             age = images['1'].data.string('x00101010');
             if (age !== undefined)
-                document.getElementById('txt_pat_age').innerHTML = set_age(age);
+                document.getElementById('txt_pat_age').innerHTML = get_age(age);
             else
                 document.getElementById('txt_pat_age').innerHTML = "Not Recorded";
             slice_loc = images['1'].data.string('x00201041');
@@ -405,7 +405,19 @@ function resizeCanvas(){
     });
 
     $("#btn_img_info").on("click", function () {
-        $('#modal_info').modal("show");
+        if(extension === "dcm"){
+            var dicom_info = get_dicom_info();
+            $("#modal_tb_body").empty();
+            for (k in dicom_info){
+                $("#modal_tb_body").append("<tr>" +
+                    "<td>"+k+"</td>"+
+                    "<td>"+dicom_info[k]+"</td>"+
+                    "</tr>");
+            }
+
+
+            $('#modal_info').modal("show");
+        }
     });
 
     $(document).keydown(function (event) {
@@ -442,7 +454,7 @@ function resizeCanvas(){
             var slc_loc = images[cur+1].data.string('x00201041');
             var taken_day = images[cur+1].data.string('x00080022');
             var taken_time = images[cur+1].data.string('x00080032');
-            console.log(set_date(taken_day, taken_time));
+            console.log(get_date(taken_day, taken_time));
 
             if (proto_name !== undefined)
                 $('#txt_protocol_name').text(proto_name);
@@ -467,7 +479,7 @@ function resizeCanvas(){
             else
                 $("#txt_pat_birthday").text("Not Recorded");
             if (age !== undefined)
-                $('#txt_pat_age').text(set_age(age));
+                $('#txt_pat_age').text(get_age(age));
             else
                 $("#txt_pat_age").text("Not Recorded");
             if (slc_loc !== undefined)
@@ -476,7 +488,7 @@ function resizeCanvas(){
                 $("#txt_slice_loc").text("Not Recorded");
 
             if (taken_day !== undefined )
-                $("#txt_taken_date").text(set_date(taken_day, taken_time));
+                $("#txt_taken_date").text(get_date(taken_day, taken_time));
             else
                 $("#txt_taken_date").text("Not Recorded");
         }else
@@ -486,22 +498,76 @@ function resizeCanvas(){
     function remove_spinner(){
         $('.loader').hide(300);
     }
+    function get_dicom_info(){
+        result = {};
+        result['Image Type'] = check_undefined(images[cur+1].data.string('x00080008'));
+        result['Study Date'] = get_date(images[cur+1].data.string('x00080020'), images[cur+1].data.string('x00080030'));
+        result['Series Date'] = get_date(images[cur+1].data.string('x00080021'), images[cur+1].data.string('x00080031'));
+        result['Acquisition Date'] = get_date(images[cur+1].data.string('x00080022'), images[cur+1].data.string('x00080032'));
+        result['Modality'] = check_undefined(images[cur+1].data.string('x00080060'));
+        result['Study Description'] = check_undefined(images[cur+1].data.string('x00081030'));
+        result['Series Description'] = check_undefined(images[cur+1].data.string('x0008103E'));
+        result['Patient Name'] = check_undefined(images[cur+1].data.string('x00100010'));
+        result['Patient Birth Date'] = check_undefined(images[cur+1].data.string('x00100030'));
+        result['Patient Gender'] = get_gender(images[cur+1].data.string('x00100040'));
+        result['Patient Age'] = get_age(images[cur+1].data.string('x00101010'));
+        result['Body Part Examined'] = check_undefined(images[cur+1].data.string('x00180015'));
+        result['Slice Thickness'] = check_undefined(images[cur+1].data.string('x00180050'));
+        result['Protocol Name'] = check_undefined(images[cur+1].data.string('x00181030'));
+        result['Rotation Direction'] = check_undefined(images[cur+1].data.string('x00181140'));
+        result['Study ID'] = check_undefined(images[cur+1].data.string('x00200010'));
+        result['Series Number'] = check_undefined(images[cur+1].data.string('x00200011'));
+        result['Acquisition Number'] = check_undefined(images[cur+1].data.string('x00200012'));
+        result['Instance Number'] = check_undefined(images[cur+1].data.string('x00200013'));
+        result['Rows'] = check_undefined(images[cur+1].data.uint16('x00280010'));
+        result['Columns'] = check_undefined(images[cur+1].data.uint16('x00280011'));
+        result['Pixel Spacing'] = check_undefined(images[cur+1].data.string('x00280030'));
+
+        return result;
+    }
 })(jQuery);
 
-function set_date(day, time) {
-    var ld = day.split("");
-    var lt = time.split("");
-    var result = ld[4]+ld[5]+"/"+ld[6]+ld[7]+"/"+ld[0]+ld[1]+ld[2]+ld[3]+" "+lt[0]+lt[1]+":"+lt[2]+lt[3]+":"+lt[4]+lt[5]
-    return result
+function check_undefined(d){
+    if(d === undefined)
+        return "";
+    else
+        return d;
 }
 
-function set_age(a){
-    var as = a.split('');
-    if (as[0] === '0'){
-        if (as[1] === '0')
-            return as[2]
-        else
-            return as[1]+as[2]
-    }else
-        return as[0]+as[1]+as[2]
+function get_date(day, time) {
+    if (day === undefined || time === undefined){
+        return ""
+    }
+    try {
+        var ld = day.split("");
+        var lt = time.split("");
+        return ld[4]+ld[5]+"/"+ld[6]+ld[7]+"/"+ld[0]+ld[1]+ld[2]+ld[3]+" "+lt[0]+lt[1]+":"+lt[2]+lt[3]+":"+lt[4]+lt[5];
+    }catch (e) {
+        return "";
+    }
+}
+
+function get_gender(gender) {
+    if (gender === "F"){
+        return "Female";
+    }else if(gender === "M") {
+        return "Male";
+    } else{
+        return "";
+    }
+}
+
+function get_age(a){
+    try{
+        var as = a.split('');
+        if (as[0] === '0'){
+            if (as[1] === '0')
+                return as[2];
+            else
+                return as[1]+as[2]
+        }else
+            return as[0]+as[1]+as[2]
+    } catch (e) {
+        return "";
+    }
 }

@@ -8,21 +8,8 @@
     $("#txt_user_role").text(cur_user_info["role"]);
     $("#txt_user_phone").text(cur_user_info['phone_number']);
 
-    $("#btn_withdraw").on("click", function () {
-       $("#modal_withdraw").modal("show");
-    });
-
-    $('#btn_no_withdraw').on("click", function () {
-        $("#modal_withdraw").modal("hide");
-    });
-
-    $('#btn_yes_withdraw').on("click", function () {
-        $("#modal_withdraw").modal("hide");
-        // logout
-        // remove user
-    });
-
     $("#btn_update").on('click', function () {
+        location.replace("/view/update_profile")
         $("#profile-retrieve").css("display", "none");
         $("#profile-update").css("display", "block");
     });

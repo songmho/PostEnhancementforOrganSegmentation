@@ -72,7 +72,7 @@ urlpatterns = [
 
     url(r'^api/sign_in', apis.sign_in),
     url(r'^api/sign_up', apis.sign_up),
-    url(r'^api/withdrawal', apis.withdrawal),
+    url(r'^api/withdraw', apis.withdraw),
     url(r'^api/signout', apis.sign_out),
     url(r'^api/retrieve_user', apis.retrieve_user),
     url(r'^api/modify_user_info', apis.modify_user_info),
@@ -84,6 +84,7 @@ urlpatterns = [
 
 
     url(r'^view/sign_in', views.sign_in_page),
+    url(r'^view/browse_profile', views.browse_profile),
     url(r'^view/update_profile', views.update_profile),
     url(r'^view/register_image', views.register_image),
     url(r'^view/browse_image', views.browse_image),

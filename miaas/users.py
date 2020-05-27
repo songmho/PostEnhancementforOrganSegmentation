@@ -107,8 +107,9 @@ class User:
                 self.activation_code = activation_code
         return result
 
-    def delete_user(self):
-        self.db.delete_user(self.identification_number)
+    def delete_user(self, id):
+        result = self.db.delete_user(id)
+        return result
 
 
 class Physician(User):
@@ -165,8 +166,9 @@ class Physician(User):
                 self.active = active
         return result
 
-    def delete_physician(self):
-        result = self.db.delete_physician(self.identification_number)
+    def delete_physician(self, id):
+        result = self.db.delete_physician(id)
+        return result
 
 
 class Patient(User):
@@ -221,8 +223,9 @@ class Patient(User):
                 self.active = active
         return result
 
-    def delete_patient(self):
-        result = self.db.delete_patient(self.identification_number)
+    def delete_patient(self, id):
+        result = self.db.delete_patient(id)
+        return result
 
 
 class Staff(User):
@@ -278,8 +281,9 @@ class Staff(User):
                 self.active = active
         return result
 
-    def delete_staff(self):
-        result = self.db.delete_staff(self.identification_number)
+    def delete_staff(self, id):
+        result = self.db.delete_staff(id)
+        return result
 
 
 class DBUser:

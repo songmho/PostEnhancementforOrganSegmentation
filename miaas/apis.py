@@ -506,26 +506,32 @@ def sign_up(request):
 
 
 @csrf_exempt
-def withdrawal(request):
+def withdraw(request):
     if request.method == "POST":
-        result = False
         data = json.loads(request.body.decode('utf-8'))
-        data = data['current_user']
-        if data['role'] == "Evaluator":
-            e = Physician()
-            e.identification_number = data["identification_number"]
-            result = e.delete_physician()
-        elif data['role'] == "Staff":
-            s = Staff()
-            s.identification_number = data["identification_number"]
-            result = s.delete_staff()
-        elif data['role'] == "Trainee":
-            t = Patient()
-            t.identification_number = data["identification_number"]
-            result = t.delete_patient()
+        id = data['id']
+        s = Session()
+        result = s.expire_session(id)
+        print("Session: ", result )
+        if result:
+            phy = Physician()
+            res_phy = phy.delete_physician(id)
 
-        if result is True:
-            return JsonResponse({'state': True})
+            print("Phy: ", res_phy)
+            pat = Patient()
+            res_pat = pat.delete_patient(id)
+            print("Pat: ", res_pat)
+
+            s = Staff()
+            res_s = s.delete_staff(id)
+            print("Staff: ", res_s)
+            u = User()
+            res_u = u.delete_user(id)
+            print("Staff: ", res_u)
+            if res_u:
+                return JsonResponse({'state': True})
+            else:
+                return JsonResponse({'state': False})
         else:
             return JsonResponse({'state': False})
 
