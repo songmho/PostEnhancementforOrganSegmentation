@@ -44,12 +44,100 @@ function handleDragOver(evt) {
     evt.preventDefault();
     evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
 }
-
-
+var isPan = true;
 const main_view = document.getElementById('main_viewer_dicom');
 main_view.addEventListener('dragover', handleDragOver, false);
 main_view.addEventListener('drop', handleFileSelect, false);
+main_view.addEventListener('mousedown', e=>{
+    if (!isPan){    // free hand
+        // var markings = cornerstoneTools.getToolState(main_view, 'FreehandMouse');
+        // var data = markings.data;
+        // var numData = data.length;
+        // // data[numData-1].handles.points.pop();
+        // console.log(markings);
+        // try{
+        //     // console.log(markings.data);
+        //     var data = markings.data;
+        //     for(var i in data){
+        //         // console.log(data[i]['handles']);
+        //     }
+        // }catch (e) {
+        //
+        // }
+        //
+        //
+        // // for (var data in ){
+        // //     console.log(data["handles"]);
+        // }
+    }else{          // pan
 
+    }
+});
+document.addEventListener("keydown", e=>{
+    if (!isPan) {    // free hand
+        console.log(e.keyCode);
+        var markes = cornerstoneTools.getToolState(main_view, 'FreehandMouse');
+        if(e.keyCode === 46){       // Delete
+            console.log("Push Delete");
+            try {
+                console.log(markes.data);
+                var marked_data = markes.data;
+                var numData = marked_data.length;
+                console.log(numData, marked_data[numData-1].handles.points);
+                marked_data[numData-1].handles.points.pop();
+                console.log(marked_data[numData-1].handles.points);
+                var numPoints = marked_data[numData-1].handles.points.length;
+                if (marked_data[numData-1].handles.points[numPoints-1].lines.length !== 0){
+                    marked_data[numData-1].handles.points[numPoints-1].lines = [];
+                }
+                console.log(marked_data[numData-1].handles.points[numPoints-1].lines , marked_data[numData-1].handles.points[numPoints-2].lines );
+                // cornerstoneTools.clearToolState(main_view, 'FreehandMouse');
+                // cornerstoneTools.addToolState(main_view, 'FreehandMouse', marked_data);
+                // cornerstone.updateImage(main_view);
+                // for (var i in data) {
+                //     console.log(data[i]['handles']);
+                // }
+            } catch (e) {
+                console.log(e);
+            }
+        } else if(e.keyCode === 27){    // Esc
+            markes = undefined;
+            cornerstoneTools.clearToolState(main_view, 'FreehandMouse');
+            cornerstoneTools.addToolState(main_view, 'FreehandMouse', markes);
+            // cornerstone.updateImage(main_view);
+        }
+
+
+    }
+});
+const btnImgSave = document.getElementById("btn_img_save");
+const btnImgCreate = document.getElementById("btn_img_create");
+var state;
+
+btnImgCreate.addEventListener('click', function () {
+    if (isPan){
+        isPan = false;
+
+        document.getElementById("img_create").style.display = "none";
+        document.getElementById("img_pan").style.display = "block";
+        var markes = cornerstoneTools.getToolState(main_view, 'FreehandMouse');
+        console.log(markes);
+        cornerstoneTools.setToolPassive("Pan", {mouseButtonMask: 1})
+        cornerstoneTools.setToolActive("FreehandMouse", {mouseButtonMask: 1})
+    }else{
+        isPan = true;
+        document.getElementById("img_pan").style.display = "none";
+        document.getElementById("img_create").style.display = "block";
+        cornerstoneTools.setToolActive("Pan", {mouseButtonMask: 1})
+        cornerstoneTools.setToolPassive("FreehandMouse", {mouseButtonMask: 1})
+        // cornerstoneTools.setToolDisabled("FreehandMouse", {mouseButtonMask: 1});
+        // cornerstone.updateImage(main_view);
+    }
+});
+
+btnImgSave.addEventListener('click', function () {
+    state = markes = cornerstoneTools.getToolState(main_view, 'FreehandMouse');
+});
 
 cornerstoneWADOImageLoader.configure({
     beforeSend: function(xhr) {
@@ -57,34 +145,6 @@ cornerstoneWADOImageLoader.configure({
         //xhr.setRequestHeader('x-auth-token', 'my auth token');
     },
     useWebWorkers: true,
-});
-
-var elementMain = document.getElementById("main_viewer_dicom");
-elementMain.addEventListener('mousedown',e => {
-    // console.log(cornerstoneTools.freehand.getConfiguration());
-    // cornerstoneTools.freehand.measurementData;
-    var markings = cornerstoneTools.getToolState(elementMain, 'freehand');
-    var data = markings.data[0];
-    // if (data.handles.points.length === 1){
-    //
-    // }else{
-    //     // data.handles.
-    // }
-    console.log(data['handles'], markings.data.length);
-});
-
-var isActive = true;
-var btnImgInfo = document.getElementById("btn_img_info");
-btnImgInfo.addEventListener('mousedown', e => {
-    console.log(isActive);
-    if (isActive){
-        isActive = false;
-        cornerstoneTools.freehand.disable(element);
-    }else{
-        isActive = true;
-        // cornerstoneTools.freehand.activate(element, 1);
-        cornerstoneTools.freehand.enable(element);
-    }
 });
 
 let loaded = false;
@@ -164,24 +224,32 @@ function loadAndViewImage(imageId) {
             document.getElementById("div_info").removeAttribute("hidden");
         }
         if(loaded === false) {
+            cornerstoneTools.init();
+            const ZoomTool = cornerstoneTools.ZoomTool;
+            const panTool = cornerstoneTools.PanTool;
+            const freehandRoiTool = cornerstoneTools.FreehandMouseTool;
+            cornerstoneTools.addTool(panTool);
+            cornerstoneTools.addTool(cornerstoneTools.FreehandMouseTool, {
+                textBox: {
 
-            // cornerstoneTools.init();
-            // const LehgthTool = conerstone.LengthTool;
-            //
-            // const FreehandRoITool = cornerstoneTools.FreehandDrawTool;
-            // cornerstoneTools.addTool(FreehandRoITool);
-            cornerstoneTools.mouseInput.enable(element);
-            // cornerstoneTools.setToolActive('FreehandRoi', {mouseButtonMask: 1})
-            cornerstoneTools.freehand.activate(element, 1);
-
-            cornerstoneTools.zoom.activate(element, 2);
-            cornerstoneTools.zoomWheel.activate(element);
-            cornerstoneTools.mouseWheelInput.enable(element);
+                }
+            });
+            cornerstoneTools.addTool(cornerstoneTools.ZoomMouseWheelTool, {
+                configuration: {
+                    invert: false,
+                    preventZoomOutsideImage: false,
+                    minScale: .1,
+                    maxScale: 20.0,
+                }
+            });
+            cornerstoneTools.setToolActive("Pan", {mouseButtonMask: 1})
+            cornerstoneTools.setToolActive("ZoomMouseWheel", {mouseButtonMask: 4})
+            // cornerstoneTools.mouseInput.enable(element);
+            // cornerstoneTools.mouseWheelInput.enable(element);
             // cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
             // cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
             // cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
             // cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
-
 
             // cornerstoneTools.imageStats.enable(element);
             loaded = true;
@@ -430,9 +498,9 @@ function resizeCanvas(){
         load_image_info();
     });
 
-    // $("#btn_img_info").on("click", function () {
-    //     $('#modal_info').modal("show");
-    // });
+    $("#btn_img_info").on("click", function () {
+        // $('#modal_info').modal("show");
+    });
 
     $(document).keydown(function (event) {
         if (event.keyCode === 37){ // Left
