@@ -24,11 +24,7 @@
 {#                        Test#}
 {#                    </div>#}
 {#                </div>#}
-                <img id="btn_img_save" class="float-right mt-4 mr-4" src="{% static "miass/images/save.svg" %}" style="width: 30px; height: 30px;"/>
-                <div id="btn_img_create" class="float-right mt-4 mr-4">
-                    <img id="img_create" src="{% static "miass/images/create.svg" %}" style="width: 30px; height: 30px; display: block;"/>
-                    <img id="img_pan" src="{% static "miass/images/pan.svg" %}" style="width: 30px; height: 30px; display: none;"/>
-                </div>
+                <img id="btn_img_info" class="float-right mt-4 mr-4" src="{% static "miass/images/info.svg" %}" style="width: 30px; height: 30px;"/>
             </div >
             <div id="div-img"  class="" style="z-index: 1">
                 <div class="" id="img_box">
@@ -61,45 +57,30 @@
             </div >
             <div id="div-footer" class="justify-content-center">
 
-                <div class="row mt-4 mx-auto container" style="text-align:center;">
-                <div class=" mx-auto" style="display: inline-block">
-                    <span>
-                        <img class="float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_left.svg' %}"  id="btn-left">
-                        <div  class="mx-3 float-left"  style="width: 80px">
-                                <div style="text-align: center">
-                                <h5 id="txt_num">--</h5>
-                                <h5 >  /  </h5>
-                                <h5 id="txt_max_num">--</h5>
-                                </div>
+                <div id="div_indicator" class="row mt-4 mx-auto container" style="text-align:center;">
+                    <div class=" w-100 mx-auto justify-content-center" style="display: inline-block;">
+                        <span class="my-auto">
+                            <div id="btn-play_pause">
+                                <img class="float-left  my-auto " style="width: 30px; height: 30px;" src="{% static 'miass/images/play.svg' %}" id="img_play">
+                                <img class="float-left  my-auto " style="width: 30px; height: 30px; display: none;" src="{% static 'miass/images/pause.svg' %}"  id="img_pause">
                             </div>
-                        <img class="mr-3 float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right.svg' %}" id="btn-right">
-                    </span>
-                </div>
+                            <img class="float-left  my-auto " style="width: 30px; height: 30px;" src="{% static 'miass/images/stop.svg' %}"  id="btn-stop">
 
-{#                <div id="div_indicator" class="row mt-4 mx-auto container" style="text-align:center;">#}
-{#                    <div class=" w-100 mx-auto justify-content-center" style="display: inline-block;">#}
-{#                        <span class="my-auto">#}
-{#                            <div id="btn-play_pause">#}
-{#                                <img class="float-left  my-auto " style="width: 30px; height: 30px;" src="{% static 'miass/images/play.svg' %}" id="img_play">#}
-{#                                <img class="float-left  my-auto " style="width: 30px; height: 30px; display: none;" src="{% static 'miass/images/pause.svg' %}"  id="img_pause">#}
-{#                            </div>#}
-{#                            <img class="float-left  my-auto " style="width: 30px; height: 30px;" src="{% static 'miass/images/stop.svg' %}"  id="btn-stop">#}
-{##}
-{#                            <input id="img_slider" class=" float-left" type="range" min="0" max="70" data-slider-step="1" value="0"/>#}
-{##}
+                            <input id="img_slider" class=" float-left" type="range" min="0" max="70" data-slider-step="1" value="0"/>
+
 {#                            <img class="float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_left.svg' %}"  id="btn-left">#}
 {#                            <img class="mr-3 float-left" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right.svg' %}" id="btn-right">#}
-{#                            <div  class="float-left ml-2 text-white" id="txt_indicator">#}
-{#                                <div style="text-align: center">#}
-{#                                <h5 id="txt_num" class="txt_slice">--</h5>#}
-{#                                <h5  class="txt_slice">  /  </h5>#}
-{#                                <h5 id="txt_max_num"  class="txt_slice">--</h5>#}
-{#                                </div>#}
-{#                            </div>#}
-{##}
-{#                        </span>#}
-{#                    </div>#}
-{#                </div>#}
+                            <div  class="float-left ml-2 text-white" id="txt_indicator">
+                                <div style="text-align: center">
+                                <h5 id="txt_num" class="txt_slice">--</h5>
+                                <h5  class="txt_slice">  /  </h5>
+                                <h5 id="txt_max_num"  class="txt_slice">--</h5>
+                                </div>
+                            </div>
+
+                        </span>
+                    </div>
+                </div>
 
             </div>
 
@@ -131,15 +112,15 @@
 
     </body>
     <script src="{% static "miass/js/dicom/hammer.min.js" %}"></script>
-    <script src="{% static "miass/js/dicom/cornerstoneMath.min.js" %}"></script>
     <script src="{% static "miass/js/dicom/cornerstone.min.js" %}"></script>
-    <script src="{% static "miass/js/dicom/cornerstoneWADOImageLoader.js" %}"></script>
-    <script src="{% static "miass/js/dicom/cornerstoneWebImageLoader.min.js" %}"></script>
+    <script src="{% static "miass/js/dicom/cornerstoneMath.min.js" %}"></script>
     <script src="{% static "miass/js/dicom/dicomParser.min.js" %}"></script>
+    <script src="{% static "miass/js/dicom/cornerstoneWADOImageLoader.js" %}"></script>
     <script src="{% static "miass/js/dicom/uids.js" %}"></script>
+    <script src="{% static "miass/js/dicom/initializeWebWorkers.js" %}"></script>
+    <script src="{% static "miass/js/dicom/cornerstoneWebImageLoader.min.js" %}"></script>
     <script src="{% static "miass/js/dicom/cornerstoneTools.min.js" %}"></script>
 
-    <script src="{% static "miass/js/dicom/initializeWebWorkers.js" %}"></script>
     <script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
     <script src="{% static "miass/js/constants.js" %}"></script>
     <script src="{% static "miass/js/sessions.js" %}"></script>

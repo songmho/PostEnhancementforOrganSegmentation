@@ -136,26 +136,12 @@ function loadAndViewImage(imageId) {
             document.getElementById("div_info").removeAttribute("hidden");
         }
         if(loaded === false) {
-            cornerstoneTools.init();
-            const ZoomTool = cornerstoneTools.ZoomTool;
-            const panTool = cornerstoneTools.PanTool;
-            cornerstoneTools.addTool(panTool);
-            cornerstoneTools.addTool(cornerstoneTools.ZoomMouseWheelTool, {
-                configuration: {
-                    invert: false,
-                    preventZoomOutsideImage: false,
-                    minScale: .1,
-                    maxScale: 20.0,
-                }
-            });
-            cornerstoneTools.setToolActive("Pan", {mouseButtonMask: 1})
-            cornerstoneTools.setToolActive("ZoomMouseWheel", {mouseButtonMask: 4})
-            // cornerstoneTools.mouseInput.enable(element);
-            // cornerstoneTools.mouseWheelInput.enable(element);
-            // cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
-            // cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
-            // cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
-            // cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
+            cornerstoneTools.mouseInput.enable(element);
+            cornerstoneTools.mouseWheelInput.enable(element);
+            cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
+            cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
+            cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
+            cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
 
             // cornerstoneTools.imageStats.enable(element);
             loaded = true;
