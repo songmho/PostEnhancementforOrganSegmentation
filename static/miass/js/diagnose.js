@@ -1,5 +1,5 @@
 cornerstoneWADOImageLoader.external.cornerston = cornerstone;
-
+// Hi
 var images = {};
 var cur = 0;
 var id = 0;
