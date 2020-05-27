@@ -9,7 +9,7 @@
     $("#txt_user_phone").text(cur_user_info['phone_number']);
 
     $("#btn_update").on('click', function () {
-        location.replace("/view/update_profile")
+        location.href = "/view/update_profile";
         $("#profile-retrieve").css("display", "none");
         $("#profile-update").css("display", "block");
     });
