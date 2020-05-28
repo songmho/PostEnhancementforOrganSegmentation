@@ -3,6 +3,8 @@ Date: 2019.10.11
 Programmer: MH
 Description: Code for user class and related classes
 """
+import datetime
+
 from . import constants
 import pymysql
 
@@ -67,12 +69,12 @@ class User:
         :return: list, list of found users
         """
         result = self.db.retrieve_user(identification_number=identification_number, first_name=first_name,
-                                       last_name=last_name, email=email,
-                                       phone_number=phone_number, pwd=pwd, role=role, active=active, activation_code=activation_code)
+                                       last_name=last_name, email=email, phone_number=phone_number, pwd=pwd, role=role,
+                                       active=active, activation_code=activation_code)
         return result
 
     def modify_user(self, identification_number, first_name=None, last_name=None, email=None, phone_number=None,
-                    pwd=None, role=None, active=None, activation_code=None):
+                    pwd=None, role=None, active=None, activation_code=None, gender=None, birthday=None):
         """
         To modify user information
         :param identification_number: int, user's identification_number
@@ -87,7 +89,8 @@ class User:
         """
         result = self.db.modify_user(identification_number=identification_number, first_name=first_name,
                                      last_name=last_name, email=email,
-                                     phone_number=phone_number, pwd=pwd, role=role, active=active, activation_code=activation_code)
+                                     phone_number=phone_number, pwd=pwd, role=role, active=active,
+                                     activation_code=activation_code, gender=gender, birthday=birthday)
         if result:
             if first_name is not None:
                 self.first_name = first_name
@@ -414,7 +417,7 @@ class DBUser:
             return []
 
     def modify_user(self, identification_number, first_name=None, last_name=None, email=None, phone_number=None,
-                    pwd=None, role=None, active=None, activation_code=None):
+                    pwd=None, role=None, active=None, activation_code=None, gender=None, birthday=None):
         """
         To modify user information about input data
         :param identification_number: int, user's identification_number
@@ -428,43 +431,57 @@ class DBUser:
         :param activation_code: sting, activation code
         :return: 'True' if successful, or 'False'.
         """
+        has_birthday = False
         sql = "UPDATE users SET "
         if first_name is not None:
             sql += "first_name='" + first_name + "'"
-            if any([last_name, email, phone_number, pwd, role, active, activation_code]):
+            if any([last_name, email, phone_number, pwd, role, active, activation_code, gender, birthday]):
                 sql += ", "
         if last_name is not None:
             sql += "last_name='" + last_name + "'"
-            if any([email, phone_number, pwd, role, active, activation_code]):
+            if any([email, phone_number, pwd, role, active, activation_code, gender, birthday]):
                 sql += ", "
         if email is not None:
             sql += "email='" + email + "'"
-            if any([phone_number, pwd, role, active, activation_code]):
+            if any([phone_number, pwd, role, active, activation_code, gender, birthday]):
                 sql += ", "
         if phone_number is not None:
             sql += "phone_number='" + phone_number + "'"
-            if any([pwd, role, active, activation_code]):
+            if any([pwd, role, active, activation_code, gender, birthday]):
                 sql += ", "
         if pwd is not None:
             sql += "pwd='" + pwd + "'"
-            if any([role, active, activation_code]):
+            if any([role, active, activation_code, gender, birthday]):
                 sql += ", "
         if role is not None:
             sql += "role='" + role + "'"
-            if any([active, activation_code]):
+            if any([active, activation_code, gender, birthday]):
                 sql += ", "
         if active is not None:
             sql += "active=" + str(active) + ""
-            if any([active]):
+            if any([active, gender, birthday]):
                 sql += ", "
         if activation_code is not None:
             sql += "activation_code='" + str(activation_code) + "'"
-
+            if any([gender, birthday]):
+                sql += ", "
+        if gender is not None:
+            sql += "gender='" + str(gender) + "'"
+            if any([birthday]):
+                sql += ", "
+        if birthday is not None:
+            has_birthday = True
+            dd, mm, yyyy = birthday.split('/')
+            sql += "birthday= '"+yyyy+"-"+mm+"-"+dd+" 00:00:00'"
         sql += " WHERE identification_number=" + str(identification_number)
-
         try:
             with self.conn.cursor() as cursor:
-                cursor.execute(sql)
+                print(sql)
+                if has_birthday:
+                    # print("has_birthday: ", has_birthday, "     ", sql, "   ", type(birth))
+                    cursor.execute(sql)
+                else:
+                    cursor.execute(sql)
                 self.conn.commit()
                 return True
         except:

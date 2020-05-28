@@ -4,6 +4,7 @@
 <html lang="en">
 
 <link rel="stylesheet" href="{% static 'miass/css/preview.css' %}">
+<link rel="stylesheet" href="{% static 'miass/css/bootstrap-datepicker.css' %}">
 <head>
 </head>
 <body>
@@ -14,87 +15,127 @@
             <div>
 
             </div>
-            <h3>Profile Image</h3>
             <div class="w-25 my-2 ">
                 <div class="mx-auto" id="body_img_profile">
-                    <img src="{% static 'miass/images/perm_identity-24px.svg' %}" id="img_modi_profile">
+                    <img src="{% static 'miass/images/perm_identity-24px.svg' %}" id="img_profile">
                 </div>
-                <input type="button" value="Change Image" class="btn btn-primary"/>
+                <div class="mx-auto mt-3 w-100">
+                    <input type="button" value="Select Image" id="btn_select_profile_img" class="btn btn-primary mx-auto"/>
+                    <input type="button" value="Remove Image" id="btn_remove_profile_img" class="btn btn-primary mx-auto "/>
+                </div>
             </div>
+{#            <div class="w-25 my-2 ">#}
+{#                <div class="mx-auto" id="body_img_profile">#}
+{#                    <img src="{% static 'miass/images/perm_identity-24px.svg' %}" id="img_modi_profile">#}
+{#                </div>#}
+{#                <input type="button" value="Select Image" class="btn btn-primary"/>#}
+{#                <input type="button" value="Remove Image" class="btn btn-primary"/>#}
+{#            </div>#}
 
             <div class="h-100 w-75">
-                <form autocomplete="off" id="signup_form" class="w-50 mx-auto ">
+
+                <form autocomplete="off" id="signup_form" class="w-75 mx-auto ">
+                <h4>General Information</h4>
                     <div class="form-group">
                         <div class="form-row">
                             <div class="col-6 form-inline">
                                 <div class="col form-group px-0">
-                                    <label for="txt_first_name" class="mt-3 mb-1">First Name<span style="color:red">*&nbsp;</span>
-                                    <span style="color:red" id="txt_chk_fir_name" hidden>Check first name</span></label>
+                                    <label for="txt_first_name" class="mt-2 mb-1">First Name</label>
                                     <input type="text" class="form-control w-100" id="txt_first_name" required>
                                 </div>
                             </div>
                             <div class="col-6 form-inline">
                                 <div class="col form-group  px-0">
-                                    <label for="txt_last_name" class="mt-3 mb-1">Last Name<span style="color:red">*&nbsp;</span>
-                                    <span style="color:red" id="txt_chk_last_name" hidden>&nbsp;Check last name</span></label>
+                                    <label for="txt_last_name" class="mt-2 mb-1">Last Name</label>
                                     <input type="text" class="form-control w-100" id="txt_last_name" required>
                                 </div>
                             </div>
                         </div>
 
-    {#                    <div class="form-row form-inline">#}
-                            <label for="txt_email" class="mt-2 mb-1">email<span style="color:red">*</span>
-                                    <span style="color:red" id="txt_chk_email" hidden>&nbsp;Check email</span></label>
-                            <input type="text" class="form-control" id="txt_email" required>
-    {#                    </div>#}
-                        <label for="txt_pwd" class="mt-2 mb-1">Password<span style="color:red">*</span>
-                                    <span style="color:red" id="txt_chk_pwd" hidden>&nbsp;Check password</span></label>
-                        <input type="password" class="form-control" id="txt_pwd" required>
-
-                        <label for="txt_pwd_check" class="mt-2 mb-1">Re-enter password<span style="color:red">*</span>
-                                    <span style="color:red" id="txt_chk_pwd_re" hidden>&nbsp;Check password</span></label>
-                        <input type="password" class="form-control " id="txt_pwd_check" required>
-
-                        <div class="w-100 my-5"></div>
-
-                        <label for="txt_birthday" class="mb-1">Birthday </label>
-                        <input type="text" class="form-control" id="txt_birthday">
-                        <label for="txt_gender" class="mt-2 mb-1">Gender<span style="color:red">*</span>
-                                    <span style="color:red" id="txt_chk_gen" hidden>&nbsp;Check gender</span> </label>
-                        <div id="txt_gender">
-                          <label class="col-5"><input type="radio" name="rdo_gender" value="Male" class="mr-2"/>Male</label>
-                          <label class="col-5"><input type="radio" name="rdo_gender" value="Female" class="mr-2"/>Female</label>
+                        <div class="mt-3" >
+                            <label for="" class="mt-2 mb-1">Change Password</label>
+                            <input type="button" class="btn btn-primary float-right"  id="btn_change_pwd" value="Change">
                         </div>
 
+                        <label for="txt_gender" class="mt-4 mb-1">Gender</label>
+                        <div id="txt_gender">
+                          <label class="col-5"><input type="radio" name="rdo_gender" id="rdo_male" value="Male" class="mr-2"/>Male</label>
+                          <label class="col-5"><input type="radio" name="rdo_gender" id="rdo_female" value="Female" class="mr-2"/>Female</label>
+                        </div>
 
-                        <label for="txt_phone" class="mt-2 mb-1">Phone Number</label>
-                        <input type="text" class="form-control" id="txt_phone">
+                        <label for="txt_birthday" class="mt-2 mb-1">Birthday </label>
+                        <input type="text" class="form-control" id="txt_birthday">
 
-                        <label for="slct_role" class="mt-2 mb-1">Role<span style="color:red">*</span>
-                                    <span style="color:red" id="txt_chk_role" hidden>&nbsp;Select role</span> </label>
-                        <select class="form-control" id="slct_role">
-                            <option selected disabled hidden></option>
-                            <option >Patient</option>
-                            <option >Physician</option>
-                            <option >Staff</option>
-                        </select>
+                        <div class="mb-1">
+                            <label for="txt_phone" class="mt-2 mb-1">Phone Number</label>
+                            <input type="text" class="form-control" id="txt_phone">
+                        </div>
+
                     </div>
                 </form>
 
-                <button id="btn_apply" class="btn btn-primary">
-                    Apply
-                </button>
-                <button id="btn_cancel" class="btn btn-secondary">
-                    Cancel
-                </button>
-                <button id="btn_withdraw" class="btn btn-danger">
-                    Withdraw
-                </button>
+                <div class="w-75 mx-auto mt-5 mb-5">
+                    <h4>Additional Information</h4>
+                    <div class="mb-1">
+                        <h5 for="txt_user_role" class="mt-2 mb-1 mr-3" style="display: inline;">Role</h5>
+                        <label class="mt-2 mb-1" id="txt_user_role"></label>
+                        <input type="button" class="btn btn-primary float-right" id="btn_add_role" value="Add ">
+                    </div>
+                </div>
+
+                <div class="w-75 mx-auto mt-4 mb-5" style="height: 40px;">
+                    <button id="btn_cancel" class="btn btn-secondary float-right">
+                        Cancel
+                    </button>
+                    <button id="btn_apply" class="btn btn-primary float-right mr-3">
+                        Save
+                    </button>
+                </div>
+
+                <div class="w-75 mx-auto mt-5 row  justify-content-between">
+                    <h5>Withdraw</h5>
+                    <button id="btn_withdraw" class="btn btn-danger  float-right ">
+                        Withdraw
+                    </button>
+                </div>
+
             </div>
 
         </div>
     </div>
 
+        <div class="modal fade" id="modal_change_pwd" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Change password</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body" id="">
+                        <h5>Input new password </h5>
+                        <form>
+                            <label for="txt_pwd" class="mt-2 mb-1">Current Password<span style="color:red">*</span>
+                                        <span style="color:red" id="txt_chk_crr_pwd" hidden>&nbsp;Check current password</span></label>
+                            <input type="password" class="form-control" id="txt_crr_pwd" required>
+
+                            <label for="txt_pwd" class="mt-2 mb-1">Password<span style="color:red">*</span>
+                                        <span style="color:red" id="txt_chk_pwd" hidden>&nbsp;Check password</span></label>
+                            <input type="password" class="form-control" id="txt_pwd" required>
+
+                            <label for="txt_pwd_check" class="mt-2 mb-1">Re-enter password<span style="color:red">*</span>
+                                        <span style="color:red" id="txt_chk_pwd_re" hidden>&nbsp;Check password</span></label>
+                            <input type="password" class="form-control " id="txt_pwd_check" required>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="btn_change_yes">Yes</button>
+                        <button type="button" class="btn btn-secondary" id="btn_change_no">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Modal -->
         <div class="modal fade" id="modal_signup" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -158,6 +199,7 @@
 
 </body>
 <script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
+<script src="{% static "miass/js/bootstrap-datepicker.js" %}"></script>
 <script src="{% static "miass/js/constants.js" %}"></script>
 <script src="{% static "miass/js/sessions.js" %}"></script>
 <script src="{% static "miass/js/update_profile.js" %}"></script>

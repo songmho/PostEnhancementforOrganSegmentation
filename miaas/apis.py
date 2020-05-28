@@ -504,6 +504,45 @@ def sign_up(request):
         # except:
         #     return JsonResponse({'state': False, "data": "Check your information again."})
 
+@csrf_exempt
+def change_pwd(request):
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        target_pwd = data['target_pwd']
+        id = data["id"]
+        u = User()
+        result = u.modify_user(identification_number=id, pwd=target_pwd)
+        if result:
+            return JsonResponse({'state': True})
+        else:
+            return JsonResponse({'state': False})
+    else:
+        return JsonResponse({'state': False})
+
+
+@csrf_exempt
+def modify_general_info(request):
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        print(data)
+        id = data['id']
+        first_name = data["first_name"]
+        last_name = data["last_name"]
+        gender = data["gender"]
+        birthday = data["birthday"]
+        phone = data["phone"]
+
+        u = User()
+        result = u.modify_user(identification_number=id, first_name=first_name, last_name=last_name,
+                               gender=gender, birthday=birthday, phone_number=phone)
+        print(result)
+        if result:
+            return JsonResponse({'state': True})
+        else:
+            return JsonResponse({'state': False})
+    else:
+        return JsonResponse({'state': False})
+
 
 @csrf_exempt
 def withdraw(request):
