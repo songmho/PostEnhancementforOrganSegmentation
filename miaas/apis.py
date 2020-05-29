@@ -59,6 +59,55 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def register_profile_image(request):
+    if request.method == "POST":
+
+        data = json.loads(request.POST.get("data"))
+        id = data['id']
+        path = "D:\\Projects\\MIAS_Project\\mias\\media\\profile_image\\"+str(id)
+        print(id)
+        try:
+            if not os.path.isdir(path):
+                os.mkdir(path)
+                print(1)
+            else:
+                for i in os.listdir(path):
+                    os.remove(path+"\\"+i)
+                print(2)
+
+            print(3, enumerate(request.FILES.getlist("files")))
+            for c, x in enumerate(request.FILES.getlist("files")):
+                print(4)
+                print(c, x)
+                def process(f):
+                    with open(path+"\\"+str(f), "wb+") as destination:
+                        print(f)
+                        for chunk in f.chunks():
+                            destination.write(chunk)
+                process(x)
+            return JsonResponse({"state": True})
+        except:
+            return JsonResponse({"state": False})
+
+
+def send_profile(request):
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        id = data['id']
+        path = "D:\\Projects\\MIAS_Project\\mias\\media\\profile_image\\"+str(id)
+        file_name = os.listdir(path)[0]
+        # try:
+        with open(path+"\\"+file_name, 'rb') as f:
+            profile_data = base64.b64encode(f.read())
+            print("Profile", id, file_name)
+            return HttpResponse(profile_data, content_type="image/png")
+        # except:
+            return JsonResponse({"state": False})
+    else:
+        return JsonResponse({"state": False})
+
+
+
 def upload_images(request):
     if request.method == "POST":
         data = json.loads(request.POST.get("data"))
@@ -536,8 +585,13 @@ def modify_general_info(request):
         result = u.modify_user(identification_number=id, first_name=first_name, last_name=last_name,
                                gender=gender, birthday=birthday, phone_number=phone)
         print(result)
+        result = u.retrieve_user(identification_number=id)
+        try:
+            result[0]['birthday'] = result[0]['birthday'].strftime('%Y-%m-%d')
+        except:
+            result[0]['birthday'] = ""
         if result:
-            return JsonResponse({'state': True})
+            return JsonResponse({'state': True, "data": result})
         else:
             return JsonResponse({'state': False})
     else:

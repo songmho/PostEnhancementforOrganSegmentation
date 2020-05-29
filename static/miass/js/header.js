@@ -89,6 +89,8 @@
         // try {
             c_u = get_current_user();
             var c_r = get_current_role();
+            $('#img_profile').attr("src", "data:image/png;base64,"+get_current_profile());
+
             if (c_u == null) {
                 $("#nav_user").prop("hidden", true);
             } else {
@@ -97,7 +99,7 @@
                 $("#txt_role").last().html(sen);
 
                 var roles = c_u['role'].split(' ');
-                console.log(roles);
+                console.log(roles, c_u);
 
                 $("#div_patient").prop("hidden", true);
                 $("#div_physician").prop("hidden", true);

@@ -1,7 +1,22 @@
+function set_current_profile(d){
+    sessionStorage.removeItem("profile");
+    console.log(d);
+    sessionStorage.setItem("profile", JSON.stringify(d));
+}
+function get_current_profile() {
+    console.log(JSON.parse(sessionStorage.getItem("profile")));
+    return JSON.parse(sessionStorage.getItem("profile"));
+}
 function set_current_user(c_u) {
     // sessionStorage.setItem("current_user", JSON.stringify(c_u));
     sessionStorage.setItem("current_user", JSON.stringify(c_u));
-    var c_r = c_u['role'].split(' ')[0];
+    console.log(c_u);
+    try{
+        var c_r = c_u['role'].split(' ')[0];
+    } catch (e) {
+        var c_r = c_u['role'];
+    }
+
     sessionStorage.setItem("current_role", JSON.stringify(c_r));
 }
 

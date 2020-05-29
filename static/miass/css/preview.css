@@ -21,6 +21,13 @@
     text-align: center;
 }
 
+#img_curr_profile{
+    background-color: #efefef;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+}
+
 #img_profile{
     background-color: #efefef;
     border-radius: 50%;

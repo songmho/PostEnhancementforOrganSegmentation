@@ -4,6 +4,7 @@
 <html lang="en">
 
 <link rel="stylesheet" href="{% static 'miass/css/preview.css' %}">
+<link rel="stylesheet" href="{% static 'miass/css/profile_update.css' %}">
 <link rel="stylesheet" href="{% static 'miass/css/bootstrap-datepicker.css' %}">
 <head>
 </head>
@@ -17,12 +18,19 @@
             </div>
             <div class="w-25 my-2 ">
                 <div class="mx-auto" id="body_img_profile">
-                    <img src="{% static 'miass/images/perm_identity-24px.svg' %}" id="img_profile">
+                    <img src="{% static 'miass/images/perm_identity-24px.svg' %}" id="img_chng_default" style="display: none;">
+                    <img id="img_chng_profile" style="display: block;">
                 </div>
-                <div class="mx-auto mt-3 w-100">
-                    <input type="button" value="Select Image" id="btn_select_profile_img" class="btn btn-primary mx-auto"/>
-                    <input type="button" value="Remove Image" id="btn_remove_profile_img" class="btn btn-primary mx-auto "/>
-                </div>
+                <form id="form_upload" class="mx-auto mt-3 w-100 form-inline justify-content-center" enctype="multipart/form-data">
+                    <div class="filebox">
+                        <label for="btn_select_profile_img">Select Image</label>
+                        <input value="Select Image"  type="file" name="files"  id="btn_select_profile_img" class="btn btn-primary"/>
+                    </div>
+                    <div class="filebox ml-3">
+                        <label id="btn_remove_profile" >Remove </label>
+{#                        <input value="Select Image"  type="button" name="profile" class="btn btn-primary"/>#}
+                    </div>
+                </form>
             </div>
 {#            <div class="w-25 my-2 ">#}
 {#                <div class="mx-auto" id="body_img_profile">#}
@@ -177,7 +185,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="modal_notice" tabindex="-1" role="dialog">
+        <div class="modal fade" id="modal_update_notice" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">

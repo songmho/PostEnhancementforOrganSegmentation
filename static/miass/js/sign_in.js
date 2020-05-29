@@ -89,6 +89,24 @@ function openWindowWithPost(url, data) {
                     } else{
                         remove_remember();
                     }
+
+                    $.ajax({
+                        url: "/api/send_profile",
+                        method: 'POST',
+                        async: false,
+                        data: JSON.stringify({
+                            "id": get_current_user()['identification_number'],
+                        }),
+                        success: function (data) {
+                            if (data !== undefined){
+                                console.log(data);
+                                set_current_profile(data);
+                            }
+                            }, error: function (err) {
+
+                        }
+                    });
+
                 } else {                      // fail to log in
                 $("#input_sign_in_id").addClass("is-invalid");
                 $("#input_sign_in_pwd").addClass("is-invalid");

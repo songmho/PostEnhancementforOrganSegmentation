@@ -53,10 +53,10 @@ var isWithdrawed = false;
 
     $('#btn_checked_notice').on("click", function () {
         if(isWithdrawed){
-            $("#modal_notice").modal("hide");
+            $("#modal_update_notice").modal("hide");
             location.replace("/main")
         } else{
-            $("#modal_notice").modal("hide");
+            $("#modal_update_notice").modal("hide");
 
         }
     });
@@ -193,10 +193,12 @@ var isWithdrawed = false;
         if (gender === undefined)
             gender = "";
         var birthday = $("#txt_birthday").val();
+        if (birthday === undefined || birthday === "")
+            birthday = null;
         var phone = $("#txt_phone").val();
 
         var isPosible = true;
-        console.log(first_name, last_name, gender, birthday, phone)
+        console.log(first_name, last_name, gender, birthday, phone);
         if(isPosible){
             $.ajax({
                url: "/api/modify_general_info",
@@ -213,12 +215,15 @@ var isWithdrawed = false;
                success: function(data){
                    var isChanged = data['state'];
                    if (isChanged){
-                        var curUser = get_current_user();
-                        curUser['pwd'] = $("#txt_pwd").val();
+                        var curUser = data['data'];
                         console.log(curUser);
-                        set_current_user(curUser);
+                        set_current_user(curUser[0]);
                         $('#modal_change_pwd').modal("hide");
+                        $("#modal_text_notice").text("Information is updated successfully.")
+                        $("#modal_update_notice").modal("show");
                    }else{
+                        $("#modal_text_notice").text("Updating information is Failed. Try again.")
+                        $("#modal_update_notice").modal("show");
 
                    }
                }, error: function (err) {
@@ -227,11 +232,44 @@ var isWithdrawed = false;
                }
             });
         }
-
-
     });
 
+    $("#btn_checked_notice").on("click", function () {
+        $("#modal_notice").modal("hide");
+    });
+
+    function loadProfileImage(){
+        $.ajax({
+            url: "/api/send_profile",
+            method: 'POST',
+            async: false,
+            data: JSON.stringify({
+                "id": get_current_user()['identification_number'],
+            }),
+            success: function (data) {
+                if (data !== undefined){
+                    console.log(data);
+                    $("#img_chng_profile").attr("src", "data:image/png;base64,"+data);
+                    set_current_profile(data);
+                }
+                }, error: function (err) {
+
+            }
+            });
+        }
+
     $(document).ready(function () {
+        loadProfileImage();
+        var hasProfile = true;
+        console.log(hasProfile);
+        if(hasProfile){
+            $("#img_chng_default").css("display", "none");
+            $('#img_chng_profile').css("display", "block");
+        } else{
+            $('#img_chng_profile').css("display", "none");
+            $("#img_chng_default").css("display", "block");
+        }
+
         var cur_user_data = get_current_user();
         console.log(cur_user_data);
         $("#txt_first_name").val(cur_user_data['first_name']);
@@ -246,7 +284,108 @@ var isWithdrawed = false;
         $("#txt_phone").val(cur_user_data['phone_number']);
         $("#txt_user_role").text(cur_user_data['role']);
 
-        $("#txt_birthday").val(changeDateFormat(cur_user_data['birthday']));
+        var birthday = cur_user_data['birthday'];
+        try{
+            if (birthday === undefined || birthday === "" || birthday=== null)
+                $("#txt_birthday").val("");
+            else
+                $("#txt_birthday").val(changeDateFormat(cur_user_data['birthday']));
+        } catch (e) {
+            $("#txt_birthday").val("");
+        }
+    });
+
+    $('#btn_select_profile_img').on("click", function () {
+
+        var fileToUpload = $('#btn_select_profile_img').prop('files');
+        console.log(fileToUpload);
+    });
+
+    $("#btn_select_profile_img").on("change", function (e) {
+        var selectedProfile = null;
+        var fileList = this.files;
+        var fileReader = new FileReader();
+        var fileName = e.target.files[0];
+
+
+        console.log(fileList, fileReader, fileName);
+        fileReader.readAsDataURL($('#btn_select_profile_img').prop('files')[0]);
+        fileReader.onload = function () {
+            $('#img_chng_profile').attr("src", fileReader.result);
+            selectedProfile = fileReader.result;
+
+            var form_profile = $('#form_upload')[0];
+            var file_data = new FormData(form_profile);
+            var data = {"id":get_current_user()["identification_number"]};
+            file_data.append("data", JSON.stringify(data));
+
+            $.ajax({
+                type:"POST",
+                enctype: 'multipart/form-data',
+                url: '/api/register_profile_image/',
+                data: file_data,
+                processData: false,
+                contentType: false,
+                cache: false,
+                timeout: 600000,
+                async: false,
+                success: function (data) {
+                    if(data['state']){
+                        $("#modal_body").text("Upload is finished");
+                        $("#modal_reg_img").modal("show");
+                        loadProfileImage();
+                        // location.reload();
+                    }else{
+                        $("#modal_body").text("Uploading files is fail.");
+                        $("#modal_reg_img").modal("show");
+                        is_uploaded = false;
+
+                    }
+                }, error: function (err) {
+                    $("#modal_body").text("Uploading files is fail.");
+                    $("#modal_reg_img").modal("show");
+                    is_uploaded = false;
+                }
+            });
+        }
+        // console.log(selectedProfile)
+        // if (selectedProfile !== null){
+        //     $.ajax({
+        //         type:"POST",
+        //         enctype: 'multipart/form-data',
+        //         url: '/api/register_profile_image/',
+        //         data: selectedProfile,
+        //         processData: false,
+        //         contentType: false,
+        //         cache: false,
+        //         timeout: 600000,
+        //         async: false,
+        //         success: function (data) {
+        //             if(data['state']){
+        //                 $("#modal_body").text("Upload is finished");
+        //                 $("#modal_reg_img").modal("show");
+        //                 // location.reload();
+        //             }else{
+        //                 $("#modal_body").text("Uploading files is fail.");
+        //                 $("#modal_reg_img").modal("show");
+        //                 is_uploaded = false;
+        //
+        //             }
+        //         }, error: function (err) {
+        //             $("#modal_body").text("Uploading files is fail.");
+        //             $("#modal_reg_img").modal("show");
+        //             is_uploaded = false;
+        //         }
+        //     });
+        // }
+
+
+    });
+
+    $('#btn_remove_profile').on("click", function () {
+        $('#img_chng_profile').css("display", "none");
+        $('#img_chng_default').css("display", "block");
+
     });
 })(jQuery);
 
