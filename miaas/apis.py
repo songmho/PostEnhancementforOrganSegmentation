@@ -92,19 +92,24 @@ def register_profile_image(request):
 
 def send_profile(request):
     if request.method == "POST":
-        data = json.loads(request.body.decode('utf-8'))
-        id = data['id']
-        path = "D:\\Projects\\MIAS_Project\\mias\\media\\profile_image\\"+str(id)
-        file_name = os.listdir(path)[0]
-        # try:
-        with open(path+"\\"+file_name, 'rb') as f:
-            profile_data = base64.b64encode(f.read())
-            print("Profile", id, file_name)
-            return HttpResponse(profile_data, content_type="image/png")
-        # except:
-            return JsonResponse({"state": False})
+
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            id = data['id']
+            path = "D:\\Projects\\MIAS_Project\\mias\\media\\profile_image\\"+str(id)
+            file_name = os.listdir(path)[0]
+            print(len(os.listdir(path)))
+            if len(os.listdir(path)) > 0:
+                    with open(path+"\\"+file_name, 'rb') as f:
+                        profile_data = base64.b64encode(f.read())
+                        print("Profile", id, file_name)
+                        return HttpResponse(profile_data, content_type="image/png")
+            else:
+                return HttpResponse(None, content_type="image/png")
+        except:
+            return HttpResponse(None, content_type="image/png")
     else:
-        return JsonResponse({"state": False})
+        return HttpResponse(None, content_type="image/png")
 
 
 
