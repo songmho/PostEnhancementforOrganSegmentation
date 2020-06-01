@@ -247,10 +247,14 @@ var isWithdrawed = false;
                 "id": get_current_user()['identification_number'],
             }),
             success: function (data) {
+                console.log(">>> ", data);
                 if (data !== undefined){
                     console.log(data);
+                    $("#img_chng_default").css("display", "none");
+                    $('#img_chng_profile').css("display", "block");
                     $("#img_chng_profile").attr("src", "data:image/png;base64,"+data);
                     set_current_profile(data);
+                    location.reload();
                 }
                 }, error: function (err) {
 
@@ -259,16 +263,17 @@ var isWithdrawed = false;
         }
 
     $(document).ready(function () {
-        loadProfileImage();
-        var hasProfile = true;
-        console.log(hasProfile);
-        if(hasProfile){
+
+        if (get_current_profile() != "None" && get_current_profile() !==null){
             $("#img_chng_default").css("display", "none");
             $('#img_chng_profile').css("display", "block");
+            $('#img_chng_profile').attr("src", "data:image/png;base64,"+get_current_profile());
         } else{
             $('#img_chng_profile').css("display", "none");
             $("#img_chng_default").css("display", "block");
         }
+        // var hasProfile = true;
+        // console.log(hasProfile);
 
         var cur_user_data = get_current_user();
         console.log(cur_user_data);
@@ -298,7 +303,6 @@ var isWithdrawed = false;
     $('#btn_select_profile_img').on("click", function () {
 
         var fileToUpload = $('#btn_select_profile_img').prop('files');
-        console.log(fileToUpload);
     });
 
     $("#btn_select_profile_img").on("change", function (e) {
@@ -307,8 +311,6 @@ var isWithdrawed = false;
         var fileReader = new FileReader();
         var fileName = e.target.files[0];
 
-
-        console.log(fileList, fileReader, fileName);
         fileReader.readAsDataURL($('#btn_select_profile_img').prop('files')[0]);
         fileReader.onload = function () {
             $('#img_chng_profile').attr("src", fileReader.result);
@@ -383,8 +385,25 @@ var isWithdrawed = false;
     });
 
     $('#btn_remove_profile').on("click", function () {
-        $('#img_chng_profile').css("display", "none");
-        $('#img_chng_default').css("display", "block");
+        $.ajax({
+            url: "/api/remove_profile",
+            method: 'POST',
+            async: false,
+            data: JSON.stringify({
+                "id": get_current_user()['identification_number'],
+            }),
+            success: function (data) {
+                if (data['state']) {
+                    $('#img_chng_profile').css("display", "none");
+                    $('#img_chng_default').css("display", "block");
+                    remove_current_profile();
+                }
+                }, error: function (err) {
+
+                }
+            });
+
+
 
     });
 })(jQuery);

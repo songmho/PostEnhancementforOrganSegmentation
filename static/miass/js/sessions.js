@@ -7,6 +7,9 @@ function get_current_profile() {
     console.log(JSON.parse(sessionStorage.getItem("profile")));
     return JSON.parse(sessionStorage.getItem("profile"));
 }
+function remove_current_profile() {
+    sessionStorage.removeItem("profile");
+}
 function set_current_user(c_u) {
     // sessionStorage.setItem("current_user", JSON.stringify(c_u));
     sessionStorage.setItem("current_user", JSON.stringify(c_u));
@@ -36,6 +39,7 @@ function get_current_role() {
 function remove_current_user() {
     sessionStorage.clear();
     sessionStorage.removeItem("current_user");
+    sessionStorage.removeItem("profile");
     sessionStorage.removeItem("current_role");
 }
 

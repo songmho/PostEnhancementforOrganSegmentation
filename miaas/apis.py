@@ -112,6 +112,25 @@ def send_profile(request):
         return HttpResponse(None, content_type="image/png")
 
 
+def remove_profile(request):
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        id = data['id']
+        path = "D:\\Projects\\MIAS_Project\\mias\\media\\profile_image\\"+str(id)
+        try:
+            if not os.path.isdir(path):
+                return JsonResponse({"state": True})
+            else:
+                try:
+                    for i in os.listdir(path):
+                        os.remove(path+"\\"+i)
+                        print(path+"\\"+i)
+                    return JsonResponse({"state": True})
+                except:
+                    return JsonResponse({"state": False})
+        except:
+            return JsonResponse({"state": False})
+
 
 def upload_images(request):
     if request.method == "POST":

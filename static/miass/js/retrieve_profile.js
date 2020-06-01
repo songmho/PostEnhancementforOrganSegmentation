@@ -8,7 +8,7 @@
         $("#txt_user_birthday").text(cur_user_info['birthday']);
         $("#txt_user_role").text(cur_user_info["role"]);
         $("#txt_user_phone").text(cur_user_info['phone_number']);
-        if (get_current_profile() != "None"){
+        if (get_current_profile() != "None" && get_current_profile() !==null){
             $("#img_curr_profile").attr("src", "data:image/png;base64,"+get_current_profile());
         }
     });

@@ -89,7 +89,7 @@
         // try {
             c_u = get_current_user();
             var c_r = get_current_role();
-            if (get_current_profile() != "None"){
+            if (get_current_profile() != "None" && get_current_profile() !==null){
                 $('#img_profile').attr("src", "data:image/png;base64,"+get_current_profile());
             }
 
