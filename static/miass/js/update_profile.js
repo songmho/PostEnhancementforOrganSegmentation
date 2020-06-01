@@ -254,7 +254,7 @@ var isWithdrawed = false;
                     $('#img_chng_profile').css("display", "block");
                     $("#img_chng_profile").attr("src", "data:image/png;base64,"+data);
                     set_current_profile(data);
-                    location.reload();
+                    location.reload()
                 }
                 }, error: function (err) {
 
@@ -397,6 +397,7 @@ var isWithdrawed = false;
                     $('#img_chng_profile').css("display", "none");
                     $('#img_chng_default').css("display", "block");
                     remove_current_profile();
+                    location.reload()
                 }
                 }, error: function (err) {
 
