@@ -132,6 +132,10 @@ class Physician(User):
         self.active = None
         self.db = DBPhysician()
 
+    def add_physician(self, id):
+        result = self.db.add_physician(id)
+        return result
+
     def register_physician(self, first_name=None, last_name=None, email=None, phone_number=None, pwd=None, role=None, active=None):
         print(">>>", role)
         result = self.db.register_physician(first_name, last_name, email, phone_number, pwd, role, active)
@@ -191,6 +195,10 @@ class Patient(User):
         self.active = None
         self.db = DBPatient()
 
+    def add_patient(self, id):
+        result = self.db.add_patient(id)
+        return result
+
     def register_patient(self, first_name=None, last_name=None, email=None, phone_number=None, pwd=None, role=None, active=None):
         result = self.db.register_patient(first_name, last_name, email, phone_number, pwd, role, active)
 
@@ -247,6 +255,10 @@ class Staff(User):
         self.role = None
         self.active = None
         self.db = DBStaff()
+
+    def add_staff(self, id):
+        result = self.db.add_staff(id)
+        return result
 
     def register_staff(self, first_name=None, last_name=None, email=None, phone_number=None, pwd=None, role=None, active=None):
         result = self.db.register_staff(first_name, last_name, email, phone_number, pwd, role, active)
@@ -512,6 +524,18 @@ class DBPhysician(DBUser):
     def __init__(self):
         super().__init__()
 
+    def add_physician(self, id):
+        try:
+            sql = "INSERT INTO physician (identification_number) " \
+                  "VALUES (%s)"
+
+            with self.conn.cursor() as cursor:
+                cursor.execute(sql, id)
+            self.conn.commit()
+            return True
+        except:
+            return False
+
     def register_physician(self, first_name, last_name, email, phone_number, pwd, role, active):
         """
         To register evaluator with user's information
@@ -669,6 +693,18 @@ class DBPatient(DBUser):
     def __init__(self):
         super().__init__()
 
+    def add_patient(self, id):
+        try:
+            sql = "INSERT INTO patient (identification_number) " \
+                  "VALUES (%s)"
+
+            with self.conn.cursor() as cursor:
+                cursor.execute(sql, id)
+            self.conn.commit()
+            return True
+        except:
+            return False
+
     def register_patient(self, first_name, last_name, email, phone_number, pwd, role, active):
         """
         To register trainee information
@@ -819,6 +855,18 @@ class DBPatient(DBUser):
 class DBStaff(DBUser):
     def __init__(self):
         super().__init__()
+
+    def add_staff(self, id):
+        try:
+            sql = "INSERT INTO staff (identification_number) " \
+                  "VALUES (%s)"
+
+            with self.conn.cursor() as cursor:
+                cursor.execute(sql, id)
+            self.conn.commit()
+            return True
+        except:
+            return False
 
     def register_staff(self, first_name, last_name, email, phone_number, pwd, role, active):
         """

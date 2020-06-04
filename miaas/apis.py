@@ -506,6 +506,34 @@ def invite_user(request):
             return JsonResponse({"result": False})
 
 @csrf_exempt
+def add_role(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            id = data['id']
+            role = data['role']
+
+            if role == "Physician":
+                pysician = Physician()
+                result = pysician.add_physician(id)
+                return JsonResponse({'state': result})
+            elif role == "Patient":
+                patient = Patient()
+                result = patient.add_patient(id)
+                return JsonResponse({'state': result})
+            elif role == "Staff":
+                staff = Staff()
+                result = staff.add_staff(id)
+                return JsonResponse({'state': result})
+            else:
+                return JsonResponse({'state': False})
+        except:
+            return JsonResponse({'state': False})
+    else:
+        return JsonResponse({'state': False})
+
+
+@csrf_exempt
 def sign_up(request):
     if request.method == "POST":
         # try:

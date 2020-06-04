@@ -81,6 +81,8 @@ urlpatterns = [
     url(r'^api/forgot_pwd', apis.forgot_pwd),
     url(r'^api/reset_pwd', apis.reset_pwd),
 
+    url(r'^api/add_role', apis.add_role),
+
     url(r'^api/register_profile_image', apis.register_profile_image),
     url(r'^api/send_profile', apis.send_profile),
     url(r'^api/remove_profile', apis.remove_profile),
