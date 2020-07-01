@@ -43,14 +43,6 @@ var isWithdrawed = false;
         $("#modal_change_pwd").modal("show");
     });
 
-    $("#btn_withdraw").on("click", function () {
-
-        $("#modal_withdraw").modal("show");
-    });
-    $('#btn_no_withdraw').on("click", function () {
-        $("#modal_withdraw").modal("hide");
-    });
-
     $('#btn_checked_notice').on("click", function () {
         if(isWithdrawed){
             $("#modal_update_notice").modal("hide");
@@ -59,6 +51,15 @@ var isWithdrawed = false;
             $("#modal_update_notice").modal("hide");
 
         }
+    });
+
+    $("#btn_withdraw").on("click", function () {
+
+        $("#modal_withdraw").modal("show");
+    });
+
+    $('#btn_no_withdraw').on("click", function () {
+        $("#modal_withdraw").modal("hide");
     });
 
     $('#btn_yes_withdraw').on("click", function () {
@@ -236,6 +237,9 @@ var isWithdrawed = false;
 
     $("#btn_checked_notice").on("click", function () {
         $("#modal_notice").modal("hide");
+    });
+    $("#btn_add_role").on("click", function () {
+        $("#modal_add_role").modal("show");
     });
 
     function loadProfileImage(){

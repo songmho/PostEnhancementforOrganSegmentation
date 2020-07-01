@@ -1,10 +1,10 @@
 function set_current_profile(d){
     sessionStorage.removeItem("profile");
-    console.log(d);
+    // console.log(d);
     sessionStorage.setItem("profile", JSON.stringify(d));
 }
 function get_current_profile() {
-    console.log(JSON.parse(sessionStorage.getItem("profile")));
+    // console.log(JSON.parse(sessionStorage.getItem("profile")));
     return JSON.parse(sessionStorage.getItem("profile"));
 }
 function remove_current_profile() {

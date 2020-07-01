@@ -1,0 +1,8 @@
+.profile_boarder{
+    outline: 1px solid orangered;
+}
+.divider{
+    height: 2px;
+    width: 100%;
+    background-color: #dee2e6;
+}

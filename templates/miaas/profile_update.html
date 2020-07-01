@@ -100,7 +100,7 @@
                     </button>
                 </div>
 
-                <div class="w-75 mx-auto mt-5 row  justify-content-between">
+                <div class="w-75 mx-auto mt-5 row  justify-content-between" style="margin-top: 100px;">
                     <h5>Withdraw</h5>
                     <button id="btn_withdraw" class="btn btn-danger  float-right ">
                         Withdraw
@@ -112,97 +112,98 @@
         </div>
     </div>
 
-        <div class="modal fade" id="modal_change_pwd" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Change password</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>
-                    <div class="modal-body" id="">
-                        <h5>Input new password </h5>
-                        <form>
-                            <label for="txt_pwd" class="mt-2 mb-1">Current Password<span style="color:red">*</span>
-                                        <span style="color:red" id="txt_chk_crr_pwd" hidden>&nbsp;Check current password</span></label>
-                            <input type="password" class="form-control" id="txt_crr_pwd" required>
+    <!-- Modal -->
+    <div class="modal fade" id="modal_change_pwd" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Change password</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body" id="">
+                    <h5>Input new password </h5>
+                    <form>
+                        <label for="txt_pwd" class="mt-2 mb-1">Current Password<span style="color:red">*</span>
+                                    <span style="color:red" id="txt_chk_crr_pwd" hidden>&nbsp;Check current password</span></label>
+                        <input type="password" class="form-control" id="txt_crr_pwd" required>
 
-                            <label for="txt_pwd" class="mt-2 mb-1">Password<span style="color:red">*</span>
-                                        <span style="color:red" id="txt_chk_pwd" hidden>&nbsp;Check password</span></label>
-                            <input type="password" class="form-control" id="txt_pwd" required>
+                        <label for="txt_pwd" class="mt-2 mb-1">Password<span style="color:red">*</span>
+                                    <span style="color:red" id="txt_chk_pwd" hidden>&nbsp;Check password</span></label>
+                        <input type="password" class="form-control" id="txt_pwd" required>
 
-                            <label for="txt_pwd_check" class="mt-2 mb-1">Re-enter password<span style="color:red">*</span>
-                                        <span style="color:red" id="txt_chk_pwd_re" hidden>&nbsp;Check password</span></label>
-                            <input type="password" class="form-control " id="txt_pwd_check" required>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="btn_change_yes">Yes</button>
-                        <button type="button" class="btn btn-secondary" id="btn_change_no">No</button>
-                    </div>
+                        <label for="txt_pwd_check" class="mt-2 mb-1">Re-enter password<span style="color:red">*</span>
+                                    <span style="color:red" id="txt_chk_pwd_re" hidden>&nbsp;Check password</span></label>
+                        <input type="password" class="form-control " id="txt_pwd_check" required>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btn_change_yes">Yes</button>
+                    <button type="button" class="btn btn-secondary" id="btn_change_no">No</button>
                 </div>
             </div>
         </div>
-        <!-- Modal -->
-        <div class="modal fade" id="modal_signup" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Note</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>
-                    <div class="modal-body" id="modal_signup_text">
+    </div>
 
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="btn_yes">Yes</button>
-                    </div>
+    <div class="modal fade" id="modal_add_role" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="modal_add_role_title">Note</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body" id="modal_add_role_txt">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btn_yes">Yes</button>
                 </div>
             </div>
         </div>
+    </div>
 
 
-        <div class="modal fade" id="modal_withdraw" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Alert</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>
-                    <div class="modal-body" id="modal_signup_text">
-                        Do you want to withdraw MIAS system?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="btn_yes_withdraw">Yes</button>
-                        <button type="button" class="btn btn-default" id="btn_no_withdraw">No</button>
-                    </div>
+    <div class="modal fade" id="modal_withdraw" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Alert</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body" id="modal_signup_text">
+                    Do you want to withdraw MIAS system?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btn_yes_withdraw">Yes</button>
+                    <button type="button" class="btn btn-default" id="btn_no_withdraw">No</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="modal fade" id="modal_update_notice" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Notice</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>
-                    <div class="modal-body" id="modal_text_notice">
+    <div class="modal fade" id="modal_update_notice" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Notice</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body" id="modal_text_notice">
 
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="btn_checked_notice">Yes</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btn_checked_notice">Yes</button>
                 </div>
             </div>
         </div>
+    </div>
 
 
 </body>
