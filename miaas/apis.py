@@ -512,26 +512,142 @@ def add_role(request):
             data = json.loads(request.body.decode('utf-8'))
             id = data['id']
             role = data['role']
-
-            if role == "Physician":
-                pysician = Physician()
-                result = pysician.add_physician(id)
-                return JsonResponse({'state': result})
-            elif role == "Patient":
-                patient = Patient()
-                result = patient.add_patient(id)
-                return JsonResponse({'state': result})
-            elif role == "Staff":
-                staff = Staff()
-                result = staff.add_staff(id)
-                return JsonResponse({'state': result})
-            else:
+            u = User()
+            cur_role = u.retrieve_user(identification_number=id)[0]["role"]
+            roles = cur_role.split(" ")
+            if role in roles:
                 return JsonResponse({'state': False})
+            else:
+                result = u.modify_user(identification_number=id, role=cur_role+" "+role)
+                if result:
+                    if role == "Physician":
+                        physician = Physician()
+                        result = physician.add_physician(id)
+                        return JsonResponse({'state': result})
+                    elif role == "Patient":
+                        patient = Patient()
+                        result = patient.add_patient(id)
+                        return JsonResponse({'state': result})
+                    elif role == "Staff":
+                        staff = Staff()
+                        result = staff.add_staff(id)
+                        return JsonResponse({'state': result})
+                    else:
+                        return JsonResponse({'state': False})
+                else:
+                    return JsonResponse({'state': False})
         except:
             return JsonResponse({'state': False})
     else:
         return JsonResponse({'state': False})
 
+@csrf_exempt
+def modify_role(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            id = data['id']
+            role = data['role']
+            u = User()
+            cur_role = u.retrieve_user(identification_number=id)[0]["role"]
+            roles = cur_role.split(" ")
+            if role in roles:
+                return JsonResponse({'state': False})
+            else:
+                result = u.modify_user(identification_number=id, role=cur_role+" "+role)
+                if result:
+                    if role == "Physician":
+                        physician = Physician()
+                        result = physician.add_physician(id)
+                        return JsonResponse({'state': result})
+                    elif role == "Patient":
+                        patient = Patient()
+                        result = patient.add_patient(id)
+                        return JsonResponse({'state': result})
+                    elif role == "Staff":
+                        staff = Staff()
+                        result = staff.add_staff(id)
+                        return JsonResponse({'state': result})
+                    else:
+                        return JsonResponse({'state': False})
+                else:
+                    return JsonResponse({'state': False})
+        except:
+            return JsonResponse({'state': False})
+    else:
+        return JsonResponse({'state': False})
+
+@csrf_exempt
+def remove_role(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            id = data['id']
+            role = data['role']
+            u = User()
+            cur_role = u.retrieve_user(identification_number=id)[0]["role"]
+            roles = cur_role.split(" ")
+            if role in roles:
+                return JsonResponse({'state': False})
+            else:
+                result = u.modify_user(identification_number=id, role=cur_role+" "+role)
+                if result:
+                    if role == "Physician":
+                        physician = Physician()
+                        result = physician.add_physician(id)
+                        return JsonResponse({'state': result})
+                    elif role == "Patient":
+                        patient = Patient()
+                        result = patient.add_patient(id)
+                        return JsonResponse({'state': result})
+                    elif role == "Staff":
+                        staff = Staff()
+                        result = staff.add_staff(id)
+                        return JsonResponse({'state': result})
+                    else:
+                        return JsonResponse({'state': False})
+                else:
+                    return JsonResponse({'state': False})
+        except:
+            return JsonResponse({'state': False})
+    else:
+        return JsonResponse({'state': False})
+
+@csrf_exempt
+def retrieve_role(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            id = data['id']
+            role = data['role']
+            u = User()
+            cur_role = u.retrieve_user(identification_number=id)[0]["role"]
+            roles = cur_role.split(" ")
+            if role in roles:
+                return JsonResponse({'state': False})
+            else:
+                result = u.modify_user(identification_number=id, role=cur_role+" "+role)
+                if result:
+                    if role == "Physician":
+                        physician = Physician()
+                        result = physician.add_physician(id)
+                        return JsonResponse({'state': result})
+                    elif role == "Patient":
+                        patient = Patient()
+                        result = patient.add_patient(id)
+                        return JsonResponse({'state': result})
+                    elif role == "Staff":
+                        staff = Staff()
+                        result = staff.add_staff(id)
+                        return JsonResponse({'state': result})
+                    else:
+                        return JsonResponse({'state': False})
+                else:
+                    return JsonResponse({'state': False})
+        except:
+            return JsonResponse({'state': False})
+    else:
+        return JsonResponse({'state': False})
 
 @csrf_exempt
 def sign_up(request):

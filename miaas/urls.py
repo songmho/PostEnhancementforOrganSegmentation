@@ -82,6 +82,9 @@ urlpatterns = [
     url(r'^api/reset_pwd', apis.reset_pwd),
 
     url(r'^api/add_role', apis.add_role),
+    url(r'^api/modify_role', apis.modify_role),
+    url(r'^api/retrieve_role', apis.retrieve_role),
+    url(r'^api/remove_role', apis.remove_role),
 
     url(r'^api/register_profile_image', apis.register_profile_image),
     url(r'^api/send_profile', apis.send_profile),
@@ -98,6 +101,7 @@ urlpatterns = [
     url(r'^view/browse_image', views.browse_image),
     url(r'^view/annotate_image', views.annotate_image),
     url(r'^view/remove_image', views.remove_image),
+    url(r'^view/add_role', views.add_role),
     url(r'^view/diagnose/(?P<img_id>[a-zA-Z0-9]+)$', views.diagnose),
     url(r'^view/annotate/(?P<img_id>[a-zA-Z0-9]+)$', views.annotate),
     url(r'^view/main', views.main),

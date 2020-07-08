@@ -13,46 +13,53 @@
             $("#img_curr_profile").attr("src", "data:image/png;base64,"+get_current_profile());
         }
         var roles = cur_user_info['role'].split(" ");
+        if (roles.length === 3)
+            $("#btn_add_role").css("display", "none");
         for (const id in roles){
-            console.log("#group_"+roles[id]);
             $("#group_"+roles[id]).show();
         }
     });
 
-    $("#btn_change_name").on("click", function () {
-        // $("#txt_first_name").value = cur_user_info["first_name"];
-        $("#txt_change_first_name").value = "first_name";
-        // $("#txt_last_name").value = cur_user_info["last_name"];
-        $("#modal_change_name").modal("show");
-
-    });
-    $("#btn_change_email").on("click", function () {
-
-    });
-    $("#btn_change_gender").on("click", function () {
-
-    });
-    $("#btn_change_birthday").on("click", function () {
-
-    });
-    $("#btn_change_phone").on("click", function () {
-
-    });
-    $("#btn_change_pwd").on("click", function () {
-
+    $("#btn_modify_profile").on("click", function () {
+        location.href = "/view/update_profile"
     });
 
     $("#btn_add_role").on("click", function () {
+        location.href = "/view/add_role"
+    });
+
+    $("#btn_patient_collapse").on("click", function () {
+        // $("#btn_patient_collapse").toggle("active");
+        console.log("Hi");
+        if ($("#content_patient").css("display")==="none"){
+            $("#content_patient").show();
+        }else{
+            $("#content_patient").hide();
+        }
+    });
+
+    $("#btn_physician_collapse").on("click", function () {
+        // $("#btn_patient_collapse").toggle("active");
+        console.log("Hi");
+        if ($("#content_physician").css("display")==="none"){
+            $("#content_physician").show();
+        }else{
+            $("#content_physician").hide();
+        }
+    });
+
+    $("#btn_staff_collapse").on("click", function () {
+        // $("#btn_patient_collapse").toggle("active");
+        console.log("Hi");
+        if ($("#content_staff").css("display")==="none"){
+            $("#content_staff").show();
+        }else{
+            $("#content_staff").hide();
+        }
     });
 
     $("#btn_withdraw").on("click", function () {
         $("#modal_withdraw").modal("show");
-    });
-
-
-    $("#btn_cancel_change_name").on("click", function () {
-        $("#modal_change_name").modal("hidden");
-
     });
 
     $("#btn_update").on('click', function () {

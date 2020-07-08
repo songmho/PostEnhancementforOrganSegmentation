@@ -1,0 +1,87 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'miass/css/preview.css' %}">
+<link rel="stylesheet" href="{% static 'miass/css/text.css' %}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MIAS: Medical Image Analysis System</title>
+</head>
+<body>
+
+{% include 'miaas/header.html' %}
+
+    <div class="container">
+        <div class="mt-5">
+            <h4>
+                Choose role for adding
+            </h4>
+            <form id="div_check_box" class="w-100">
+                <label class="col-3" id="lb_Patient"><input type="radio" name="group_role_add" id="rdo_Patient" value="Patient">Patient</label>
+                <label class="col-3" id="lb_Physician"><input type="radio" name="group_role_add" id="rdo_Physician" value="Physician">Physician</label>
+                <label class="col-3" id="lb_Staff"><input type="radio" name="group_role_add" id="rdo_Staff" value="Staff">Staff</label>
+            </form>
+            <div id="content h-50">
+
+            </div>
+            <div class="">
+                <button class="btn btn-primary" type="button" id="btn_add">Add</button>
+                <button class="btn btn-secondary" type="button" id="btn_cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modal_add" tabindex="-1" role="dialog">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Note</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body" id="modal_add_text">
+                    Do you want to add the role?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btn_yes_add">Yes</button>
+                    <button type="button" class="btn btn-default" id="btn_no_add">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_change" tabindex="-1" role="dialog">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Alert</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body" id="modal_change_text">
+                    Do you want to change the role to add? The data having been written will be removed.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btn_yes_change">Yes</button>
+                    <button type="button" class="btn btn-default" id="btn_no_change">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script src="{% static "miass/js/sessions.js" %}"></script>
+<script src="{% static "miass/js/header.js" %}"></script>
+<script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
+<script src="{% static "miass/js/constants.js" %}"></script>
+<script src="{% static "miass/js/add_role.js" %}"></script>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</html>

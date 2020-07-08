@@ -22,91 +22,90 @@
 
                 <div class="h-100 w-75">
                     <div class="border border-default rounded p-3">
-                        <h4 class="mb-4 ml-2">General Information</h4>
+                        <div class="w-100 row mb-4 mx-2 ">
+                            <h4 class="col-11" style="font-weight: bold">General Information</h4>
+                            <img id="btn_modify_profile"  class="col-1" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right_black.svg' %}">
+                        </div>
+
 
                         <div class="divider mb-2"></div>
                         <div class="w-100 row ml-3 my-3">
                             <h5 class="w-25">Name</h5>
                             <h5 class="col-8 mx-0 px-0" id="txt_user_name"></h5>
-                            <img id="btn_change_name" class="float-right" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right_black.svg' %}">
                         </div>
 
                         <div class="divider mb-2"></div>
                         <div class="w-100 row ml-3 my-3">
                             <h5 class="w-25">Email</h5>
                             <h5 class="col-8 mx-0 px-0" id="txt_user_email"></h5>
-                            <img id="btn_change_email" class="float-right" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right_black.svg' %}">
                         </div>
 
                         <div class="divider mb-2"></div>
                         <div class="w-100 row ml-3 my-3">
                             <h5 class="w-25">Gender</h5>
                             <h5 class="col-8 mx-0 px-0" id="txt_user_gender"></h5>
-                            <img id="btn_change_gender" class="float-right" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right_black.svg' %}">
                         </div>
 
                         <div class="divider mb-2"></div>
                         <div class="w-100 row ml-3 my-3">
                             <h5 class="w-25">Birth Day</h5>
                             <h5 class="col-8 mx-0 px-0" id="txt_user_birthday"></h5>
-                            <img id="btn_change_birthday" class="float-right" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right_black.svg' %}">
-                        </div>
-
-                        <div class="divider mb-2"></div>
-                        <div class="w-100 row ml-3 my-3 ">
-                            <h5 class="w-25">Phone</h5>
-                            <h5 class="col-8 mx-0 px-0" id="txt_user_phone"></h5>
-                            <img id="btn_change_phone" class="float-right" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right_black.svg' %}">
                         </div>
 
                         <div class="divider mb-2"></div>
                         <div class="w-100 row ml-3 mt-3 ">
-                            <h5 class="w-25">Change Password</h5>
-                            <h5 class="col-8 mx-0 px-0" id="txt_user_pwd"></h5>
-                            <img id="btn_change_pwd" class="float-right" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right_black.svg' %}">
+                            <h5 class="w-25">Phone</h5>
+                            <h5 class="col-8 mx-0 px-0" id="txt_user_phone"></h5>
                         </div>
                     </div>
 
                     <div class="border border-default rounded p-3 my-5">
                         <div class="w-100 row mb-4 mx-2 ">
-                            <h4 class="">Additional Information</h4>
-                            <img class=" ml-auto mr-4" style="width: 30px; height: 30px;" src="{% static 'miass/images/add_black.svg' %}" id="btn_add_role">
+                            <h4 class="col-11" style="font-weight: bold">Role Information</h4>
+                            <img id="btn_add_role" class="col-1" style="width: 30px; height: 30px;" src="{% static 'miass/images/add_black.svg' %}" >
                         </div>
 
                         <div id="group_Patient" style="display:none">
                             <div class="divider mb-2"></div>
-                            <div class="w-100 row ml-3 my-3">
-                                <h5 class="w-25">Patient</h5>
-                                <h5 class="col-8 mx-0 px-0" ></h5>
-                                <img class="float-right" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_down_black.svg' %}">
+                            <div class="w-100 row mx-2 my-3">
+                                <h5 class="col-11">Patient</h5>
+                                <img id="btn_patient_collapse" class="col-1" class="collapsible" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_down_black.svg' %}">
+                                <div id="content_patient" class="content">
+                                    <p>Hi</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div id="group_Physical" style="display:none">
+                        <div id="group_Physician" style="display:none">
                             <div class="divider mb-2"></div>
-                            <div class="w-100 row ml-3 my-3">
-                                <h5 class="w-25">Physician</h5>
-                                <h5 class="col-8 mx-0 px-0" ></h5>
-                                <img class="float-right" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_down_black.svg' %}">
+                            <div class="w-100 row mx-2 my-3">
+                                <h5 class="col-11">Physician</h5>
+                                <img id="btn_physician_collapse" class="col-1" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_down_black.svg' %}">
+                                <div id="content_physician" class="content">
+                                    <p>Hi</p>
+                                </div>
                             </div>
                         </div>
 
                         <div id="group_Staff" style="display:none">
                             <div class="divider mb-2"></div>
-                            <div class="w-100 row ml-3 my-3">
-                                <h5 class="w-25">Staff</h5>
-                                <h5 class="col-8 mx-0 px-0" ></h5>
-                                <img class="float-right" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_down_black.svg' %}">
+                            <div class="w-100 row mx-2 my-3">
+                                <h5 class="col-11">Staff</h5>
+                                <img id="btn_staff_collapse" class="col-1" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_down_black.svg' %}">
+                                <div id="content_staff" class="content">
+                                    <p>Hi</p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="border border-danger rounded p-3 mt-5" >
-                        <h4 class="mb-4 ml-2">Danger Zone</h4>
-                        <div class="w-100 row ml-3">
-                            <h5 class="w-25" style="color:red; font-weight: bold">Withdraw</h5>
-                            <h5 class="col-8 mx-0 px-0"></h5>
-                            <img id="btn_withdraw" class="float-right" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right_black.svg' %}">
+                        <div class="w-100 row mb-4 mx-2 ">
+                            <h4 class="col-11" style="font-weight: bold">Danger Zone</h4>
+                        </div>
+                        <div class="w-100 row ml-2">
+                            <h5 class="col-11" style="font-weight: bold">Withdraw</h5>
+                            <img id="btn_withdraw" class="col-1" style="width: 30px; height: 30px;" src="{% static 'miass/images/arrow_right_black.svg' %}">
                         </div>
                     </div>
 {##}
@@ -170,36 +169,6 @@
 
 
         <!-- Modal -->
-        <div class="modal fade" id="modal_change_name" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Change Name</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>
-                    <div class="modal-body" id="modal_signup_text">
-                        <h5>Enter the name to change.</h5>
-                        <div class="form-group">
-                            <div class="form-group">
-                                <label for="txt_first_name">First Name</label>
-                                <input type="text" class="form-control" id="txt_change_first_name">
-
-                                <label for="txt_last_name">Last Name</label>
-                                <input type="text" class="form-control" id="txt_change_last_name">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="btn_submit_name">Submit</button>
-                        <button type="button" class="btn btn-default" id="btn_cancel_change_name">No</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
         <div class="modal fade" id="modal_withdraw" tabindex="-1" role="dialog">
             <div class="modal-dialog " role="document">
                 <div class="modal-content">

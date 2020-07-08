@@ -164,6 +164,9 @@ def annotate_image(request):
 def remove_image(request):
     return render(request, "miaas/image_remove.html")
 
+def add_role(request):
+    return render(request, "miaas/role_add.html")
+
 def forgot_password(request):
     return render(request, "miaas/forgot_password.html")
 
