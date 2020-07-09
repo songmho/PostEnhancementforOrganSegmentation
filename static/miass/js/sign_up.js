@@ -2,7 +2,8 @@ var is_sign = false;
 (function () {
     $(function () {
         $("#txt_birthday").datepicker({
-            format: "dd/mm/yyyy",	//데이터 포맷 형식(yyyy : 년 mm : 월 dd : 일 )
+            format: "yyyy/mm/dd",	//데이터 포맷 형식(yyyy : 년 mm : 월 dd : 일 )
+            // format: "dd/mm/yyyy",	//데이터 포맷 형식(yyyy : 년 mm : 월 dd : 일 )
                 // startDate: '-10d',	//달력에서 선택 할 수 있는 가장 빠른 날짜. 이전으로는 선택 불가능 ( d : 일 m : 달 y : 년 w : 주)
                 // endDate: '+10d',	//달력에서 선택 할 수 있는 가장 느린 날짜. 이후로 선택 불가 ( d : 일 m : 달 y : 년 w : 주)
                 autoclose : true,	//사용자가 날짜를 클릭하면 자동 캘린더가 닫히는 옵션
@@ -29,6 +30,15 @@ var is_sign = false;
         });
     });
 
+    $("#slct_role").on("change", function () {
+        var value = $(this).val();
+        console.log(value);
+        $("#div_patient_info").css("display", "none");
+        $("#div_physician_info").css("display", "none");
+
+        $("#div_staff_info").css("display", "none");
+        $("#div_"+value.toLowerCase()+"_info").css("display", "block");
+    });
 
     $("#btn_sign_up").click(function () {
         $("#txt_chk_gen").prop("hidden", true);
@@ -58,6 +68,24 @@ var is_sign = false;
         var gender = $('input:radio[name=rdo_gender]:checked').val();
         var txt_birthday = $('#txt_birthday').val();
         var role = $("#slct_role").val();
+        var role_data = {};
+        if (role==="Patient"){  // if selected role is s
+            role_data = {};
+            role_data["blood_type"] = $("#slct_pat_blood_type").val();
+            role_data["height"] = $("#txt_pat_height").val();
+            role_data["weight"] = $("#txt_pat_weight").val();
+        } else if (role==="Physician"){
+            role_data = {};
+            role_data["affiliation"] = $("#txt_phy_affiliation").val();
+            role_data["license_number"] = $("#txt_phy_license_number").val();
+            role_data["major"] = $("#txt_phy_major").val();
+
+        } else if (role === "Staff"){
+            role_data = {};
+            role_data["affiliation"] = $("#txt_saf_affiliation").val();
+        }else {
+
+        }
 
         if (fir_name === ""){
             is_possible = false;
@@ -119,8 +147,8 @@ var is_sign = false;
                     "role": role,
                     "active": 0,
                     "gender":gender,
-                    "birthday":txt_birthday
-
+                    "birthday":txt_birthday,
+                    "role_data":role_data,
                 }),
                 success: function (data) {
                     is_sign = data['state'];

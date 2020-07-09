@@ -18,6 +18,39 @@
         for (const id in roles){
             $("#group_"+roles[id]).show();
         }
+
+        for(const i in roles){
+            console.log(roles[i]);
+            $.ajax({
+               url: "/api/retrieve_role",
+               method: 'POST',
+               async: false,
+               data: JSON.stringify({
+                   "id": get_current_user()["identification_number"],
+                   "role": roles[i],
+               }),
+               success: function(data){
+                   state = data['state'];
+                   const role_data = data['data'];
+                   if (state){
+                       if (roles[i] === "Physician"){
+                           $("#txt_phy_affiliation").text(role_data['affiliation']);
+                           $("#txt_phy_license_number").text(role_data['license_number']);
+                           $("#txt_phy_major").text(role_data['major']);
+                       } else if (roles[i] === "Patient"){
+                           $("#txt_pat_blood_type").text(role_data['blood_type']);
+                           $("#txt_pat_weight").text(role_data['weight']);
+                           $("#txt_pat_height").text(role_data['height']);
+
+                       }else{       // Staff
+                           $("#txt_staff_affiliation").text(role_data['affiliation']);
+                       }
+                   }
+               }, error: function (err) {
+               }
+            });
+        }
+
     });
 
     $("#btn_modify_profile").on("click", function () {
@@ -30,7 +63,6 @@
 
     $("#btn_patient_collapse").on("click", function () {
         // $("#btn_patient_collapse").toggle("active");
-        console.log("Hi");
         if ($("#content_patient").css("display")==="none"){
             $("#content_patient").show();
         }else{
@@ -40,7 +72,6 @@
 
     $("#btn_physician_collapse").on("click", function () {
         // $("#btn_patient_collapse").toggle("active");
-        console.log("Hi");
         if ($("#content_physician").css("display")==="none"){
             $("#content_physician").show();
         }else{
@@ -50,7 +81,6 @@
 
     $("#btn_staff_collapse").on("click", function () {
         // $("#btn_patient_collapse").toggle("active");
-        console.log("Hi");
         if ($("#content_staff").css("display")==="none"){
             $("#content_staff").show();
         }else{

@@ -65,12 +65,48 @@
 
                     <label for="slct_role" class="mt-2 mb-1">Role<span style="color:red">*</span>
                                 <span style="color:red" id="txt_chk_role" hidden>&nbsp;Select role</span> </label>
-                    <select class="form-control" id="slct_role">
+                    <select class="form-control mt-2 mb-1" id="slct_role">
                         <option selected disabled hidden></option>
                         <option >Patient</option>
                         <option >Physician</option>
                         <option >Staff</option>
                     </select>
+
+                    <div class="mt-2 mb-1">
+                        <div id="div_patient_info" style="display:none">
+                            <label for="slct_pat_blood_type" class="mt-2 mb-1">Blood Type </label>
+                            <select class="form-control" id="slct_pat_blood_type">
+                                <option selected disabled hidden></option>
+                                <option >A Rh+</option>
+                                <option >B Rh+</option>
+                                <option >AB Rh+</option>
+                                <option >O Rh+</option>
+                                <option >A Rh-</option>
+                                <option >B Rh-</option>
+                                <option >AB Rh-</option>
+                                <option >O Rh-</option>
+                            </select>
+                            <label for="txt_pat_height" class="mt-2 mb-1">Height (cm) </label>
+                            <input type="number" class="form-control" id="txt_pat_height">
+                            <label for="txt_pat_weight" class="mt-2 mb-1">Weight (Kg) </label>
+                            <input type="number" class="form-control" id="txt_pat_weight">
+                        </div>
+
+                        <div id="div_physician_info" style="display:none">
+                            <label for="txt_phy_affiliation" class="mt-2 mb-1">Affiliation</label>
+                            <input type="text" class="form-control" id="txt_phy_affiliation">
+                            <label for="txt_phy_license_number" class="mt-2 mb-1">License Number</label>
+                            <input type="text" class="form-control" id="txt_phy_license_number">
+                            <label for="txt_phy_major" class="mt-2 mb-1">Major</label>
+                            <input type="text" class="form-control" id="txt_phy_major">
+                        </div>
+
+                        <div id="div_staff_info" style="display:none">
+                            <label for="txt_saf_affiliation" class="mt-2 mb-1">Affiliation</label>
+                            <input type="text" class="form-control" id="txt_saf_affiliation">
+
+                        </div>
+                    </div>
                 </div>
             </form>
             <div class="w-50 mx-auto mt-5 text-center">

@@ -13,20 +13,51 @@
 {% include 'miaas/header.html' %}
 
     <div class="container">
-        <div class="mt-5">
+        <div class="mt-5 w-50 mx-auto ">
             <h4>
                 Choose role for adding
             </h4>
             <form id="div_check_box" class="w-100">
-                <label class="col-3" id="lb_Patient"><input type="radio" name="group_role_add" id="rdo_Patient" value="Patient">Patient</label>
-                <label class="col-3" id="lb_Physician"><input type="radio" name="group_role_add" id="rdo_Physician" value="Physician">Physician</label>
-                <label class="col-3" id="lb_Staff"><input type="radio" name="group_role_add" id="rdo_Staff" value="Staff">Staff</label>
+                <label class="col-3" id="lb_Patient"><input type="radio" class="mr-2" name="group_role_add" id="rdo_Patient" value="Patient">Patient</label>
+                <label class="col-3" id="lb_Physician"><input type="radio" class="mr-2" name="group_role_add" id="rdo_Physician" value="Physician">Physician</label>
+                <label class="col-3" id="lb_Staff"><input type="radio" class="mr-2" name="group_role_add" id="rdo_Staff" value="Staff">Staff</label>
             </form>
-            <div id="content h-50">
+            <div id="div_Patient_info" style="display:none">
+                <label for="slct_pat_blood_type" class="mt-2 mb-1">Blood Type </label>
+                <select class="form-control" id="slct_pat_blood_type">
+                    <option selected disabled hidden></option>
+                    <option >A Rh+</option>
+                    <option >B Rh+</option>
+                    <option >AB Rh+</option>
+                    <option >O Rh+</option>
+                    <option >A Rh-</option>
+                    <option >B Rh-</option>
+                    <option >AB Rh-</option>
+                    <option >O Rh-</option>
+                </select>
+                <label for="txt_pat_height" class="mt-2 mb-1">Height (cm) </label>
+                <input type="number" class="form-control" id="txt_pat_height">
+                <label for="txt_pat_weight" class="mt-2 mb-1">Weight (Kg) </label>
+                <input type="number" class="form-control" id="txt_pat_weight">
+            </div>
+
+            <div id="div_Physician_info" style="display:none">
+                <label for="txt_phy_affiliation" class="mt-2 mb-1">Affiliation</label>
+                <input type="text" class="form-control" id="txt_phy_affiliation">
+                <label for="txt_phy_license_number" class="mt-2 mb-1">License Number</label>
+                <input type="text" class="form-control" id="txt_phy_license_number">
+                <label for="txt_phy_major" class="mt-2 mb-1">Major</label>
+                <input type="text" class="form-control" id="txt_phy_major">
+            </div>
+
+            <div id="div_Staff_info" style="display:none">
+                <label for="txt_saf_affiliation" class="mt-2 mb-1">Affiliation</label>
+                <input type="text" class="form-control" id="txt_saf_affiliation">
 
             </div>
-            <div class="">
-                <button class="btn btn-primary" type="button" id="btn_add">Add</button>
+
+            <div class="row float-right mt-4">
+                <button class="btn btn-primary mx-3" type="button" id="btn_add">Add</button>
                 <button class="btn btn-secondary" type="button" id="btn_cancel">Cancel</button>
             </div>
         </div>
@@ -48,6 +79,25 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="btn_yes_add">Yes</button>
                     <button type="button" class="btn btn-default" id="btn_no_add">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_add_finish" tabindex="-1" role="dialog">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Note</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body" id="modal_add_finish_text">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btn_yes_add_finish">Yes</button>
                 </div>
             </div>
         </div>

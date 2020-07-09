@@ -170,10 +170,6 @@ def upload_images(request):
     else:
         return JsonResponse({"state": False})
 
-def test(request):
-    if request.method == "POST":
-        print(request.POST)
-
 def get_max_img_count(request):
     if request.method == "POST":
         data = json.loads(request.body.decode('utf-8'))
@@ -508,36 +504,39 @@ def invite_user(request):
 @csrf_exempt
 def add_role(request):
     if request.method == "POST":
-        try:
+        # try:
             data = json.loads(request.body.decode('utf-8'))
             id = data['id']
             role = data['role']
+            role_data = data["role_data"]
             u = User()
             cur_role = u.retrieve_user(identification_number=id)[0]["role"]
+            print(cur_role)
             roles = cur_role.split(" ")
             if role in roles:
                 return JsonResponse({'state': False})
             else:
                 result = u.modify_user(identification_number=id, role=cur_role+" "+role)
+                print("upadted ___>>>", result)
                 if result:
                     if role == "Physician":
                         physician = Physician()
-                        result = physician.add_physician(id)
+                        result = physician.add_physician(id, role_data)
                         return JsonResponse({'state': result})
                     elif role == "Patient":
                         patient = Patient()
-                        result = patient.add_patient(id)
+                        result = patient.add_patient(id, role_data)
                         return JsonResponse({'state': result})
                     elif role == "Staff":
                         staff = Staff()
-                        result = staff.add_staff(id)
+                        result = staff.add_staff(id, role_data)
                         return JsonResponse({'state': result})
                     else:
                         return JsonResponse({'state': False})
                 else:
                     return JsonResponse({'state': False})
-        except:
-            return JsonResponse({'state': False})
+        # except:
+        #     return JsonResponse({'state': False})
     else:
         return JsonResponse({'state': False})
 
@@ -594,15 +593,15 @@ def remove_role(request):
                 if result:
                     if role == "Physician":
                         physician = Physician()
-                        result = physician.add_physician(id)
+                        result = physician.delete_physician(id)
                         return JsonResponse({'state': result})
                     elif role == "Patient":
                         patient = Patient()
-                        result = patient.add_patient(id)
+                        result = patient.delete_patient(id)
                         return JsonResponse({'state': result})
                     elif role == "Staff":
                         staff = Staff()
-                        result = staff.add_staff(id)
+                        result = staff.delete_staff(id)
                         return JsonResponse({'state': result})
                     else:
                         return JsonResponse({'state': False})
@@ -616,36 +615,26 @@ def remove_role(request):
 @csrf_exempt
 def retrieve_role(request):
     if request.method == "POST":
-        try:
+        # try:
             data = json.loads(request.body.decode('utf-8'))
             id = data['id']
             role = data['role']
-            u = User()
-            cur_role = u.retrieve_user(identification_number=id)[0]["role"]
-            roles = cur_role.split(" ")
-            if role in roles:
-                return JsonResponse({'state': False})
+            if role == "Physician":
+                physician = Physician()
+                result = physician.retrieve_physician(identification_number=id)[0]
+                return JsonResponse({'state': True, "data": result})
+            elif role == "Patient":
+                patient = Patient()
+                result = patient.retrieve_patient(identification_number=id)[0]
+                return JsonResponse({'state': True, "data": result})
+            elif role == "Staff":
+                staff = Staff()
+                result = staff.retrieve_staff(identification_number=id)[0]
+                return JsonResponse({'state': True, "data": result})
             else:
-                result = u.modify_user(identification_number=id, role=cur_role+" "+role)
-                if result:
-                    if role == "Physician":
-                        physician = Physician()
-                        result = physician.add_physician(id)
-                        return JsonResponse({'state': result})
-                    elif role == "Patient":
-                        patient = Patient()
-                        result = patient.add_patient(id)
-                        return JsonResponse({'state': result})
-                    elif role == "Staff":
-                        staff = Staff()
-                        result = staff.add_staff(id)
-                        return JsonResponse({'state': result})
-                    else:
-                        return JsonResponse({'state': False})
-                else:
-                    return JsonResponse({'state': False})
-        except:
-            return JsonResponse({'state': False})
+                return JsonResponse({'state': False})
+        # except:
+        #     return JsonResponse({'state': False})
     else:
         return JsonResponse({'state': False})
 
@@ -658,6 +647,7 @@ def sign_up(request):
         print(data['role'])
         data['role'] = " ".join(data['role'])
         print("role", data['role'])
+        role_data = data['role_data']
         u = User()
         akg = ActivationKeyGenerator()
         a_k = akg.get_key()
@@ -669,15 +659,15 @@ def sign_up(request):
             if "Physician" in data['role']:
                 u = Physician()
                 result = u.register_physician(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
-                                phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
+                                phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0, role_data=role_data)
             if "Patient" in data['role']:
                 u = Patient()
                 result = u.register_patient(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
-                                phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
+                                phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0, role_data=role_data)
             if "Staff" in data['role']:
                 s = Staff()
                 result = s.register_staff(first_name=data['first_name'], last_name=data['last_name'], email=data["email"],
-                                phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0)
+                                phone_number=data["phone_number"], pwd=data["pwd"], role=data['role'], active=0, role_data=role_data)
             if result:
                 # snder = MailSender()
 
@@ -721,6 +711,7 @@ def sign_up(request):
         # except:
         #     return JsonResponse({'state': False, "data": "Check your information again."})
 
+
 @csrf_exempt
 def change_pwd(request):
     if request.method == "POST":
@@ -733,6 +724,24 @@ def change_pwd(request):
             return JsonResponse({'state': True})
         else:
             return JsonResponse({'state': False})
+    else:
+        return JsonResponse({'state': False})
+
+
+@csrf_exempt
+def get_current_user_info(request):
+    if request.method == "POST":
+        data = json.loads(request.body.decode('utf-8'))
+        id = data["id"]
+        try:
+            user = User()
+            cur_user = user.retrieve_user(identification_number=id)
+            if cur_user:
+                return JsonResponse({"state": True, "data": cur_user[0]})
+            else:
+                return JsonResponse({"state": True})
+        except:
+            return JsonResponse({"state": True})
     else:
         return JsonResponse({'state': False})
 

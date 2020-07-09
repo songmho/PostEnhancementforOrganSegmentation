@@ -92,7 +92,7 @@ urlpatterns = [
 
     url(r'^api/send_activate_mail', apis.send_activate_mail),
     url(r'^api/change_pwd', apis.forgot_pwd),
-
+    url(r'^api/get_cur_user_info', apis.get_current_user_info),
 
     url(r'^view/sign_in', views.sign_in_page),
     url(r'^view/browse_profile', views.browse_profile),
@@ -117,7 +117,6 @@ urlpatterns = [
     url(r'^api/send_dicom/(?P<img_id>[0-9]+)/(?P<img_loc>[0-9]+)$', apis.send_dicom),
     url(r'^api/get_max_img_count', apis.get_max_img_count),
     url(r'^api/upload_txt', apis.upload_txt),
-    url(r'^api/test123', apis.test),
     # url(r'^api/register_test_item', apis.register_test_item),
     # url(r'^api/invite_user', apis.invite_user),
     # url(r'^api/check_invitation_code', apis.check_invitation_code),
