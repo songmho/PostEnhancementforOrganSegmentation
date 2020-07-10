@@ -85,6 +85,7 @@ urlpatterns = [
     url(r'^api/modify_role', apis.modify_role),
     url(r'^api/retrieve_role', apis.retrieve_role),
     url(r'^api/remove_role', apis.remove_role),
+    url(r'^api/change_role_order', apis.change_role_order),
 
     url(r'^api/register_profile_image', apis.register_profile_image),
     url(r'^api/send_profile', apis.send_profile),

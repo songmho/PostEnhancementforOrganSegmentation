@@ -30,6 +30,25 @@ function get_current_user() {
 
 function set_current_role(role) {
     sessionStorage.setItem("current_role", JSON.stringify(role));
+    $.ajax({
+        url: "/api/change_role_order",
+        method: 'POST',
+        async: true,
+        data: JSON.stringify({
+            "id": get_current_user()["identification_number"],
+            "role": role,
+        }),
+        success: function (data) {
+            console.log(data);
+            if (data["state"]){
+
+            }else{
+
+            }
+        }, error: function (err) {
+            console.log(err);
+        }
+    });
 }
 
 function get_current_role() {

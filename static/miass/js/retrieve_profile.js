@@ -61,31 +61,46 @@
         location.href = "/view/add_role"
     });
 
-    $("#btn_patient_collapse").on("click", function () {
+    $("#btn_patient_collapse_down").on("click", function () {
         // $("#btn_patient_collapse").toggle("active");
-        if ($("#content_patient").css("display")==="none"){
-            $("#content_patient").show();
-        }else{
-            $("#content_patient").hide();
-        }
+        $("#content_patient").show();
+        $("#btn_patient_collapse_down").hide();
+        $("#btn_patient_collapse_up").show();
     });
 
-    $("#btn_physician_collapse").on("click", function () {
+    $("#btn_patient_collapse_up").on("click", function () {
         // $("#btn_patient_collapse").toggle("active");
-        if ($("#content_physician").css("display")==="none"){
-            $("#content_physician").show();
-        }else{
-            $("#content_physician").hide();
-        }
+        $("#content_patient").hide();
+        $("#btn_patient_collapse_down").show();
+        $("#btn_patient_collapse_up").hide();
     });
 
-    $("#btn_staff_collapse").on("click", function () {
+    $("#btn_physician_collapse_down").on("click", function () {
         // $("#btn_patient_collapse").toggle("active");
-        if ($("#content_staff").css("display")==="none"){
-            $("#content_staff").show();
-        }else{
-            $("#content_staff").hide();
-        }
+        $("#content_physician").show();
+        $("#btn_physician_collapse_down").hide();
+        $("#btn_physician_collapse_up").show();
+    });
+
+    $("#btn_physician_collapse_up").on("click", function () {
+        // $("#btn_patient_collapse").toggle("active");
+        $("#content_physician").hide();
+        $("#btn_physician_collapse_down").show();
+        $("#btn_physician_collapse_up").hide();
+    });
+
+    $("#btn_staff_collapse_down").on("click", function () {
+        // $("#btn_patient_collapse").toggle("active");
+        $("#content_staff").show();
+        $("#btn_staff_collapse_down").hide();
+        $("#btn_staff_collapse_up").show();
+    });
+
+    $("#btn_staff_collapse_up").on("click", function () {
+        // $("#btn_patient_collapse").toggle("active");
+        $("#content_staff").hide();
+        $("#btn_staff_collapse_down").show();
+        $("#btn_staff_collapse_up").hide();
     });
 
     $("#btn_withdraw").on("click", function () {

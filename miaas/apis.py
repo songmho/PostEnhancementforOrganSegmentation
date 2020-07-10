@@ -613,6 +613,26 @@ def remove_role(request):
         return JsonResponse({'state': False})
 
 @csrf_exempt
+def change_role_order(request):
+    if request.method == "POST":
+        # try:
+        data = json.loads(request.body.decode('utf-8'))
+        id = data['id']
+        role = data['role']
+        u = User()
+        cur_role = u.retrieve_user(identification_number=id)[0]["role"]
+        roles = cur_role.split(" ")
+        roles.remove(role)
+        roles.insert(0, role)
+        u.modify_user(identification_number=id, role=" ".join(roles))
+        return JsonResponse({"state": True})
+        # except:
+        #     return JsonResponse({"state": False})
+    else:
+        return JsonResponse({"state": False})
+
+
+@csrf_exempt
 def retrieve_role(request):
     if request.method == "POST":
         # try:
