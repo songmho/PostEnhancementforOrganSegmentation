@@ -20,18 +20,23 @@
 
 
     $("#nav_brain_abnormality").click(function () {
+        location.replace(SERVER_ADDRESS+"/view/brain_abnormality_diagnosis");
     });
 
     $("#nav_liver_abnormality").click(function () {
+        location.replace(SERVER_ADDRESS+"/view/liver_abnormality_diagnosis");
     });
 
     $("#nav_lung_abnormality").click(function () {
+        location.replace(SERVER_ADDRESS+"/view/lung_abnormality_diagnosis");
     });
 
     $("#nav_breast_abnormality").click(function () {
+        location.replace(SERVER_ADDRESS+"/view/breast_abnormality_diagnosis");
     });
 
     $("#nav_stomach_abnormality").click(function () {
+        location.replace(SERVER_ADDRESS+"/view/stomach_abnormality_diagnosis");
     });
 
 

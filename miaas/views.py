@@ -150,7 +150,7 @@ def register_image(request):
 def browse_image(request):
     return render(request, "miaas/image_browse.html")
 
-def diagnose(request, img_id):
+def browse(request, img_id):
     context = {'img_id': img_id}
     return render(request, "miaas/diagnose.html", context)
 
@@ -166,6 +166,28 @@ def remove_image(request):
 
 def add_role(request):
     return render(request, "miaas/role_add.html")
+
+def brain_abnormality_diagnosis(request):
+    return render(request, "miaas/brain_abnormality_diagnosis.html")
+
+def liver_abnormality_diagnosis(request):
+    return render(request, "miaas/liver_abnormality_diagnosis.html")
+
+def lung_abnormality_diagnosis(request):
+    return render(request, "miaas/lung_abnormality_diagnosis.html")
+
+def breast_abnormality_diagnosis(request):
+    return render(request, "miaas/breast_abnormality_diagnosis.html")
+
+def stomach_abnormality_diagnosis(request):
+    return render(request, "miaas/stomach_abnormality_diagnosis.html")
+
+def diagnosis_detail(request, diagnosis_id):
+    context = {'diagnosis_id': diagnosis_id}
+    return render(request, "miaas/detail_diagnosis.html", context)
+
+def diagnose_abnormality(request):
+    return render(request, "miaas/diagnose_abnormality.html")
 
 def forgot_password(request):
     return render(request, "miaas/forgot_password.html")

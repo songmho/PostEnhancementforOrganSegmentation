@@ -1,0 +1,147 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'miass/css/preview.css' %}">
+<link rel="stylesheet" href="{% static 'miass/css/text.css' %}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MIAS: Medical Image Analysis System</title>
+</head>
+<body>
+
+{% include 'miaas/header.html' %}
+<div class="container">
+    <div class="mt-5">
+        <form autocomplete="off" id="diagnosis_form" class="w-75 mx-auto">
+            <div class="row mx-0">
+                <div class="col-5 border rounded p-2">
+                    <div class="row ">
+                        <h4 class="col-10">Patient Information</h4>
+                        <div class="col-1">
+                        <img id="btn_patient_search" style="width: 30px; height: 30px;" src="{% static 'miass/images/search.svg' %}">
+                        </div>
+                    </div>
+                    <div class="row ml-1">
+                        <h5 class="col-4">Name </h5>
+                        <h5 class="col-7" id="txt_patient_name"> Test</h5>
+                    </div>
+                    <div class="row ml-1">
+                        <h5 class="col-4">Gender </h5>
+                        <h5 class="col-7" id="txt_patient_gender"> Female</h5>
+                    </div>
+                    <div class="row ml-1">
+                        <h5 class="col-4">Age </h5>
+                        <h5 class="col-7" id="txt_patient_name"> 43</h5>
+                    </div>
+
+                </div>
+                <div class="col-7 border rounded  p-2">
+                    <h4>Previous Diagnosis Record</h4>
+                    <table class="table table-sm" id="list_record">
+                        <thead>
+                            <tr>
+                                <th scope="col" width="25%">Date</th>
+                                <th scope="col" width="75%" colspan="4">Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="1">
+                                <td >2020.07.07.</td>
+                                <td  colspan="4">Test</td>
+                            </tr>
+                            <tr id="1">
+                                <td >2020.07.07.</td>
+                                <td  colspan="4">Test</td>
+                            </tr>
+                            <tr id="1">
+                                <td >2020.07.07.</td>
+                                <td  colspan="4">Test</td>
+                            </tr>
+                            <tr id="1">
+                                <td >2020.07.07.</td>
+                                <td  colspan="4">Test</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+            <div class="w-100 border rounded mt-2  p-2">
+                <h4 class="col-10">Diagnosis Information</h4>
+
+                <div class="ml-2">
+                    <h5 class="col-3">Symptoms</h5>
+                    <div class="ml-3">
+                        <div class="row mx-0">
+                            <h5 class="col-3">Symptom Name</h5>
+                            <input type="number" class="col-8" id="txt_symptom_name">
+                        </div>
+                        <div class="row mx-0 mt-1">
+                            <h5 class="col-3">Symptom Part</h5>
+                            <input type="number" class="col-8" id="txt_symptom_part">
+                        </div>
+                        <div class="row mx-0 mt-1">
+                            <h5 class="col-3">Soreness</h5>
+                            <input type="number" class="col-8" id="txt_soreness">
+                        </div>
+                    </div>
+                </div>
+                <div  class="row ml-2 mt-2">
+                    <h5 class="col-3 ">Medical Image</h5>
+                    <h5 class="col-7" id="txt_selected_img"></h5>
+                    <button id="btn_select_img" class="btn btn-primary col-1">Select</button>
+                </div>
+                <div  class="row ml-2 mt-2">
+                    <h5 class="col-3">Opinion</h5>
+                    <textarea class="col-8" id="txt_disease"></textarea>
+                </div>
+                <div  class="row ml-2 mt-2">
+                    <h5 class="col-3">Disease</h5>
+                    <input class="col-8" id="txt_disease">
+                </div>
+
+            </div>
+            <div class="w-100 border rounded mt-2 p-2">
+                <h4 class="col-10">ML Base Diagnosis</h4>
+                <div class="row ml-4 mt-2">
+                    <h5 class="col-3  p-0">ML Model</h5>
+                    <h5 class="col-6" id="txt_selected_model"></h5>
+                    <button id="btn_select_model" class="btn btn-primary col-1 mr-1">Select</button>
+                    <button id="btn_predict_disease" class="btn btn-primary ">Predict</button>
+                </div>
+                <div class="ml-4 mt-2">
+                    <h5 class="">Predicted Result</h5>
+                    <div class="row ml-4">
+                        <h5 class="col-2">Disease</h5>
+                        <h5 id="txt_disease">HCC</h5>
+                    </div>
+                    <div class="row ml-4">
+                        <h5 class="col-2">Stage</h5>
+                        <h5 id="txt_stage">LR-3</h5>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="float-right mt-4">
+                <button class="btn btn-primary" id="btn_submit">Submit</button>
+                <button class="btn btn-secondary" id="btn_cancel">Cancel</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+</body>
+
+<script src="{% static "miass/js/sessions.js" %}"></script>
+<script src="{% static "miass/js/header.js" %}"></script>
+<script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
+<script src="{% static "miass/js/constants.js" %}"></script>
+<script src="{% static "miass/js/diagnose_abnormality.js" %}"></script>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</html>

@@ -3,6 +3,8 @@ __author__ = 'hanter'
 from django.conf.urls import url
 from . import views, apis
 
+app_name = 'miaas'
+
 urlpatterns = [
     # url(r'^$', views.main_page, name='main'),
     # url(r'^$', views.index_page, name='index'),
@@ -103,7 +105,17 @@ urlpatterns = [
     url(r'^view/annotate_image', views.annotate_image),
     url(r'^view/remove_image', views.remove_image),
     url(r'^view/add_role', views.add_role),
-    url(r'^view/diagnose/(?P<img_id>[a-zA-Z0-9]+)$', views.diagnose),
+
+    url(r'^view/brain_abnormality_diagnosis', views.brain_abnormality_diagnosis),
+    url(r'^view/liver_abnormality_diagnosis', views.liver_abnormality_diagnosis),
+    url(r'^view/lung_abnormality_diagnosis', views.lung_abnormality_diagnosis),
+    url(r'^view/breast_abnormality_diagnosis', views.breast_abnormality_diagnosis),
+    url(r'^view/stomach_abnormality_diagnosis', views.stomach_abnormality_diagnosis),
+
+    url(r'^view/diagnose_abnormality', views.diagnose_abnormality),
+    url(r'^view/diagnose/(?P<diagnosis_id>[a-zA-Z0-9]+)$', views.diagnosis_detail),
+
+    url(r'^view/browse/(?P<img_id>[a-zA-Z0-9]+)$', views.browse),
     url(r'^view/annotate/(?P<img_id>[a-zA-Z0-9]+)$', views.annotate),
     url(r'^view/main', views.main),
     url(r'^forgot_password', views.forgot_password),
@@ -125,4 +137,3 @@ urlpatterns = [
 
     url(r'^', views.page_not_found_view),
 ]
-app_name = 'miaas'

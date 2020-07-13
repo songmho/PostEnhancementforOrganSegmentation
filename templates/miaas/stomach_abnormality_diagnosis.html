@@ -1,0 +1,47 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'miass/css/preview.css' %}">
+<link rel="stylesheet" href="{% static 'miass/css/text.css' %}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MIAS: Medical Image Analysis System</title>
+</head>
+<body>
+
+{% include 'miaas/header.html' %}
+    <div class="container">
+        <div class="mt-5">
+        <table class="table table-hover" id="list_image" data-pagination="true">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Diagnosis Date</th>
+                    <th scope="col">Patient Name</th>
+                    <th scope="col">Physician Name</th>
+                    <th scope="col">Disease Name</th>
+                </tr>
+            </thead>
+
+            <tbody id="list_body">
+
+            </tbody>
+        </table>
+
+        </div>
+    </div>
+
+
+</body>
+
+<script src="{% static "miass/js/sessions.js" %}"></script>
+<script src="{% static "miass/js/header.js" %}"></script>
+<script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
+<script src="{% static "miass/js/constants.js" %}"></script>
+<script src="{% static "miass/js/stomach_abnormality_diagnosis.js" %}"></script>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</html>

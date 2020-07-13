@@ -8,7 +8,7 @@
         var tr = $(this);
 
         // var tds = tr.children();
-        location.href = SERVER_ADDRESS+"/view/diagnose/"+tr.attr('id');
+        location.href = SERVER_ADDRESS+"/view/browse/"+tr.attr('id');
     });
 
     $(document).ready(function () {
@@ -42,7 +42,7 @@
                 });
                 $('#myInput').on( 'keyup', function () {
                     table.search( this.value ).draw();
-} );
+                });
             }, error: function (err) {
 
             }
