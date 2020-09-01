@@ -135,7 +135,7 @@ def remove_profile(request):
 def upload_images(request):
     if request.method == "POST":
         keys = list(request.FILES.keys())
-        result = False
+        print(keys)
         try:
             try:
                 data = json.loads(request.POST.get("data"))
@@ -172,16 +172,12 @@ def upload_images(request):
                                     destination.write(chunk)
                         process(x)
 
-                result = True
+                return JsonResponse({"state": True})
             except:
-                result = False
+                return JsonResponse({"state": False})
             # i = Image()
             # result = i.register_images(uploader_id, img_type, t_folder+'/', acq_date, first_name, last_name,
             #                            birthday, gender, examination_source, interpretation, description)
-            if result:
-                return JsonResponse({"state": True})
-            else:
-                return JsonResponse({"state": False})
         except:
             return JsonResponse({"state": False})
     else:

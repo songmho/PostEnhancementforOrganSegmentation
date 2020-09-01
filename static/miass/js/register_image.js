@@ -78,11 +78,6 @@ var cur_preview = 1;
         $("#modal_cancel_reg_img").modal("show");
     });
 
-    $("body").on("click", "input.img_loader", function (){
-
-
-    });
-
     $("body").on("click", "button.btn_preview", function(){
         var id = $(this).attr("id").split("_")[2];
         cur_preview = id;
@@ -146,36 +141,43 @@ var cur_preview = 1;
         var description = $("#txt_desc").val();
         var img_type = $("#txt_img_type").val();
 
-        var form_upload = $("#form_upload")[0];
-        var file_data = new FormData(form_upload);
 
         if (gender === undefined){
             gender = "";
         }
 
-        data = {"fir_name": fir_name, "last_name": last_name, "birthday": birthday, "gender": gender,
-            "acquisition_date": acq_date, "examination_source":exam_src, "interpretation":interpretation,
-            "description": description, 'uploader_id':get_current_user()['identification_number'],"blood_type":blood_type,
-            "height":height,"weight":weight, "img_type":img_type}
-
-        file_data.append("data", JSON.stringify(data))
-
         var is_sent = true;
+        var is_possible = true;
         if(selected_series_id.length <= 0){
             alert("Upload medical images.");
-        } else if (img_type==="" || img_type===null) {
+            is_possible = false;
+        } if (img_type==="" || img_type===null) {
             $("#txt_img_type").addClass("is-invalid");
-        } else if (fir_name==="") {
+            is_possible = false;
+        } if (fir_name==="") {
             $("#txt_fir_name").addClass("is-invalid");
-        } else if (last_name === "") {
+            is_possible = false;
+        } if (last_name === "") {
             $("#txt_last_name").addClass("is-invalid");
-        } else if (acq_date==="") {
+            is_possible = false;
+        } if (acq_date==="") {
             $("#txt_acq_date").addClass("is-invalid");
-        } else if (exam_src==="" ) {
+            is_possible = false;
+        } if (exam_src==="" ) {
             $("#txt_exam_src").addClass("is-invalid");
-        }else {
+            is_possible = false;
+        }
+        console.log(is_possible);
+        if(is_possible) {
             var files = $("#form_upload")[0];
             var file_data = new FormData(files);    // To make Form Data
+
+            data = {"fir_name": fir_name, "last_name": last_name, "birthday": birthday, "gender": gender,
+                "acquisition_date": acq_date, "examination_source":exam_src, "interpretation":interpretation,
+                "description": description, 'uploader_id':get_current_user()['identification_number'],"blood_type":blood_type,
+                "height":height,"weight":weight, "img_type":img_type}
+
+            file_data.append("data", JSON.stringify(data))
             for (var j in selected_series_id) {
                 var filet = $("#btn_img_loader_" + selected_series_id[j])[0].files;   // To load whole images in a phase
                 var phase = $("#txt_phase_select_" + selected_series_id[j]).val();    // To load selected phase name
@@ -189,6 +191,8 @@ var cur_preview = 1;
                     file_data.append("img_" + phase, item);   // To make a list having image data at same key
                 });
             }
+            console.log(is_sent);
+            console.log(file_data);
             if(is_sent){
                 // To send data to the server
                 $.ajax({
