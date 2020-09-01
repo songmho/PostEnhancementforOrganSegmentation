@@ -15,55 +15,57 @@
     <div class="container">
             <div class="mt-5 w-100 mx-0 row">
                 <div class="w-100 row">
-                    <div class="col-7 h-100">
-                        <h1 class="txt_font text-white w-50 pl-2" style="font-size: 28px; background-color: #0066ff">Medical Image</h1>
-                        <div class="mb-3">
-                            <form id="form_upload" enctype="multipart/form-data">
-                                <input id="btn_img_loader" type="file" name="files"  multiple="multiple" webkitdirectory mozdirectory>
-                            </form>
-                        </div>
-                        <div class="mx-auto" id="img_box">
-                            <img id="img_preview" src="{% static 'miass/images/placeholder.png' %}" style="z-index: 1;">
-                            <div id="img_dicom" class="content" style="z-index: 100;">
+
+                    <div class="col-6 h-100">
+                        <h1 class="txt_font text-white w-50 pl-2" style="font-size: 28px; background-color: #0066ff">
+                            Patient Information</h1>
+                        <button class="btn btn-primary float-right" id="btn-patient_search">Search</button>
+                        <form autocomplete="off" id="signup_form">
+                            <div class="form-group">
+                                <span>
+                                    <label for="txt_fir_name" class="mb-1 mt-2">First Name <span style="color:red">*</span></label>
+                                    <input type="text" class="form-control" id="txt_fir_name" required>
+                                </span>
+                                <label for="txt_last_name" class="mb-1 mt-2">Last Name <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" id="txt_last_name" required>
+
+                                <label for="txt_birthday" class="mb-1 mt-2">Birthday </label>
+                                <input type="text" id="txt_Birthday" class="form-control" >
+
+                                <label for="txt_gender"  class="mb-1 mt-2">Gender </label>
+                                <div class="row mx-0">
+                                    <input type="radio" class="my-auto mr-1 ml-2" name="rdo_gender" id="rdo_male" value="Male">
+                                    <label for="rdo_male" class="my-auto">Male</label>
+
+                                    <input type="radio" class="ml-4 my-auto mr-1" name="rdo_gender" id="rdo_female" value="Female" >
+                                    <label for="rdo_female" class="my-auto">Female</label>
+                                </div>
+                                <label for="txt_blood_type" class="mb-1 mt-2">Blood Type</label>
+                                <select class="form-control" id="txt_blood_type">
+                                    <option selected disabled hidden></option>
+                                    <option>A Rh+</option>
+                                    <option>A Rh-</option>
+                                    <option>B Rh+</option>
+                                    <option>B Rh-</option>
+                                    <option>AB Rh+</option>
+                                    <option>AB Rh-</option>
+                                    <option>O Rh+</option>
+                                    <option>O Rh-</option>
+                                </select>
+                                <label for="txt_height" class="mb-1 mt-2">Height (cm)</label>
+                                <input type="text" id="txt_height" class="form-control" >
+
+                                <label for="txt_weight" class="mb-1 mt-2">Weight (Kg)</label>
+                                <input type="text" id="txt_weight" class="form-control" >
                             </div>
-                        </div>
-                        <input id="img_slider" class="w-100 mt-2" type="range" min="0" max="70" data-slider-step="1" value="0"/>
-                        <span class="row mx-auto">
-                            <h5 id="txt_num">--</h5>&nbsp
-                            <h5 >  /  </h5>&nbsp
-                            <h5 id="txt_max_num">--</h5>
-                        </span>
+                        </form>
                     </div>
 
-                    <div class="col-5">
+                    <div class="col-6">
                         <div>
-                            <h1 class="txt_font text-white w-50 pl-2" style="font-size: 28px; background-color: #0066ff">
-                                Patient Information</h1>
-                            <form autocomplete="off" id="signup_form">
-                                <div class="form-group">
-                                    <span>
-                                        <label for="txt_fir_name" class="mb-1 mt-2">First Name <span style="color:red">*</span></label>
-                                        <input type="text" class="form-control" id="txt_fir_name" required>
-                                    </span>
-                                    <label for="txt_last_name" class="mb-1 mt-2">Last Name <span style="color:red">*</span></label>
-                                    <input type="text" class="form-control" id="txt_last_name" required>
-
-                                    <label for="txt_birthday" class="mb-1 mt-2">Birthday </label>
-                                    <input type="text" id="txt_Birthday" class="form-control" >
-
-                                    <label for="txt_gender"  class="mb-1 mt-2">Gender </label>
-                                    <div class="row mx-0">
-                                        <input type="radio" class="my-auto mr-1 ml-2" name="rdo_gender" id="rdo_male" value="Male">
-                                        <label for="rdo_male" class="my-auto">Male</label>
-
-                                        <input type="radio" class="ml-4 my-auto mr-1" name="rdo_gender" id="rdo_female" value="Female" >
-                                        <label for="rdo_female" class="my-auto">Female</label>
-                                    </div>
-                                </div>
-                            </form>
 {#                        <div class="mt-5">#}
 
-                            <h1 class="txt_font text-white w-50 pl-2 mt-5" style="font-size: 28px; background-color: #0066ff">Image Information</h1>
+                            <h1 class="txt_font text-white w-50 pl-2" style="font-size: 28px; background-color: #0066ff">Image Information</h1>
                             <form autocomplete="off" id="signup_form" >
                                 <div class="form-group">
                                     <label for="txt_img_type"  class="mb-1 mt-2">Image Type <span style="color:red">*</span></label>
@@ -90,10 +92,35 @@
 
                                     <label for="txt_desc"  class="mb-1 mt-2">Description </label>
                                     <input type="text" class="form-control" id="txt_desc" >
+
+                                    <label for="txt_desc"  class="mb-1 mt-2">Uploading Medical Images  <span style="color:red">*</span></label>
+                                    <form id="form_upload" enctype="multipart/form-data">
+                                        <div id="list_phase">
+                                            <div class="row pl-4 mb-2" id="list_phase_1">
+                                                <select class="phase_select" id="txt_phase_select_1">
+                                                    <option disabled hidden selected>Acquired Phase</option>
+                                                    <option>Plain</option>
+                                                    <option>Arterial Phase</option>
+                                                    <option>Portal Venous Phase</option>
+                                                    <option>Delayed Phase</option>
+                                                </select>
+
+                                                <div id="cell">
+                                                        <input id="btn_img_loader_1" class="ml-1 img_loader y-auto" type="file" name="files"  multiple="multiple" webkitdirectory mozdirectory>
+                                                </div>
+                                                <button type="button" id="btn_preview_1" class="btn btn-primary ml-2 btn_preview" >Preview</button>
+                                                <button type="button" id="btn_cancel_1" class="btn btn-danger rounded-circle btn-circle btn-cancel  ml-1">X</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="w-100 text-center mt-3 ">
+                                        <button id="btn_add_new_phase" type="button" class="btn btn-info mx-auto">Add Acquired Phases</button>
+                                    </div>
+
                                 </div>
                             </form>
 {#                        </div>#}
-                            <div class="pull-right mt-2">
+                            <div class="pull-right mt-5">
                                 <button type="button" class="btn btn-danger float-right w-25" id="btn_reset">Cancel</button>
                                 <button type="button" class="btn btn-primary float-right w-25  mr-3" id="btn_submit">Upload</button>
                             </div>
@@ -162,13 +189,47 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal_preview_viewer" tabindex="-1" role="dialog" aria-labelledby="previewViewerCenter" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered  modal-lg modal-preview" role="document">
+        <div class="modal-content  modal-preview">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewViewerCenter">Preview</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div class="h-100 mx-auto">
+                        <div class="mx-auto img_block" id="img_box">
+                            <img id="img_preview" src="{% static 'miass/images/placeholder.png' %}" style="z-index: 1;">
+                            <div id="img_dicom" class="content" style="z-index: 100;">
+                            </div>
+                        </div>
+                        <div class="row w-100 mx-auto">
+                            <input id="img_slider" class="mt-2" type="range" min="0" max="70" data-slider-step="1" value="0"/>
+                            <span class="row mx-auto">
+                                <h5 id="txt_num">--</h5>&nbsp
+                                <h5 >  /  </h5>&nbsp
+                                <h5 id="txt_max_num">--</h5>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 </body>
-<script src="{% static "miass/js/dicom/cornerstone.min.js" %}"></script>
+<script src="{% static "miass/js/dicom/hammer.min.js" %}"></script>
 <script src="{% static "miass/js/dicom/cornerstoneMath.min.js" %}"></script>
+<script src="{% static "miass/js/dicom/cornerstone.min.js" %}"></script>
+<script src="{% static "miass/js/dicom/cornerstoneWADOImageLoader.js" %}"></script>
 <script src="{% static "miass/js/dicom/cornerstoneTools.min.js" %}"></script>
 <script src="{% static "miass/js/dicom/dicomParser.min.js" %}"></script>
-<script src="{% static "miass/js/dicom/cornerstoneWADOImageLoader.js" %}"></script>
 <script src="{% static "miass/js/dicom/uids.js" %}"></script>
 <script src="{% static "miass/js/dicom/initializeWebWorkers.js" %}"></script>
 

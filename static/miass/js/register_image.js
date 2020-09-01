@@ -1,6 +1,9 @@
 var is_uploaded= true;
 var path = "";
 var cur_img_type = "Normal";
+var num_cur_phases = 1;
+var selected_series_id = [1];
+var cur_preview = 1;
 
 (function () {
     // function getfolder(e) {
@@ -75,12 +78,67 @@ var cur_img_type = "Normal";
         $("#modal_cancel_reg_img").modal("show");
     });
 
+    $("body").on("click", "input.img_loader", function (){
+
+
+    });
+
+    $("body").on("click", "button.btn_preview", function(){
+        var id = $(this).attr("id").split("_")[2];
+        cur_preview = id;
+        console.log($(this).attr("id").split("_")[2]);
+        console.log($("#btn_img_loader_"+id).prop('files'));
+       // try{
+           var fileList = $("#btn_img_loader_"+id).prop('files');
+           var fileReader = new FileReader();
+           var fileName = $("#btn_img_loader_"+id).prop('files')[0];
+           $('#img_slider').attr('min', 0);
+           $('#img_slider').attr('max', fileList.length-1);
+           $('#txt_max_num').text(fileList.length);
+           $('#txt_num').text(1);
+           console.log(">>>>> ", $("#btn_img_loader_"+id).prop('files')[0]);
+           if ($("#btn_img_loader_"+id).prop('files')[0]["name"].split(".")[1] === "dcm"){
+                cur_img_type = "DCM";
+                console.log("DCM");
+                // $('#img_preview').css('display', "none");
+                // $('#img_dicom').css('display', "block");
+                $('#img_preview').css('z-index', 1);
+                $('#img_dicom').css('z-index', 100);
+                // $('#img_preview').attr("src", fileReader.result);
+                setDicomImage($("#btn_img_loader_"+id).prop('files')[0]);
+                $('#img_slider').val(0);
+           } else {
+               cur_img_type = "Normal";
+               console.log("Normal");
+               // $('#img_preview').css('display', "block");
+               // $('#img_dicom').css('display', "none");
+               $('#img_preview').css('z-index', 100);
+               $('#img_dicom').css('z-index', 1);
+               console.log("name: ", $("#btn_img_loader_"+id).prop('files'));
+               fileReader.readAsDataURL($("#btn_img_loader_"+id).prop('files')[0]);
+               fileReader.onload = function () {
+                   $('#img_preview').attr("src", fileReader.result);
+               };
+               $('#img_slider').val(0);
+           }
+
+           $("#modal_preview_viewer").modal("show");
+       // }catch (e){
+       //     alert("Check uploaded files" );
+       // }
+
+
+    });
+
     $("#btn_submit").click(function () {
         var fir_name = $("#txt_fir_name").val();
         var last_name = $("#txt_last_name").val();
         var birthday = $("#txt_Birthday").val();
 
         var gender = $('input:radio[name=rdo_gender]:checked').val();
+        var blood_type = $("#txt_blood_type").val();
+        var height = $("#txt_height").val();
+        var weight = $("#txt_weight").val();
 
         var acq_date = $("#txt_acq_date").val();
         var exam_src = $("#txt_exam_src").val();
@@ -97,51 +155,106 @@ var cur_img_type = "Normal";
 
         data = {"fir_name": fir_name, "last_name": last_name, "birthday": birthday, "gender": gender,
             "acquisition_date": acq_date, "examination_source":exam_src, "interpretation":interpretation,
-            "description": description, 'uploader_id':get_current_user()['identification_number'], "img_type":img_type}
+            "description": description, 'uploader_id':get_current_user()['identification_number'],"blood_type":blood_type,
+            "height":height,"weight":weight, "img_type":img_type}
 
         file_data.append("data", JSON.stringify(data))
 
-        if (img_type==="" || img_type===null) {
+        var is_sent = true;
+        if(selected_series_id.length <= 0){
+            alert("Upload medical images.");
+        } else if (img_type==="" || img_type===null) {
             $("#txt_img_type").addClass("is-invalid");
-        } if (fir_name==="") {
+        } else if (fir_name==="") {
             $("#txt_fir_name").addClass("is-invalid");
-        } if (last_name === "") {
+        } else if (last_name === "") {
             $("#txt_last_name").addClass("is-invalid");
-        } if (acq_date==="") {
+        } else if (acq_date==="") {
             $("#txt_acq_date").addClass("is-invalid");
-        } if (exam_src==="" ) {
+        } else if (exam_src==="" ) {
             $("#txt_exam_src").addClass("is-invalid");
-        }else{
-            $.ajax({
-                type:"POST",
-                enctype: 'multipart/form-data',
-                url: '/api/upload/',
-                data: file_data,
-                processData: false,
-                contentType: false,
-                cache: false,
-                timeout: 600000,
-                async: false,
-                success: function (data) {
-                    if(data['state']){
-                        $("#modal_body").text("Upload is finished");
-                        $("#modal_reg_img").modal("show");
-                        // location.reload();
-                    }else{
+        }else {
+            var files = $("#form_upload")[0];
+            var file_data = new FormData(files);    // To make Form Data
+            for (var j in selected_series_id) {
+                var filet = $("#btn_img_loader_" + selected_series_id[j])[0].files;   // To load whole images in a phase
+                var phase = $("#txt_phase_select_" + selected_series_id[j]).val();    // To load selected phase name
+                if (filet.length <= 0){
+                    is_sent = false;
+                }
+                if (phase === "Acquired Phase"){
+                    is_sent = false;
+                }
+                $.each(filet, function (i, item) {
+                    file_data.append("img_" + phase, item);   // To make a list having image data at same key
+                });
+            }
+            if(is_sent){
+                // To send data to the server
+                $.ajax({
+                    type: "POST",
+                    enctype: 'multipart/form-data',
+                    url: '/api/upload/',
+                    data: file_data,
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    timeout: 600000,
+                    async: false,
+                    success: function (data) {
+                        if (data['state']) {
+                            $("#modal_body").text("Upload is finished");
+                            $("#modal_reg_img").modal("show");
+                            // location.reload();
+                        } else {
+                            $("#modal_body").text("Uploading files is fail.");
+                            $("#modal_reg_img").modal("show");
+                            is_uploaded = false;
+
+                        }
+                    }, error: function (err) {
                         $("#modal_body").text("Uploading files is fail.");
                         $("#modal_reg_img").modal("show");
                         is_uploaded = false;
-
                     }
-                }, error: function (err) {
-                    $("#modal_body").text("Uploading files is fail.");
-                    $("#modal_reg_img").modal("show");
-                    is_uploaded = false;
-                }
-            });
-
+                });
+            }
         }
     });
+
+
+    $("#btn_add_new_phase").click(function (){
+        num_cur_phases = num_cur_phases+1;
+        selected_series_id.push(num_cur_phases);
+        $("#list_phase").append(
+            "<div class=\"row pl-4 mb-2\" id=\"list_phase_"+num_cur_phases+"\">\n" +
+            "    <select class=\"phase_select\" id=\"txt_phase_select_"+num_cur_phases+"\">\n" +
+            "        <option disabled hidden selected>Acquired Phase</option>\n" +
+            "        <option>Plain</option>\n" +
+            "        <option>Arterial Phase</option>\n" +
+            "        <option>Portal Venous Phase</option>\n" +
+            "        <option>Delayed Phase</option>\n" +
+            "    </select>\n" +
+            "    <div id=\"cell\">\n" +
+            "        <input id=\"btn_img_loader_"+num_cur_phases+"\" class=\"ml-1 img_loader y-auto\" type=\"file\" name=\"files\"  multiple=\"multiple\" webkitdirectory mozdirectory>\n" +
+            "    </div>\n" +
+            "    <button id=\"btn_preview_"+num_cur_phases+"\" type=\"button\" class=\"btn btn-primary ml-2 btn_preview\" >Preview</button>\n" +
+            "    <button id=\"btn_cancel_"+num_cur_phases+"\" type=\"button\" class=\"btn btn-danger btn-cancel rounded-circle btn-circle ml-1\">X</button>"+
+            "</div>");
+        console.log(selected_series_id);
+    });
+
+    $("body").on("click", "button.btn-cancel", function (){
+        var id = $(this).attr("id").split("_")[2];
+        console.log("btn_cancel is clicked.", id);
+        $("#list_phase_"+id).remove();
+
+        delete selected_series_id[id-1];
+        console.log(id, selected_series_id);
+    });
+
+
+
 
     $('#btn_yes').click(function () {
         if(is_uploaded){
@@ -158,47 +271,47 @@ var cur_img_type = "Normal";
         $("#modal_cancel_reg_img").modal("hide");
     });
 
-    $('#btn_img_loader').on('change', function (e) {
-        var fileList = this.files;
-        var fileReader = new FileReader();
-        var fileName = e.target.files[0];
-        $('#img_slider').attr('min', 0);
-        $('#img_slider').attr('max', fileList.length-1);
-        $('#txt_max_num').text(fileList.length);
-        $('#txt_num').text(1);
-        console.log(">>>>> ", $('#btn_img_loader').prop('files')[0]);
-        if ($('#btn_img_loader').prop('files')[0]["name"].split(".")[1] === "dcm"){
-            cur_img_type = "DCM";
-            console.log("DCM");
-            // $('#img_preview').css('display', "none");
-            // $('#img_dicom').css('display', "block");
-            $('#img_preview').css('z-index', 1);
-            $('#img_dicom').css('z-index', 100);
-            // $('#img_preview').attr("src", fileReader.result);
-            setDicomImage($('#btn_img_loader').prop('files')[0]);
-            $('#img_slider').val(0);
-        } else{
-            cur_img_type = "Normal";
-            console.log("Normal");
-            // $('#img_preview').css('display', "block");
-            // $('#img_dicom').css('display', "none");
-            $('#img_preview').css('z-index', 100);
-            $('#img_dicom').css('z-index', 1);
-            console.log("name: ", $('#btn_img_loader').prop('files'));
-            fileReader.readAsDataURL($('#btn_img_loader').prop('files')[0]);
-            fileReader.onload = function () {
-                $('#img_preview').attr("src", fileReader.result);
-            };
-            $('#img_slider').val(0);
-        }
-    });
+    // $('#btn_img_loader').on('change', function (e) {
+    //     var fileList = this.files;
+    //     var fileReader = new FileReader();
+    //     var fileName = e.target.files[0];
+    //     $('#img_slider').attr('min', 0);
+    //     $('#img_slider').attr('max', fileList.length-1);
+    //     $('#txt_max_num').text(fileList.length);
+    //     $('#txt_num').text(1);
+    //     console.log(">>>>> ", $('#btn_img_loader').prop('files')[0]);
+    //     if ($('#btn_img_loader').prop('files')[0]["name"].split(".")[1] === "dcm"){
+    //         cur_img_type = "DCM";
+    //         console.log("DCM");
+    //         // $('#img_preview').css('display', "none");
+    //         // $('#img_dicom').css('display', "block");
+    //         $('#img_preview').css('z-index', 1);
+    //         $('#img_dicom').css('z-index', 100);
+    //         // $('#img_preview').attr("src", fileReader.result);
+    //         setDicomImage($('#btn_img_loader').prop('files')[0]);
+    //         $('#img_slider').val(0);
+    //     } else{
+    //         cur_img_type = "Normal";
+    //         console.log("Normal");
+    //         // $('#img_preview').css('display', "block");
+    //         // $('#img_dicom').css('display', "none");
+    //         $('#img_preview').css('z-index', 100);
+    //         $('#img_dicom').css('z-index', 1);
+    //         console.log("name: ", $('#btn_img_loader').prop('files'));
+    //         fileReader.readAsDataURL($('#btn_img_loader').prop('files')[0]);
+    //         fileReader.onload = function () {
+    //             $('#img_preview').attr("src", fileReader.result);
+    //         };
+    //         $('#img_slider').val(0);
+    //     }
+    // });
 
     $('#img_slider').on("input", function () {
         var fileReader = new FileReader();
         if(cur_img_type === "DCM"){
-            setDicomImage($('#btn_img_loader').prop('files')[$('#img_slider').val()]);
+            setDicomImage($('#btn_img_loader_'+cur_preview).prop('files')[$('#img_slider').val()]);
         } else{
-            fileReader.readAsDataURL($('#btn_img_loader').prop('files')[$('#img_slider').val()]);
+            fileReader.readAsDataURL($('#btn_img_loader_'+cur_preview).prop('files')[$('#img_slider').val()]);
             fileReader.onload = function () {
                 $('#img_preview').attr("src",fileReader.result);
             };
@@ -237,6 +350,16 @@ var cur_img_type = "Normal";
 })(jQuery);
 
 cornerstoneWADOImageLoader.external.cornerston = cornerstone;
+
+function findPatientInfo(id){
+    const element = document.getElementById('btn_img_loader_'+id);
+
+    element
+    file = files[0];
+    const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
+    loadAndViewImage(imageId);
+}
+
 
 function handleFileSelect(evt) {
     evt.stopPropagation();
@@ -285,22 +408,25 @@ function loadAndViewImage(imageId) {
         // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
         // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
         cornerstone.displayImage(element, image, viewport);
-        if(loaded === false) {
-            cornerstoneTools.mouseInput.enable(element);
-            cornerstoneTools.mouseWheelInput.enable(element);
-            cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
-            cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
-            cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
-            cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
-
-            // cornerstoneTools.imageStats.enable(element);        // Code for displaying information
-            loaded = true;
-        }
+        console.log(element, image);
+        // if(loaded === false) {
+        //     cornerstoneTools.mouseInput.enable(element);
+        //     cornerstoneTools.mouseWheelInput.enable(element);
+        //     cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
+        //     cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
+        //     cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
+        //     cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
+        //
+        //     // cornerstoneTools.imageStats.enable(element);        // Code for displaying information
+        //     loaded = true;
+        // }
 
         var dcm_birth = image.data.string("x00100030");     // To road patient's birthday data
         var dcm_gender = image.data.string("x00100040");    // To road patient's gender
         var dcm_modality = image.data.string("x00080060");  // To road the image's modality
         var dcm_acq_date = image.data.string("x00080022");      // To road acquisition date
+
+        console.log(dcm_birth, dcm_gender, dcm_modality, dcm_acq_date);
 
         if (dcm_birth !== undefined){
             document.getElementById('txt_Birthday').value = get_date(dcm_birth);
@@ -322,7 +448,6 @@ function loadAndViewImage(imageId) {
                 document.getElementById("txt_img_type").options[4].selected = "selected";
             else if (dcm_modality === 'ECG')
                 document.getElementById("txt_img_type").options[6].selected = "selected";
-
         }
         if (dcm_acq_date !== undefined){
             document.getElementById("txt_acq_date").value = get_date(dcm_acq_date);
@@ -397,16 +522,15 @@ cornerstone.enable(element);
 
 function setDicomImage(file){
     const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
-
     loadAndViewImage(imageId);
 
 }
 
 function resizeCanvas(){
-    var ele = document.getElementById("img_preview");
-    element.style.height = ele.clientWidth+"px";
-    console.log(element.clientWidth, element.style.width)
-    cornerstone.resize(element, true);
+    // var ele = document.getElementById("img_preview");
+    // element.style.height = ele.clientWidth+"px";
+    // console.log(element.clientWidth, element.style.width)
+    // cornerstone.resize(element, true);
 }
 // document.getElementById('btn_img_loader').addEventListener('change', function(e) {
 //     // Add the file to the cornerstoneFileImageLoader and get unique

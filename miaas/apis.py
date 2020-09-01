@@ -64,7 +64,7 @@ def register_profile_image(request):
 
         data = json.loads(request.POST.get("data"))
         id = data['id']
-        path = "D:\\Projects\\MIAS_Project\\mias\\media\\profile_image\\"+str(id)
+        path = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\Test\\mias\\media\\profile_image\\"+str(id)
         print(id)
         try:
             if not os.path.isdir(path):
@@ -96,7 +96,7 @@ def send_profile(request):
         try:
             data = json.loads(request.body.decode('utf-8'))
             id = data['id']
-            path = "D:\\Projects\\MIAS_Project\\mias\\media\\profile_image\\"+str(id)
+            path = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\Test\\mias\\media\\profile_image\\"+str(id)
             file_name = os.listdir(path)[0]
             print(len(os.listdir(path)))
             if len(os.listdir(path)) > 0:
@@ -116,7 +116,7 @@ def remove_profile(request):
     if request.method == "POST":
         data = json.loads(request.body.decode('utf-8'))
         id = data['id']
-        path = "D:\\Projects\\MIAS_Project\\mias\\media\\profile_image\\"+str(id)
+        path = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\Test\\mias\\media\\profile_image\\"+str(id)
         try:
             if not os.path.isdir(path):
                 return JsonResponse({"state": True})
@@ -134,33 +134,50 @@ def remove_profile(request):
 
 def upload_images(request):
     if request.method == "POST":
-        data = json.loads(request.POST.get("data"))
-        uploader_id = data['uploader_id']
-        img_type = data['img_type']
-        acq_date = data['acquisition_date']
-        first_name = data['fir_name']
-        last_name = data['last_name']
-        birthday = data['birthday']
-        gender = data['gender']
-        examination_source = data['examination_source']
-        interpretation = data['interpretation']
-        description = data['description']
-
+        keys = list(request.FILES.keys())
+        result = False
         try:
+            try:
+                data = json.loads(request.POST.get("data"))
+                print(data)
+            except:
+                print("the data is none.")
+            uploader_id = data['uploader_id']
+            img_type = data['img_type']
+            acq_date = data['acquisition_date']
+            first_name = data['fir_name']
+            last_name = data['last_name']
+            birthday = data['birthday']
+            gender = data['gender']
+            examination_source = data['examination_source']
+            interpretation = data['interpretation']
+            description = data['description']
+            print("files: ", request.FILES.getlist("images"))
             t = str(int(time.time()))
-            t_folder = 'D:\\Projects\\MIAS_Project\\mias\\media\\'+str(uploader_id)+"_"+t
+            t_folder = 'E:\\1. Lab\\Projects\\Medical Image Analytics System\\Test\\mias\\media\\'+str(uploader_id)+"_"+t
+            # t_folder = 'E:\\1. Lab\\Projects\\Medical Image Analytics System\\Test\\mias\\media\\'+str(455)+"_"+t
             if not os.path.isdir(t_folder):
                 os.mkdir(t_folder)
-            for c, x in enumerate(request.FILES.getlist("files")):
-                def process(f):
-                    with open(t_folder+'/' + str(f).zfill(5), 'wb+') as destination:
-                        for chunk in f.chunks():
-                            destination.write(chunk)
-                process(x)
+            try:
+                for k in keys:
+                    k_folder = t_folder+"\\"+k.split("_")[1]
+                    if not os.path.isdir(k_folder):
+                        os.mkdir(k_folder)
+                    for c, x in enumerate(request.FILES.getlist(k)):
+                        print(x)
+                        def process(f):
+                            with open(k_folder+'/' + str(f).zfill(5), 'wb+') as destination:
+                                for chunk in f.chunks():
 
-            i = Image()
-            result = i.register_images(uploader_id, img_type, t_folder+'/', acq_date, first_name, last_name,
-                                       birthday, gender, examination_source, interpretation, description)
+                                    destination.write(chunk)
+                        process(x)
+
+                result = True
+            except:
+                result = False
+            # i = Image()
+            # result = i.register_images(uploader_id, img_type, t_folder+'/', acq_date, first_name, last_name,
+            #                            birthday, gender, examination_source, interpretation, description)
             if result:
                 return JsonResponse({"state": True})
             else:
@@ -169,6 +186,7 @@ def upload_images(request):
             return JsonResponse({"state": False})
     else:
         return JsonResponse({"state": False})
+
 
 def get_max_img_count(request):
     if request.method == "POST":
