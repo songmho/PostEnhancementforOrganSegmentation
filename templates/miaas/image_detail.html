@@ -11,8 +11,8 @@
     <body>
         {% include 'miaas/header.html' %}
         <div id="cur_id" hidden>{{ img_id }}</div>
+        <div id="cur_phase" hidden>{{ phase_name }}</div>
         <div class="sidenav" id="navigator" >
-            <img id="thum_1" class="mx-2 my-1 thumb_img" height="260px" width="260px">
         </div>
         <div class="main h-100" id="main_body">
             <div id="div-data" class="">
@@ -134,7 +134,7 @@
     <script src="{% static "miass/js/constants.js" %}"></script>
     <script src="{% static "miass/js/sessions.js" %}"></script>
     <script src="{% static "miass/js/header.js" %}"></script>
-    <script src="{% static "miass/js/diagnose.js" %}"></script>
+    <script src="{% static "miass/js/image_detail.js" %}"></script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>

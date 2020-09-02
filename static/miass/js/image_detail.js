@@ -7,6 +7,12 @@ var max = 0;
 var extension = 0;
 var isPlay = false;
 var isStopped = true;
+var phase;
+var cur_phase = "";
+var cur_phase_id = 0;
+var target_phases = {};
+var keys = [];
+var dcmImgIDs = {};
 
 function formatDate(value){
   if(value){
@@ -60,80 +66,84 @@ cornerstoneWADOImageLoader.configure({
 });
 
 let loaded = false;
-function loadAndViewImage(imageId) {
+function viewImage(c_p, id){
     const element = document.getElementById('main_viewer_dicom');
+    var elems = document.querySelectorAll(".loader");
+    [].forEach.call(document.querySelectorAll('.loader'), function (el) {
+      el.style.visibility = 'hidden';
+    });
+
+    document.getElementById('txt_num').innerHTML = id+1;
+    document.getElementById('txt_max_num').innerHTML = max;
+    const viewport = cornerstone.getDefaultViewportForImage(element, images[keys[c_p]][(id+1).toString()]);
+    // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
+    // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
+    cornerstone.displayImage(element, images[keys[0]]['1'], viewport);
+
+    proto_name = images[keys[c_p]][(id+1).toString()].data.string('x00181030');
+    if (proto_name !== undefined)
+        document.getElementById('txt_protocol_name').innerHTML = proto_name;
+    else
+        document.getElementById("sp_proto_name").setAttribute("hidden", true);
+
+    taken_date = images[keys[c_p]][(id+1).toString()].data.string('x00080022');
+    taken_time = images[keys[c_p]][(id+1).toString()].data.string('x00080032');
+    if (taken_date !== undefined)
+        document.getElementById('txt_taken_date').innerHTML = get_date(taken_date, taken_time);
+    else
+        document.getElementById('txt_taken_date').innerHTML = "Not Recorded";
+
+    // study_desc = images['1'].data.string('x00081030');
+    // if (study_desc !== undefined)
+    //     document.getElementById('txt_study_desc').innerHTML = study_desc;
+    // else
+    //     document.getElementById("sp_study_desc").setAttribute("hidden", true);
+    //
+    // series_desc = images['1'].data.string('x0008103E');
+    // if (series_desc !== undefined)
+    //     document.getElementById('txt_series_desc').innerHTML = series_desc;
+    // else
+    //     document.getElementById("sp_series_desc").setAttribute("hidden", true);
+
+    pat_name = images[keys[c_p]][(id+1).toString()].data.string('x00100010');
+    if (pat_name !== undefined)
+        document.getElementById('txt_pat_name').innerHTML = pat_name;
+    else
+        document.getElementById('txt_pat_name').innerHTML= "Not Recorded";
+
+    gender = images[keys[c_p]][(id+1).toString()].data.string('x00100040');
+    if (gender !== undefined){
+        if (gender === "F")
+            document.getElementById('txt_pat_gender').innerHTML = "Female";
+        else if (gender === "M")
+            document.getElementById('txt_pat_gender').innerHTML = "Male";
+    } else
+            document.getElementById('txt_pat_gender').innerHTML= "Not Recorded";
+    birth = images[keys[c_p]][(id+1).toString()].data.string('x00100030');
+    if (birth !== undefined)
+        document.getElementById('txt_pat_birthday').innerHTML = birth;
+    else
+        document.getElementById('txt_pat_birthday').innerHTML= "Not Recorded";
+    age = images[keys[c_p]][(id+1).toString()].data.string('x00101010');
+    if (age !== undefined)
+        document.getElementById('txt_pat_age').innerHTML = get_age(age);
+    else
+        document.getElementById('txt_pat_age').innerHTML = "Not Recorded";
+    slice_loc = images[keys[c_p]][(id+1).toString()].data.string('x00201041');
+    if (slice_loc !== undefined)
+        document.getElementById('txt_slice_loc').innerHTML = slice_loc;
+    else
+        document.getElementById('txt_slice_loc').innerHTML = "Not Recorded";
+
+    document.getElementById("div_info").removeAttribute("hidden");
+}
+function loadAndViewImage(imageId, c_p) {
     cornerstone.loadImage(imageId).then(function(image) {
         instance_num = parseInt(image.data.string('x00200013'));    // To parse dicom image's instance number
-        images[instance_num] = image;
-        if(Object.keys(images).length === max){
-            var elems = document.querySelectorAll(".loader");
-            [].forEach.call(document.querySelectorAll('.loader'), function (el) {
-              el.style.visibility = 'hidden';
-            });
-
-            document.getElementById('txt_num').innerHTML = cur+1;
-            document.getElementById('txt_max_num').innerHTML = max;
-            const viewport = cornerstone.getDefaultViewportForImage(element, images['1']);
-            // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
-            // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
-            cornerstone.displayImage(element, images['1'], viewport);
-
-            proto_name = images['1'].data.string('x00181030');
-            if (proto_name !== undefined)
-                document.getElementById('txt_protocol_name').innerHTML = proto_name;
-            else
-                document.getElementById("sp_proto_name").setAttribute("hidden", true);
-
-            taken_date = images['1'].data.string('x00080022');
-            taken_time = images['1'].data.string('x00080032');
-            if (taken_date !== undefined)
-                document.getElementById('txt_taken_date').innerHTML = get_date(taken_date, taken_time);
-            else
-                document.getElementById('txt_taken_date').innerHTML = "Not Recorded";
-
-            // study_desc = images['1'].data.string('x00081030');
-            // if (study_desc !== undefined)
-            //     document.getElementById('txt_study_desc').innerHTML = study_desc;
-            // else
-            //     document.getElementById("sp_study_desc").setAttribute("hidden", true);
-            //
-            // series_desc = images['1'].data.string('x0008103E');
-            // if (series_desc !== undefined)
-            //     document.getElementById('txt_series_desc').innerHTML = series_desc;
-            // else
-            //     document.getElementById("sp_series_desc").setAttribute("hidden", true);
-
-            pat_name = images['1'].data.string('x00100010');
-            if (pat_name !== undefined)
-                document.getElementById('txt_pat_name').innerHTML = pat_name;
-            else
-                document.getElementById('txt_pat_name').innerHTML= "Not Recorded";
-
-            gender = images['1'].data.string('x00100040');
-            if (gender !== undefined){
-                if (gender === "F")
-                    document.getElementById('txt_pat_gender').innerHTML = "Female";
-                else if (gender === "M")
-                    document.getElementById('txt_pat_gender').innerHTML = "Male";
-            } else
-                    document.getElementById('txt_pat_gender').innerHTML= "Not Recorded";
-            birth = images['1'].data.string('x00100030');
-            if (birth !== undefined)
-                document.getElementById('txt_pat_birthday').innerHTML = birth;
-            else
-                document.getElementById('txt_pat_birthday').innerHTML= "Not Recorded";
-            age = images['1'].data.string('x00101010');
-            if (age !== undefined)
-                document.getElementById('txt_pat_age').innerHTML = get_age(age);
-            else
-                document.getElementById('txt_pat_age').innerHTML = "Not Recorded";
-            slice_loc = images['1'].data.string('x00201041');
-            if (slice_loc !== undefined)
-                document.getElementById('txt_slice_loc').innerHTML = slice_loc;
-            else
-                document.getElementById('txt_slice_loc').innerHTML = "Not Recorded";
-
-            document.getElementById("div_info").removeAttribute("hidden");
+        images[c_p][instance_num] = image;
+        console.log(c_p, instance_num, cur, max);
+        if(Object.keys(images[keys[0]]).length === max){
+            viewImage(0,0);
         }
         if(loaded === false) {
             cornerstoneTools.init();
@@ -239,6 +249,17 @@ function resizeCanvas(){
 /// Jquery Part
 (function () {
 
+    $("body").on("click", ".thumb_img", function (){
+        console.log($(this).attr("id"));
+        cur_phase_id = $(this).attr("id").split("_")[1];
+        cur = 0;
+        if (extension === "dcm"){
+
+        }else{
+            load_image_info();
+        }
+    });
+
     $("#main_viewer_img").on('mousewheel DOMMouseScroll', function (e) {
         var E = e.originalEvent;
         var delta = 0;
@@ -270,21 +291,22 @@ function resizeCanvas(){
         resizeCanvas();
     });
 
-    function loadImg(loc){
+    function loadImg(loc, k){
         $.ajax({
             url: "/api/send_images",
             method: 'POST',
             async: false,
             data: JSON.stringify({
                 "img_id": id,
-                "img_loc": loc
+                "img_loc": loc,
+                "cur_phase":cur_phase
             }),
             success: function (data) {
                 if (data !== undefined){
-                    images.push(data);
-                    if (loc === 0){
-                        $("#thum_1").attr("src", "data:image/png;base64,"+images[0]);
-                        $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[0]);
+                    images[keys[k]].push(data);
+                    if (loc === 0 || k === 0){
+                        $("#thum_"+k).attr("src", "data:image/png;base64,"+images[keys[k]][0]);
+                        $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[keys[k]][0]);
                         $("#txt_num").text(cur+1);
                         $("#txt_max_num").text(max);
                     }
@@ -297,7 +319,7 @@ function resizeCanvas(){
     $(document).ready(function () {
         resizeCanvas();
         id = $("#cur_id").text();
-
+        phase = $("#cur_phase").text();
         // $(window).on('load', function () {
         //     setTimeout(function () {
         //         $('.loader').hide();
@@ -310,36 +332,70 @@ function resizeCanvas(){
            async: true,
            data: JSON.stringify({
                "img_id": id,
+               "cur_phase":phase
            }),
            success: function (data) {
-                max = data['data']['length'];
+               target_phases = data['data']['length'];
+               keys = Object.keys(target_phases);
+               max = target_phases[keys[0]];
+               cur_phase = keys[0];
+               cur_phase_id = 0;
+               for (var k in keys){
+                   $("#navigator").append("" +
+                   "<h4 class='mx-2'>"+keys[k]+"</h4>"+
+                   "<img id=\"thum_"+k+"\" class=\"mx-2 mt-1 mb-4 thumb_img\" height=\"260px\" width=\"260px\">");
+               }
 
-                $('#img_slider').attr('min', 0);
-                $('#img_slider').attr('max', max-1);
+               $('#img_slider').attr('min', 0);
+               $('#img_slider').attr('max', max-1);
 
-                extension = data['data']['extension'];
-                if (extension === "dcm"){
-                    images = {};
-                    $('#main_viewer_dicom').css('z-index', 100);
-                    $('#main_viewer_img').css('z-index', 1);
-                    for (var i=0;i<max; i++){
-                        url = "wadouri:" + "/api/send_dicom/"+id+"/"+i;
-                        // image enable the dicomImage element and activate a few tools
-                        loadAndViewImage(url);
-                    }
+               extension = data['data']['extension'];
+               if (extension === "dcm"){
+                   images = {};
+                   $('#main_viewer_dicom').css('z-index', 100);
+                   $('#main_viewer_img').css('z-index', 1);
+                   console.log(cur_phase);
+                   console.log(id, cur_phase);
 
-                }else{
-                    images = [];
-                    $('#main_viewer_img').css('z-index', 100);
-                    $('#main_viewer_dicom').css('z-index', 1);
-                    for(var i=0; i<max; i++){
-                        loadImg(i);
-                    }
+                   keys = Object.keys(target_phases);
+                   for (var k in keys){
+                       images[keys[k]] = {};
+                       max = target_phases[keys[k]];
+                       cur_phase = keys[k];
+                       console.log(cur_phase,images, max);
+                       for(var i=0; i<max; i++){
+                           url = "wadouri:" + "/api/send_dicom/"+id+"/"+cur_phase+"/"+i;
+                           loadAndViewImage(url, cur_phase);
+                       }
+                   }
+                   max = target_phases[keys[0]];
+                   cur_phase = keys[0];
+                   // load_image_info();
+                   // remove_spinner();
+                   // for (var i=0;i<max; i++){
+                   //     url = "wadouri:" + "/api/send_dicom/"+id+"/"+cur_phase+"/"+i;
+                   //     // image enable the dicomImage element and activate a few tools
+                   //     loadAndViewImage(url);
+                   // }
 
-                    remove_spinner();
-                }
-                }, error: function (err) {
+               }else{
+                   $('#main_viewer_img').css('z-index', 100);
+                   $('#main_viewer_dicom').css('z-index', 1);
 
+                   keys = Object.keys(target_phases);
+                   for (var k in keys){
+                       images[keys[k]] = [];
+                       max = target_phases[keys[k]];
+                       cur_phase = keys[k];
+                       for(var i=0; i<max; i++){
+                           loadImg(i, k);
+                       }
+                   }
+
+                   cur_phase_id = 0;
+                   remove_spinner();
+               }
+               }, error: function (err) {
            }
         });
     });
@@ -442,18 +498,18 @@ function resizeCanvas(){
         $('#img_slider').val(cur);
         $("#txt_num").text(cur+1);
         if (extension === "dcm"){
-            const viewport = cornerstone.getDefaultViewportForImage(element, images[cur+1]);
+            const viewport = cornerstone.getDefaultViewportForImage(element, images[cur_phase][cur+1]);
             // document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
             // document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
-            cornerstone.displayImage(element, images[cur+1], viewport);
-            var proto_name = images[cur+1].data.string('x00181030');
-            var name = images[cur+1].data.string('x00100010');
-            var gender = images[cur+1].data.string('x00100040');
-            var birth = images[cur+1].data.string('x00100030');
-            var age = images[cur+1].data.string('x00101010');
-            var slc_loc = images[cur+1].data.string('x00201041');
-            var taken_day = images[cur+1].data.string('x00080022');
-            var taken_time = images[cur+1].data.string('x00080032');
+            cornerstone.displayImage(element, images[cur_phase][cur+1], viewport);
+            var proto_name = images[cur_phase][cur+1].data.string('x00181030');
+            var name = images[cur_phase][cur+1].data.string('x00100010');
+            var gender = images[cur_phase][cur+1].data.string('x00100040');
+            var birth = images[cur_phase][cur+1].data.string('x00100030');
+            var age = images[cur_phase][cur+1].data.string('x00101010');
+            var slc_loc = images[cur_phase][cur+1].data.string('x00201041');
+            var taken_day = images[cur_phase][cur+1].data.string('x00080022');
+            var taken_time = images[cur_phase][cur+1].data.string('x00080032');
             console.log(get_date(taken_day, taken_time));
 
             if (proto_name !== undefined)
@@ -492,7 +548,7 @@ function resizeCanvas(){
             else
                 $("#txt_taken_date").text("Not Recorded");
         }else
-            $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[cur]);
+            $("#main_viewer_img").attr("src", "data:image/png;base64,"+images[keys[cur_phase_id]][cur]);
 
     }
     function remove_spinner(){

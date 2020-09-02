@@ -1,5 +1,6 @@
 import base64
 import copy
+import glob
 import json
 import logging
 import os
@@ -90,6 +91,25 @@ def register_profile_image(request):
             return JsonResponse({"state": False})
 
 
+def retrieve_image_info(request):
+    if request.method == "POST":
+        print("HI")
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            print(data)
+            i_id = data["i_id"]
+            i = Image()
+            result = i.retrieve_images(img_id=i_id)
+            print(result)
+            print(os.listdir(result[0]['img_path']))
+            result[0]["images"] = os.listdir(result[0]['img_path'])
+            return JsonResponse({"state": True, "data": result})
+        except:
+            return JsonResponse({"state": False})
+    else:
+        return JsonResponse({"state": False})
+
+
 def send_profile(request):
     if request.method == "POST":
 
@@ -171,13 +191,12 @@ def upload_images(request):
 
                                     destination.write(chunk)
                         process(x)
-
-                return JsonResponse({"state": True})
+                i = Image()
+                result = i.register_images(uploader_id, img_type, t_folder + '\\', acq_date, first_name, last_name,
+                                           birthday, gender, examination_source, interpretation, description)
+                return JsonResponse({"state": result})
             except:
                 return JsonResponse({"state": False})
-            # i = Image()
-            # result = i.register_images(uploader_id, img_type, t_folder+'/', acq_date, first_name, last_name,
-            #                            birthday, gender, examination_source, interpretation, description)
         except:
             return JsonResponse({"state": False})
     else:
@@ -193,8 +212,13 @@ def get_max_img_count(request):
             result = i.retrieve_images(img_id=img_id)
             img_path = result[0]['img_path']
             file_list = os.listdir(img_path)
-            result = len(file_list)
-            extension = file_list[0].split(".")[-1]
+            result = {}
+            extension = ""
+            for i in file_list:
+                p = img_path+"\\"+i
+                f_list = os.listdir(p)
+                result[i] = len(f_list)
+                extension = f_list[0].split(".")[-1]
             return JsonResponse({"state": True, "data": {"length": result, "extension": extension}})
         except:
             return JsonResponse({"state": False, "data": 0})
@@ -205,10 +229,11 @@ def send_images(request):
         data = json.loads(request.body.decode('utf-8'))
         img_id = data['img_id']
         img_loc = data['img_loc']
+        cur_phase = data["cur_phase"]
         try:
             i = Image()
             result = i.retrieve_images(img_id=img_id)
-            img_path = result[0]['img_path']
+            img_path = result[0]['img_path']+cur_phase+"\\"
             file_list = os.listdir(img_path)
             extension = file_list[img_loc].split(".")[-1]
             print(img_path+file_list[img_loc])
@@ -230,12 +255,13 @@ def send_images(request):
         return JsonResponse({"state": False})
 
 
-def send_dicom(request, img_id, img_loc):
+def send_dicom(request, img_id, phase, img_loc):
     if request.method == "GET":
         img_loc = int(img_loc)
+        print(img_id, phase, img_loc)
         i = Image()
         result = i.retrieve_images(img_id=img_id)
-        img_path = result[0]['img_path']
+        img_path = result[0]['img_path']+phase+"\\"
         file_list = os.listdir(img_path)
         extension = file_list[img_loc].split(".")[-1]
         if extension == "dcm":

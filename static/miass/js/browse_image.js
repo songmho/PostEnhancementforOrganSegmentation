@@ -8,7 +8,7 @@
         var tr = $(this);
 
         // var tds = tr.children();
-        location.href = SERVER_ADDRESS+"/view/browse/"+tr.attr('id');
+        location.href = SERVER_ADDRESS+"/view/browse_image_info/"+tr.attr('id');
     });
 
     $(document).ready(function () {

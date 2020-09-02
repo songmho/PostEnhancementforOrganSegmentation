@@ -148,11 +148,17 @@ def register_image(request):
     return render(request, "miaas/image_register.html")
 
 def browse_image(request):
+    print("BYBYBY")
     return render(request, "miaas/image_browse.html")
 
-def browse(request, img_id):
+def browse_image_info(request, img_id):
     context = {'img_id': img_id}
-    return render(request, "miaas/diagnose.html", context)
+    return render(request, "miaas/image_info_browse.html", context)
+
+def browse_image_detail(request, img_id):
+    context = {'img_id': img_id}
+    # context={'img_id': img_id}
+    return render(request, "miaas/image_detail.html", context)
 
 def annotate(request, img_id):
     context = {'img_id': img_id}

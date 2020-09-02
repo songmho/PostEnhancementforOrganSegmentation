@@ -5,6 +5,7 @@ from . import views, apis
 
 app_name = 'miaas'
 
+
 urlpatterns = [
     # url(r'^$', views.main_page, name='main'),
     # url(r'^$', views.index_page, name='index'),
@@ -82,6 +83,7 @@ urlpatterns = [
     url(r'^api/modify_user_info', apis.modify_user_info),
     url(r'^api/forgot_pwd', apis.forgot_pwd),
     url(r'^api/reset_pwd', apis.reset_pwd),
+    url(r'^api/retrieve_image_info', apis.retrieve_image_info),
 
     url(r'^api/add_role', apis.add_role),
     url(r'^api/modify_role', apis.modify_role),
@@ -98,6 +100,8 @@ urlpatterns = [
     url(r'^api/get_cur_user_info', apis.get_current_user_info),
 
     url(r'^view/sign_in', views.sign_in_page),
+    url(r'^view/browse_image_detail/(?P<img_id>[a-zA-Z0-9]+)', views.browse_image_detail),
+    url(r'^view/browse_image_info/(?P<img_id>[a-zA-Z0-9]+)', views.browse_image_info),
     url(r'^view/browse_profile', views.browse_profile),
     url(r'^view/update_profile', views.update_profile),
     url(r'^view/register_image', views.register_image),
@@ -115,7 +119,6 @@ urlpatterns = [
     url(r'^view/diagnose_abnormality', views.diagnose_abnormality),
     url(r'^view/diagnose/(?P<diagnosis_id>[a-zA-Z0-9]+)$', views.diagnosis_detail),
 
-    url(r'^view/browse/(?P<img_id>[a-zA-Z0-9]+)$', views.browse),
     url(r'^view/annotate/(?P<img_id>[a-zA-Z0-9]+)$', views.annotate),
     url(r'^view/main', views.main),
     url(r'^forgot_password', views.forgot_password),
@@ -127,7 +130,7 @@ urlpatterns = [
     url(r'^upload', views.Upload),
     url(r'^api/upload', apis.upload_images),
     url(r'^api/send_images', apis.send_images),
-    url(r'^api/send_dicom/(?P<img_id>[0-9]+)/(?P<img_loc>[0-9]+)$', apis.send_dicom),
+    url(r'^api/send_dicom/(?P<img_id>[0-9]+)/(?P<phase>[\w ]+)/(?P<img_loc>[0-9]+)$', apis.send_dicom),
     url(r'^api/get_max_img_count', apis.get_max_img_count),
     url(r'^api/upload_txt', apis.upload_txt),
     # url(r'^api/register_test_item', apis.register_test_item),
