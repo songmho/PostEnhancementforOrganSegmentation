@@ -36,4 +36,9 @@
 
     });
 
+    $("#btn_diagnose_ml").on("click", function () {
+        location.href = SERVER_ADDRESS+"/view/diagnose_abnormality_ml";
+
+    });
+
 })(jQuery);

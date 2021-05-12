@@ -1,0 +1,100 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'miass/css/smart_wizard.css' %}">
+<link rel="stylesheet" href="{% static 'miass/css/preview.css' %}">
+<link rel="stylesheet" href="{% static 'miass/css/text.css' %}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MIAS: Medical Image Analysis System</title>
+</head>
+<body>
+
+{% include 'miaas/header.html' %}
+    <div class="container">
+        <div class="mt-5">
+            <div id="smartwizard">
+                <ul class="nav">
+                    <li id="step1_box" class="nav-item">
+                      <a class="nav-link pr-0" href="#step-1" id="btn_step1">
+                            <span style="font-size:larger; font-weight: bolder;">Step 1</span><br> <span style="font-weight: bold">Load Medical Image</span>
+                      </a>
+                    </li>
+                    <li id="step2_box" class="nav-item">
+                        <a class="nav-link pr-0 arrow-border" href="#step-2" id="btn_step2" >
+                            <span style="font-size:larger; font-weight: bolder;">Step 2</span><br><span style="font-weight: bold">Segment Liver Region</span>
+                        </a>
+                    </li>
+                    <li id="step3_box"  class="nav-item">
+                      <a class="nav-link pr-0" href="#step-3" id="btn_step3">
+                           <span style="font-size:larger; font-weight: bolder;">Step 3</span><br><span style="font-weight: bold">Segment Lesions</span>
+                      </a>
+                    </li>
+                    <li id="step4_box"  class="nav-item">
+                      <a class="nav-link pr-0" href="#step-4" id="btn_step4">
+                           <span style="font-size:larger; font-weight: bolder;">Step 4</span><br><span style="font-weight: bold">Evaluate Image Features</span>
+                      </a>
+                    </li>
+                    <li id="step5_box"  class="nav-item">
+                      <a class="nav-link pr-0" href="#step-5" id="btn_step5">
+                           <span style="font-size:larger; font-weight: bolder;">Step 5</span><br><span style="font-weight: bold">Determine Tumor Types</span>
+                      </a>
+                    </li>
+                    <li id="step6_box"  class="nav-item">
+                      <a class="nav-link pr-0" href="#step-6" id="btn_step6">
+                           <span style="font-size:larger; font-weight: bolder;">Step 6</span><br><span style="font-weight: bold">Compute Li-RADS Features</span>
+                      </a>
+                    </li>
+                    <li id="step7_box"  class="nav-item">
+                      <a class="nav-link pr-0" href="#step-7" id="btn_step7">
+                           <span style="font-size:larger; font-weight: bolder;">Step 7</span><br><span style="font-weight: bold">Determine LR Stage</span>
+                      </a>
+                    </li>
+                </ul>
+
+
+                <div class="tab-content"  style="height: 700px">
+                    <div id="step-1" class="tab-pane mx-3 mt-2" role="tabpanel" aria-labelledby="step-1">
+        {#                {% include 'step1.html' %}#}
+                    </div>
+                    <div id="step-2" class="tab-pane  mx-3 mt-2" role="tabpanel" style="display: block" aria-labelledby="step-2">
+        {#                {% include 'step2.html' %}#}
+                    </div>
+                    <div id="step-3" class="tab-pane mx-3 mt-2" role="tabpanel" aria-labelledby="step-3">
+        {#                {% include 'step3.html' %}#}
+                    </div>
+                    <div id="step-4" class="tab-pane mx-3 mt-2" role="tabpanel" aria-labelledby="step-4">
+        {#                {% include 'step3.html' %}#}
+                    </div>
+                    <div id="step-5" class="tab-pane mx-3 mt-2" role="tabpanel" aria-labelledby="step-5">
+        {#                {% include 'step3.html' %}#}
+                    </div>
+                    <div id="step-6" class="tab-pane mx-3 mt-2" role="tabpanel" aria-labelledby="step-6">
+        {#                {% include 'step3.html' %}#}
+                    </div>
+                    <div id="step-7" class="tab-pane mx-3 mt-2" role="tabpanel" aria-labelledby="step-7">
+        {#                {% include 'step3.html' %}#}
+                    </div>
+                </div>
+                <div id="div_console" class="w-100 border position-static p-2" style="background-color: #aaaaaa; height: 245px;  margin-right:18px">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+<script src="{% static "miass/js/sessions.js" %}"></script>
+<script src="{% static "miass/js/header.js" %}"></script>
+<script src="{% static "lib/jQuery/jquery-3.4.1.js" %}"></script>
+<script src="{% static "miass/js/constants.js" %}"></script>
+<script src="{% static "miass/js/smartWizard.min.js" %}"></script>
+{#<script src="https://cdn.jsdelivr.net/npm/smartwizard@5/dist/js/jquery.smartWizard.min.js" type="text/javascript"></script>#}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script src="{% static "miass/js/diagnose_abnormality_ml.js" %}"></script>
+</html>

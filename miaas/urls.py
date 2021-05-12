@@ -5,7 +5,6 @@ from . import views, apis
 
 app_name = 'miaas'
 
-
 urlpatterns = [
     # url(r'^$', views.main_page, name='main'),
     # url(r'^$', views.index_page, name='index'),
@@ -62,6 +61,15 @@ urlpatterns = [
     url(r'^api/payment$', apis.handle_payment_mgt),
     url(r'^api/get_upload_progress$', apis.handle_image_uploading_progress),
     url(r'^api/image_upload$', apis.handle_multple_image_upload),
+    url(r'^api/load_lirads_img_nii', apis.step1_save_lirads_imgs),
+    url(r'^api/check_extension', apis.step1_check_extension),
+    url(r'^api/load_medical_img', apis.step1_load_medical_img),
+    url(r'^api/convert_color_depth', apis.step1_convert_color_depth),
+    url(r"^api/load_file_list", apis.load_file_list),
+    url(r"^api/segment_liver", apis.segment_liver),
+    url(r"^api/load_setCT_a", apis.load_setCT_a),
+    url(r"^api/segment_tumor", apis.segment_tumor),
+
 
     url(r'^api/archive$', apis.handle_archive),
 
@@ -116,11 +124,19 @@ urlpatterns = [
     url(r'^view/breast_abnormality_diagnosis', views.breast_abnormality_diagnosis),
     url(r'^view/stomach_abnormality_diagnosis', views.stomach_abnormality_diagnosis),
 
+    url(r'^view/diagnose_abnormality_ml', views.diagnose_abnormality_ml),
     url(r'^view/diagnose_abnormality', views.diagnose_abnormality),
     url(r'^view/diagnose/(?P<diagnosis_id>[a-zA-Z0-9]+)$', views.diagnosis_detail),
 
     url(r'^view/annotate/(?P<img_id>[a-zA-Z0-9]+)$', views.annotate),
     url(r'^view/main', views.main),
+    url(r'^view/lirads_step2', views.lirads_step2),
+    url(r'^view/lirads_step1', views.lirads_step1),
+    url(r'^view/lirads_step3', views.lirads_step3),
+    url(r'^view/lirads_step4', views.lirads_step4),
+    url(r'^view/lirads_step5', views.lirads_step5),
+    url(r'^view/lirads_step6', views.lirads_step6),
+    url(r'^view/lirads_step7', views.lirads_step7),
     url(r'^forgot_password', views.forgot_password),
 
     url(r'^api/retrieve_images', apis.retrieve_images),
@@ -140,3 +156,4 @@ urlpatterns = [
 
     url(r'^', views.page_not_found_view),
 ]
+

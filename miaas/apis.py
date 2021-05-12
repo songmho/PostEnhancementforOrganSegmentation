@@ -93,7 +93,6 @@ def register_profile_image(request):
 
 def retrieve_image_info(request):
     if request.method == "POST":
-        print("HI")
         try:
             data = json.loads(request.body.decode('utf-8'))
             print(data)
@@ -1927,3 +1926,101 @@ def handle_test(request):
         email_auth.send_auth_mail(user_info, '9fudsiu32q984rhds98')
 
     return JsonResponse(constants.CODE_SUCCESS)
+
+
+@csrf_exempt
+def step1_save_lirads_imgs(request):
+    if request.method == "POST":
+        data = json.loads(request.POST.get("data"))
+        target = data["img"]
+        phase = data["phase"]
+        pat_name = data["pat_name"]
+        pat_birth = data["pat_birth"]
+        acq_date = data["acq_date"]
+        files = request.FILES.getlist("files")
+        root_path = r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\medical_image"
+        cur_path = ""
+        # To generate folders to save slices
+        if not os.path.isdir(os.path.join(root_path, pat_name+"_"+pat_birth)):
+            os.mkdir(os.path.join(root_path, pat_name + "_" + pat_birth))
+        container.mias_container.lirads_process.set_mi_path(os.path.join(root_path, pat_name+"_"+pat_birth))
+        if not os.path.isdir(os.path.join(root_path,pat_name+"_"+pat_birth, acq_date)):
+            os.mkdir(os.path.join(root_path,pat_name+"_"+pat_birth, acq_date))
+        if not os.path.isdir(os.path.join(root_path,pat_name+"_"+pat_birth, acq_date, phase)):
+            cur_path = os.path.join(root_path,pat_name+"_"+pat_birth, acq_date, phase)
+            os.mkdir(cur_path)
+        for c, x in enumerate(files):
+            def process(f):
+                with open(cur_path + '/' + str(f).zfill(5), 'wb+') as destination:
+                    for chunk in f.chunks():
+                        destination.write(chunk)
+            process(x)
+        return JsonResponse({'state': True})
+    else:
+        return JsonResponse({'state': False})
+
+
+@csrf_exempt
+def step1_check_extension(request):
+    if request.method == "POST":
+        container.mias_container.lirads_process.check_extension()
+        return JsonResponse({'state': True})
+    else:
+        return JsonResponse({'state': False})
+
+
+@csrf_exempt
+def step1_load_medical_img(request):
+    if request.method == "POST":
+        container.mias_container.lirads_process.load_medical_img()
+        return JsonResponse({'state': True})
+    else:
+        return JsonResponse({'state': False})
+
+
+@csrf_exempt
+def step1_convert_color_depth(request):
+    if request.method == "POST":
+        container.mias_container.lirads_process.convert_color_depth()
+        return JsonResponse({'state': True})
+    else:
+        return JsonResponse({'state': False})
+
+
+@csrf_exempt
+def load_file_list(request):
+    if request.method == "POST":
+        list_data, list_imgs = container.mias_container.lirads_process.get_whole_img_data()
+        return JsonResponse({"state": True, "data": list_data, "imgs": list_imgs})
+    else:
+        return JsonResponse({"state": False})
+
+@csrf_exempt
+def segment_liver(request):
+    if request.method == "POST":
+        data = json.loads(request.POST.get("data"))
+        img_id = data["target_img"]
+        list_img, list_console = container.mias_container.lirads_process.segment_liver_region(img_id)
+        return JsonResponse({"state": False, "img":list_img, "console":list_console})
+    else:
+        return JsonResponse({"state": False})
+
+
+@csrf_exempt
+def load_setCT_a(request):
+    if request.method == "POST":
+        list_data, list_imgs = container.mias_container.lirads_process.get_whole_tumor_seg_targets()
+        return JsonResponse({"state": True, "data": list_data, "imgs": list_imgs})
+    else:
+        return JsonResponse({"state": False})
+
+
+@csrf_exempt
+def segment_tumor(request):
+    if request.method == "POST":
+        data = json.loads(request.POST.get("data"))
+        img_id = data["target_img"]
+        list_img, list_console = container.mias_container.lirads_process.segment_tumor_region(img_id)
+        return JsonResponse({"state":False, "img":list_img, "console":list_console})
+    else:
+        return JsonResponse({"state":False})

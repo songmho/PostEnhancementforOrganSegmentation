@@ -119,6 +119,27 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def lirads_step1(request):
+    return render(request, "miaas/lirads_step1.html")
+
+def lirads_step2(request):
+    print("HI")
+    return render(request, "miaas/lirads_step2.html")
+
+def lirads_step3(request):
+    return render(request, "miaas/lirads_step3.html")
+
+def lirads_step4(request):
+    return render(request, "miaas/lirads_step4.html")
+
+def lirads_step5(request):
+    return render(request, "miaas/lirads_step5.html")
+
+def lirads_step6(request):
+    return render(request, "miaas/lirads_step6.html")
+
+def lirads_step7(request):
+    return render(request, "miaas/lirads_step7.html")
 
 def main2_page(request):
     context = _get_session_context(request)
@@ -191,6 +212,9 @@ def stomach_abnormality_diagnosis(request):
 def diagnosis_detail(request, diagnosis_id):
     context = {'diagnosis_id': diagnosis_id}
     return render(request, "miaas/detail_diagnosis.html", context)
+
+def diagnose_abnormality_ml(request):
+    return render(request, "miaas/diagnose_abnormality_ml.html")
 
 def diagnose_abnormality(request):
     return render(request, "miaas/diagnose_abnormality.html")
