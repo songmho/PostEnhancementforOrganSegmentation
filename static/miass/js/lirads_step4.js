@@ -1,5 +1,21 @@
 (function () {
+    var d =["plain_2_0","plain_3_0","plain_4_0","arterial_2_0","arterial_3_0","arterial_4_0","venous_2_0","venous_3_0","venous_4_0","delayed_2_0","delayed_3_0","delayed_4_0"];
     $(document).ready(function(){
+
+        for (var i in d){
+            if (i==0)
+            $("#list_slices_step_4").append("<a class='list-group-item list-group-item-action active w-100'" +
+                " role='tab' id='list_"+i+"_list_tumors_step4"+"' data-toggle='list' href='#list_"+i+"'>"+d[i]+"</a>");
+            else
+            $("#list_slices_step_4").append("<a class='list-group-item list-group-item-action w-100'" +
+                " role='tab' id='list_"+i+"_list_tumors_step4"+"' data-toggle='list' href='#list_"+i+"'>"+d[i]+"</a>");
+        }
+
+        $("#btn_btn_evaluate_tumor").on("click", function () {
+            
+        });
+
+
         $("#btn_lirads_step4_back").on("click", function () {
             $("#smartwizard").smartWizard("prev");
             $("#btn_step4").removeClass("done");

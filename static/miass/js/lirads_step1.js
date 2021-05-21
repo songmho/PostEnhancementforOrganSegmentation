@@ -1,18 +1,4 @@
 (function () {
-
-    var list_console = [];
-    function write_log_in_console(text){
-        var dt = new Date();
-        list_console.push("["+dt.getFullYear()+"."+(dt.getMonth()+1).toString().padStart(2,"0")+"."+dt.getDate().toString().padStart(2,"0")+" "
-            +dt.getHours().toString().padStart(2,"0")+":"+dt.getMinutes().toString().padStart(2,"0")+":"+dt.getSeconds().toString().padStart(2,"0")+"]  "+text);
-        if (list_console.length >9)
-            list_console.shift();
-
-        $("#div_console").empty();
-        for (var i in list_console)
-            $("#div_console").append("<p class='mb-0'>"+list_console[i]+"</p>");
-    };
-
     function upload_img(pat_name,pat_birth, acq_date , phase, form_loader_name, cur) {
         var cur_form_data_tmp = new FormData($(form_loader_name)[0]);
         var fileList= cur.files;
@@ -84,7 +70,6 @@
     }
 
     $(document).ready(function(){
-        console.log("IIHHH");
         $("#btn_lirads_step1_next").on("click", function () {
 
             $("#step-2").empty();

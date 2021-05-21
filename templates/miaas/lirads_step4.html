@@ -7,11 +7,41 @@
     <title>Title</title>
 </head>
 <body>
+    <div class="w-100" style="height: 6%;">
+        <div id="div_init_tumor">
+            <button class="btn btn-outline-info float-right" id="btn_evaluate_tumor">Evaluate</button>
+        </div>
+        <div id="div_start_tumor" style="display: none;">
+            <button class="btn btn-outline-info float-right" id="btn_stop_evaluate_tumor">Stop</button>
+            <button class="btn btn-outline-info float-right mr-2" id="btn_pause_evaluate_tumor">Pause</button>
+        </div>
+        <div id="div_pause_tumor"  style="display: none;">
+            <button class="btn btn-outline-info float-right" id="btn_resume_evaluate_tumor">Resume</button>
+        </div>
+    </div>
+    <div class="w-100 row" style="height: 84%">
+        <div id="list_slices_step_4" role="tablist" class="list-group border border-primary" style="width: 22%; overflow-x: hidden; max-height: 100%; -ms-overflow-style:none">
 
+        </div>
+        <div id="sl_id_tumors" style="width: 76%;" class="tab-content ml-2 row">
+            <div id="div_img" class="w-50">
+                <div class="div_area w-100">
+                    <img src="{% static "/miass/images/tumors/HCC_2_AP 1_0.jpg"%}">
+                </div>
+            </div>
+            <div id="div_features" class="w-50">
+                <h6>Predicted Image Features</h6>
+                <div id="div_img_features" class="ml-2">
+                <p>Hypoattenuating</p>
+                </div>
+            </div>
+        </div>
+    </div>
     <div>
         <button id="btn_lirads_step4_next" class="col-1 btn btn-primary float-right">Next</button>
         <button id="btn_lirads_step4_back" class="col-1 btn btn-primary float-right mr-1">Back</button>
     </div>
 </body>
+<script src="{% static "miass/js/console.js" %}"></script>
 <script src="{% static "miass/js/lirads_step4.js" %}"></script>
 </html>

@@ -1,5 +1,13 @@
 (function () {
+
     $(document).ready(function(){
+        $("#btn_generate_report").on("click", function(){
+
+        });
+        $("#btn_pred_stage").on("click", function(){
+
+        });
+
         $("#btn_lirads_step7_back").on("click", function () {
             $("#smartwizard").smartWizard("prev");
             $("#btn_step7").removeClass("done");

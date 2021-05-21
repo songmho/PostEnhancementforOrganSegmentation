@@ -7,11 +7,47 @@
     <title>Title</title>
 </head>
 <body>
+    <div class="ml-2">
+        <h6>LIRADS Stage Information</h6>
+        <div class="row ml-2 mb-1">
+            <p class="col-3 my-auto">Tumor Type</p>
+            <p class="col-2 px-1" id="txt_tumor_type">
+        </div>
+        <div class="row ml-2 mb-1">
+            <p class="col-3 my-auto">Image Features</p>
+            <p class="col-2 px-1" id="txt_tumor_img_features">
+        </div>
+        <div class="row ml-2 mb-1">
+            <p class="col-3 my-auto">APHE Type</p>
+            <p class="col-2 px-1" id="txt_tumor_aphe_type">Nonrim APHE</p>
+        </div>
+        <div class="row ml-2 mb-1">
+            <p class="col-3 my-auto">Tumor Size</p>
+            <p class="col-2 px-1" id="txt_tumor_size">32 mm</p>
+        </div>
+        <div class="row ml-2 mb-1">
+            <p class="col-3 my-auto">Number of Major Features</p>
+            <p class="col-2 px-1" id="txt_tumor_aphe_type">2</p>
+        </div>
+        <div class="row ml-2 mb-1">
+            <p class="col-3 my-auto">Stage</p>
+            <p class="col-2 px-1" id="txt_lirad_stage">LR-5</p>
+            <button id="btn_pred_stage" class="btn btn-outline-info">Predict</button>
+        </div>
+    </div>
+    <div class="ml-2 mt-3">
+        <h6>Report</h6>
+        <div class="row ml-2 mb-1">
+            <p class="col-4 my-auto">Generating Report</p>
+            <button id="btn_generate_report" class="btn btn-outline-info">Generate</button>
+        </div>
+    </div>
 
     <div>
         <button id="btn_lirads_step7_done" class="col-1 btn btn-primary float-right">Done</button>
         <button id="btn_lirads_step7_back" class="col-1 btn btn-primary float-right mr-1">Back</button>
     </div>
 </body>
+<script src="{% static "miass/js/console.js" %}"></script>
 <script src="{% static "miass/js/lirads_step7.js" %}"></script>
 </html>

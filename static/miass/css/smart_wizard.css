@@ -298,28 +298,34 @@
   border-color: #f8f8f8;
   background: #f8f8f8;
   cursor: not-allowed;
+  font-size: large;
+  font-weight: 400;
 }
 
 .sw-theme-arrows > .nav .nav-link.active {
-  color: #ffffff;
-  border-color: #69bbfc;
-  background: #69bbfc;
+  color: #000000;
+  border-color: #ff8a65;
+  background: #ff8a65;
   cursor: pointer;
+  font-size: large;
+  font-weight: 700;
 }
 
 .sw-theme-arrows > .nav .nav-link.active::after {
-  border-left-color: #69bbfc;
+  border-left-color: #ff8a65;
 }
 
 .sw-theme-arrows > .nav .nav-link.done {
   color: #ffffff;
-  border-color: #298BC9;
-  background: #298BC9;
+  border-color: #43a047;
+  background: #43a047;
   cursor: pointer;
+  font-size: large;
+  font-weight: 400;
 }
 
 .sw-theme-arrows > .nav .nav-link.done::after {
-  border-left-color: #298BC9;
+  border-left-color: #43a047;
 }
 
 .sw-theme-arrows > .nav .nav-link.disabled {
