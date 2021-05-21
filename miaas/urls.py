@@ -149,6 +149,8 @@ urlpatterns = [
     url(r'^api/send_dicom/(?P<img_id>[0-9]+)/(?P<phase>[\w ]+)/(?P<img_loc>[0-9]+)$', apis.send_dicom),
     url(r'^api/get_max_img_count', apis.get_max_img_count),
     url(r'^api/upload_txt', apis.upload_txt),
+    url(r'^api/load_tumor_list', apis.load_tumor_list),
+    url(r'^api/load_tumor_group_list', apis.load_tumor_group_list),
     # url(r'^api/register_test_item', apis.register_test_item),
     # url(r'^api/invite_user', apis.invite_user),
     # url(r'^api/check_invitation_code', apis.check_invitation_code),

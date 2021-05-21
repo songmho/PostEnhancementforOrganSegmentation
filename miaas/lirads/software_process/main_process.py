@@ -125,8 +125,6 @@ class LiradsProcess:
             self.setCT_c[ii[0]] = {}
         self.setCT_c_seg[ii[0]][ii[1]] = result
         self.setCT_c[ii[0]][ii[1]] = slice
-        print(result["whole_mask"].shape)
-        print(result["whole_mask"].dtype)
         return self.__convert_img_to_binary(result["whole_mask"]), ""
 
     def get_setCT_c_seg(self):
@@ -134,6 +132,21 @@ class LiradsProcess:
 
     def get_setCT_C_tumor(self):
         return self.step_3.get_setCT_C_tumor()
+
+
+    ### Method for Step 4
+    def get_tumor_img_data(self):
+        self.list_tumor_names, self.list_tumor_imgs = [], []
+
+
+
+        return
+
+    def evaluate_img_features(self, img_id):
+        cur_tumor = self.list_tumor_imgs[img_id]
+        result = self.step_4.evaluate_image_feature_new(cur_tumor)
+
+        return
 
     def __convert_img_to_binary(self, img):
         scs, encoded_img = cv2.imencode(".png", img)

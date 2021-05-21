@@ -5,6 +5,7 @@
 
 
     $(document).ready(function(){
+        write_log_in_console("Step 3. segmenting tumor regions is started.");
         $.ajax({
             url: "/api/load_setCT_a",
             async: true,

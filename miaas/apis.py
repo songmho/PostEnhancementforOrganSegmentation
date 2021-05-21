@@ -91,6 +91,7 @@ def register_profile_image(request):
             return JsonResponse({"state": False})
 
 
+
 def retrieve_image_info(request):
     if request.method == "POST":
         try:
@@ -1994,6 +1995,23 @@ def load_file_list(request):
         return JsonResponse({"state": True, "data": list_data, "imgs": list_imgs})
     else:
         return JsonResponse({"state": False})
+
+@csrf_exempt
+def load_tumor_list(request):
+    if request.method == "POST":
+        # list_data, list_imgs = container.mias_container.lirads_process.get_tumor_img_data()
+        list_data, list_imgs = [],[]
+        return JsonResponse({"state": True, "data": list_data, "imgs": list_imgs})
+    else:
+        return JsonResponse({"state": False})
+
+@csrf_exempt
+def load_tumor_group_list(request):
+    if request.method == "POST":
+        list_data, list_imgs = [],[]
+        return JsonResponse({"state": True, "data": list_data, "imgs": list_imgs})
+    else:
+        return JsonResponse({"state":False})
 
 @csrf_exempt
 def segment_liver(request):

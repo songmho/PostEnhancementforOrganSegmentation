@@ -70,6 +70,7 @@
     }
 
     $(document).ready(function(){
+        write_log_in_console("Step 1. Loading target medical image is started.");
         $("#btn_lirads_step1_next").on("click", function () {
 
             $("#step-2").empty();

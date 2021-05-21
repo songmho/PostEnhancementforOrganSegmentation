@@ -187,6 +187,14 @@ class ImageFeatureEvaluator:
                     self.features[i][j].append(self.feature_classifier.get_features(result[0]))
         return self.features
 
+    def evaluate_image_feature_new(self, img):
+        result = self.feature_classifier.predict(img)
+        return result
+
+    def get_image_features(self, list_conf):
+        result = self.feature_classifier.get_features(list_conf)
+        return result
+
     def __slice_roi(self, cur_img, roi):
         return cur_img[roi[0]:roi[2], roi[1]:roi[3]]
 

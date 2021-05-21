@@ -23,16 +23,20 @@
         <div id="list_slices_step_4" role="tablist" class="list-group border border-primary" style="width: 22%; overflow-x: hidden; max-height: 100%; -ms-overflow-style:none">
 
         </div>
-        <div id="sl_id_tumors" style="width: 76%;" class="tab-content ml-2 row mt-4 h-75">
-            <div id="div_img" class="w-50">
-                <div class="div_area text-center h-100">
-                    <img src="{% static "/miass/images/tumors/HCC_2_AP 1_0.jpg"%}" width="250px" height="250px">
-                </div>
-            </div>
-            <div id="div_features" class="w-50 border border-info p-2">
-                <h5>Predicted Image Features</h5>
-                <div id="div_img_features" class="ml-2">
-                <h6>Hypoattenuating</h6>
+        <div id="sl_id_tumors" style="width: 76%;" class="tab-content h-75">
+            <div class="h-100  ml-2 mt-4 tab-pane show active" id="list_i" role="tabpanel" aria-labelledby="list_i_list_tumors_step4">
+                <div class="row h-100">
+                    <div id="div_img" class="w-50 mr-0">
+                        <div class="div_area text-center h-100">
+                          <img src="{% static "/miass/images/tumors/HCC_2_AP 1_0.jpg"%}" width="250px" height="250px">
+                        </div>
+                    </div>
+                    <div id="div_features" class="w-50 border border-info p-2">
+                      <h5>Predicted Image Features</h5>
+                        <div id="div_img_features" class="ml-2">
+                          <h6>Hypoattenuating</h6>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,6 +1,8 @@
 (function () {
 
     $(document).ready(function(){
+
+        write_log_in_console("Step 7. Predicting LR stage is started.");
         $("#btn_generate_report").on("click", function(){
 
         });

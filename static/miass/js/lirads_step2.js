@@ -3,6 +3,7 @@
     var idx= 0;
     var intervalSegment = null;
     $(document).ready(function(){
+        write_log_in_console("Step 2. segmenting liver organ is started.");
         $.ajax({
             url: "/api/load_file_list",
             async: true,
