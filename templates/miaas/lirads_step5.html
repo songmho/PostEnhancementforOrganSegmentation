@@ -23,35 +23,37 @@
         <div id="list_slices_step_5" role="tablist" class="list-group border border-primary" style="width: 22%; overflow-x: hidden; max-height: 100%; -ms-overflow-style:none">
 
         </div>
-        <div id="sl_id_tumors" style="width: 78%;" class="tab-content row mx-0">
-            <div id="div_img" style="width: 50%;">
+        <div style="width: 1.5%; height: 100%"></div>
+        <div id="sl_id_tumors" style="width: 76.5%;" class="tab-content row mx-0 mt-3">
+            <div id="div_img" style="width: 50%; height: 70%">
                 <div style="height: 50%;" class="row mx-0">
                     <div class="w-50">
-                    <img src="{% static "/miass/images/tumors/HCC_2_DP 1_0.jpg"%}">
-                        <h6>Plain</h6>
+                    <img src="{% static "/miass/images/tumors/HCC_2_DP 1_0.jpg"%}" class="mx-auto d-block" height="160px" width="160px">
+                        <h6 class="text-center">Plain</h6>
                     </div>
-                    <div class="w-50">
-                    <img src="{% static "/miass/images/tumors/HCC_2_AP 1_0.jpg"%}">
-                        <h6>Arterial Phase</h6>
+                    <div class="w-50 mx-auto">
+                    <img src="{% static "/miass/images/tumors/HCC_2_AP 1_0.jpg"%}" class="mx-auto d-block" height="160px" width="160px">
+                        <h6 class="text-center">Arterial Phase</h6>
                     </div>
                 </div>
                 <div style="height: 50%;"  class="row mx-0">
                     <div class="w-50" >
 
-                    <img src="{% static "/miass/images/tumors/HCC_2_PVP 1_0.jpg"%}">
-                        <h6>Portal Venous Phase</h6>
+                    <img src="{% static "/miass/images/tumors/HCC_2_PVP 1_0.jpg"%}" class="mx-auto d-block" height="160px" width="160px">
+                        <h6 class="text-center">Portal Venous Phase</h6>
                     </div>
                     <div class="w-50">
 
-                    <img src="{% static "/miass/images/tumors/HCC_2_DP 1_0.jpg"%}">
-                        <h6>Delayed Phase</h6>
+                    <img src="{% static "/miass/images/tumors/HCC_2_DP 1_0.jpg"%}" class="mx-auto d-block" height="160px" width="160px">
+                        <h6 class="text-center">Delayed Phase</h6>
                     </div>
                 </div>
             </div>
-            <div id="div_features" class="w-50 row mx-0 pl-2">
-                <h6>Tumor Type: </h6>
-                <h6 id="txt_cur_tumor_type">HCC</h6>
-
+            <div id="div_features" class="w-50 mx-0 p-2 border border-info h-75">
+                <h5>Predicted Tumor Type</h5>
+                <h6 id="txt_cur_tumor_type" class="ml-2">HCC (98%)</h6>
+                <h6 id="txt_cur_tumor_type" class="ml-2">FLHCC (12%)</h6>
+                <h6 id="txt_cur_tumor_type" class="ml-2">Hemangioma (6%)</h6>
             </div>
         </div>
     </div>
