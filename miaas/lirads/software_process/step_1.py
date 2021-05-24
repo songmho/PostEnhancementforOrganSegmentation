@@ -78,13 +78,14 @@ class MedicalImageLoader:
                         if os.path.join(self.path_medimg, series, slice) != self.path_info:
                             self.med_type = ext[1:]
                             break
+        print(">>>> ", self.med_type)
 
     def load_medical_img(self):
         """
         To load medical images
         :return:
         """
-        if self.med_type.lower() == ("png" or "jpg"):
+        if self.med_type.lower() in ["png", "jpg", "jpeg"]:
             self._load_medical_img_normal()
         elif self.med_type.lower() == "dcm":
             self.__load_medical_img_dcm()
@@ -108,7 +109,7 @@ class MedicalImageLoader:
 
     def _load_medical_img_normal(self):
         for study in os.listdir(self.path_medimg):
-            self.set_med_img[study] = {}
+            self.set_med_img[study] = {"plain":[], "arterial":[], "venous":[], "delay":[]}
             for series in os.listdir(os.path.join(self.path_medimg, study)):
                 self.set_med_img[study][series] = []
                 for slice in os.listdir(os.path.join(self.path_medimg, study, series)):
@@ -122,12 +123,25 @@ class MedicalImageLoader:
         To convert color depth
         :return:
         """
-        if self.med_type.lower() == ("png" or "jpg"):
-            pass
+        if self.med_type.lower() in ["png", "jpg","jpeg"]:
+            self.__load_normal_imgs()
         elif self.med_type.lower() == "dcm":
             self.__convert_color_depth_dcm()
         else:
             pass
+
+    def __load_normal_imgs(self):
+        print(self.set_med_img.keys())
+        for std_name, studies in self.set_med_img.items():
+            self.setCT_a[std_name] = {}
+            for series, slices in studies.items():
+                list_cur_series = []
+                for dc in slices:
+                    list_cur_series.append(dc)
+                self.setCT_a[std_name][series] = list_cur_series
+                print(len(self.setCT_a[std_name][series]))
+            print(self.setCT_a[std_name].keys())
+        print(self.setCT_a.keys())
 
     def __convert_color_depth_dcm(self):
         for std_name, studies in self.set_med_img.items():

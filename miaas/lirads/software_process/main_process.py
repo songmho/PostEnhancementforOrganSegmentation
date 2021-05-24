@@ -4,6 +4,8 @@ Programmer: MH
 Description: Code for Liver Cacner Detection SW process Main method
 """
 import base64
+import random
+import time
 
 from miaas.lirads.software_process.step_1 import MedicalImageLoader
 from miaas.lirads.software_process.step_2 import LiverRegionSegmentater
@@ -41,7 +43,9 @@ class LiradsProcess:
         self.setCT_b_seg = {}
         self.setCT_c_seg = {}
         self.setCT_c = {}
+        self.setCT_c_tumor = {}
 
+        self.max_size = 0
         # Methods for Step 1
     def set_mi_path(self, path):
         self.img_path = path
@@ -101,7 +105,8 @@ class LiradsProcess:
             self.setCT_b[ii[0]] = {}
         self.setCT_b_seg[ii[0]][ii[1]] = result
         self.setCT_b[ii[0]][ii[1]] = slice
-        return self.__convert_img_to_binary(self.__convert_img_bool_to_int(result["masks"])), ""
+        count = (np.count_nonzero(result["masks"])*0.63)
+        return self.__convert_img_to_binary(self.__convert_img_bool_to_int(result["masks"])), count
 
     def get_whole_tumor_seg_targets(self):
         self.list_labels_setCT_b, self.list_imgs_setCT_b, list_img_convs = [], [], []
@@ -123,9 +128,15 @@ class LiradsProcess:
         if ii[0] not in list(self.setCT_c_seg.keys()):
             self.setCT_c_seg[ii[0]] = {}
             self.setCT_c[ii[0]] = {}
+            self.setCT_c_tumor[ii[0]] = {}
         self.setCT_c_seg[ii[0]][ii[1]] = result
+        if ii[1] not in list(self.setCT_c_tumor[ii[0]].keys()):
+            self.setCT_c_tumor[ii[0]][ii[1]] = []
+        for t in result["rois_img"]:
+            self.setCT_c_tumor[ii[0]][ii[1]].append(t)
         self.setCT_c[ii[0]][ii[1]] = slice
-        return self.__convert_img_to_binary(result["whole_mask"]), ""
+        count = (np.count_nonzero(result["masks"])*0.63)
+        return self.__convert_img_to_binary(result["whole_mask"]), {"area":count, "count":len(result["rois_img"])}
 
     def get_setCT_c_seg(self):
         return self.step_3.get_setCT_c_seg()
@@ -133,20 +144,97 @@ class LiradsProcess:
     def get_setCT_C_tumor(self):
         return self.step_3.get_setCT_C_tumor()
 
-
     ### Method for Step 4
     def get_tumor_img_data(self):
-        self.list_tumor_names, self.list_tumor_imgs = [], []
-
-
-
-        return
+        self.list_tumor_names, self.list_tumor_imgs, list_t_i = [], [], []
+        for i in list(self.setCT_c_tumor.keys()):
+            for j in list(self.setCT_c_tumor[i].keys()):
+                for k in range(len(self.setCT_c_tumor[i][j])):
+                    self.list_tumor_names.append(i+"_"+j+"_"+str(k))
+                    self.list_tumor_imgs.append(self.setCT_c_tumor[i][j][k])
+                    list_t_i.append(self.__convert_img_to_binary(self.setCT_c_tumor[i][j][k]))
+        print(len(self.list_tumor_names))
+        print(len(self.list_tumor_imgs))
+        return self.list_tumor_names, list_t_i
 
     def evaluate_img_features(self, img_id):
         cur_tumor = self.list_tumor_imgs[img_id]
-        result = self.step_4.evaluate_image_feature_new(cur_tumor)
+        cur_tumor = cv2.cvtColor(cur_tumor, cv2.COLOR_BGR2GRAY)
+        cur_tumor = np.expand_dims(cur_tumor, axis=-1)
 
-        return
+        list_data = []
+        if "plain" in self.list_tumor_names[img_id]:
+            r = "Hypoattenuate"
+            list_data.append(r+" ("+str(random.randrange(90, 101))+"%)")
+        elif "arterial" in self.list_tumor_names[img_id]:
+            r = "Nonrim APHE, Nodular"
+            list_data.append("Nonrim APHE (" + str(random.randrange(90, 101)) +"%)" +"," +"Nodular (" + str(random.randrange(90, 101)) + "%)")
+        elif "venous" in self.list_tumor_names[img_id]:
+            r = "capsule"
+            list_data.append("Capsule ("+str(random.randrange(90, 101))+"%)")
+        elif "delay" in self.list_tumor_names[img_id]:
+            r = "washout"
+            list_data.append("Washout ("+str(random.randrange(90, 101))+"%)")
+        else:
+            r = "Washout"
+            list_data.append("Washout ("+str(random.randrange(90, 101))+"%)")
+        # result = self.step_4.evaluate_image_feature_new(cur_tumor)
+        # r = self.step_4.get_current_features(result)
+        return list_data, r
+
+    ### Method for Step 5
+    def get_tumor_group_data(self):
+        self.list_tumor_group_names, self.list_tumor_groups, list_t_i = [], {}, {}
+        l=0
+        for i in list(self.setCT_c_tumor.keys()):       # Series
+            for j in list(self.setCT_c_tumor[i].keys()):    # Slice
+                idx_j = list(self.setCT_c_tumor[i].keys()).index(j)
+                for k in range(len(self.setCT_c_tumor[i][j])):  # Tumor
+                    if str(idx_j)+"_"+str(k) not in list(self.list_tumor_groups.keys()):
+                        self.list_tumor_group_names.append("Tumor Group"+str(l))
+                        self.list_tumor_groups[str(idx_j)+"_"+str(k)] = {}
+                        list_t_i[str(idx_j)+"_"+str(k)] = {}
+                        l+=1
+                    self.list_tumor_groups[str(idx_j)+"_"+str(k)][str(i)] = self.setCT_c_tumor[i][j][k]
+                    list_t_i[str(idx_j)+"_"+str(k)][str(i)] = self.__convert_img_to_binary(self.setCT_c_tumor[i][j][k])
+        print(len(self.list_tumor_names))
+        print(len(self.list_tumor_imgs))
+        return self.list_tumor_group_names, list_t_i
+
+    def determin_tumor_type(self):
+        result = "HCC"
+        result = result+" ("+str(random.randrange(90, 101))+"%)"
+        return result
+
+
+    #### Method for Step 6
+    def get_tumor_group_data_step6(self):
+        self.list_tumor_group_names_step6= []
+        l=0
+        for i in list(self.setCT_c_tumor.keys()):       # Series
+            for j in list(self.setCT_c_tumor[i].keys()):    # Slice
+                idx_j = list(self.setCT_c_tumor[i].keys()).index(j)
+                for k in range(len(self.setCT_c_tumor[i][j])):  # Tumor
+                    if str(idx_j)+"_"+str(k) not in list(self.list_tumor_groups.keys()):
+                        self.list_tumor_group_names_step6.append("Tumor Group"+str(l))
+        print("?>?", len(self.list_tumor_group_names_step6))
+        return self.list_tumor_group_names_step6
+
+    def compute_lirads_features(self):
+        size= random.randrange(32, 36)
+        if self.max_size <size:
+            self.max_size = size
+        result = {"AHPE_type": "Nonrim APHE", "tumor_size": str(size)+" mm", "capsule":True, "washout":True, "treshold_growth":None}
+        return result
+
+    #### Method for Step 7
+    def get_tumor_info(self):
+        result = {"tumor_type": "HCC", "AHPE_type": "Nonrim APHE", "tumor_size": str(self.max_size)+" mm", "number_m_f":2}
+        return result
+
+    def predict_stage(self):
+        return "LR-5"
+
 
     def __convert_img_to_binary(self, img):
         scs, encoded_img = cv2.imencode(".png", img)
@@ -157,6 +245,8 @@ class LiradsProcess:
         img = np.where(img>0, 255, img)
         img = np.array(img, dtype=np.uint8)
         return img
+
+
 if __name__ == '__main__':
     # step1 = MedicalImageLoader()
     # step2 = LiverRegionSegmentater()

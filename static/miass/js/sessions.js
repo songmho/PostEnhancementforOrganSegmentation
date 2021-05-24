@@ -8,7 +8,9 @@ function get_current_profile() {
     return JSON.parse(sessionStorage.getItem("profile"));
 }
 function remove_current_profile() {
+    var voice = get_voice();
     sessionStorage.removeItem("profile");
+    set_voice(voice);
 }
 function set_current_user(c_u) {
     // sessionStorage.setItem("current_user", JSON.stringify(c_u));
@@ -56,14 +58,18 @@ function get_current_role() {
 }
 
 function remove_current_user() {
+    var voice = get_voice();
     sessionStorage.clear();
     sessionStorage.removeItem("current_user");
     sessionStorage.removeItem("profile");
     sessionStorage.removeItem("current_role");
+    set_voice(voice);
 }
 
 function clear_session() {
+    var voice = get_voice();
     sessionStorage.clear();
+    set_voice(voice);
 }
 
 function set_remember(c_u){
@@ -75,7 +81,16 @@ function get_remember() {
 }
 
 function remove_remember() {
+    var voice = get_voice();
     localStorage.removeItem("saved_user");
     localStorage.clear();
+    set_voice(voice);
 
+}
+
+function set_voice(d){
+    localStorage.setItem("voice", JSON.stringify(d));
+}
+function get_voice() {
+    return JSON.parse(localStorage.getItem("voice"));
 }

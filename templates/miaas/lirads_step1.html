@@ -7,70 +7,73 @@
     <title>Title</title>
 </head>
 <body>
-    <h5>Load CT Study</h5>
-    <div class="ml-2">
-        <h6>Patient Information</h6>
-        <div class="row ml-2 mb-1">
-            <p class="col-3 my-auto">Name</p>
-            <input class="col-3 px-1" id="input_pat_name">
-        </div>
-        <div class="row ml-2 mb-1">
-            <p class="col-3 my-auto">Birthday </p>
-            <input class="col-3 px-1" id="input_pat_birth" placeholder="mm-dd-yyyy">
-        </div>
-    </div>
-    <div class="ml-2 mt-3">
-        <h6 >Medical Image Information</h6>
-        <div class="row ml-2 mb-1">
-            <p class="col-3 my-auto">Acquired Date</p>
-            <input class="col-3 px-1" id="input_acq_date" placeholder="mm-dd-yyyy">
-        </div>
+    <div class="w-100" style="height: 90%">
+        <h5>Load CT Study</h5>
         <div class="ml-2">
-            <div class="col-3"><p class=" my-auto"> CT Series Data </p></div>
-            <div class="row ml-3 mb-1">
-                <p class="col-3 my-auto">Plain Phase </p>
-                <label class="btn btn-outline-info col-1">Load
-                    <form id="form_loader_plain" class="my-0" enctype="multipart/form-data">
-                        <input id="btn_loader_plain" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
-                    </form>
-                </label>
+            <h6>Patient Information</h6>
+            <div class="row ml-2 mb-1">
+                <p class="col-3 my-auto">Name</p>
+                <input class="col-3 px-1" id="input_pat_name">
             </div>
-            <div class="row ml-3 mb-1">
-                <p class="col-3 my-auto">Arterial Phase </p>
-                <label class="btn btn-outline-info col-1">Load
-                    <form id="form_loader_arterial" class="my-0" enctype="multipart/form-data">
-                        <input id="btn_loader_arterial" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
-                    </form>
-                </label>
+            <div class="row ml-2 mb-1">
+                <p class="col-3 my-auto">Birthday </p>
+                <input class="col-3 px-1" id="input_pat_birth" placeholder="mm-dd-yyyy">
             </div>
-            <div class="row ml-3 mb-1">
-                <p class="col-3 my-auto">Portal Venous Phase </p>
-                <label class="btn btn-outline-info col-1">Load
-                    <form id="form_loader_pvp" class="my-0" enctype="multipart/form-data">
-                        <input id="btn_loader_pvp" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
-                    </form>
-                </label>
+        </div>
+        <div class="ml-2 mt-3">
+            <h6 >Medical Image Information</h6>
+            <div class="row ml-2 mb-1">
+                <p class="col-3 my-auto">Acquired Date</p>
+                <input class="col-3 px-1" id="input_acq_date" placeholder="mm-dd-yyyy">
             </div>
-            <div class="row ml-3 mb-1">
-                <p class="col-3 my-auto">Delay Phase </p>
-                <label class="btn btn-outline-info col-1">Load
-                    <form id="form_loader_delay" class="my-0" enctype="multipart/form-data">
-                        <input id="btn_loader_delay" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
-                    </form>
-                </label>
+            <div class="ml-2">
+                <div class="col-3"><p class=" my-auto"> CT Series Data </p></div>
+                <div class="row ml-3 mb-1">
+                    <p class="col-3 my-auto">Plain Phase </p>
+                    <label class="btn btn-outline-info col-1">Load
+                        <form id="form_loader_plain" class="my-0" enctype="multipart/form-data">
+                            <input id="btn_loader_plain" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
+                        </form>
+                    </label>
+                </div>
+                <div class="row ml-3 mb-1">
+                    <p class="col-3 my-auto">Arterial Phase </p>
+                    <label class="btn btn-outline-info col-1">Load
+                        <form id="form_loader_arterial" class="my-0" enctype="multipart/form-data">
+                            <input id="btn_loader_arterial" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
+                        </form>
+                    </label>
+                </div>
+                <div class="row ml-3 mb-1">
+                    <p class="col-3 my-auto">Portal Venous Phase </p>
+                    <label class="btn btn-outline-info col-1">Load
+                        <form id="form_loader_pvp" class="my-0" enctype="multipart/form-data">
+                            <input id="btn_loader_pvp" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
+                        </form>
+                    </label>
+                </div>
+                <div class="row ml-3 mb-1">
+                    <p class="col-3 my-auto">Delay Phase </p>
+                    <label class="btn btn-outline-info col-1">Load
+                        <form id="form_loader_delay" class="my-0" enctype="multipart/form-data">
+                            <input id="btn_loader_delay" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
+                        </form>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="ml-2 mt-3">
+            <h6>Uploaded Data Information</h6>
+            <div class="row ml-2 mb-1">
+                <p class="col-3 my-auto">Acquired Date</p>
+                <button class="btn btn-outline-info col-2" id="btn_start_step1">Load Information</button>
             </div>
         </div>
     </div>
 
-    <div class="ml-2 mt-3">
-        <h6>Uploaded Data Information</h6>
-        <div class="row ml-2 mb-1">
-            <p class="col-3 my-auto">Acquired Date</p>
-            <button class="btn btn-outline-info col-2" id="btn_start_step1">Load Information</button>
-        </div>
-    </div>
 
-    <div>
+    <div class="bottom-">
         <button id="btn_lirads_step1_next" class="col-1 btn btn-primary float-right">Next</button>
     </div>
 </body>

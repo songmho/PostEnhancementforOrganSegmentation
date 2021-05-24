@@ -3,6 +3,7 @@
  */
 
 $(document).ready(function() {
+    set_voice(1);
     if($.cookie('remember_user') == 'true') {
         $('#checkRemember').attr('checked', true);
         $('#inputId').val($.cookie('saved_id'));

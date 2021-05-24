@@ -82,12 +82,31 @@
         location.replace("/view/browse_profile")
     });
 
+    $("#nav_option").on("click", function () {
+       console.log(get_voice());
+       if (get_voice()==1){
+            $("#rdo_female").prop("checked", true);
+            $("#rdo_male").prop("checked", false);
+       }else{
+            $("#rdo_female").prop("checked", false);
+            $("#rdo_male").prop("checked", true);
+       }
+    });
+
     $("#btn_change").click(function () {
         var a = $("input[name='role']:checked").val();
         console.log(a);
         set_current_role(a);
 
         location.reload();
+    });
+
+    $("#btn_option_change").on("click", function () {
+        var a = $("input[name='voice']:checked").val();
+        set_voice(a);
+
+        $("#modal_option").modal("hide");
+
     });
 
     $(document).ready(function () {

@@ -1999,10 +1999,12 @@ def load_file_list(request):
 @csrf_exempt
 def load_tumor_list(request):
     if request.method == "POST":
-        # list_data, list_imgs = container.mias_container.lirads_process.get_tumor_img_data()
-        list_data, list_imgs = [],[]
+        list_data, list_imgs = container.mias_container.lirads_process.get_tumor_img_data()
+        # list_data, list_imgs = [],[]
+        print(">>> load_tumor_list, True")
         return JsonResponse({"state": True, "data": list_data, "imgs": list_imgs})
     else:
+        print(">>> load_tumor_list, False")
         return JsonResponse({"state": False})
 
 @csrf_exempt
@@ -2042,3 +2044,77 @@ def segment_tumor(request):
         return JsonResponse({"state":False, "img":list_img, "console":list_console})
     else:
         return JsonResponse({"state":False})
+    
+@csrf_exempt
+def evaluate_img_feature(request):
+    if request.method == "POST":
+        data = json.loads(request.POST.get("data"))
+        img_id = data["target_img"]
+        list_img, list_console = container.mias_container.lirads_process.evaluate_img_features(img_id)
+        return JsonResponse({"state":False, "img":list_img, "console":list_console})
+    else:
+        return JsonResponse({"state":False})
+
+@csrf_exempt
+def get_tumor_group_data(request):
+    if request.method == "POST":
+        data = json.loads(request.POST.get("data"))
+        list_data, list_imgs = container.mias_container.lirads_process.get_tumor_group_data()
+        return JsonResponse({"state": True, "data": list_data, "imgs": list_imgs})
+    else:
+        return JsonResponse({"state": False})
+
+@csrf_exempt
+def determin_tumor_type(request):
+    if request.method == "POST":
+        data = json.loads(request.POST.get("data"))
+        list_data = container.mias_container.lirads_process.determin_tumor_type()
+        return JsonResponse({"state": True, "data": list_data})
+    else:
+        return JsonResponse({"state": False})
+
+
+@csrf_exempt
+def compute_lirads_feature(request):
+    if request.method == "POST":
+        data = json.loads(request.POST.get("data"))
+        list_data = container.mias_container.lirads_process.compute_lirads_features()
+        return JsonResponse({"state": True, "data": list_data})
+    else:
+        return JsonResponse({"state": False})
+
+
+@csrf_exempt
+def load_tumor_group_list_step6(request):
+    if request.method == "POST":
+        data = json.loads(request.POST.get("data"))
+        list_data = container.mias_container.lirads_process.get_tumor_group_data_step6()
+        return JsonResponse({"state": True, "data": list_data})
+    else:
+        return JsonResponse({"state": False})
+
+@csrf_exempt
+def load_tumor_lirads_feature_info(request):
+    if request.method == "POST":
+        list_data = []
+
+        return JsonResponse({"state": True, "data": list_data})
+    else:
+        return JsonResponse({"state": False})
+
+@csrf_exempt
+def get_tumor_info(request):
+    if request.method == "POST":
+        stage = container.mias_container.lirads_process.get_tumor_info()
+        return JsonResponse({"state": True, "data": stage})
+    else:
+        return JsonResponse({"state": False})
+
+
+@csrf_exempt
+def predict_stage(request):
+    if request.method == "POST":
+        stage = container.mias_container.lirads_process.predict_stage()
+        return JsonResponse({"state": True, "stage": stage})
+    else:
+        return JsonResponse({"state": False})

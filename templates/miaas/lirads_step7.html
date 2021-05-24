@@ -7,38 +7,38 @@
     <title>Title</title>
 </head>
 <body>
-    <div class="ml-2">
-        <h6>LIRADS Stage Information</h6>
+    <div class="ml-2 mb-1">
+        <h5>LIRADS Stage Information</h5>
         <div class="row ml-2 mb-1">
-            <p class="col-3 my-auto">Tumor Type</p>
-            <p class="col-2 px-1" id="txt_tumor_type">
+            <p class="col-3 mb-1">Tumor Type</p>
+            <p class="col-2 mb-1 px-1" id="txt_tumor_type"></p>
         </div>
         <div class="row ml-2 mb-1">
-            <p class="col-3 my-auto">Image Features</p>
-            <p class="col-2 px-1" id="txt_tumor_img_features">
+            <p class="col-3 mb-1">Image Features</p>
+            <p class="col-2 mb-1 px-1" id="txt_tumor_img_features">
         </div>
-        <div class="row ml-2 mb-1">
-            <p class="col-3 my-auto">APHE Type</p>
-            <p class="col-2 px-1" id="txt_tumor_aphe_type">Nonrim APHE</p>
+        <div class="row ml-4 mb-1 ">
+            <p class="col-3 mb-1">APHE Type</p>
+            <p class="col-2 mb-1 px-1" id="txt_tumor_aphe_type"></p>
         </div>
-        <div class="row ml-2 mb-1">
-            <p class="col-3 my-auto">Tumor Size</p>
-            <p class="col-2 px-1" id="txt_tumor_size">32 mm</p>
+        <div class="row ml-4 mb-1">
+            <p class="col-3 mb-1">Tumor Size</p>
+            <p class="col-2 mb-1 px-1" id="txt_tumor_size"></p>
         </div>
-        <div class="row ml-2 mb-1">
-            <p class="col-3 my-auto">Number of Major Features</p>
-            <p class="col-2 px-1" id="txt_tumor_aphe_type">2</p>
-        </div>
-        <div class="row ml-2 mb-1">
-            <p class="col-3 my-auto">Stage</p>
-            <p class="col-2 px-1" id="txt_lirad_stage">LR-5</p>
-            <button id="btn_pred_stage" class="btn btn-outline-info">Predict</button>
+        <div class="row ml-4 mb-1">
+            <p class="col-3 mb-1">Number of Major Features</p>
+            <p class="col-2 mb-1 px-1" id="txt_number_major_feature"></p>
         </div>
     </div>
+    <div class="row ml-2 mt-3">
+        <h5 class="col-3 mb-1 px-0">Predicted Stage</h5>
+        <h5 class="col-2 mb-1 px-1" style="font-weight: bold;" id="txt_lirad_stage"></h5>
+        <button id="btn_pred_hcc_stage" class="btn btn-outline-info">Predict</button>
+    </div>
     <div class="ml-2 mt-3">
-        <h6>Report</h6>
+        <h5>Report</h5>
         <div class="row ml-2 mb-1">
-            <p class="col-4 my-auto">Generating Report</p>
+            <p class="col-4">Generating Report</p>
             <button id="btn_generate_report" class="btn btn-outline-info">Generate</button>
         </div>
     </div>

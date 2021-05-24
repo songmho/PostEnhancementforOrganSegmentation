@@ -206,6 +206,8 @@ class ImageFeatureEvaluator:
         """
         pass
 
+    def get_current_features(self, list_data):
+        return self.feature_classifier.get_features(list_data)
     def get_features(self):
         return self.features
 

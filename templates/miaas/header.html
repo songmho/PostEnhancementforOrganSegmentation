@@ -57,6 +57,7 @@
                         </div>
                         <a class="dropdown-item txt_font mx-auto" id="nav_profile" href="#">Update Profile</a>
                         <a class="dropdown-item txt_font" id="nav_change_role" href="#" data-target="#modal_chg_role" data-toggle="modal">Change Role</a>
+                        <a class="dropdown-item txt_font" id="nav_option" href="#" data-target="#modal_option" data-toggle="modal">Option</a>
                         <a class="dropdown-item txt_font" id="nav_log_out" href="#">Logout</a>
                     </div>
                 </ul>
@@ -98,6 +99,38 @@
             <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <button type="button" class="btn btn-primary" id="btn_change">Change</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_option" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Option</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form>
+                    <h5>Voice</h5>
+                    <div class="ml-2">
+                        <input type="radio" id="rdo_female" name="voice" value="1">
+                        <label for="rdo_patient">Female</label>
+                    </div>
+                    <div class="ml-2">
+                        <input type="radio" id="rdo_male" name="voice" value="21">
+                        <label for="rdo_physician">Male</label>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="btn_option_change">Change</button>
             </div>
         </div>
     </div>

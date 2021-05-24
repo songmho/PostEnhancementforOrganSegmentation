@@ -2,8 +2,10 @@
     var isPause = false;
     var idx= 0;
     var intervalSegment = null;
+    var d;
     $(document).ready(function(){
         write_log_in_console("Step 2. segmenting liver organ is started.");
+        write_log_in_console("The liver organ segmentation model is being prepared.");
         $.ajax({
             url: "/api/load_file_list",
             async: true,
@@ -12,10 +14,9 @@
             data_type: "text",
             success: function (data) {
                 // var data = JSON.parse(data);
-                var d = data["data"];
+                d = data["data"];
                 img_list = data["imgs"];
                 numImgs = d.length;
-                console.log("State: ", data["state"], numImgs, img_list.length);
                 for (var i in d){
                     // var slice = toUTF8Array(img_list[i]);
                     slice = img_list[i];
@@ -26,17 +27,21 @@
                         $("#sl_id_part").append("<div class='tab-pane show active mx-0' id='list_"+i+"' role='tabpanel' aria-labelledby='list_"+i+"_list'>" +
                     "   <div class='row'>" +
                     "            <div class=\"\" style=\"width: 2.56%\"></div>\n" +
-                    "            <div class=\"border border-dark mx-0 \" style=\"width: 47.44%\" id=\"img_slice\">\n" +
+                    "            <div class=\"border border-dark p-2\" style=\"width: 47.44%\" id=\"img_slice\">\n" +
                                     "<div class=\"h-100 w-100\" style='display: inline-block'>" +
                                     "    <h5 class=\"mx-auto px-auto text-center\">Original Image</h5>" +
-                                    "    <img class='mx-auto' style=\"width:358px; height:358px; \" src='"+"data:image/png;base64,"+slice+"'/>" +
+                    "                   <div class='mx-auto text-center'>" +
+                                    "       <img class='mx-auto' style=\"width:358px; height:358px; \" src='"+"data:image/png;base64,"+slice+"'/>" +
+                                    "   </div>"+
                                     "</div>" +
                     "            </div>\n" +
                     "            <div class=\"\" style=\"width: 2.56%\"></div>\n" +
-                    "            <div class=\"border border-dark \" style=\"width: 47.44%\" id=\"img_seg_result\">\n" +
+                    "            <div class=\"border border-dark p-2\" style=\"width: 47.44%\" id=\"img_seg_result\">\n" +
                                     "<div class=\"h-100  w-100 box_enhanced\" style='display: inline-block'>" +
                                     "    <h5 class=\"mx-auto px-auto text-center\">Segmented Result</h5>" +
-                                    "    <img class='img_enhanced mx-auto' id='img_liver_seg_"+i+"' style=\"min-width:358px; height:358px; background-color: #cccccc;\"/>" +
+                    "                   <div class='mx-auto text-center'>" +
+                                    "       <img class='img_enhanced mx-auto' id='img_liver_seg_"+i+"' style=\"min-width:358px; height:358px; background-color: #cccccc;\"/>" +
+                                    "   </div>"+
                                     "</div>" +
                     "            </div>"+
                             "</div>"+
@@ -47,17 +52,21 @@
                         $("#sl_id_part").append("<div class='tab-pane none mx-0' id='list_"+i+"' role='tabpanel' aria-labelledby='list_"+i+"_list'>" +
                     "   <div class='row'>" +
                     "            <div class=\"\" style=\"width: 2.56%\"></div>\n" +
-                    "            <div class=\"border border-dark mx-0 \" style=\"width: 47.44%\" id=\"img_slice\">\n" +
+                    "            <div class=\"border border-dark p-2\" style=\"width: 47.44%\" id=\"img_slice\">\n" +
                                     "<div class=\"h-100 w-100\" style='display: inline-block'>" +
                                     "    <h5 class=\"mx-auto px-auto text-center\">Original Image</h5>" +
-                                    "    <img class=' mx-auto' style=\"width:358px; height:358px; \" src='"+"data:image/png;base64,"+slice+"'/>" +
+                    "                   <div class='mx-auto text-center'>" +
+                                    "       <img class='mx-auto' style=\"width:358px; height:358px; \" src='"+"data:image/png;base64,"+slice+"'/>" +
+                                    "   </div>"+
                                     "</div>" +
                     "            </div>\n" +
                     "            <div class=\"\" style=\"width: 2.56%\"></div>\n" +
-                    "            <div class=\"border border-dark \" style=\"width: 47.44%\" id=\"img_seg_result\">\n" +
+                    "            <div class=\"border border-dark p-2\" style=\"width: 47.44%\" id=\"img_seg_result\">\n" +
                                     "<div class=\"h-100  w-100 box_enhanced\" style='display: inline-block'>" +
                                     "    <h5 class=\"mx-auto px-auto text-center\">Segmented Result</h5>" +
-                                    "    <img class='img_enhanced mx-auto' id='img_liver_seg_"+i+"' style=\"min-width:358px; height:358px; background-color: #cccccc;\"/>" +
+                    "                   <div class='mx-auto text-center'>" +
+                                    "       <img class='img_enhanced mx-auto' id='img_liver_seg_"+i+"' style=\"min-width:358px; height:358px; background-color: #cccccc;\"/>" +
+                                    "   </div>"+
                                     "</div>" +
                     "            </div>"+
                             "</div>"+
@@ -75,6 +84,7 @@
             $("#div_init").css("display", "none");
             $("#div_start").css("display", "block");
             $("#div_pause").css("display", "none");
+            write_log_in_console("Segmenting liver organ is started.");
             isPause = false;
             intervalSegment = setInterval(function () {
                 if(!isPause){
@@ -87,8 +97,11 @@
                         success: function (data) {
                             var text = data["console"];
                             var slice = data["img"]
+                            if (text>0)
+                                write_log_in_console("Liver organ in CT slice "+d[idx]+" is segmented. (Area: "+text.toLocaleString()+" mm)");
+                            else
+                                write_log_in_console("Liver organ in CT slice "+d[idx]+" is not detected.");
 
-                            write_log_in_console(text);
                             $("#list_img_part").children().removeClass("active");
                             $("#sl_id_part").children().removeClass("active");
                             $("#list_"+idx+"_list").addClass("active");
@@ -110,7 +123,7 @@
                                 isPause = false;
                                 idx = 0;
                                 clearInterval(intervalSegment);
-                                write_log_in_console("Target segmentation is finished.");
+                                write_log_in_console("Segmenting liver organ is finished.");
                             }
                             idx+=1;
                         }, error: function (){
@@ -125,6 +138,7 @@
             $("#div_init").css("display", "none");
             $("#div_start").css("display", "none");
             $("#div_pause").css("display", "block");
+            write_log_in_console("Segmenting liver organ is paused.");
             isPause = true;
         });
         $("#btn_stop_segment_liver").on("click", function () {
@@ -132,6 +146,7 @@
             $("#div_init").css("display", "block");
             $("#div_start").css("display", "none");
             $("#div_pause").css("display", "none");
+            write_log_in_console("Segmenting liver organ is stopped.");
             isPause = false;
             clearInterval(intervalSegment);
         });
@@ -139,6 +154,7 @@
             $("#div_init").css("display", "none");
             $("#div_start").css("display", "block");
             $("#div_pause").css("display", "none");
+            write_log_in_console("Segmenting liver organ is resumed.");
             isPause = false;
         });
 
