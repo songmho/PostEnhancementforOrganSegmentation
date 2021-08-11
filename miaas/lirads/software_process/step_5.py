@@ -13,8 +13,13 @@ class TumorTypeDeterminer:
     def __init__(self):
         self.t_type_classifier = LesionTypeClassifier()
         self.t_type_classifier.load_model()
+        self.img_features = {} # {TUMOR_ID: [[... ],[... ],.. ], TUMOR_ID: [... ]}
+        self.LEN_FEATURES = 9
 
-    def sort_img_features(self, setCT_features, list_phase):
+    def set_tumor_groups(self, tg):
+        self.tumor_groups = tg
+
+    def sort_img_features(self):
         """
         To sort image features
         :param setCT_features:
@@ -22,41 +27,28 @@ class TumorTypeDeterminer:
         """
         list_excepted_phase_id = []
         list_max_phase = LIRADSPhase.LIST_PHASE.value
-        for i in range(len(list_max_phase)):
-            p = list_max_phase[i]
-            is_not_include = True
-            for p_i in list_phase:
-                if p.lower() in p_i.lower():
-                    is_not_include = False
-            if is_not_include:
-                list_excepted_phase_id.append(i)
-        print(list_excepted_phase_id)
-        self.img_features = {}
-        for i in list(setCT_features.keys()):   # Tumor Group ID
-            self.img_features[i] = {}
-            for j in list(setCT_features[i].keys()): #Slice Group ID
-                self.img_features[i][j] = []
-                len_features = 0
-                for k in range(len(setCT_features[i][j])):      # series
-                    self.img_features[i][j].append(setCT_features[i][j][k]["WholeConf"])
-                    len_features = len(setCT_features[i][j][k]["WholeConf"])
-                for l in list_excepted_phase_id:
-                    self.img_features[i][j].insert(l, [0.0]*len_features)
-                print(len(self.img_features[i][j]))
-        return self.img_features
 
-    def predict_tumor_type(self, list_f):
+        for t_id, info in self.tumor_groups.items():
+            self.img_features[t_id] = []
+            for srs_id, features in info["features"].items():
+                for phase_name in list_max_phase:
+                    if phase_name in list(features.keys()):
+                        self.img_features[t_id].append(features[phase_name]["WholeConf"])
+                    else:    # Not in information for the pahse
+                        self.img_features[t_id].append([0.0]*self.LEN_FEATURES)
+
+    def predict_tumor_type(self):
         """
         To predict the tumor type in a group of CT slices for a tumor's section
         :return:
         """
-        list_type = {}
-        for i in list(list_f.keys()):
-            list_type[i] = {}
-            for j in list(list_f[i].keys()):
-                result = self.t_type_classifier.predict([[list_f[i][j]]])     # To predict tumor type from a series of slices for a tumor
-                list_type[i][j] = self.t_type_classifier.get_tumor_type(result)  # To get a tumor type
-        return list_type
+        for t_id, list_features in self.img_features.items():
+            result = self.t_type_classifier.predict([[list_features]])
+            self.tumor_groups[t_id]["type"] = self.t_type_classifier.get_tumor_type(result)
+
+    def get_tumor_groups(self):
+        return self.tumor_groups
+
 
     def determine_tumor_type(self, setCT_tumor_types, setCT_tumor_group, setCT_features):
         result = []

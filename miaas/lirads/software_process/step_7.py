@@ -11,33 +11,41 @@ class LIRADSStageClassifier:
     def __init__(self):
         self.HCC_classifier = MalignantStageClassifier()
         self.benign_classifier = BenignStageClassifier()
+
+    def set_tumor_groups(self, tg):
+        self.tumor_groups = tg
+
+    def load_model(self):
         self.HCC_classifier.load_model()
         self.benign_classifier.load_model()
-        self.stage = Stages.none
 
-    def classify_stage(self, tumor_info):
+    def classify_stage(self):
         """
         To classify HCC stage based on LI-RADS Stage
         :param tumor_info:
         :return:
         """
         self.stages = {}
-        for i in list(tumor_info.keys()):
-            self.stages[i] = []
-            if tumor_info[i]["tiv"]:
-                self.stages[i].append(Stages.LR_TIV)
-            if tumor_info[i]["Tumor_Type"] in TumorSeverity.Benign:        ## LR-1 or LR-2
+        for i, info in self.tumor_groups.items():
+            self.tumor_groups[i]["stage"] = []
+            tumor_info = info["major_features"]
+            if tumor_info["tiv"]:
+                self.tumor_groups[i]["stage"].append(Stages.LR_TIV)
+            if info["type"]["Tumor Type"] in TumorSeverity.Benign:        ## LR-1 or LR-2
                 data =[]
-                self.stages[i].append(self.benign_classifier.predict(data))
-            elif tumor_info[i]["Tumor_Type"]==TumorType.HCC:               # LR-3, LR-4, or LR-5
-                if tumor_info[i]["APHE_Type"] in ["No", "Nonrim"]:
-                    cur_info = [tumor_info[i]["APHE_Type"], tumor_info[i]["Lesion_Size"], tumor_info[i]["Capsule"], tumor_info[i]["Washout"],
-                                tumor_info[i]["Threshold_Growth"], tumor_info[i]["Num_Major_Features"]]
-                    self.stages[i].append(self.HCC_classifier.predict(cur_info))
+                self.tumor_groups[i]["stage"].append(self.benign_classifier.predict(data))
+            elif info["type"]["Tumor Type"] == TumorType.HCC:               # LR-3, LR-4, or LR-5
+                if tumor_info["APHE_Type"] in ["No", "Nonrim"]:
+                    cur_info = [tumor_info["APHE_Type"], tumor_info["Lesion_Size"], tumor_info["Capsule"], tumor_info["Washout"],
+                                tumor_info["Threshold_Growth"], tumor_info["Num_Major_Features"]]
+                    self.tumor_groups[i]["stage"].append(self.HCC_classifier.predict(cur_info))
                 else:
-                    self.stages[i].append(Stages.LR_M)
+                    self.tumor_groups[i]["stage"].append(Stages.LR_M)
             else:               # LR-M for other Malignant Tumor
-                self.stages[i].append(Stages.LR_M)
+                self.tumor_groups[i]["stage"].append(Stages.LR_M)
+
+    def get_tumor_groups(self):
+        return self.tumor_groups
 
     def generate_report(self):
         """
@@ -45,6 +53,3 @@ class LIRADSStageClassifier:
         :return:
         """
         pass
-
-    def get_stage(self):
-        return self.stages

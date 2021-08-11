@@ -1,6 +1,12 @@
 import enum
 
 
+class ImageType(enum.Enum):
+    DCM = 0
+    NII = 1
+    NORMAL = 2
+
+
 class SegModel(enum.Enum):
     instance = 0
     semantic = 1
@@ -35,7 +41,7 @@ class LIRADSPhase(enum.Enum):
     Portal_Venous_Phase = 2
     Delayed_Phase = 3
     NUM_PHASE = 4
-    LIST_PHASE = ["Plain", "Arterial", "Venous", "Delay"]
+    LIST_PHASE = ["PLAIN", "ARTERIAL", "VENOUS", "DELAY"]
 
 
 class TumorType(enum.Enum):

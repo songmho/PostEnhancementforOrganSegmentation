@@ -30,7 +30,8 @@ class LiverRegionSegmentater:
         :param med_imgs: dict, medical images
         :return:
         """
-        self.setCT_b = setCT_a
+        self.setCT_b = setCT_a[list(setCT_a.keys())[0]]
+
         for name in self.setCT_b.keys():
             self.setCT_b_liver[name] = {}
             self.setCT_b_seg[name] = {}
@@ -46,23 +47,37 @@ class LiverRegionSegmentater:
         To segment liver regions in CT slices
         :return:
         """
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0810\result\step2"
+
+
         for srs_name, slices in self.setCT_b.items():
+            print("       >>", srs_name, len(slices))
             i = 0
-            for sl in slices:
+            if not os.path.isdir(os.path.join(path_save, srs_name)):
+                os.mkdir(os.path.join(path_save, srs_name))
+            for k, sl in slices.items():
                 result = self.ml_liver_seg.segment(sl)  # To segment liver region
                 # if result["roi"] != []: # To append CT slices having liver region
                 self.setCT_b_liver[srs_name][i] = sl
                 # if result["masks"].shape[2]> 0:
                 zeros = np.zeros((result["masks"].shape[0], result["masks"].shape[1], 1), dtype=np.uint8)
-                if result["masks"].shape[2]> 1:
-                    for k in range(result["masks"].shape[2]):
-                        cur = np.array(np.expand_dims(result["masks"][:, :, k], axis=-1), dtype=np.uint8)
+                if result["masks"].shape[2] > 1:
+                    for q in range(result["masks"].shape[2]):
+                        cur = np.array(np.expand_dims(result["masks"][:, :, q], axis=-1), dtype=np.uint8)
                         zeros = np.add(cur, zeros)
                     result["masks"] = zeros
                 elif result["masks"].shape[2] == 0:
                     result["masks"] = zeros
-                result["masks"] = np.array(result["masks"], dtype=np.uint8)
-                self.setCT_b_seg[srs_name][i] = result
+                result["masks"] = np.array(np.where(result["masks"] > 0, 255, 0), dtype=np.uint8)
+                self.setCT_b_seg[srs_name][k] = result
+
+                # TODO: NEED TO REMOVE
+                # cv2.imshow("img", sl)
+                # cv2.imshow("mask", result["masks"])
+                cv2.imwrite(os.path.join(path_save, srs_name, k+".png"), result["masks"])
+                # cv2.waitKey(5)
+
+
                 i+=1
 
     def clear_session(self):
