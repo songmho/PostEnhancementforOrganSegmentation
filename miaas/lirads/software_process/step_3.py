@@ -25,6 +25,12 @@ class LegionSegmentor:
         self.tumor_class_names = ['None', 'Tumor']
         self.is_contain_target = False
 
+    def initialize(self, std_name):
+        self.setCT_C_Seg = {}
+        self.setCT_C_tumor = {}
+        self.is_contain_target = False
+        self.std_name = std_name
+
     def clear_session(self):
         clear_session()
 
@@ -68,11 +74,14 @@ class LegionSegmentor:
             self.setCT_C_Seg[name] = {}
             self.setCT_C_tumor[name] = {}
 
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0810\result\step3"
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0814\result\step3"
         for srs_name, slices in setCT_b.items():
             count = 0
-            if not os.path.isdir(os.path.join(path_save, srs_name)):
-                os.mkdir(os.path.join(path_save, srs_name))
+            keys = []
+            if not os.path.isdir(os.path.join(path_save, self.std_name)):
+                os.mkdir(os.path.join(path_save,self.std_name))
+            if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
+                os.mkdir(os.path.join(path_save, self.std_name, srs_name))
             for key, sl in slices.items():
                 results = self.tumor_detector.detect([sl], verbose=0)
                 mask_result, roi_result, conf_value_result, roi_imgs_result = \
@@ -94,18 +103,17 @@ class LegionSegmentor:
                         rois.append(roi_result[k])
                         conf_values.append(conf_value_result[k])
                         rois_img.append(roi_imgs_result[k])
-                if len(masks)>0:
-                    count+=1
-
-
+                if len(masks) > 0:
+                    count += 1
+                    keys.append(key)
                 # cv2.imshow("img", sl)
                 # cv2.imshow("mask", msks_new)
                 cv2.imwrite(os.path.join(path_save, srs_name, key+".png"), msks_new)
                 # cv2.waitKey(5)
 
-
                 self.setCT_C_Seg[srs_name][key] = {"masks": masks, 'rois': rois, "confidence_values": conf_values, "rois_img":rois_img, "img": sl}
                 self.setCT_C_tumor[srs_name][key] = msks_new
+            print("       >>", srs_name, len(slices), count, "[",keys,"]")
 
     def segment_lesion_new(self, cur_liver, img):
         results = self.tumor_detector.detect([img], verbose=0)

@@ -22,10 +22,23 @@ class ImageFeatureEvaluator:
         self.list_phases = []
 
         self.setCT_sl_groups = {}
-        self.MARGIN = 10
+        self.MARGIN = 15
         self.tumor_groups = {}
         self.th_sl_num = 3
         self.LEN_FEATURES = 9
+
+    def initialize(self):
+        self.features = {}
+        self.list_phases = []
+
+        self.setCT_sl_groups = {}
+        self.MARGIN = 15
+        self.tumor_groups = {}
+        self.th_sl_num = 3
+        self.LEN_FEATURES = 9
+        self.setCT_slices = {}
+        self.setCT_seg = {}
+        self.setCT_tumor_seg = {}
 
     def generate_slice_group(self, med_type, setMed_img):
         """
@@ -149,20 +162,23 @@ class ImageFeatureEvaluator:
             new_info_tumors[srs_name]["sl_start_end_img"] = new_group_img
 
         t_groups = {}
-        for srs_name, srs in new_info_tumors.items():
-            print(srs_name, len(srs["sl_start_end"]), srs["sl_start_end"])
+        # for srs_name, srs in new_info_tumors.items():
+        #     print(srs_name, len(srs["sl_start_end"]), srs["sl_start_end"])
 
         for srs_name, srs in new_info_tumors.items():
             for t_g_id in range(len(srs["sl_start_end"])):
                 cur_t_g_id = len(list(t_groups.keys()))
                 t_g = srs["sl_start_end"][t_g_id]
                 t_groups[cur_t_g_id] = {srs_name: (t_g, srs["sl_start_end_img"][t_g_id])}
+                is_trg = False
                 for o_srs_name, o_srs in new_info_tumors.items():
-                    if srs_name == o_srs_name:
+                    if not is_trg or srs_name == o_srs_name:
+                        if srs_name == o_srs_name:
+                            is_trg = True
                         continue
                     for o_t_g_id in range(len(o_srs["sl_start_end"])):
                         o_t_g = o_srs["sl_start_end"][o_t_g_id]
-                        if not(int(t_g[0])>int(o_t_g[1]) or int(t_g[1])<int(o_t_g[0])):
+                        if not(int(t_g[0]) > int(o_t_g[1]) or int(t_g[1]) < int(o_t_g[0])):
                             t_groups[cur_t_g_id][o_srs_name] = (o_t_g, o_srs["sl_start_end_img"][o_t_g_id])
                 if len(list(t_groups[cur_t_g_id].keys())) < len(new_info_tumors.keys()):
                     del t_groups[cur_t_g_id]
@@ -176,7 +192,6 @@ class ImageFeatureEvaluator:
                 for i in range(int(range_t_g[0]), int(range_t_g[1])+1):
                     self.tumor_groups[t_id]["mask"][srs_id].append((str(i).zfill(5), t_g[1][idx]))
                     idx +=1
-        print(len(self.tumor_groups.keys()), self.tumor_groups.keys())
 
     def evaluate_image_feature(self, setCT_c_seg):
         """
@@ -216,15 +231,53 @@ class ImageFeatureEvaluator:
         """
         for tumor_id, info in self.tumor_groups.items():
             features = {}
-            for srs_id, list_sl in info["mask"].items():
-                biggest_sl, biggest_sl_id = -1, -1
-                count = 0
-                for (sl_id, sl) in list_sl:
-                    if biggest_sl < np.count_nonzero(sl):
-                        biggest_sl, biggest_sl_id = np.count_nonzero(sl), count
-                    count+=1
-                features[srs_id] = self.tumor_groups[tumor_id]["features"][srs_id][biggest_sl_id]
+            for srs_id, list_sl in info["features"].items():
+                features[srs_id] = self.get_image_features([self.__extract_major_features(list_sl)])
             self.tumor_groups[tumor_id]["features"] = features
+
+    def __extract_major_features(self, list_features):
+        """
+        To extract image features of the tumor
+        considering predicted image  features from each CT slice, the image features that appeared most frequently
+        are selected and the results showing the highest confidence score of the selected features are gathered and
+        the average value is computed and applied to the tumor's image features
+        """
+        dict_count = {}
+        dict_result = {}
+        for i in self.feature_classifier.labels:
+            dict_count[i] = 0
+            dict_result[i] = 0
+        for fs in list_features:  # a Series
+            for conf in range(len(fs["WholeConf"])):
+                if fs["WholeConf"][conf] > self.feature_classifier.th_confidence:
+                    dict_count[self.feature_classifier.labels[conf]] += 1
+
+        selected_features = []
+        for k, v in dict_count.items():
+            if v >= int(len(dict_count.keys()) / 2):
+                selected_features.append(list(dict_count.keys()).index(k))
+
+        selected_list = []
+        for f_id in range(len(list_features)):  # a Series
+            fs = list_features[f_id]
+            for l in selected_features:
+                if fs["WholeConf"][l] > self.feature_classifier.th_confidence:
+                    selected_list.append(f_id)
+
+        selected_list = list(set(selected_list))
+        for f_id in selected_list:
+            for k in range(len(list_features[f_id]["WholeConf"])):
+                dict_result[self.feature_classifier.labels[k]] += list_features[f_id]["WholeConf"][k]
+
+        for k, v in dict_result.items():
+            try:
+                dict_result[k] = v/len(selected_list)
+            except:
+                dict_result[k] =0
+        # for k, v in dict_result.items():
+        #     dict_result[k] = round(v / len(selected_list), 3)
+        return list(dict_result.values())
+
 
     def check_treatment(self):
         """
@@ -285,7 +338,6 @@ class ImageFeatureEvaluator:
         if trg_srs_id == -1:
             trg_srs_id = keys[0]
 
-        print("        Target Series ID:", trg_srs_id)
         # To select CT slices in other CT series to be a group
         trg_srs = self.setCT_d_spine_bone[trg_srs_id]
         self.setCT_sl_groups = {}

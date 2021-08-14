@@ -32,6 +32,16 @@ class MedicalImageLoader:
         self.ww_liver = 400
         self.wc_liver = 40
 
+    def initialize(self):
+        self.setCT_a = {}
+        self.setMed_img = {}
+        self.set_med_info = {}
+        self.med_type = ""
+        self.path_medimg = ""
+        self.path_info = ""
+        self.voxels = {}
+        self.acquisition_date = ""
+
     def set_path(self, img_path, info_path=None):
         """
         To set image's path
@@ -128,7 +138,7 @@ class MedicalImageLoader:
                     # try:
                         dcm = pydicom.dcmread(os.path.join(self.path_medimg, study, series, slice))
                         if dcm[0x0008, 0x103E].value not in self.setMed_img[study].keys():
-                            if "pre" in str(dcm[0x0008, 0x103E].value).lower() or "plain" in str(dcm[0x0008, 0x103E].value).lower():
+                            if "pre" in str(dcm[0x0008, 0x103E].value).lower() or "plain" in str(dcm[0x0008, 0x103E].value).lower() or "non con" in str(dcm[0x0008, 0x103E].value).lower():
                                 if "PLAIN" not in self.setMed_img[study].keys():
                                     self.setMed_img[study]["PLAIN"] = {}
                                     cur_srs = "PLAIN"

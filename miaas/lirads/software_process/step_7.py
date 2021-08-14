@@ -12,6 +12,9 @@ class LIRADSStageClassifier:
         self.HCC_classifier = MalignantStageClassifier()
         self.benign_classifier = BenignStageClassifier()
 
+    def initialize(self):
+        pass
+
     def set_tumor_groups(self, tg):
         self.tumor_groups = tg
 
@@ -36,7 +39,7 @@ class LIRADSStageClassifier:
                 self.tumor_groups[i]["stage"].append(self.benign_classifier.predict(data))
             elif info["type"]["Tumor Type"] == TumorType.HCC:               # LR-3, LR-4, or LR-5
                 if tumor_info["APHE_Type"] in ["No", "Nonrim"]:
-                    cur_info = [tumor_info["APHE_Type"], tumor_info["Lesion_Size"], tumor_info["Capsule"], tumor_info["Washout"],
+                    cur_info = [tumor_info["APHE_Type"], tumor_info["Lesion_Size"]["length"], tumor_info["Capsule"], tumor_info["Washout"],
                                 tumor_info["Threshold_Growth"], tumor_info["Num_Major_Features"]]
                     self.tumor_groups[i]["stage"].append(self.HCC_classifier.predict(cur_info))
                 else:

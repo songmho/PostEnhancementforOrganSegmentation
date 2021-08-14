@@ -16,6 +16,8 @@ class TumorTypeDeterminer:
         self.img_features = {} # {TUMOR_ID: [[... ],[... ],.. ], TUMOR_ID: [... ]}
         self.LEN_FEATURES = 9
 
+    def initialize(self):
+        self.img_features = {}  # {TUMOR_ID: [[... ],[... ],.. ], TUMOR_ID: [... ]}
     def set_tumor_groups(self, tg):
         self.tumor_groups = tg
 

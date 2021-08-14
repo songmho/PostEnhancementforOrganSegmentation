@@ -9,9 +9,7 @@ from tensorflow.python.keras.backend import clear_session
 
 from miaas.lirads.software_process.livers import LiverSegmenter
 import cv2
-import pydicom
 import numpy as np
-import scipy
 from scipy import ndimage
 
 
@@ -23,6 +21,12 @@ class LiverRegionSegmentater:
         self.setCT_b_seg = {}
         # self.ml_liver_seg.clear_session()
         self.ml_liver_seg.load_model()
+
+    def initialize(self, std_name):
+        self.setCT_b = None
+        self.setCT_b_liver = {}
+        self.setCT_b_seg = {}
+        self.std_name = std_name
 
     def set_setCT_b(self, setCT_a):
         """
@@ -47,14 +51,16 @@ class LiverRegionSegmentater:
         To segment liver regions in CT slices
         :return:
         """
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0810\result\step2"
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0814\result\step2"
 
 
         for srs_name, slices in self.setCT_b.items():
             print("       >>", srs_name, len(slices))
             i = 0
-            if not os.path.isdir(os.path.join(path_save, srs_name)):
-                os.mkdir(os.path.join(path_save, srs_name))
+            if not os.path.isdir(os.path.join(path_save, self.std_name)):
+                os.mkdir(os.path.join(path_save, self.std_name))
+            if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
+                os.mkdir(os.path.join(path_save, self.std_name, srs_name))
             for k, sl in slices.items():
                 result = self.ml_liver_seg.segment(sl)  # To segment liver region
                 # if result["roi"] != []: # To append CT slices having liver region
@@ -74,10 +80,8 @@ class LiverRegionSegmentater:
                 # TODO: NEED TO REMOVE
                 # cv2.imshow("img", sl)
                 # cv2.imshow("mask", result["masks"])
-                cv2.imwrite(os.path.join(path_save, srs_name, k+".png"), result["masks"])
+                cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, k+".png"), result["masks"])
                 # cv2.waitKey(5)
-
-
                 i+=1
 
     def clear_session(self):

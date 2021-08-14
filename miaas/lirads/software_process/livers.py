@@ -19,10 +19,12 @@ class LiverSegmenter:
         self.margin = 15
         self.config = liver.LiverConfig()
 
-
     def load_model(self):
-        LIVER_SEG_MODEL_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment\\logs"
-        LIVER_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment\\mask_rcnn_liver_0100.h5"
+        # LIVER_SEG_MODEL_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment\\logs"
+        # LIVER_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment\\mask_rcnn_liver_0100.h5"
+
+        LIVER_SEG_MODEL_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment_2\\logs"
+        LIVER_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment_3\\mask_rcnn_liver_000100.h5"
 
 
         self.liver_detector = modellib.MaskRCNN(mode='inference',

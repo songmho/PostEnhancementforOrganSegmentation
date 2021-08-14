@@ -29,6 +29,19 @@ class LIRADSFeatureComputer:
         self.list_lirad_features = {}
         self.voxel = 0.0
 
+    def initialize(self):
+        self.num_major_features = 0
+        self.aphe_type = ""
+        self.lesion_size = 0
+        self.has_capsule = False
+        self.has_washout = False
+        self.has_threshold_growth = False
+        self.setCT_tumor_info = {}
+
+        self.setCT_a = {}
+        self.list_lirad_features = {}
+        self.voxel = 0.0
+
     def set_tumor_groups(self, tg):
         self.tumor_groups = tg
 
@@ -104,12 +117,19 @@ class LIRADSFeatureComputer:
         """
         aphe_types = {}
         for t_id, info in self.tumor_groups.items():
+
+            if info["features"]["ARTERIAL"]["WholeConf"][6] >= info["features"]["ARTERIAL"]["WholeConf"][4]:
+                aphe_types[t_id] = "Nonrim"
+            else:
+                aphe_types[t_id] = "No"
+            """
             if "NoAPHE" in info["features"]["ARTERIAL"]["Labels"]:
                 aphe_types[t_id] = "No"
             elif "NonrimAPHE" in info["features"]["ARTERIAL"]["Labels"]:
                 aphe_types[t_id] = "Nonrim"
             else:
                 aphe_types[t_id] = "rim"
+            """
         return aphe_types
 
     def compute_lesion_size(self, voxel):
@@ -139,7 +159,7 @@ class LIRADSFeatureComputer:
         for t_id, info in self.tumor_groups.items():
             capsules[t_id] = False
             for srs_id in info["features"].keys():
-                if "capsule" in info["features"][srs_id]["Labels"]:
+                if "Capsule" in info["features"][srs_id]["Labels"]:
                     capsules[t_id] = True
                     break
         return capsules
@@ -324,7 +344,7 @@ class LIRADSFeatureComputer:
         :return: float, the lesion's size in the slice
         """
         obs = obs.astype(np.uint8)
-        obs*=255
+        # obs*=255
         contours = self.__find_contours(copy.deepcopy(obs))
         longest = 0
         long_points = {"point1": (), "point2": ()}  #

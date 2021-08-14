@@ -46,11 +46,14 @@ class LIRADSPhase(enum.Enum):
 
 class TumorType(enum.Enum):
     Hemangioma = 0
-    FNH = 1
-    Adenoma = 2
-    FLHCC = 3
-    HCC = 4
-    Metastases = 5
+    HCC = 1
+
+    # Hemangioma = 0+100
+    FNH = 1+100
+    Adenoma = 2+100
+    FLHCC = 3+100
+    # HCC = 4+100
+    Metastases = 5+100
 
 
 class TumorFeatures(enum.Enum):

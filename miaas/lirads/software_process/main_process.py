@@ -1,7 +1,7 @@
 """
 Date: 2020. 12. 15.
 Programmer: MH
-Description: Code for Liver Cacner Detection SW process Main method
+Description: Code for Liver Cancer Detection SW process Main method
 """
 import base64
 import random
