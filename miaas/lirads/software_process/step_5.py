@@ -3,6 +3,8 @@ Date: 2021. 04. 27.
 Programmer: MH
 Description: Code for step 5. Determining tumor type
 """
+import os
+
 from miaas.lirads.util.tumor_progress_diagnosis import LesionTypeClassifier
 from collections import Counter
 import numpy as np
@@ -16,8 +18,9 @@ class TumorTypeDeterminer:
         self.img_features = {} # {TUMOR_ID: [[... ],[... ],.. ], TUMOR_ID: [... ]}
         self.LEN_FEATURES = 9
 
-    def initialize(self):
+    def initialize(self, std_name):
         self.img_features = {}  # {TUMOR_ID: [[... ],[... ],.. ], TUMOR_ID: [... ]}
+        self.std_name = std_name
     def set_tumor_groups(self, tg):
         self.tumor_groups = tg
 
@@ -44,9 +47,17 @@ class TumorTypeDeterminer:
         To predict the tumor type in a group of CT slices for a tumor's section
         :return:
         """
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0817\result\step5"
+
         for t_id, list_features in self.img_features.items():
             result = self.t_type_classifier.predict([[list_features]])
             self.tumor_groups[t_id]["type"] = self.t_type_classifier.get_tumor_type(result)
+
+            if not os.path.isdir(os.path.join(path_save, self.std_name)):
+                os.mkdir(os.path.join(path_save, self.std_name))
+            f = open(os.path.join(path_save, self.std_name, "step_5.txt"), "w")
+            f.write(str(t_id)+"  :  "+str(self.tumor_groups[t_id]["type"]))
+            f.close()
 
     def get_tumor_groups(self):
         return self.tumor_groups

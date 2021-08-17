@@ -3,6 +3,8 @@ Date: 2021. 04. 27.
 Programmer: MH
 Description: Code for computing Li-RADS Features
 """
+import os
+
 from miaas.lirads.constant import ImagingFeatures, TumorType
 import numpy as np
 import cv2
@@ -29,7 +31,7 @@ class LIRADSFeatureComputer:
         self.list_lirad_features = {}
         self.voxel = 0.0
 
-    def initialize(self):
+    def initialize(self, std_name):
         self.num_major_features = 0
         self.aphe_type = ""
         self.lesion_size = 0
@@ -41,6 +43,7 @@ class LIRADSFeatureComputer:
         self.setCT_a = {}
         self.list_lirad_features = {}
         self.voxel = 0.0
+        self.std_name = std_name
 
     def set_tumor_groups(self, tg):
         self.tumor_groups = tg
@@ -302,6 +305,8 @@ class LIRADSFeatureComputer:
         To generate list for major features of each tumor
         :return:
         """
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0817\result\step6"
+
         self.list_major_features = {}
         for t_id in self.tumor_groups.keys():
             num_mf = 0
@@ -315,6 +320,13 @@ class LIRADSFeatureComputer:
                                              "Lesion_Size": lesion_sizes[t_id], "Capsule": capsules[t_id],
                                              "Washout": washouts[t_id], "Threshold_Growth": th_growths[t_id],
                                              "Num_Major_Features": num_mf, "tiv": tivs[t_id]}
+
+
+            if not os.path.isdir(os.path.join(path_save, self.std_name)):
+                os.mkdir(os.path.join(path_save, self.std_name))
+            f = open(os.path.join(path_save, self.std_name, "step_6.txt"), "w")
+            f.write(str(t_id)+"  :  "+str(self.tumor_groups[t_id]["major_features"]))
+            f.close()
     def get_tumor_groups(self):
         return self.tumor_groups
 

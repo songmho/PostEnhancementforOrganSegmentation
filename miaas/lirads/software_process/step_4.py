@@ -27,7 +27,7 @@ class ImageFeatureEvaluator:
         self.th_sl_num = 3
         self.LEN_FEATURES = 9
 
-    def initialize(self):
+    def initialize(self, std_name):
         self.features = {}
         self.list_phases = []
 
@@ -39,6 +39,7 @@ class ImageFeatureEvaluator:
         self.setCT_slices = {}
         self.setCT_seg = {}
         self.setCT_tumor_seg = {}
+        self.std_name = std_name
 
     def generate_slice_group(self, med_type, setMed_img):
         """
@@ -57,6 +58,10 @@ class ImageFeatureEvaluator:
         elif med_type == ImageType.NII:
             self.__enhance_spine_bone_parts_mi(setMed_img)
             self.__make_group_by_spine_bone_location()
+
+        for k, v in self.setCT_sl_groups.items():
+            print(k, ": ", v)
+
 
     def make_lesion_group(self, setCT_tumor_seg):
         """
@@ -111,6 +116,7 @@ class ImageFeatureEvaluator:
         :param setCT_tumor_seg:
         :return:
         """
+        # TODO: CONSIDER SL GROUPS
         info_tumors = {}    # {PHASE: {num_tumors: #, sl_start_end:[( , ), ...] }, ... }
         self.tumor_groups = {}
             # {tumorID: {"mask": {PHASE1: [(sl_id, sl), (sl_id, sl), ...],... }, "features": OBJECT, "type":TYPE,
@@ -229,11 +235,19 @@ class ImageFeatureEvaluator:
         but it may revised to consider majority of image features or confidence scores
         :return:
         """
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0817\result\step4"
+
         for tumor_id, info in self.tumor_groups.items():
             features = {}
             for srs_id, list_sl in info["features"].items():
                 features[srs_id] = self.get_image_features([self.__extract_major_features(list_sl)])
             self.tumor_groups[tumor_id]["features"] = features
+
+            if not os.path.isdir(os.path.join(path_save, self.std_name)):
+                os.mkdir(os.path.join(path_save, self.std_name))
+            f = open(os.path.join(path_save, self.std_name, "step_4.txt"), "w")
+            f.write(str(tumor_id) + "  :  " + str(self.tumor_groups[tumor_id]["features"]))
+            f.close()
 
     def __extract_major_features(self, list_features):
         """

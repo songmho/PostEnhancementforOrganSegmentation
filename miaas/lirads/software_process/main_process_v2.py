@@ -40,10 +40,10 @@ class MainProcess:
         self.step1.initialize()
         self.step2.initialize(std_name)
         self.step3.initialize(std_name)
-        self.step4.initialize()
-        self.step5.initialize()
-        self.step6.initialize()
-        self.step7.initialize()
+        self.step4.initialize(std_name)
+        self.step5.initialize(std_name)
+        self.step6.initialize(std_name)
+        self.step7.initialize(std_name)
 
     def diagnose(self):
         # Step 1. Load Medical Image
@@ -162,16 +162,15 @@ if __name__ == '__main__':
     # 1611730:  4 Phases, 1 Tumor ([Nonrim, WO, Capsule]), LR5
     # 7064369:  4 Phases, 1 Tumor ([Nonrim, WO,]), LR5
     # 1668171:  4 Phases, 1 Tumor ([Nonrim, WO,]), LR5
+    # 7048295:  4 Phases, 1 Tumor ([Nonrim, WO]), LR5
 
     # 8112000:  4 Phases, 1 Tumor ([Nonrim, WO, Capsule]), LR5        # NOT DETECTED
-
-
     # 7159233:  4 Phases, 1 Tumor ([Nonrim, WO]), LR5
-    # 7048295:  4 Phases, 1 Tumor ([Nonrim, WO]), LR5
     # 1383803:  4 Phases, 1 Tumor ([No, WO, Capsule]) LR5 (?)
 
+
     # for std_name in ["03. 7083077", "06. 1611730", "07. 7064369", "09. 1668171", "04. 8112000", "10. 7159233", "11. 7048295", "14. 1383803", ]:
-    for std_name in ["04. 8112000", "10. 7159233", "11. 7048295",]:
+    for std_name in ["10. 7159233", "11. 7048295", "14. 1383803",]:
         print("["+std_name.split(" ")[1]+"]")
         path_mi = r"E:\1. Lab\Daily Results\2021\2107\0728\LLU Dataset"+"\\"+str(std_name)+"\\00. DICOM\\target"              # 4 Phases, 2 Tumors ([Nonrim, WO], [Nonrim, WO])
         lirads_process.initialize(std_name)

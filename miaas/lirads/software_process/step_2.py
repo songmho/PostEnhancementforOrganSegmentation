@@ -51,7 +51,7 @@ class LiverRegionSegmentater:
         To segment liver regions in CT slices
         :return:
         """
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0814\result\step2"
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0817\result\step2"
 
 
         for srs_name, slices in self.setCT_b.items():

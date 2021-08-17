@@ -74,12 +74,12 @@ class LegionSegmentor:
             self.setCT_C_Seg[name] = {}
             self.setCT_C_tumor[name] = {}
 
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0814\result\step3"
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0817\result\step3"
         for srs_name, slices in setCT_b.items():
             count = 0
             keys = []
             if not os.path.isdir(os.path.join(path_save, self.std_name)):
-                os.mkdir(os.path.join(path_save,self.std_name))
+                os.mkdir(os.path.join(path_save, self.std_name))
             if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
                 os.mkdir(os.path.join(path_save, self.std_name, srs_name))
             for key, sl in slices.items():
@@ -125,7 +125,7 @@ class LegionSegmentor:
             area_lesion = np.count_nonzero(mask_result[:, :, k])
             cur_mask = np.array(np.expand_dims(mask_result[:, :, k], axis=-1), dtype=np.uint8)
             # cm = np.where(cur_mask>0, 255, cur_mask)
-            cm = np.where(cur_mask>0, np.array([0, 255, 255], dtype=np.uint8), np.array([0,0,0], dtype=np.uint8))
+            cm = np.where(cur_mask > 0, np.array([0, 255, 255], dtype=np.uint8), np.array([0, 0, 0], dtype=np.uint8))
             whole_mask += cm
             if len(np.unique(cur_liver)) > 0:  # If liver is segmented
                 mask_sum = cv2.bitwise_or(cur_mask, cur_liver)

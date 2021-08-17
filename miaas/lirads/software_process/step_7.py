@@ -3,6 +3,8 @@ Date: 2021. 04. 28.
 Programmer: MH
 Description: Code for classifying Li-RADS grade using gathered tumor information
 """
+import os
+
 from miaas.lirads.util.tumor_stage_classifier import BenignStageClassifier, MalignantStageClassifier
 from miaas.lirads.constant import Stages, TumorType, TumorSeverity
 
@@ -12,8 +14,8 @@ class LIRADSStageClassifier:
         self.HCC_classifier = MalignantStageClassifier()
         self.benign_classifier = BenignStageClassifier()
 
-    def initialize(self):
-        pass
+    def initialize(self, std_name):
+        self.std_name = std_name
 
     def set_tumor_groups(self, tg):
         self.tumor_groups = tg
@@ -28,6 +30,8 @@ class LIRADSStageClassifier:
         :param tumor_info:
         :return:
         """
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0817\result\step7"
+
         self.stages = {}
         for i, info in self.tumor_groups.items():
             self.tumor_groups[i]["stage"] = []
@@ -46,6 +50,12 @@ class LIRADSStageClassifier:
                     self.tumor_groups[i]["stage"].append(Stages.LR_M)
             else:               # LR-M for other Malignant Tumor
                 self.tumor_groups[i]["stage"].append(Stages.LR_M)
+
+            if not os.path.isdir(os.path.join(path_save, self.std_name)):
+                os.mkdir(os.path.join(path_save, self.std_name))
+                f = open(os.path.join(path_save, self.std_name, "step_7.txt"), "w")
+                f.write(str(i)+"  :  "+str(self.tumor_groups[i]["stage"]))
+                f.close()
 
     def get_tumor_groups(self):
         return self.tumor_groups
