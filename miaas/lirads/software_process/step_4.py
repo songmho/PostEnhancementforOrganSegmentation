@@ -53,15 +53,13 @@ class ImageFeatureEvaluator:
         if med_type == ImageType.NORMAL:
             pass
         elif med_type == ImageType.DCM:
-            self.__enhance_spine_bone_parts_mi(setMed_img)
-            self.__make_group_by_spine_bone_location()
+            self.__parse_sl_location(setMed_img)
         elif med_type == ImageType.NII:
             self.__enhance_spine_bone_parts_mi(setMed_img)
             self.__make_group_by_spine_bone_location()
 
         for k, v in self.setCT_sl_groups.items():
             print(k, ": ", v)
-
 
     def make_lesion_group(self, setCT_tumor_seg):
         """
@@ -109,6 +107,11 @@ class ImageFeatureEvaluator:
         # for k, v in self.setCT_tumor_grps.items():
         #     print(k, ": ", v)
 
+    def __find_sl_group_id(self, cur_srs, cur_sl):
+        for grp_id, data in self.setCT_sl_groups.items():
+            if int(self.setCT_sl_groups[grp_id][cur_srs]) == int(cur_sl):
+                return grp_id
+
     def correct_segmented_lesion_location(self, acq_date):
         """
         To share segmented lesion location and modify the location of segmented tumor
@@ -125,8 +128,10 @@ class ImageFeatureEvaluator:
         for srs_name, srs in self.setCT_tumor_grps.items():
             info_tumors[srs_name] = {"num_tumors": len(list(srs.values())), "sl_start_end": [], "sl_start_end_img":[]}
             for t_id, ts in srs.items():
-                if (ts[0][0], ts[-1][0]) not in info_tumors[srs_name]["sl_start_end"]:
-                    info_tumors[srs_name]["sl_start_end"].append((ts[0][0], ts[-1][0]))
+                start_group_id = self.__find_sl_group_id(srs_name, ts[0][0])
+                end_group_id = self.__find_sl_group_id(srs_name, ts[-1][0])
+                if (start_group_id, end_group_id) not in info_tumors[srs_name]["sl_start_end"]:
+                    info_tumors[srs_name]["sl_start_end"].append((start_group_id, end_group_id))
                     info_tumors[srs_name]["sl_start_end_img"].append([])
                     for i in ts:
                         info_tumors[srs_name]["sl_start_end_img"][-1].append(i[1])
@@ -446,6 +451,45 @@ class ImageFeatureEvaluator:
                     img = np.where(img > 50, img, 0)
                     img = np.array(img, dtype=np.uint8)
                     self.setCT_d_spine_bone[srs_name][sl_name] = img
+
+    def __parse_sl_location(self, setMed_img):
+        """
+        To parse slice information
+        """
+        # To select the CT series having the longest CT slices
+        self.setCT_sl_groups = {}
+        long_srs_name, long_srs = "", -1
+        setMed_img = setMed_img[list(setMed_img.keys())[0]]
+        for srs_name, srs in setMed_img.items():
+            if len(srs.values()) > long_srs:
+                long_srs = len(srs.values())
+                long_srs_name = srs_name
+        # To store sl id with slice location for each CT slice in selected series
+        for sl_id, sl in setMed_img[long_srs_name].items():
+            self.setCT_sl_groups[sl_id] = {long_srs_name: (sl_id, sl["info"]["slice_location"])}
+
+        for srs_name, srs in setMed_img.items():
+            if srs_name == long_srs_name:
+                continue
+            for sl_name, sl in srs.items():
+                sl_location = sl["info"]["slice_location"]
+                diff, closed_name = 10000, ""
+                for k, i in self.setCT_sl_groups.items():
+                    name, loc = i[long_srs_name]
+                    if abs(sl_location-loc) < diff:
+                        diff = abs(sl_location-loc)
+                        closed_name = name
+                self.setCT_sl_groups[closed_name][srs_name] = (sl_name, sl_location)
+
+        for group_id, group in self.setCT_sl_groups.items():
+            for srs, data in self.setCT_sl_groups[group_id].items():
+                self.setCT_sl_groups[group_id][srs] = data[0]
+
+        for group_id, gs in self.setCT_sl_groups.items():
+            print(group_id, end=": ")
+            for id, g in gs.items():
+                print(g, end=", ")
+            print()
 
     def __compare_overlapped(self, mask1, mask2):
         mask_and = cv2.bitwise_and(mask1, mask2)

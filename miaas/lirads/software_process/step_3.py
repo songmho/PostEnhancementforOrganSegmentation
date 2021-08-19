@@ -108,7 +108,7 @@ class LegionSegmentor:
                     keys.append(key)
                 # cv2.imshow("img", sl)
                 # cv2.imshow("mask", msks_new)
-                cv2.imwrite(os.path.join(path_save, srs_name, key+".png"), msks_new)
+                cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, key+".png"), msks_new)
                 # cv2.waitKey(5)
 
                 self.setCT_C_Seg[srs_name][key] = {"masks": masks, 'rois': rois, "confidence_values": conf_values, "rois_img":rois_img, "img": sl}

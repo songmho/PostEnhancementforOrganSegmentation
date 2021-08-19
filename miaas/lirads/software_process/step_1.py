@@ -138,7 +138,7 @@ class MedicalImageLoader:
                     # try:
                         dcm = pydicom.dcmread(os.path.join(self.path_medimg, study, series, slice))
                         if dcm[0x0008, 0x103E].value not in self.setMed_img[study].keys():
-                            if "pre" in str(dcm[0x0008, 0x103E].value).lower() or "plain" in str(dcm[0x0008, 0x103E].value).lower() or "non con" in str(dcm[0x0008, 0x103E].value).lower():
+                            if "w/o" in str(dcm[0x0008, 0x103E].value).lower() or "pre" in str(dcm[0x0008, 0x103E].value).lower() or "plain" in str(dcm[0x0008, 0x103E].value).lower() or "non con" in str(dcm[0x0008, 0x103E].value).lower():
                                 if "PLAIN" not in self.setMed_img[study].keys():
                                     self.setMed_img[study]["PLAIN"] = {}
                                     cur_srs = "PLAIN"
@@ -157,15 +157,23 @@ class MedicalImageLoader:
                             else:
                                 self.setMed_img[study][dcm[0x0008, 0x103E].value] = {}
                                 cur_srs = dcm[0x0008, 0x103E].value
+                        if type(dcm[0x0028, 0x1051].value) == pydicom.valuerep.DSfloat:  #If ww is set to only a number
+                            cur_ww = float(dcm[0x0028, 0x1051].value)
+                        else:               # if ww is set to two numbers
+                            cur_ww = float(dcm[0x0028, 0x1051].value[0])
+                        if type(dcm[0x0028, 0x1050].value) == pydicom.valuerep.DSfloat: # if wc is set to only a number
+                            cur_wc = float(dcm[0x0028, 0x1050].value)
+                        else:               # if wc is set to two numbers
+                            cur_wc = float(dcm[0x0028, 0x1050].value[0])
                         info = {"voxel": float(dcm[0x0028, 0x0030].value[0]), "acq_date": str(dcm[0x0008, 0x0022].value),
-                                "slice_location": float(dcm[0x0020, 0x1041].value), "ww":float(dcm[0x0028, 0x1051].value),
-                                "wc":float(dcm[0x0028, 0x1050].value), "rescaleIntercept":float(dcm[0x0028, 0x1052].value),
+                                "slice_location": float(dcm[0x0020, 0x1041].value), "ww":cur_ww,
+                                "wc":cur_wc, "rescaleIntercept":float(dcm[0x0028, 0x1052].value),
                                 "rescaleSlope":float(dcm[0x0028, 0x1053].value)}
                         self.acquisition_date = str(dcm[0x0008, 0x0022].value)
                         self.voxels = float(dcm[0x0028, 0x0030].value[0])
                         self.setMed_img[study][cur_srs][str(dcm[0x0020, 0x0013].value).zfill(5)] = {"image": dcm.pixel_array, "info":info}
-                        self.ww_liver = float(dcm[0x0028, 0x1051].value)
-                        self.wc_liver = float(dcm[0x0028, 0x1050].value)
+                        self.ww_liver = cur_ww
+                        self.wc_liver = cur_wc
                         self.rescale_intercept = float(dcm[0x0028, 0x1052].value)
                         self.rescale_slope = float(dcm[0x0028, 0x1053].value)
                     # except:

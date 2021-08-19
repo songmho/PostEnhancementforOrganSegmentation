@@ -11,11 +11,12 @@ from miaas.lirads.software_process.livers import LiverSegmenter
 import cv2
 import numpy as np
 from scipy import ndimage
-
+from miaas.lirads.util.post_processing_liver import PostProcessLiver
 
 class LiverRegionSegmentater:
     def __init__(self):
         self.ml_liver_seg = LiverSegmenter()
+        self.post_processor = PostProcessLiver()
         self.setCT_b = None
         self.setCT_b_liver = {}
         self.setCT_b_seg = {}
@@ -28,13 +29,14 @@ class LiverRegionSegmentater:
         self.setCT_b_seg = {}
         self.std_name = std_name
 
-    def set_setCT_b(self, setCT_a):
+    def set_setCT_b(self, setCT_a, setMed_img):
         """
         To receive set_med_img data
         :param med_imgs: dict, medical images
         :return:
         """
         self.setCT_b = setCT_a[list(setCT_a.keys())[0]]
+        self.setMed_img = setMed_img[list(setMed_img.keys())[0]]
 
         for name in self.setCT_b.keys():
             self.setCT_b_liver[name] = {}
@@ -42,9 +44,6 @@ class LiverRegionSegmentater:
 
     def get_setCT_b(self):
         return self.setCT_b
-
-    def alleviate_noised_data(self):
-        pass
 
     def segment_liver_regions(self):
         """
@@ -112,7 +111,19 @@ class LiverRegionSegmentater:
         To discard insignificant slices
         :return:
         """
-        self.__discard_wrong_segmented_results()
+
+        # self.setCT_b_seg    # For mask
+        # self.setMed_img     # For slice before transform
+        for srs_name, imgs in self.setCT_b.items():   # For Image
+            print("       ", srs_name)
+            self.post_processor.initialize(self.setCT_b_seg[srs_name], self.setMed_img[srs_name], imgs)
+            self.post_processor.split_t_f_sequence()
+            self.post_processor.check_continuity_false()
+            self.post_processor.revise_sequences()
+            self.post_processor.discard_sequence()
+            seqs = self.post_processor.return_target_seq()
+            for i in range(len(self.setCT_b_seg[srs_name].values())):
+                self.setCT_b_seg[srs_name][list(self.setCT_b_seg[srs_name].keys())[i]]["masks"] = seqs[i][1]
 
     def detect_liver_hepatic_segments(self):
         """
