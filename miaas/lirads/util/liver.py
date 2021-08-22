@@ -75,7 +75,6 @@ class LiverConfig(Config):
     # Skip detections with < 90% confidence
     DETECTION_MIN_CONFIDENCE = 0.9
     GPU_COUNT = 1
-    IMAGES_PER_GPU = 1
 
 
 ############################################################

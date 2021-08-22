@@ -74,7 +74,7 @@ class LegionSegmentor:
             self.setCT_C_Seg[name] = {}
             self.setCT_C_tumor[name] = {}
 
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0817\result\step3"
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step3"
         for srs_name, slices in setCT_b.items():
             count = 0
             keys = []

@@ -47,7 +47,7 @@ class TumorTypeDeterminer:
         To predict the tumor type in a group of CT slices for a tumor's section
         :return:
         """
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0817\result\step5"
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step5"
 
         for t_id, list_features in self.img_features.items():
             result = self.t_type_classifier.predict([[list_features]])

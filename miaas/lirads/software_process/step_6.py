@@ -305,7 +305,7 @@ class LIRADSFeatureComputer:
         To generate list for major features of each tumor
         :return:
         """
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0817\result\step6"
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step6"
 
         self.list_major_features = {}
         for t_id in self.tumor_groups.keys():

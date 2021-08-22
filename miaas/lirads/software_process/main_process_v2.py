@@ -69,77 +69,77 @@ class MainProcess:
         # print("    Task 3. Detect Liver Hepatic Segments (Not Completed)")
         # step2.detect_liver_hepatic_segments()
 
-        setCT_b = self.step2.get_setCT_b()
-        setCT_b_seg = self.step2.get_setCT_b_seg()
-
-        # Step 3. Segment Lesions
-        print("\n\nStep 3. Segment Lesions")
-        self.step3.load_model()
-        print("    Task 1. Checking Presence of Lesion")
-        result = self.step3.check_target_presence(setCT_a, setCT_b_seg)
-        print("    Task 2. Segmenting Lesions")
-        self.step3.segment_lesion(setCT_a, setCT_b_seg)
-        # print("    Task 3. Detecting Hepatic Segments for Each Lesion (Not Completed)")
-        # step3.detect_hepatic_segments()
-
-        setCT_c_tumor = self.step3.get_setCT_C_tumor()
-        setCT_c_seg = self.step3.get_setCT_c_seg()
-
-
-        # Step 4. Evaluate Image Features
-        print("\n\nStep 4. Evaluate Image Features")
-        print("    Task 1. Generate CT Slice Group")
-        self.step4.generate_slice_group(self.step1.med_type, setMed_img)
-        print("    Task 2. Generate Lesion Group")
-        self.step4.make_lesion_group(setCT_c_tumor)
-        print("    Task 3. Share Location of Lesions")
-        self.step4.correct_segmented_lesion_location(self.step1.acquisition_date)
-        print("    Task 4. Evaluate Image Features")
-        self.step4.evaluate_image_feature(setCT_c_seg)
-        print("    Task 5. Discard Insignificant Image Features")
-        self.step4.discard_insignificant_image_features()
-
-        tumor_groups = self.step4.get_tumor_groups()
-
-        # Step 5. Determine Tumor Type
-        self.step5.set_tumor_groups(tumor_groups)
-        print("\n\nStep 5. Determine Tumor Type")
-        print("    Task 1. Sort Image Features")
-        self.step5.sort_img_features()
-        print("    Task 2. Predict Tumor Type")
-        self.step5.predict_tumor_type()
-
-        tumor_groups = self.step5.get_tumor_groups()
-
-        # Step 6. Compute LI-RADS Features
-        self.step6.set_tumor_groups(tumor_groups)
-        print("\n\nStep 6. Compute LI-RADS Features")
-        print("    Task 1. Check Tumor Type")
-        t_type_list = self.step6.get_tumor_type()
-        print("    Task 2. Check Type of APHE")
-        list_aphe = self.step6.get_APHE_type()
-        print("    Task 3. Compute Size of Lesions")
-        list_size = self.step6.compute_lesion_size(self.step1.voxels)
-        print("    Task 4. Check presence of Capsule and Washout")
-        capsules = self.step6.check_capsule()
-        washouts = self.step6.check_washout()
-        print("    Task 5. Compute Threshold Growth")
-        self.step6.set_prv_data(self.path_prv_data)
-        self.step6.set_setCT_a(setMed_img)
-        th_growths = self.step6.compute_threshold_growth()
-        print("    Task 6. Classify Tumor in Vein")
-        self.step6.detect_vein_location(setCT_a)
-        tivs = self.step6.compute_tumor_in_vein()
-        print("    Task 7. Count Number of Major Features")
-        self.step6.generate_major_feature_list(t_type_list, list_aphe, list_size, capsules, washouts, th_growths, tivs)
-        tumor_groups = self.step6.get_tumor_groups()
-
-        # Step 7. Determine LR Stage
-        print("\n\nStep 7. Determine LR Stage")
-        self.step7.set_tumor_groups(tumor_groups)
-        self.step7.load_model()
-        print("    Task 1. Classify Stage")
-        self.step7.classify_stage()
+        # setCT_b = self.step2.get_setCT_b()
+        # setCT_b_seg = self.step2.get_setCT_b_seg()
+        #
+        # # Step 3. Segment Lesions
+        # print("\n\nStep 3. Segment Lesions")
+        # self.step3.load_model()
+        # print("    Task 1. Checking Presence of Lesion")
+        # result = self.step3.check_target_presence(setCT_a, setCT_b_seg)
+        # print("    Task 2. Segmenting Lesions")
+        # self.step3.segment_lesion(setCT_a, setCT_b_seg)
+        # # print("    Task 3. Detecting Hepatic Segments for Each Lesion (Not Completed)")
+        # # step3.detect_hepatic_segments()
+        #
+        # setCT_c_tumor = self.step3.get_setCT_C_tumor()
+        # setCT_c_seg = self.step3.get_setCT_c_seg()
+        #
+        #
+        # # Step 4. Evaluate Image Features
+        # print("\n\nStep 4. Evaluate Image Features")
+        # print("    Task 1. Generate CT Slice Group")
+        # self.step4.generate_slice_group(self.step1.med_type, setMed_img)
+        # print("    Task 2. Generate Lesion Group")
+        # self.step4.make_lesion_group(setCT_c_tumor)
+        # print("    Task 3. Share Location of Lesions")
+        # self.step4.correct_segmented_lesion_location(self.step1.acquisition_date)
+        # print("    Task 4. Evaluate Image Features")
+        # self.step4.evaluate_image_feature(setCT_c_seg)
+        # print("    Task 5. Discard Insignificant Image Features")
+        # self.step4.discard_insignificant_image_features()
+        #
+        # tumor_groups = self.step4.get_tumor_groups()
+        #
+        # # Step 5. Determine Tumor Type
+        # self.step5.set_tumor_groups(tumor_groups)
+        # print("\n\nStep 5. Determine Tumor Type")
+        # print("    Task 1. Sort Image Features")
+        # self.step5.sort_img_features()
+        # print("    Task 2. Predict Tumor Type")
+        # self.step5.predict_tumor_type()
+        #
+        # tumor_groups = self.step5.get_tumor_groups()
+        #
+        # # Step 6. Compute LI-RADS Features
+        # self.step6.set_tumor_groups(tumor_groups)
+        # print("\n\nStep 6. Compute LI-RADS Features")
+        # print("    Task 1. Check Tumor Type")
+        # t_type_list = self.step6.get_tumor_type()
+        # print("    Task 2. Check Type of APHE")
+        # list_aphe = self.step6.get_APHE_type()
+        # print("    Task 3. Compute Size of Lesions")
+        # list_size = self.step6.compute_lesion_size(self.step1.voxels)
+        # print("    Task 4. Check presence of Capsule and Washout")
+        # capsules = self.step6.check_capsule()
+        # washouts = self.step6.check_washout()
+        # print("    Task 5. Compute Threshold Growth")
+        # self.step6.set_prv_data(self.path_prv_data)
+        # self.step6.set_setCT_a(setMed_img)
+        # th_growths = self.step6.compute_threshold_growth()
+        # print("    Task 6. Classify Tumor in Vein")
+        # self.step6.detect_vein_location(setCT_a)
+        # tivs = self.step6.compute_tumor_in_vein()
+        # print("    Task 7. Count Number of Major Features")
+        # self.step6.generate_major_feature_list(t_type_list, list_aphe, list_size, capsules, washouts, th_growths, tivs)
+        # tumor_groups = self.step6.get_tumor_groups()
+        #
+        # # Step 7. Determine LR Stage
+        # print("\n\nStep 7. Determine LR Stage")
+        # self.step7.set_tumor_groups(tumor_groups)
+        # self.step7.load_model()
+        # print("    Task 1. Classify Stage")
+        # self.step7.classify_stage()
 
     def print_diagnosis_result(self):
         print("\n\n[DIAGNOSIS RESULT]")
@@ -177,7 +177,7 @@ if __name__ == '__main__':
 
     # "1383803", "1611730", "1668171",  "7048295", "7064369",
     #  "7083077", "7159233", "8112000", "99. 8523522", "99. 8082200_07312017"
-    for std_name in ["7083077", "7159233", "8112000", "99. 8523522", "99. 8082200_07312017"]:
+    for std_name in ["1383803", "1611730", "1668171",  "7048295", "7064369", "7083077", "7159233", "8112000", "99. 8523522", "99. 8082200_07312017"]:
         if len(std_name.split(" ")) > 1:
             print("["+std_name.split(" ")[1]+"]")
         else:
@@ -188,5 +188,5 @@ if __name__ == '__main__':
         lirads_process.initialize(std_name)
         lirads_process.set_path(path_mi, path_prv_data=r"")
         lirads_process.diagnose()
-        lirads_process.print_diagnosis_result()
+        # lirads_process.print_diagnosis_result()
         print("\n\n")

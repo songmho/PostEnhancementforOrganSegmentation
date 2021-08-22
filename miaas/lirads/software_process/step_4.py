@@ -240,7 +240,7 @@ class ImageFeatureEvaluator:
         but it may revised to consider majority of image features or confidence scores
         :return:
         """
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0817\result\step4"
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step4"
 
         for tumor_id, info in self.tumor_groups.items():
             features = {}

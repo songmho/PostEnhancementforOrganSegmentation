@@ -30,7 +30,7 @@ class LIRADSStageClassifier:
         :param tumor_info:
         :return:
         """
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0817\result\step7"
+        path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step7"
 
         self.stages = {}
         for i, info in self.tumor_groups.items():
