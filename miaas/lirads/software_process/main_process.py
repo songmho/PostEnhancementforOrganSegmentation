@@ -18,6 +18,7 @@ import numpy as np
 import cv2
 
 import tensorflow as tf
+from miaas.lirads.constant import ImageType
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
   # Restrict TensorFlow to only allocate 1GB of memory on the first GPU
@@ -52,35 +53,37 @@ class LiradsProcess:
         self.step_1.set_path(self.img_path)
 
     def check_extension(self):
-        self.step_1.check_extension()
+        self.step_1.check_mi_type()
 
     def load_medical_img(self):
         self.step_1.load_medical_img()
 
     def convert_color_depth(self):
         self.step_1.convert_color_depth()
-        self.set_med_img = self.step_1.get_setCT_a()
+        self.set_med_img = self.step_1.get_setMed_img()
+        self.setCT_a = self.step_1.get_setCT_a()
 
     def get_get_id_info(self):
         self.list_series_id = list(self.set_med_img.keys())
         self.list_slice_id = {}
         std_id = list(self.set_med_img.keys())[0]
         for i in list(self.set_med_img[std_id].keys()):
-            self.list_slice_id[i] = list(self.set_med_img[std_id][i])
+            self.list_slice_id[i] = list(self.set_med_img[std_id][i].keys())
         return self.list_series_id, self.list_slice_id
 
     def get_whole_img_data(self):
         self.list_labels, self.list_imgs, list_img_convs = [], [], []
         self.get_get_id_info()
         for i in list(self.list_slice_id.keys()):   # To gather labels
-            for j in range(len(self.list_slice_id[i])):
+            for j in self.list_slice_id[i]:
                 self.list_labels.append(i+"_"+str(j).zfill(5))
         std_id = list(self.set_med_img.keys())[0]
         for i in list(self.set_med_img[std_id].keys()): # Series
-            for j in self.set_med_img[std_id][i]:       # slices
+            for j in self.set_med_img[std_id][i].keys():       # slices
 
-                self.list_imgs.append(j)
-                list_img_convs.append(self.__convert_img_to_binary(j))
+                self.list_imgs.append(self.setCT_a[std_id][i][j])
+                list_img_convs.append(self.__convert_img_to_binary(self.setCT_a[std_id][i][j]))
+        self.step_2.set_setCT_b(self.setCT_a, self.set_med_img)
         self.step_2.clear_session()
         self.step_2.load_model()
         return self.list_labels, list_img_convs
@@ -99,93 +102,117 @@ class LiradsProcess:
         print(img_id, ii, self.list_labels[img_id], np.array(slice).shape)
         # self.step_2.clear_session()
         # self.step_2.load_model()
-        result = self.step_2.segment_liver_region_new(slice)
+        result = self.step_2.segment_liver_region_new(slice, ii)
         if ii[0] not in list(self.setCT_b_seg.keys()):
             self.setCT_b_seg[ii[0]] = {}
             self.setCT_b[ii[0]] = {}
         self.setCT_b_seg[ii[0]][ii[1]] = result
         self.setCT_b[ii[0]][ii[1]] = slice
-        count = (np.count_nonzero(result["masks"])*0.63)
+        voxel = 0.63
+        if self.step_1.get_med_type() == ImageType.DCM:
+            voxel = self.step_1.voxels
+        count = (np.count_nonzero(result["masks"])*voxel)
         return self.__convert_img_to_binary(self.__convert_img_bool_to_int(result["masks"])), count
 
     def get_whole_tumor_seg_targets(self):
         self.list_labels_setCT_b, self.list_imgs_setCT_b, list_img_convs = [], [], []
-        self.step_3.clear_session()
-        self.step_3.load_model()
-        for i in list(self.setCT_b.keys()):
-            for j in list(self.setCT_b[i].keys()):
+        self.setCT_b = self.step_2.get_setCT_b()
+        self.setCT_b_seg = self.step_2.get_setCT_b_seg()
+        for i in list(self.list_slice_id.keys()):
+            for j in list(self.list_slice_id[i]):
                 self.list_labels_setCT_b.append(i+"_"+j)
                 self.list_imgs_setCT_b.append(self.setCT_b[i][j])
                 list_img_convs.append(self.__convert_img_to_binary(self.setCT_b[i][j]))
+        self.step_3.clear_session()
+        self.step_3.load_model()
         return self.list_labels_setCT_b, list_img_convs
 
     # Method for Step 3
     def segment_tumor_region(self, img_id):
-        ii = self.list_labels_setCT_b[img_id].split("_")
+        ii = self.list_labels[img_id].split("_")
         slice = self.setCT_b[ii[0]][ii[1]]
         cur_liver = self.setCT_b_seg[ii[0]][ii[1]]["masks"]
-        result = self.step_3.segment_lesion_new(cur_liver, slice)
-        if ii[0] not in list(self.setCT_c_seg.keys()):
-            self.setCT_c_seg[ii[0]] = {}
-            self.setCT_c[ii[0]] = {}
-            self.setCT_c_tumor[ii[0]] = {}
-        self.setCT_c_seg[ii[0]][ii[1]] = result
-        if ii[1] not in list(self.setCT_c_tumor[ii[0]].keys()):
-            self.setCT_c_tumor[ii[0]][ii[1]] = []
-        for t in result["rois_img"]:
-            self.setCT_c_tumor[ii[0]][ii[1]].append(t)
-        self.setCT_c[ii[0]][ii[1]] = slice
-        count = (np.count_nonzero(result["masks"])*0.63)
+        result = self.step_3.segment_lesion_new(cur_liver, slice, ii)
+        # if ii[0] not in list(self.setCT_c_seg.keys()):
+        #     self.setCT_c_seg[ii[0]] = {}
+        #     self.setCT_c[ii[0]] = {}
+        #     self.setCT_c_tumor[ii[0]] = {}
+        # self.setCT_c_seg[ii[0]][ii[1]] = result
+        # if ii[1] not in list(self.setCT_c_tumor[ii[0]].keys()):
+        #     self.setCT_c_tumor[ii[0]][ii[1]] = []
+        # for t in result["rois_img"]:
+        #     self.setCT_c_tumor[ii[0]][ii[1]].append(t)
+        # self.setCT_c[ii[0]][ii[1]] = slice
+
+        voxel = 0.63
+        if self.step_1.get_med_type() == ImageType.DCM:
+            voxel = self.step_1.voxels
+        count = (np.count_nonzero(result["masks"])*voxel)
         return self.__convert_img_to_binary(result["whole_mask"]), {"area":count, "count":len(result["rois_img"])}
 
-    def get_setCT_c_seg(self):
-        return self.step_3.get_setCT_c_seg()
-
-    def get_setCT_C_tumor(self):
-        return self.step_3.get_setCT_C_tumor()
-
     ### Method for Step 4
+    ## TODO: ADD code for tumor groups
     def get_tumor_img_data(self):
+        self.setCT_c_seg = self.step_3.get_setCT_c_seg()
+        self.setCT_c_tumor = self.step_3.get_setCT_C_tumor()
+
+        self.step_4.generate_slice_group(self.step_1.med_type, self.set_med_img)
+        self.step_4.make_lesion_group(self.setCT_c_tumor)
+        self.step_4.correct_segmented_lesion_location(self.step_1.acquisition_date)
+        self.tumor_groups= self.step_4.get_tumor_groups()
         self.list_tumor_names, self.list_tumor_imgs, list_t_i = [], [], []
-        for i in list(self.setCT_c_tumor.keys()):
-            for j in list(self.setCT_c_tumor[i].keys()):
-                for k in range(len(self.setCT_c_tumor[i][j])):
-                    self.list_tumor_names.append(i+"_"+j+"_"+str(k))
-                    self.list_tumor_imgs.append(self.setCT_c_tumor[i][j][k])
-                    list_t_i.append(self.__convert_img_to_binary(self.setCT_c_tumor[i][j][k]))
-        print(len(self.list_tumor_names))
-        print(len(self.list_tumor_imgs))
+        for t_id in self.tumor_groups.keys():
+            for srs_id, t_g in self.tumor_groups[t_id]["mask"].items():
+                for i in range(len(t_g)):
+                    sl_id = self.tumor_groups[t_id]["mask"][srs_id][i][0]
+                    img = self.setCT_c_seg[srs_id][sl_id]["img"]
+                    mask = self.tumor_groups[t_id]["mask"][srs_id][i][1]
+                    if np.count_nonzero(mask)>0:
+                        self.list_tumor_names.append(str(t_id)+"_"+str(srs_id)+"_"+str(i).zfill(3))
+                        print(t_id, srs_id, sl_id, type(img), type(mask))
+                        self.list_tumor_imgs.append(self.step_4.make_roi(img, mask))
+                        list_t_i.append(self.__convert_img_to_binary(self.step_4.make_roi(img, mask)))
+        self.step_4.clear_session()
+        self.step_4.load_model()
         return self.list_tumor_names, list_t_i
 
     def evaluate_img_features(self, img_id):
         cur_tumor = self.list_tumor_imgs[img_id]
-        cur_tumor = cv2.cvtColor(cur_tumor, cv2.COLOR_BGR2GRAY)
-        cur_tumor = np.expand_dims(cur_tumor, axis=-1)
-
+        ii = self.list_tumor_names[img_id].split("_")   # 0: tumor ID, 1: series ID, 2: index of tumor image
+        if len(cur_tumor.shape) == 2:
+            cur_tumor = np.expand_dims(cur_tumor, axis=-1)
+        if cur_tumor.shape[2] > 1:
+            cur_tumor = cv2.cvtColor(cur_tumor, cv2.COLOR_BGR2GRAY)
+        result = self.step_4.evaluate_image_feature_new(cur_tumor, ii)
+        print(result)
         list_data = []
-        if "plain" in self.list_tumor_names[img_id]:
-            r = "Hypoattenuate"
-            list_data.append(r+" ("+str(random.randrange(90, 101))+"%)")
-        elif "arterial" in self.list_tumor_names[img_id]:
-            r = "Nonrim APHE, Nodular"
-            list_data.append("Nonrim APHE (" + str(random.randrange(90, 101)) +"%)" +"," +"Nodular (" + str(random.randrange(90, 101)) + "%)")
-        elif "venous" in self.list_tumor_names[img_id]:
-            r = "capsule"
-            list_data.append("Capsule ("+str(random.randrange(90, 101))+"%)")
-        elif "delay" in self.list_tumor_names[img_id]:
-            r = "washout"
-            list_data.append("Washout ("+str(random.randrange(90, 101))+"%)")
-        else:
-            r = "Washout"
-            list_data.append("Washout ("+str(random.randrange(90, 101))+"%)")
-        # result = self.step_4.evaluate_image_feature_new(cur_tumor)
+        for i in range(len(result["Labels"])):
+            list_data.append(str(result["Labels"][i])+" ("+str(round(result["ConfidenceScores"][i], 3))+"%)")
         # r = self.step_4.get_current_features(result)
-        return list_data, r
+        return list_data, ", ".join(result["Labels"])
 
     ### Method for Step 5
     def get_tumor_group_data(self):
+        self.step_4.discard_insignificant_image_features()
         self.list_tumor_group_names, self.list_tumor_groups, list_t_i = [], {}, {}
         l=0
+
+        for t_id in self.tumor_groups.keys():
+
+            self.list_tumor_group_names.append("Tumor Group" + str(t_id))
+
+            for srs_id, t_g in self.tumor_groups[t_id]["mask"].items():
+                for i in range(len(t_g)):
+                    sl_id = self.tumor_groups[t_id]["mask"][srs_id][i][0]
+                    img = self.setCT_c_seg[srs_id][sl_id]["img"]
+                    mask = self.tumor_groups[t_id]["mask"][srs_id][i][1]
+                    if np.count_nonzero(mask)>0:
+                        self.list_tumor_names.append(str(t_id)+"_"+str(srs_id)+"_"+str(i).zfill(3))
+                        print(t_id, srs_id, sl_id, type(img), type(mask))
+                        self.list_tumor_imgs.append(self.step_4.make_roi(img, mask))
+                        list_t_i.append(self.__convert_img_to_binary(self.step_4.make_roi(img, mask)))
+
+
         for i in list(self.setCT_c_tumor.keys()):       # Series
             for j in list(self.setCT_c_tumor[i].keys()):    # Slice
                 idx_j = list(self.setCT_c_tumor[i].keys()).index(j)
@@ -199,9 +226,12 @@ class LiradsProcess:
                     list_t_i[str(idx_j)+"_"+str(k)][str(i)] = self.__convert_img_to_binary(self.setCT_c_tumor[i][j][k])
         print(len(self.list_tumor_names))
         print(len(self.list_tumor_imgs))
+        self.step_5.clear_session()
+        self.step_5.load_model()
         return self.list_tumor_group_names, list_t_i
 
     def determin_tumor_type(self):
+        self.step_5.determine_tumor_type(None)
         result = "HCC"
         result = result+" ("+str(random.randrange(90, 101))+"%)"
         return result
@@ -246,6 +276,14 @@ class LiradsProcess:
         img = np.array(img, dtype=np.uint8)
         return img
 
+    def __divid_tumors_eachother(self, img):
+        cur_cnt, _ = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        cur_mask = np.zeros(img.shape)
+        result = []
+        for k in cur_cnt:
+            new_mask = np.zeros(img.shape)
+            result.append(np.array(cv2.drawContours(new_mask, [k], -1, color=255, thickness=cv2.FILLED), dtype=np.uint8))
+        return result
 
 if __name__ == '__main__':
     # step1 = MedicalImageLoader()

@@ -99,7 +99,7 @@
                             var slice = data["img"];
                             console.log(text);
                             if (text["count"]>0)
-                                write_log_in_console("Tumor regions in CT slice "+d[idx]+" is segmented. (# of Tumors:"+text["count"]+", Whole Area: "+text["area"].toLocaleString()+" mm)");
+                                write_log_in_console("Tumor regions in CT slice "+d[idx]+" is segmented. (# of Tumors:"+text["count"]+", Whole Area: "+text["area"].toLocaleString()+" mm^2)");
                             else
                                 write_log_in_console("Any tumor region in CT slice "+d[idx]+" is not detected.");
 

@@ -52,7 +52,7 @@ class PostProcessLiver:
         To split true and false sequences from input mask data
         :return:
         """
-        print("        POST-Step 1. Split true and false sequences from input mask data")
+        print("          POST-Step 1. Split true and false sequences from input mask data")
         # To consider A/N VVP
         cur_seq = []
         cur_tag = True
@@ -73,10 +73,10 @@ class PostProcessLiver:
         To check continuity false and true sequences and revise sequences
         :return:
         """
-        print("        POST-Step 2. Check continuity false and true sequences and revise them")
+        print("          POST-Step 2. Check continuity false and true sequences and revise them")
         # Step 2-1. Check continuity of true sequence
         # To consider Size VVP, Location VVP
-        print("        POST-Step 2-1. Check whether segmented organ contains many air sections")
+        print("            POST-Step 2-1. Check whether segmented organ contains many air sections")
         for id in range(len(self.list_seqs_t_f)):
             # print("\n\n"+str(id))
             if self.list_seqs_t_f[id][0]:  # If true sequence,
@@ -92,11 +92,17 @@ class PostProcessLiver:
                                                                    dtype=np.uint8)
                         if is_first:
                             if id - 1 >= 0:
-                                self.list_seqs_t_f[id - 1][1].append(self.list_seqs_t_f[id][1][j])
+                                cur_id = int(self.list_seqs_t_f[id][1][j][0])
+                                prv_last_id = int(self.list_seqs_t_f[id-1][-1][0][0])
+                                if abs(cur_id-prv_last_id) == 1:
+                                    self.list_seqs_t_f[id-1][1].append(self.list_seqs_t_f[id][1][j])
                             list_del_ids.append(j)
                         else:
                             if id + 1 < len(self.list_seqs_t_f[id][1]):
-                                self.list_seqs_t_f[id + 1][1].insert(0, self.list_seqs_t_f[id][1][j])
+                                cur_id = int(self.list_seqs_t_f[id][1][j][0])
+                                next_fir_id = int(self.list_seqs_t_f[id+1][1][0][0])
+                                if abs(cur_id-next_fir_id) == 1:
+                                    self.list_seqs_t_f[id+1][1].insert(0, self.list_seqs_t_f[id][1][j])
                             list_del_ids.append(j)
                     else:
                         is_first = False
@@ -121,7 +127,7 @@ class PostProcessLiver:
         # The location VVP and Size change rate are considered.
         # If two TFSequences can be combined, the false sequences are considered.
         # If it can't,
-        print("        POST-Step 2-2. Combine TF Sequences")
+        print("            POST-Step 2-2. Combine TF Sequences")
         new_seq = []
         for id in range(len(self.list_seqs_t_f)):
             if self.list_seqs_t_f[id][0]:
@@ -155,167 +161,178 @@ class PostProcessLiver:
                             del self.list_seqs_t_f[id - 1][1][i]
                     new_seq.extend(self.list_seqs_t_f[id][1])
                 else:  # If the TF sequences consist of multiple true sequences
-                    prv_size = np.count_nonzero(self.list_seqs_t_f[id - 2][1][-1][1])
-                    cur_size = np.count_nonzero(self.list_seqs_t_f[id][1][0][1])
-                    num_sl_between = len(self.list_seqs_t_f[id - 1][1])
-                    cur_case = -1  # Variable for Cases of managing sequences. 0: Separate id-2 and id. 1: Combine id-2 and id
-                    if num_sl_between > len(self.list_seqs_t_f[id - 2][1][0]) / 2 and num_sl_between > len(
-                            self.list_seqs_t_f[id][1][0]):  # The length of FSeq[id-1] is longer than half of TSeqs.
-                        cur_case = 0
-                    else:
-                        # Check location VVP
-                        is_cor_loc_vvp = self.__check_location_vvp(self.list_seqs_t_f[id - 2][1][-1][1],
-                                                                   self.list_seqs_t_f[id][1][0][1])
-                        if not is_cor_loc_vvp:  # If not show correct location VVP
-                            cur_case = 0
-                        else:  # Showing location VVP
-                            avg_change_rate_prv = self.__compute_change_rate(self.list_seqs_t_f[id - 2][1],
-                                                                             len(self.list_seqs_t_f[id - 2][1]) - 1)
-                            avg_change_rate_cur = self.__compute_change_rate(self.list_seqs_t_f[id][1], 0)
-
-                            exp_cur_size = prv_size * (1 + avg_change_rate_prv) ** (num_sl_between - 1)
-                            exp_prv_size = cur_size * (1 - avg_change_rate_cur) ** (num_sl_between - 1)
-
-                            if len(self.list_seqs_t_f[id][1]) == 1 and len(
-                                    self.list_seqs_t_f[id - 2]) > 1:  # If the length of ith tf sequence is 1
-                                try:
-                                    diff_rate = (prv_size - cur_size) / prv_size
-                                    if (diff_rate < 0 and avg_change_rate_prv < 0) or (
-                                            diff_rate >= 0 and avg_change_rate_prv >= 0):
-                                        exp_prv_size = prv_size
-                                    else:
-                                        exp_prv_size = 1
-                                except:
-                                    exp_prv_size = 1
-                            elif len(self.list_seqs_t_f[id - 2]) == 1 and len(
-                                    self.list_seqs_t_f[id][1]) > 1:  # If the length of i-2th tf sequence is 1
-                                try:
-                                    diff_rate = (cur_size - prv_size) / cur_size
-                                    if (diff_rate < 0 and avg_change_rate_cur < 0) or (
-                                            diff_rate >= 0 and avg_change_rate_cur >= 0):
-                                        exp_cur_size = cur_size
-                                    else:
-                                        exp_cur_size = 1
-                                except:
-                                    exp_cur_size = 1
-                            elif len(self.list_seqs_t_f[id - 2]) == 1 and len(self.list_seqs_t_f[id][1]) == 1:
-                                # Only Size check
-                                if prv_size >= cur_size:
-                                    bigger = prv_size
-                                    smaller = cur_size
-                                else:
-                                    bigger = cur_size
-                                    smaller = prv_size
-                                if bigger / smaller > 1.5:
-                                    exp_cur_size = 1
-                                    exp_prv_size = 1
-                                else:
-                                    exp_cur_size = cur_size
-                                    exp_prv_size = prv_size
-                            if self.th_exp_changed < np.abs(
-                                    prv_size - exp_prv_size) / exp_prv_size or self.th_exp_changed < np.abs(
-                                    cur_size - exp_cur_size) / exp_cur_size:
-                                cur_case = 0
-                            else:
-                                cur_case = 1
-                    if cur_case == 0:  # Separate TFSeq[id-2] and TFSeq[id]
-                        # To add TFSeq[id-1] to current new_seq
-                        trg_mask = self.list_seqs_t_f[id - 2][1][-1][1]
-                        trg_img = self.__load_img(self.list_seqs_t_f[id - 2][1][-1][0])
-                        overlapped_trg = np.bitwise_and(trg_mask, trg_img)
-                        list_new = []
-                        list_del = []
-                        for i in range(len(self.list_seqs_t_f[id - 1][1])):
-                            cur_mask = self.list_seqs_t_f[id - 1][1][i][1]
-                            cur_img = self.__load_img(self.list_seqs_t_f[id - 1][1][i][0])
-                            overlapped_cur = np.bitwise_and(cur_mask, cur_img)
-                            # To consider Shape's change
-                            mask_new = self.__revise_mask(trg_img, cur_img, None, trg_mask, cur_mask, None,
-                                                          overlapped_trg, overlapped_cur, None)
-                            if self.__check_shape_vvp(trg_mask, mask_new):  # To check Shape VVP
-                                self.list_seqs_t_f[id - 1][1][i][1] = mask_new
-                                cur_mask = mask_new
-                                self.list_seqs_t_f[id - 2][1].append(self.list_seqs_t_f[id - 1][1][i])
-                                list_del.append(i)
-                                list_new.append(self.list_seqs_t_f[id - 1][1][i])
-                            else:
-                                break
-                            trg_mask = cur_mask
-                            trg_img = cur_img
-                            overlapped_trg = np.bitwise_and(cur_mask, cur_img)
-                        list_del.reverse()
-                        for i in list_del:
-                            del self.list_seqs_t_f[id - 1][1][i]
-                        new_seq.extend(list_new)
-
-                        # To add new_seq to self.list_seqs
+                    last_id_seq_i_2 = int(self.list_seqs_t_f[id-2][1][-1][0])
+                    fir_id_seq_i_1 =  int(self.list_seqs_t_f[id-1][1][0][0])
+                    last_id_seq_i_1 = int(self.list_seqs_t_f[id-1][1][-1][0])
+                    fir_id_seq_i =    int(self.list_seqs_t_f[id][1][0][0])
+                    # print(last_id_seq_i_2, fir_id_seq_i_1, last_id_seq_i_1, fir_id_seq_i)
+                    if (abs(last_id_seq_i_2 - fir_id_seq_i_1)>1) or (abs(last_id_seq_i_2 - fir_id_seq_i_1)==1 and abs(last_id_seq_i_1 - fir_id_seq_i)>1):
+                        new_seq.extend(self.list_seqs_t_f[id][1])
                         self.list_seqs.append(new_seq)
                         new_seq = []
+                        continue
+                    else:
+                        prv_size = np.count_nonzero(self.list_seqs_t_f[id - 2][1][-1][1])
+                        cur_size = np.count_nonzero(self.list_seqs_t_f[id][1][0][1])
+                        num_sl_between = len(self.list_seqs_t_f[id - 1][1])
+                        cur_case = -1  # Variable for Cases of managing sequences. 0: Separate id-2 and id. 1: Combine id-2 and id
+                        if num_sl_between > len(self.list_seqs_t_f[id - 2][1][0]) / 2 and num_sl_between > len(
+                                self.list_seqs_t_f[id][1][0]):  # The length of FSeq[id-1] is longer than half of TSeqs.
+                            cur_case = 0
+                        else:
+                            # Check location VVP
+                            is_cor_loc_vvp = self.__check_location_vvp(self.list_seqs_t_f[id - 2][1][-1][1],
+                                                                       self.list_seqs_t_f[id][1][0][1])
+                            if not is_cor_loc_vvp:  # If not show correct location VVP
+                                cur_case = 0
+                            else:  # Showing location VVP
+                                avg_change_rate_prv = self.__compute_change_rate(self.list_seqs_t_f[id - 2][1],
+                                                                                 len(self.list_seqs_t_f[id - 2][1]) - 1)
+                                avg_change_rate_cur = self.__compute_change_rate(self.list_seqs_t_f[id][1], 0)
 
-                        # To add TFSeq[id-1] and TFSeq[id] to new_seq
-                        trg_mask = self.list_seqs_t_f[id][1][0][1]
-                        trg_img = self.__load_img(self.list_seqs_t_f[id][1][0][0])
-                        overlapped_trg = np.bitwise_and(trg_mask, trg_img)
-                        list_new = []
-                        list_del = []
-                        for i in range(len(self.list_seqs_t_f[id - 1][1]) - 1, -1, -1):
-                            cur_mask = self.list_seqs_t_f[id - 1][1][i][1]
-                            cur_img = self.__load_img(self.list_seqs_t_f[id - 1][1][i][0])
-                            overlapped_cur = np.bitwise_and(cur_mask, cur_img)
-                            # To consider Shape's change
-                            mask_new = self.__revise_mask(None, cur_img, trg_img, None, cur_mask, trg_mask, None,
-                                                          overlapped_cur, overlapped_trg)
-                            if self.__check_shape_vvp(trg_mask, mask_new):  # To check Shape VVP
-                                self.list_seqs_t_f[id - 1][1][i][1] = mask_new
-                                cur_mask = mask_new
-                                self.list_seqs_t_f[id][1].insert(0, self.list_seqs_t_f[id - 1][1][i])
-                                list_del.append(i)
-                                list_new.append(self.list_seqs_t_f[id - 1][1][i])
-                            else:
-                                break
-                            trg_mask = cur_mask
-                            trg_img = cur_img
-                            overlapped_trg = np.bitwise_and(cur_mask, cur_img)
-                        for i in list_del:
-                            del self.list_seqs_t_f[id - 1][1][i]
-                        new_seq.extend(self.list_seqs_t_f[id][1])
+                                exp_cur_size = prv_size * (1 + avg_change_rate_prv) ** (num_sl_between - 1)
+                                exp_prv_size = cur_size * (1 - avg_change_rate_cur) ** (num_sl_between - 1)
 
-                    else:  # cur_case == 1, Combine TFSeq[id-2] and TFSeq[id]
-                        # To add TFSeq[id-1]
-                        # TODO Criteria for revising False Seq
-                        trg_mask = self.list_seqs_t_f[id - 2][1][-1][1]
-                        trg_img = self.__load_img(self.list_seqs_t_f[id - 2][1][-1][0])
-                        overlapped_trg = np.bitwise_and(trg_mask, trg_img)
-                        list_new = []
-                        list_del = []
-                        for i in range(len(self.list_seqs_t_f[id - 1][1])):
-                            cur_mask = self.list_seqs_t_f[id - 1][1][i][1]
-                            cur_img = self.__load_img(self.list_seqs_t_f[id - 1][1][i][0])
-                            overlapped_cur = np.bitwise_and(cur_mask, cur_img)
-                            # To consider Shape's change
-                            mask_new = self.__revise_mask(trg_img, cur_img, None, trg_mask, cur_mask, None,
-                                                          overlapped_trg, overlapped_cur, None)
-                            if self.__check_shape_vvp(trg_mask, mask_new):  # To check Shape VVP
-                                self.list_seqs_t_f[id - 1][1][i][1] = mask_new
-                                cur_mask = mask_new
-                                self.list_seqs_t_f[id - 2][1].append(self.list_seqs_t_f[id - 1][1][i])
-                                list_del.append(i)
-                                list_new.append(self.list_seqs_t_f[id - 1][1][i])
-                            else:
-                                break
-                            trg_mask = cur_mask
-                            trg_img = cur_img
-                            overlapped_trg = np.bitwise_and(cur_mask, cur_img)
-                        list_del.reverse()
-                        for i in list_del:
-                            del self.list_seqs_t_f[id - 1][1][i]
-                        new_seq.extend(list_new)
+                                if len(self.list_seqs_t_f[id][1]) == 1 and len(
+                                        self.list_seqs_t_f[id - 2]) > 1:  # If the length of ith tf sequence is 1
+                                    try:
+                                        diff_rate = (prv_size - cur_size) / prv_size
+                                        if (diff_rate < 0 and avg_change_rate_prv < 0) or (
+                                                diff_rate >= 0 and avg_change_rate_prv >= 0):
+                                            exp_prv_size = prv_size
+                                        else:
+                                            exp_prv_size = 1
+                                    except:
+                                        exp_prv_size = 1
+                                elif len(self.list_seqs_t_f[id - 2]) == 1 and len(
+                                        self.list_seqs_t_f[id][1]) > 1:  # If the length of i-2th tf sequence is 1
+                                    try:
+                                        diff_rate = (cur_size - prv_size) / cur_size
+                                        if (diff_rate < 0 and avg_change_rate_cur < 0) or (
+                                                diff_rate >= 0 and avg_change_rate_cur >= 0):
+                                            exp_cur_size = cur_size
+                                        else:
+                                            exp_cur_size = 1
+                                    except:
+                                        exp_cur_size = 1
+                                elif len(self.list_seqs_t_f[id - 2]) == 1 and len(self.list_seqs_t_f[id][1]) == 1:
+                                    # Only Size check
+                                    if prv_size >= cur_size:
+                                        bigger = prv_size
+                                        smaller = cur_size
+                                    else:
+                                        bigger = cur_size
+                                        smaller = prv_size
+                                    if bigger / smaller > 1.5:
+                                        exp_cur_size = 1
+                                        exp_prv_size = 1
+                                    else:
+                                        exp_cur_size = cur_size
+                                        exp_prv_size = prv_size
+                                if self.th_exp_changed < np.abs(
+                                        prv_size - exp_prv_size) / exp_prv_size or self.th_exp_changed < np.abs(
+                                        cur_size - exp_cur_size) / exp_cur_size:
+                                    cur_case = 0
+                                else:
+                                    cur_case = 1
+                        if cur_case == 0:  # Separate TFSeq[id-2] and TFSeq[id]
+                            # To add TFSeq[id-1] to current new_seq
+                            trg_mask = self.list_seqs_t_f[id - 2][1][-1][1]
+                            trg_img = self.__load_img(self.list_seqs_t_f[id - 2][1][-1][0])
+                            overlapped_trg = np.bitwise_and(trg_mask, trg_img)
+                            list_new = []
+                            list_del = []
+                            for i in range(len(self.list_seqs_t_f[id - 1][1])):
+                                cur_mask = self.list_seqs_t_f[id - 1][1][i][1]
+                                cur_img = self.__load_img(self.list_seqs_t_f[id - 1][1][i][0])
+                                overlapped_cur = np.bitwise_and(cur_mask, cur_img)
+                                # To consider Shape's change
+                                mask_new = self.__revise_mask(trg_img, cur_img, None, trg_mask, cur_mask, None,
+                                                              overlapped_trg, overlapped_cur, None)
+                                if self.__check_shape_vvp(trg_mask, mask_new):  # To check Shape VVP
+                                    self.list_seqs_t_f[id - 1][1][i][1] = mask_new
+                                    cur_mask = mask_new
+                                    self.list_seqs_t_f[id - 2][1].append(self.list_seqs_t_f[id - 1][1][i])
+                                    list_del.append(i)
+                                    list_new.append(self.list_seqs_t_f[id - 1][1][i])
+                                else:
+                                    break
+                                trg_mask = cur_mask
+                                trg_img = cur_img
+                                overlapped_trg = np.bitwise_and(cur_mask, cur_img)
+                            list_del.reverse()
+                            for i in list_del:
+                                del self.list_seqs_t_f[id - 1][1][i]
+                            new_seq.extend(list_new)
 
-                        # To add TFSeq[id]
-                        new_seq.extend(self.list_seqs_t_f[id][1])
-                        cur_target = self.list_seqs_t_f[id - 2][1]
-                        cur_target.extend(self.list_seqs_t_f[id][1])
-                        self.list_seqs_t_f[id][1] = cur_target
+                            # To add new_seq to self.list_seqs
+                            self.list_seqs.append(new_seq)
+                            new_seq = []
+
+                            # To add TFSeq[id-1] and TFSeq[id] to new_seq
+                            trg_mask = self.list_seqs_t_f[id][1][0][1]
+                            trg_img = self.__load_img(self.list_seqs_t_f[id][1][0][0])
+                            overlapped_trg = np.bitwise_and(trg_mask, trg_img)
+                            list_new = []
+                            list_del = []
+                            for i in range(len(self.list_seqs_t_f[id - 1][1]) - 1, -1, -1):
+                                cur_mask = self.list_seqs_t_f[id - 1][1][i][1]
+                                cur_img = self.__load_img(self.list_seqs_t_f[id - 1][1][i][0])
+                                overlapped_cur = np.bitwise_and(cur_mask, cur_img)
+                                # To consider Shape's change
+                                mask_new = self.__revise_mask(None, cur_img, trg_img, None, cur_mask, trg_mask, None,
+                                                              overlapped_cur, overlapped_trg)
+                                if self.__check_shape_vvp(trg_mask, mask_new):  # To check Shape VVP
+                                    self.list_seqs_t_f[id - 1][1][i][1] = mask_new
+                                    cur_mask = mask_new
+                                    self.list_seqs_t_f[id][1].insert(0, self.list_seqs_t_f[id - 1][1][i])
+                                    list_del.append(i)
+                                    list_new.append(self.list_seqs_t_f[id - 1][1][i])
+                                else:
+                                    break
+                                trg_mask = cur_mask
+                                trg_img = cur_img
+                                overlapped_trg = np.bitwise_and(cur_mask, cur_img)
+                            for i in list_del:
+                                del self.list_seqs_t_f[id - 1][1][i]
+                            new_seq.extend(self.list_seqs_t_f[id][1])
+
+                        else:  # cur_case == 1, Combine TFSeq[id-2] and TFSeq[id]
+                            # To add TFSeq[id-1]
+                            # TODO Criteria for revising False Seq
+                            trg_mask = self.list_seqs_t_f[id - 2][1][-1][1]
+                            trg_img = self.__load_img(self.list_seqs_t_f[id - 2][1][-1][0])
+                            overlapped_trg = np.bitwise_and(trg_mask, trg_img)
+                            list_new = []
+                            list_del = []
+                            for i in range(len(self.list_seqs_t_f[id - 1][1])):
+                                cur_mask = self.list_seqs_t_f[id - 1][1][i][1]
+                                cur_img = self.__load_img(self.list_seqs_t_f[id - 1][1][i][0])
+                                overlapped_cur = np.bitwise_and(cur_mask, cur_img)
+                                # To consider Shape's change
+                                mask_new = self.__revise_mask(trg_img, cur_img, None, trg_mask, cur_mask, None,
+                                                              overlapped_trg, overlapped_cur, None)
+                                if self.__check_shape_vvp(trg_mask, mask_new):  # To check Shape VVP
+                                    self.list_seqs_t_f[id - 1][1][i][1] = mask_new
+                                    cur_mask = mask_new
+                                    self.list_seqs_t_f[id - 2][1].append(self.list_seqs_t_f[id - 1][1][i])
+                                    list_del.append(i)
+                                    list_new.append(self.list_seqs_t_f[id - 1][1][i])
+                                else:
+                                    break
+                                trg_mask = cur_mask
+                                trg_img = cur_img
+                                overlapped_trg = np.bitwise_and(cur_mask, cur_img)
+                            list_del.reverse()
+                            for i in list_del:
+                                del self.list_seqs_t_f[id - 1][1][i]
+                            new_seq.extend(list_new)
+
+                            # To add TFSeq[id]
+                            new_seq.extend(self.list_seqs_t_f[id][1])
+                            cur_target = self.list_seqs_t_f[id - 2][1]
+                            cur_target.extend(self.list_seqs_t_f[id][1])
+                            self.list_seqs_t_f[id][1] = cur_target
         if len(new_seq) > 0:
             if not self.list_seqs_t_f[-1][0]:  # If the last is false
                 # To add data containing similar segmented results in false sequence
@@ -357,9 +374,19 @@ class PostProcessLiver:
         list_new_seqs = []
         # Step 3-1. Check combined sequences and re-connect them considering continuity
         # If the slice id is continued, they are combined.
-        print("        POST-Step 3. Revise combined sequences considering VVPs")
-        print("        POST-Step 3-1. Revise Sequences considering Slice ID")
+        print("          POST-Step 3. Revise combined sequences considering VVPs")
+        print("            POST-Step 3-1. Revise Sequences considering Slice ID")
         list_new = []
+
+        # To check empty sequence
+        list_del_id = []
+        for id in range(len(self.list_seqs)):
+            if len(self.list_seqs[id]) == 0:
+                list_del_id.append(id)
+        list_del_id.reverse()
+        for id in list_del_id:
+            del self.list_seqs[id]
+
         for id in range(len(self.list_seqs)):
             if id == 0:
                 list_new = self.list_seqs[id]
@@ -370,7 +397,8 @@ class PostProcessLiver:
                 self.list_seqs[id][0][0])  # first slice id in current sequence
 
             # if len(np.unique(self.list_seqs[id-1][-1][1]))>1 and len(np.unique(self.list_seqs[id][0][1]))>1 and (cur_seq_fir_id - prv_seq_last_id == 1):   # if continued
-            if (cur_seq_fir_id - prv_seq_last_id == 1):  # if continued
+            if (cur_seq_fir_id - prv_seq_last_id == 1) and \
+                    (np.count_nonzero(np.bitwise_and(self.list_seqs[id-1][-1][1], self.list_seqs[id][0][1]))>0):   # if continued
                 list_new.extend(self.list_seqs[id])
             else:
                 list_new_seqs.append(list_new)
@@ -381,7 +409,7 @@ class PostProcessLiver:
         self.list_seqs = list_new_seqs
 
         # Step 3-2. Check location VVP
-        print("        POST-Step 3-2. Check location VVP and Revise sequence")
+        print("            POST-Step 3-2. Check location VVP and Revise sequence")
         for i in range(len(self.list_seqs)):
             big_id = self.__get_biggest_sl_id(self.list_seqs[i])
             trg_img = self.__load_img(self.list_seqs[i][big_id][0])
@@ -442,7 +470,7 @@ class PostProcessLiver:
         """
 
         # # Step 3-3. Check Size VVP.
-        print("        POST-Step 3-3. Check Size VVP and Revise sequence")
+        print("            POST-Step 3-3. Check Size VVP and Revise sequence")
         th_size_check = 9
         for i in range(len(self.list_seqs)):
             big_id = self.__get_biggest_sl_id(self.list_seqs[i])
@@ -451,6 +479,33 @@ class PostProcessLiver:
 
             max_size = big_id
             for j in range(big_id - 1, -1, -1):  # big_id-1~0
+
+                cur_img = self.__load_img(self.list_seqs[i][j][0])
+                cur_mask = self.list_seqs[i][j][1]
+                cur_mask_sections = self.__divide_mask_to_sections(cur_mask)
+
+                if np.bitwise_and(np.count_nonzero(cur_mask), np.count_nonzero(trg_mask)) == 0:
+                    overlapped_cur = np.bitwise_and(cur_img, cur_mask)
+                    overlapped_trg = np.bitwise_and(trg_img, trg_mask)
+                    cur_mask = self.__revise_mask(trg_img, cur_img, None, trg_mask, cur_mask, None, overlapped_trg,
+                                                  overlapped_cur, None)
+                    self.list_seqs[i][j][1] = cur_mask
+
+                if len(cur_mask_sections) > 1 and np.count_nonzero(cur_mask) > np.count_nonzero(trg_mask):
+                    new_cur_mask = np.zeros(shape=cur_mask.shape)
+                    for c in cur_mask_sections:
+                        if np.count_nonzero(np.bitwise_and(c, trg_mask)) / np.count_nonzero(c) >= 0.3:
+                            new_cur_mask += c
+                    cur_mask = np.array(new_cur_mask, dtype=np.uint8)
+                    self.list_seqs[i][j][1] = cur_mask
+                if np.count_nonzero(trg_mask) != 0 and np.count_nonzero(cur_mask)/np.count_nonzero(trg_mask) > 2.0:
+                    overlapped_cur = np.bitwise_and(cur_img, cur_mask)
+                    overlapped_trg = np.bitwise_and(trg_img, trg_mask)
+                    cur_mask = self.__revise_mask(trg_img, cur_img, None, trg_mask, cur_mask, None, overlapped_trg,
+                                                  overlapped_cur, None)
+                    self.list_seqs[i][j][1] = cur_mask
+                    # self.list_seqs[i][j][1] = np.zeros((512, 512))
+
                 if max_size - th_size_check < j:
                     cur_high = j
                 else:
@@ -474,12 +529,9 @@ class PostProcessLiver:
                         overlapped_trg = np.bitwise_and(trg_img, trg_mask)
                         cur_mask = self.__revise_mask(None, cur_img, trg_img, None, cur_mask, trg_mask, None,
                                                       overlapped_cur, overlapped_trg)
-                        self.list_seqs[i][j][1] = cur_mask
+                        # self.list_seqs[i][j][1] = cur_mask
                 except:
                     pass
-
-                if np.count_nonzero(trg_mask) != 0 and np.count_nonzero(cur_mask) / np.count_nonzero(trg_mask) > 3.9:
-                    self.list_seqs[i][j][1] = np.zeros((512, 512))
 
                 trg_mask = self.list_seqs[i][j][1]
                 trg_img = cur_img
@@ -488,7 +540,33 @@ class PostProcessLiver:
             trg_mask = self.list_seqs[i][big_id][1]
 
             max_size = len(self.list_seqs[i])
-            for j in range(big_id + 1, len(self.list_seqs[i])):  # big_id-1~0
+            for j in range(big_id + 1, len(self.list_seqs[i])):   # big_id+1~MAX
+                cur_img = self.__load_img(self.list_seqs[i][j][0])
+                cur_mask = self.list_seqs[i][j][1]
+
+                if np.bitwise_and(np.count_nonzero(cur_mask), np.count_nonzero(trg_mask)) == 0:
+                    overlapped_cur = np.bitwise_and(cur_img, cur_mask)
+                    overlapped_trg = np.bitwise_and(trg_img, trg_mask)
+                    cur_mask = self.__revise_mask(trg_img, cur_img, None, trg_mask, cur_mask, None, overlapped_trg,
+                                                  overlapped_cur, None)
+                    self.list_seqs[i][j][1] = cur_mask
+
+                cur_mask_sections = self.__divide_mask_to_sections(cur_mask)
+                if len(cur_mask_sections) > 1 and np.count_nonzero(cur_mask) > np.count_nonzero(trg_mask):
+                    new_cur_mask = np.zeros(shape=cur_mask.shape)
+                    for c in cur_mask_sections:
+                        if np.count_nonzero(np.bitwise_and(c, trg_mask)) / np.count_nonzero(c) >= 0.3:
+                            new_cur_mask += c
+                    cur_mask = np.array(new_cur_mask, dtype=np.uint8)
+                    self.list_seqs[i][j][1] = cur_mask
+
+                if np.count_nonzero(trg_mask) != 0 and np.count_nonzero(cur_mask)/np.count_nonzero(trg_mask) > 2.0:
+                    overlapped_cur = np.bitwise_and(cur_img, cur_mask)
+                    overlapped_trg = np.bitwise_and(trg_img, trg_mask)
+                    cur_mask = self.__revise_mask(trg_img, cur_img, None, trg_mask, cur_mask, None, overlapped_trg,
+                                                  overlapped_cur, None)
+                    self.list_seqs[i][j][1] = cur_mask
+                    # self.list_seqs[i][j][1] = np.zeros((512, 512))
                 if max_size - th_size_check < j:
                     cur_high = j
                 else:
@@ -504,12 +582,15 @@ class PostProcessLiver:
                 change_seq_j = self.__check_seq_change(seq_j)
                 cur_img = self.__load_img(self.list_seqs[i][j][0])
                 cur_mask = self.list_seqs[i][j][1]
-                if ((np.sign(change_seq_i)) != (np.sign(change_seq_j)) and 0.0 < np.abs(change_seq_j) < 0.3):
-                    overlapped_cur = np.bitwise_and(cur_img, cur_mask)
-                    overlapped_trg = np.bitwise_and(trg_img, trg_mask)
-                    cur_mask = self.__revise_mask(trg_img, cur_img, None, trg_mask, cur_mask, None, overlapped_trg,
-                                                  overlapped_cur, None)
-                    self.list_seqs[i][j][1] = cur_mask
+                try:
+                    if ((np.sign(change_seq_i)) != (np.sign(change_seq_j)) and 0.0 < np.abs(change_seq_j) < 0.3):
+                        overlapped_cur = np.bitwise_and(cur_img, cur_mask)
+                        overlapped_trg = np.bitwise_and(trg_img, trg_mask)
+                        cur_mask = self.__revise_mask(trg_img, cur_img, None, trg_mask, cur_mask, None, overlapped_trg,
+                                                      overlapped_cur, None)
+                        # self.list_seqs[i][j][1] = cur_mask
+                except:
+                    pass
                 trg_mask = self.list_seqs[i][j][1]
                 trg_img = cur_img
 
@@ -518,7 +599,7 @@ class PostProcessLiver:
         To be able to change shape as high difference although the CT slices contain correct seg results
         To check shape VVP for only bigger size of organ parts
         """
-        print("        POST-Step 3-4. Check Shape VVP and Revise sequence")
+        print("            POST-Step 3-4. Check Shape VVP and Revise sequence")
         for i in range(len(self.list_seqs)):
             big_id = self.__get_biggest_sl_id(self.list_seqs[i])
             trg_img = self.__load_img(self.list_seqs[i][big_id][0])
@@ -561,8 +642,8 @@ class PostProcessLiver:
         To discard sequences considering HU VPP
         :return:
         """
-        print("        POST-Step 4. Discard sequences considering VVPs")
-        print("        POST-Step 4-1. Discard sequences considering HU VVP")
+        print("          POST-Step 4. Discard sequences considering VVPs")
+        print("            POST-Step 4-1. Discard sequences considering HU VVP")
         list_remove_seq = []
         if len(self.list_seqs)>1:
             for seq in self.list_seqs:
@@ -601,7 +682,7 @@ class PostProcessLiver:
             for i in list_remove_seq:
                 del self.list_seqs[i]
 
-        print("        POST-Step 4-2. Discard sequences considering Similarity of Shape")
+        print("            POST-Step 4-2. Discard sequences considering Similarity of Shape")
         if len(self.list_seqs)>1:
             list_cmp = self.__select_compared_mask_data()
             avg_list_sim_dist = []
@@ -629,19 +710,64 @@ class PostProcessLiver:
 
     def return_target_seq(self):
         size, id = 0, -1
-        for i in self.list_seqs:
-            if len(i) > size:
-                size = len(i)
-                id = self.list_seqs.index(i)
+
+        if len(self.list_seqs)>1:
+            list_seqs_new = []
+            list_seqs_new.append(self.list_seqs[0])
+            for i in range(1, len(self.list_seqs)):
+                if (abs(int(self.list_seqs[i][0][0])-int(self.list_seqs[i-1][-1][0])) == 1) and \
+                        np.count_nonzero(np.bitwise_and(self.list_seqs[i][0][1], self.list_seqs[i-1][-1][1])) > 0:
+                    cur = np.count_nonzero(self.list_seqs[i][0][1])
+                    prv = np.count_nonzero(self.list_seqs[i - 1][-1][1])
+                    if np.abs(cur-prv) / prv > 3.0:
+                        list_seqs_new.append(self.list_seqs[i])
+                    else:
+                        # If adjacent sequences are connected and overlapped.
+                        list_seqs_new[len(list_seqs_new)-1].extend(self.list_seqs[i])
+                else:
+                    list_seqs_new.append(self.list_seqs[i])
+            self.list_seqs = list_seqs_new
+            for i in self.list_seqs:
+                cur_count = 0
+                for j in i:
+                    if np.count_nonzero(j[1]) > 0:
+                        cur_count += 1
+                if cur_count > size:
+                    size = cur_count
+                    id = self.list_seqs.index(i)
+        else:
+            id = 0
+
         list_seq_sl_id = []
         for i in self.list_seqs[id]:
             list_seq_sl_id.append(i[0])
         list_results = []
         for sl_id in self.list_sl_ids:
             if sl_id in list_seq_sl_id:
-                list_results.append((sl_id, self.list_seqs[id][list_seq_sl_id.index(sl_id)][1]))
+                list_results.append([sl_id, self.list_seqs[id][list_seq_sl_id.index(sl_id)][1]])
             else:
-                list_results.append((sl_id, np.zeros(self.list_seqs[id][0][1].shape)))
+                list_results.append([sl_id, np.zeros(self.list_seqs[id][0][1].shape)])
+        groups = []
+        new_group = []
+        for l in list_results:
+            if np.count_nonzero(l[1])>0:
+                new_group.append(l)
+            else:
+                if len(new_group)>0:
+                    groups.append(new_group)
+                    new_group = []
+
+        idx, length = -1, 0
+        for i in range(len(groups)):
+            if len(groups[i]) >length:
+                idx = i
+                length = len(groups[i])
+
+        for i in range(len(list_results)):
+            if list_results[i] in groups[idx]:
+                pass
+            else:
+                list_results[i] = [list_results[i][0], np.zeros(self.list_seqs[id][0][1].shape)]
         return list_results
 
     def __check_seq_change(self, sub_seq):

@@ -1937,18 +1937,20 @@ def step1_save_lirads_imgs(request):
         phase = data["phase"]
         pat_name = data["pat_name"]
         pat_birth = data["pat_birth"]
+        mrn = data["mrn"]
         acq_date = data["acq_date"]
+        acq_date = acq_date.replace("-", "")
         files = request.FILES.getlist("files")
         root_path = r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\medical_image"
         cur_path = ""
         # To generate folders to save slices
-        if not os.path.isdir(os.path.join(root_path, pat_name+"_"+pat_birth)):
-            os.mkdir(os.path.join(root_path, pat_name + "_" + pat_birth))
-        container.mias_container.lirads_process.set_mi_path(os.path.join(root_path, pat_name+"_"+pat_birth))
-        if not os.path.isdir(os.path.join(root_path,pat_name+"_"+pat_birth, acq_date)):
-            os.mkdir(os.path.join(root_path,pat_name+"_"+pat_birth, acq_date))
-        if not os.path.isdir(os.path.join(root_path,pat_name+"_"+pat_birth, acq_date, phase)):
-            cur_path = os.path.join(root_path,pat_name+"_"+pat_birth, acq_date, phase)
+        if not os.path.isdir(os.path.join(root_path, mrn)):
+            os.mkdir(os.path.join(root_path, mrn))
+        container.mias_container.lirads_process.set_mi_path(os.path.join(root_path, mrn))
+        if not os.path.isdir(os.path.join(root_path, mrn, mrn+"_"+acq_date)):
+            os.mkdir(os.path.join(root_path, mrn, mrn+"_"+acq_date))
+        if not os.path.isdir(os.path.join(root_path, mrn, mrn+"_"+acq_date, phase)):
+            cur_path = os.path.join(root_path, mrn, mrn+"_"+acq_date, phase)
             os.mkdir(cur_path)
         for c, x in enumerate(files):
             def process(f):

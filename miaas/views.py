@@ -123,7 +123,6 @@ def lirads_step1(request):
     return render(request, "miaas/lirads_step1.html")
 
 def lirads_step2(request):
-    print("HI")
     return render(request, "miaas/lirads_step2.html")
 
 def lirads_step3(request):

@@ -98,7 +98,7 @@
                             var text = data["console"];
                             var slice = data["img"]
                             if (text>0)
-                                write_log_in_console("Liver organ in CT slice "+d[idx]+" is segmented. (Area: "+text.toLocaleString()+" mm)");
+                                write_log_in_console("Liver organ in CT slice "+d[idx]+" is segmented. (Area: "+text.toLocaleString()+" mm^2)");
                             else
                                 write_log_in_console("Liver organ in CT slice "+d[idx]+" is not detected.");
 

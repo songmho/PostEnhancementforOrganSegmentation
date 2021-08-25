@@ -1,5 +1,5 @@
 (function () {
-    function upload_img(pat_name,pat_birth, acq_date , phase, form_loader_name, cur) {
+    function upload_img(pat_name, pat_birth, mrn, acq_date , phase, form_loader_name, cur) {
         var cur_form_data_tmp = new FormData($(form_loader_name)[0]);
         var fileList= cur.files;
         isAnnoFileSelect = true;
@@ -8,7 +8,7 @@
         for(var i=0; i<fileList.length;i++){
             selected_img.push(fileList[i].name);
         }
-        var data = {"img":selected_img, "phase":phase, "pat_name": pat_name, "pat_birth":pat_birth, "acq_date":acq_date}
+        var data = {"img":selected_img, "phase":phase, "pat_name": pat_name, "mrn":mrn, "pat_birth":pat_birth, "acq_date":acq_date}
         cur_form_data_tmp.append("data", JSON.stringify(data));
         var splited = selected_img[0].split(".");
         let format = splited[splited.length-1];
@@ -90,16 +90,16 @@
         });
         
         $("#btn_loader_plain").on("change", function () {
-            upload_img($("#input_pat_name").val(), $("#input_pat_birth").val(), $("#input_acq_date").val(), "plain", "#form_loader_plain", this);
+            upload_img($("#input_pat_name").val(), $("#input_pat_birth").val(), $("#input_mrn").val(), $("#input_acq_date").val(), "plain", "#form_loader_plain", this);
         });
         $("#btn_loader_arterial").on("change", function () {
-            upload_img($("#input_pat_name").val(), $("#input_pat_birth").val(), $("#input_acq_date").val(), "arterial", "#form_loader_arterial", this);
+            upload_img($("#input_pat_name").val(), $("#input_pat_birth").val(), $("#input_mrn").val(), $("#input_acq_date").val(), "arterial", "#form_loader_arterial", this);
         });
         $("#btn_loader_pvp").on("change", function () {
-            upload_img($("#input_pat_name").val(), $("#input_pat_birth").val(), $("#input_acq_date").val(), "venous", "#form_loader_pvp", this);
+            upload_img($("#input_pat_name").val(), $("#input_pat_birth").val(), $("#input_mrn").val(), $("#input_acq_date").val(), "venous", "#form_loader_pvp", this);
         });
         $("#btn_loader_delay").on("change", function () {
-            upload_img($("#input_pat_name").val(), $("#input_pat_birth").val(), $("#input_acq_date").val(), "delay", "#form_loader_delay", this);
+            upload_img($("#input_pat_name").val(), $("#input_pat_birth").val(), $("#input_mrn").val(), $("#input_acq_date").val(), "delay", "#form_loader_delay", this);
         });
     });
 })(jQuery);

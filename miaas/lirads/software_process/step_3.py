@@ -74,14 +74,14 @@ class LegionSegmentor:
             self.setCT_C_Seg[name] = {}
             self.setCT_C_tumor[name] = {}
 
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step3"
+        # path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step3"
         for srs_name, slices in setCT_b.items():
             count = 0
             keys = []
-            if not os.path.isdir(os.path.join(path_save, self.std_name)):
-                os.mkdir(os.path.join(path_save, self.std_name))
-            if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
-                os.mkdir(os.path.join(path_save, self.std_name, srs_name))
+            # if not os.path.isdir(os.path.join(path_save, self.std_name)):
+            #     os.mkdir(os.path.join(path_save, self.std_name))
+            # if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
+            #     os.mkdir(os.path.join(path_save, self.std_name, srs_name))
             for key, sl in slices.items():
                 results = self.tumor_detector.detect([sl], verbose=0)
                 mask_result, roi_result, conf_value_result, roi_imgs_result = \
@@ -108,43 +108,42 @@ class LegionSegmentor:
                     keys.append(key)
                 # cv2.imshow("img", sl)
                 # cv2.imshow("mask", msks_new)
-                cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, key+".png"), msks_new)
+                # cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, key+".png"), msks_new)
                 # cv2.waitKey(5)
 
                 self.setCT_C_Seg[srs_name][key] = {"masks": masks, 'rois': rois, "confidence_values": conf_values, "rois_img":rois_img, "img": sl}
                 self.setCT_C_tumor[srs_name][key] = msks_new
-            print("       >>", srs_name, len(slices), count, "[",keys,"]")
+            print("       >>", srs_name, len(slices), count, keys)
 
-    def segment_lesion_new(self, cur_liver, img):
+    def segment_lesion_new(self, cur_liver, img, ii):
+
         results = self.tumor_detector.detect([img], verbose=0)
         mask_result, roi_result, conf_value_result, roi_imgs_result = \
             results[0]["masks"], results[0]["rois"], results[0]["scores"], results[0]["rois_img"]
+        masks = np.array(np.zeros(shape=(512, 512, 1),dtype=np.uint8))
+
+        msks_new = self.__enhance_seg_tumor_data(cur_liver, masks)
         masks, rois, conf_values, rois_img = [], [], [], []
-        whole_mask = np.zeros((mask_result.shape[0], mask_result.shape[1], 3), dtype=np.uint8)
+        whole_mask = np.zeros(shape=(512, 512, 3), dtype=np.uint8)
         for k in range(len(mask_result[0, 0, :])):  # Tumor Mask ID
-            area_lesion = np.count_nonzero(mask_result[:, :, k])
-            cur_mask = np.array(np.expand_dims(mask_result[:, :, k], axis=-1), dtype=np.uint8)
-            # cm = np.where(cur_mask>0, 255, cur_mask)
-            cm = np.where(cur_mask > 0, np.array([0, 255, 255], dtype=np.uint8), np.array([0, 0, 0], dtype=np.uint8))
-            whole_mask += cm
-            if len(np.unique(cur_liver)) > 0:  # If liver is segmented
-                mask_sum = cv2.bitwise_or(cur_mask, cur_liver)
-                area_sum = np.count_nonzero(mask_sum)
-                area_liver = np.count_nonzero(cur_liver)
-                # include_rate = 1 - (area_sum - area_liver) / area_lesion
-                #
-                # if include_rate > 0:
-                #     masks.append(cur_mask)
-                #     rois.append(roi_result[k])
-                #     conf_values.append(conf_value_result[k])
-                #     rois_img.append(roi_imgs_result[k])
-                masks.append(cur_mask)
+            cur_lesion = np.array(np.expand_dims(mask_result[:, :, k], axis=-1), dtype=np.uint8)
+            msks_new = self.__enhance_seg_tumor_data(cur_liver, cur_lesion)
+            if np.count_nonzero(msks_new) > 0:
+                cm = np.where(cur_lesion>0, np.array([0, 255, 255], dtype=np.uint8), np.array([0,0,0], dtype=np.uint8)) # TO add color
+                whole_mask += cm
+                masks.append(cur_lesion)
                 rois.append(roi_result[k])
                 conf_values.append(conf_value_result[k])
                 rois_img.append(roi_imgs_result[k])
 
-        result = {"masks": masks,"whole_mask":whole_mask, 'rois': rois, "confidence_values": conf_values, "rois_img": rois_img,
-                                  "img": img}
+        if ii[0] not in list(self.setCT_C_Seg.keys()):
+            self.setCT_C_Seg[ii[0]] = {}
+        if ii[0] not in list(self.setCT_C_tumor.keys()):
+            self.setCT_C_tumor[ii[0]] = {}
+        result = {"masks": masks, "whole_mask": whole_mask, 'rois': rois, "confidence_values": conf_values,
+                  "rois_img": rois_img, "img": img}
+        self.setCT_C_Seg[ii[0]][ii[1]] = result
+        self.setCT_C_tumor[ii[0]][ii[1]] = msks_new
         return result
 
     def detect_hepatic_segments(self, setCT_B_Hep_Seg):
@@ -169,3 +168,12 @@ class LegionSegmentor:
             if np.count_nonzero(np.bitwise_and(cur_organ_msk, new_mask)) > 0:
                 cur_mask += new_mask
         return np.array(cur_mask, dtype=np.uint8)
+
+    def __divid_tumors_eachother(self, img):
+        cur_cnt, _ = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        cur_mask = np.zeros(img.shape)
+        result = [] 
+        for k in cur_cnt:
+            new_mask = np.zeros(img.shape)
+            result.append(np.array(cv2.drawContours(new_mask, [k], -1, color=255, thickness=cv2.FILLED), dtype=np.uint8))
+

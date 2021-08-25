@@ -10,6 +10,7 @@ import numpy as np
 import cv2
 from miaas.lirads.constant import ImageType
 
+from tensorflow.python.keras.backend import clear_session
 
 class ImageFeatureEvaluator:
     def __init__(self):
@@ -26,6 +27,8 @@ class ImageFeatureEvaluator:
         self.tumor_groups = {}
         self.th_sl_num = 3
         self.LEN_FEATURES = 9
+        self.tumor_features = {}
+        self.tumor_groups = {}
 
     def initialize(self, std_name):
         self.features = {}
@@ -40,6 +43,12 @@ class ImageFeatureEvaluator:
         self.setCT_seg = {}
         self.setCT_tumor_seg = {}
         self.std_name = std_name
+
+    def clear_session(self):
+        clear_session()
+
+    def load_model(self):
+        self.feature_classifier.load_model()
 
     def generate_slice_group(self, med_type, setMed_img):
         """
@@ -58,8 +67,8 @@ class ImageFeatureEvaluator:
             self.__enhance_spine_bone_parts_mi(setMed_img)
             self.__make_group_by_spine_bone_location()
 
-        for k, v in self.setCT_sl_groups.items():
-            print(k, ": ", v)
+        # for k, v in self.setCT_sl_groups.items():
+        #     print(k, ": ", v)
 
     def make_lesion_group(self, setCT_tumor_seg):
         """
@@ -81,7 +90,7 @@ class ImageFeatureEvaluator:
                         list_del_id = []
                         for k in range(len(self.setCT_tumor_grps[srs_name][j])-1, -1, -1):
                             prv_id = int(self.setCT_tumor_grps[srs_name][j][k][0])
-                            if cur_id -prv_id == 1:
+                            if cur_id-prv_id == 1:
                                 if len(list_del_id) == 0:
                                     if self.__check_overlapped(self.setCT_tumor_grps[srs_name][j][k][1], cur_msk):
                                         self.setCT_tumor_grps[srs_name][j].append([sl_id, sl])
@@ -96,7 +105,7 @@ class ImageFeatureEvaluator:
                                     else:
                                         is_contained = False
                                 break
-                            elif cur_id-prv_id ==0:
+                            elif cur_id-prv_id == 0:
                                 list_del_id.append(k)
                                 list_del.append(self.setCT_tumor_grps[srs_name][j][k][1])
                             else:
@@ -121,7 +130,6 @@ class ImageFeatureEvaluator:
         """
         # TODO: CONSIDER SL GROUPS
         info_tumors = {}    # {PHASE: {num_tumors: #, sl_start_end:[( , ), ...] }, ... }
-        self.tumor_groups = {}
             # {tumorID: {"mask": {PHASE1: [(sl_id, sl), (sl_id, sl), ...],... }, "features": OBJECT, "type":TYPE,
             #                     "major_features":{...}, "stage":"LR-x", "ACQ_INFO": {"date:..., }}}
 
@@ -143,7 +151,7 @@ class ImageFeatureEvaluator:
             new_group_img = []
             cur_new = trg[0]
             cur_new_img = trg_img[0]
-            new_info_tumors[srs_name] = {"sl_start_end":[], "sl_start_end_img":[]}
+            new_info_tumors[srs_name] = {"sl_start_end": [], "sl_start_end_img": []}
             for i in range(1, len(list(trg))):
                 if int(cur_new[1])+self.th_sl_num > int(trg[i][0])-self.th_sl_num:
                     diff = int(trg[i][0])-int(cur_new[1])
@@ -209,7 +217,6 @@ class ImageFeatureEvaluator:
         To evaluate image features for a tumor
         :return:
         """
-        self.tumor_features = {}
         for tumor_id, info in self.tumor_groups.items():
             self.tumor_groups[tumor_id]["features"] = {}
             for srs_id, list_tumors in info["mask"].items():
@@ -220,13 +227,22 @@ class ImageFeatureEvaluator:
                         list_srs.append({"High Id": [], "Labels": [], 'ConfidenceScores': [], "WholeConf": [0.0]*self.LEN_FEATURES})
                     else:
                         sl = setCT_c_seg[srs_id][t_info[0]]["img"]
-                        cur_roi = self.__make_roi(sl, msk)
+                        cur_roi = self.make_roi(sl, msk)
                         result = self.feature_classifier.predict(cur_roi)
                         list_srs.append(self.get_image_features(result))
                 self.tumor_groups[tumor_id]["features"][srs_id] = list_srs
 
-    def evaluate_image_feature_new(self, img):
-        result = self.feature_classifier.predict(img)
+    def evaluate_image_feature_new(self, img, ii):
+        tumor_id, srs_id, idx = int(ii[0]), ii[1], int(ii[2])
+        if "features" not in list(self.tumor_groups[tumor_id].keys()):
+            self.tumor_groups[tumor_id]["features"]={}
+        if np.count_nonzero(img) >0:
+            result = self.get_image_features(self.feature_classifier.predict(img))
+        else:
+            result = {"High Id": [], "Labels": [], 'ConfidenceScores': [], "WholeConf": [0.0]*self.LEN_FEATURES}
+        if srs_id not in list(self.tumor_groups[tumor_id]["features"]):
+            self.tumor_groups[tumor_id]["features"] = {srs_id: []}
+        self.tumor_groups[tumor_id]["features"][srs_id].append(result)
         return result
 
     def get_image_features(self, list_conf):
@@ -240,7 +256,7 @@ class ImageFeatureEvaluator:
         but it may revised to consider majority of image features or confidence scores
         :return:
         """
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step4"
+        # path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step4"
 
         for tumor_id, info in self.tumor_groups.items():
             features = {}
@@ -248,11 +264,11 @@ class ImageFeatureEvaluator:
                 features[srs_id] = self.get_image_features([self.__extract_major_features(list_sl)])
             self.tumor_groups[tumor_id]["features"] = features
 
-            if not os.path.isdir(os.path.join(path_save, self.std_name)):
-                os.mkdir(os.path.join(path_save, self.std_name))
-            f = open(os.path.join(path_save, self.std_name, "step_4.txt"), "w")
-            f.write(str(tumor_id) + "  :  " + str(self.tumor_groups[tumor_id]["features"]))
-            f.close()
+            # if not os.path.isdir(os.path.join(path_save, self.std_name)):
+            #     os.mkdir(os.path.join(path_save, self.std_name))
+            # f = open(os.path.join(path_save, self.std_name, "step_4.txt"), "w")
+            # f.write(str(tumor_id) + "  :  " + str(self.tumor_groups[tumor_id]["features"]))
+            # f.close()
 
     def __extract_major_features(self, list_features):
         """
@@ -417,7 +433,7 @@ class ImageFeatureEvaluator:
         # for k, v in self.setCT_sl_groups.items():
         #     print(k, ": ", v)
 
-    def __make_roi(self, sl, msk):
+    def make_roi(self, sl, msk):
         """
         To make tumor roi considering the location of mask
         """
@@ -485,11 +501,11 @@ class ImageFeatureEvaluator:
             for srs, data in self.setCT_sl_groups[group_id].items():
                 self.setCT_sl_groups[group_id][srs] = data[0]
 
-        for group_id, gs in self.setCT_sl_groups.items():
-            print(group_id, end=": ")
-            for id, g in gs.items():
-                print(g, end=", ")
-            print()
+        # for group_id, gs in self.setCT_sl_groups.items():
+        #     print(group_id, end=": ")
+        #     for id, g in gs.items():
+        #         print(g, end=", ")
+        #     print()
 
     def __compare_overlapped(self, mask1, mask2):
         mask_and = cv2.bitwise_and(mask1, mask2)

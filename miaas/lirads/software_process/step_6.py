@@ -305,8 +305,7 @@ class LIRADSFeatureComputer:
         To generate list for major features of each tumor
         :return:
         """
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step6"
-
+        # path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step6"
         self.list_major_features = {}
         for t_id in self.tumor_groups.keys():
             num_mf = 0
@@ -322,11 +321,11 @@ class LIRADSFeatureComputer:
                                              "Num_Major_Features": num_mf, "tiv": tivs[t_id]}
 
 
-            if not os.path.isdir(os.path.join(path_save, self.std_name)):
-                os.mkdir(os.path.join(path_save, self.std_name))
-            f = open(os.path.join(path_save, self.std_name, "step_6.txt"), "w")
-            f.write(str(t_id)+"  :  "+str(self.tumor_groups[t_id]["major_features"]))
-            f.close()
+            # if not os.path.isdir(os.path.join(path_save, self.std_name)):
+            #     os.mkdir(os.path.join(path_save, self.std_name))
+            # f = open(os.path.join(path_save, self.std_name, "step_6.txt"), "w")
+            # f.write(str(t_id)+"  :  "+str(self.tumor_groups[t_id]["major_features"]))
+            # f.close()
     def get_tumor_groups(self):
         return self.tumor_groups
 

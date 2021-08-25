@@ -35,8 +35,8 @@ class LiverRegionSegmentater:
         :param med_imgs: dict, medical images
         :return:
         """
-        self.setCT_b = setCT_a[list(setCT_a.keys())[0]]
-        self.setMed_img = setMed_img[list(setMed_img.keys())[0]]
+        self.setCT_b = setCT_a[list(setCT_a.keys())[-1]]
+        self.setMed_img = setMed_img[list(setMed_img.keys())[-1]]
 
         for name in self.setCT_b.keys():
             self.setCT_b_liver[name] = {}
@@ -76,8 +76,9 @@ class LiverRegionSegmentater:
     def load_model(self):
         self.ml_liver_seg.load_model()
 
-    def segment_liver_region_new(self, slice):
-
+    def segment_liver_region_new(self, slice, loc):
+        if loc[0] not in list(self.setCT_b_seg.keys()):
+            self.setCT_b_seg[loc[0]] = {}
         result = self.ml_liver_seg.segment(slice)
         try:
             zeros = np.zeros((result["masks"].shape[0], result["masks"].shape[1], 1), dtype=np.uint8)
@@ -89,6 +90,7 @@ class LiverRegionSegmentater:
             elif result["masks"].shape[2] == 0:
                 result["masks"] = zeros
             result["masks"] = np.array(result["masks"], dtype=np.uint8)
+            self.setCT_b_seg[loc[0]][loc[1]] = result
             return result
         except:
             return result
@@ -101,13 +103,13 @@ class LiverRegionSegmentater:
 
         # self.setCT_b_seg    # For mask
         # self.setMed_img     # For slice before transform
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step2"
+        # path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step2"
         for srs_name, imgs in self.setCT_b.items():   # For Image
-            print("       ", srs_name)
-            if not os.path.isdir(os.path.join(path_save, self.std_name)):
-                os.mkdir(os.path.join(path_save, self.std_name))
-            if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
-                os.mkdir(os.path.join(path_save, self.std_name, srs_name))
+            print("       [", srs_name,"]")
+            # if not os.path.isdir(os.path.join(path_save, self.std_name)):
+            #     os.mkdir(os.path.join(path_save, self.std_name))
+            # if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
+            #     os.mkdir(os.path.join(path_save, self.std_name, srs_name))
             self.post_processor.initialize(self.setCT_b_seg[srs_name], self.setMed_img[srs_name], imgs)
             self.post_processor.split_t_f_sequence()
             self.post_processor.check_continuity_false()
@@ -116,7 +118,7 @@ class LiverRegionSegmentater:
             seqs = self.post_processor.return_target_seq()
             for i in range(len(self.setCT_b_seg[srs_name].values())):
                 self.setCT_b_seg[srs_name][list(self.setCT_b_seg[srs_name].keys())[i]]["masks"] = seqs[i][1]
-                cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, list(self.setCT_b_seg[srs_name].keys())[i] + ".png"), seqs[i][1])
+                # cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, list(self.setCT_b_seg[srs_name].keys())[i] + ".png"), seqs[i][1])
 
     def detect_liver_hepatic_segments(self):
         """

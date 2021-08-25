@@ -30,7 +30,7 @@ class LIRADSStageClassifier:
         :param tumor_info:
         :return:
         """
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step7"
+        # path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step7"
 
         self.stages = {}
         for i, info in self.tumor_groups.items():
@@ -51,11 +51,11 @@ class LIRADSStageClassifier:
             else:               # LR-M for other Malignant Tumor
                 self.tumor_groups[i]["stage"].append(Stages.LR_M)
 
-            if not os.path.isdir(os.path.join(path_save, self.std_name)):
-                os.mkdir(os.path.join(path_save, self.std_name))
-                f = open(os.path.join(path_save, self.std_name, "step_7.txt"), "w")
-                f.write(str(i)+"  :  "+str(self.tumor_groups[i]["stage"]))
-                f.close()
+            # if not os.path.isdir(os.path.join(path_save, self.std_name)):
+            #     os.mkdir(os.path.join(path_save, self.std_name))
+            #     f = open(os.path.join(path_save, self.std_name, "step_7.txt"), "w")
+            #     f.write(str(i)+"  :  "+str(self.tumor_groups[i]["stage"]))
+            #     f.close()
 
     def get_tumor_groups(self):
         return self.tumor_groups

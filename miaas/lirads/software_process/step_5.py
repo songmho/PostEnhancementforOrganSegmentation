@@ -9,6 +9,7 @@ from miaas.lirads.util.tumor_progress_diagnosis import LesionTypeClassifier
 from collections import Counter
 import numpy as np
 from miaas.lirads.constant import LIRADSPhase
+from tensorflow.python.keras.backend import clear_session
 
 
 class TumorTypeDeterminer:
@@ -23,6 +24,12 @@ class TumorTypeDeterminer:
         self.std_name = std_name
     def set_tumor_groups(self, tg):
         self.tumor_groups = tg
+
+    def clear_session(self):
+        clear_session()
+
+    def load_model(self):
+        self.t_type_classifier.load_model()
 
     def sort_img_features(self):
         """
@@ -47,17 +54,16 @@ class TumorTypeDeterminer:
         To predict the tumor type in a group of CT slices for a tumor's section
         :return:
         """
-        path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step5"
+        # path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step5"
 
         for t_id, list_features in self.img_features.items():
             result = self.t_type_classifier.predict([[list_features]])
             self.tumor_groups[t_id]["type"] = self.t_type_classifier.get_tumor_type(result)
-
-            if not os.path.isdir(os.path.join(path_save, self.std_name)):
-                os.mkdir(os.path.join(path_save, self.std_name))
-            f = open(os.path.join(path_save, self.std_name, "step_5.txt"), "w")
-            f.write(str(t_id)+"  :  "+str(self.tumor_groups[t_id]["type"]))
-            f.close()
+            # if not os.path.isdir(os.path.join(path_save, self.std_name)):
+            #     os.mkdir(os.path.join(path_save, self.std_name))
+            # f = open(os.path.join(path_save, self.std_name, "step_5.txt"), "w")
+            # f.write(str(t_id)+"  :  "+str(self.tumor_groups[t_id]["type"]))
+            # f.close()
 
     def get_tumor_groups(self):
         return self.tumor_groups
