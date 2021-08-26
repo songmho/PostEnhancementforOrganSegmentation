@@ -42,8 +42,13 @@ function write_log_in_console(text){
 
     $("#div_console").empty();
     for (var i in list_console){
+        var text = list_console[i]["text"];
+        if (text.includes("^")){
+            var def = text.split("^")
+            text = def[0]+"<sup>"+def[1].slice(0, 1)+"</sup>"+def[1].slice(1, def[1].length);
+        }
         $("#div_console").append("<p class='mb-0' style='color:white;'>" +
             "<span class='mr-2' style='font-weight: bold; font-size: large'>"+list_console[i]['date']+"</span> " +
-            "<span style='font-size: large'>"+list_console[i]["text"]+"</span></p>");
+            "<span style='font-size: large'>"+text+"</span></p>");
     }
 };

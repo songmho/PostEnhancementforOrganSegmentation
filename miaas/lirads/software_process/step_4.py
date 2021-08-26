@@ -241,7 +241,7 @@ class ImageFeatureEvaluator:
         else:
             result = {"High Id": [], "Labels": [], 'ConfidenceScores': [], "WholeConf": [0.0]*self.LEN_FEATURES}
         if srs_id not in list(self.tumor_groups[tumor_id]["features"]):
-            self.tumor_groups[tumor_id]["features"] = {srs_id: []}
+            self.tumor_groups[tumor_id]["features"][srs_id] = []
         self.tumor_groups[tumor_id]["features"][srs_id].append(result)
         return result
 

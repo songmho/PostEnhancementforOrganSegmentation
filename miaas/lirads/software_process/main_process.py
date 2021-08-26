@@ -47,6 +47,15 @@ class LiradsProcess:
         self.setCT_c_tumor = {}
 
         self.max_size = 0
+    def initialize_env(self):
+        self.step_1.initialize()
+        self.step_2.initialize("")
+        self.step_3.initialize("")
+        self.step_4.initialize("")
+        self.step_5.initialize("")
+        self.step_6.initialize("")
+        self.step_7.initialize("")
+
         # Methods for Step 1
     def set_mi_path(self, path):
         self.img_path = path
@@ -127,6 +136,11 @@ class LiradsProcess:
         self.step_3.load_model()
         return self.list_labels_setCT_b, list_img_convs
 
+    def post_process_liver(self, step):
+
+
+        return
+
     # Method for Step 3
     def segment_tumor_region(self, img_id):
         ii = self.list_labels[img_id].split("_")
@@ -187,83 +201,94 @@ class LiradsProcess:
         print(result)
         list_data = []
         for i in range(len(result["Labels"])):
-            list_data.append(str(result["Labels"][i])+" ("+str(round(result["ConfidenceScores"][i], 3))+"%)")
+            list_data.append(str(result["Labels"][i])+" ("+str(round(result["ConfidenceScores"][i]*100, 2))+"%)")
         # r = self.step_4.get_current_features(result)
         return list_data, ", ".join(result["Labels"])
 
     ### Method for Step 5
     def get_tumor_group_data(self):
+        print(self.step_4.get_tumor_groups())
         self.step_4.discard_insignificant_image_features()
+        self.step_5.set_tumor_groups(self.step_4.get_tumor_groups())
         self.list_tumor_group_names, self.list_tumor_groups, list_t_i = [], {}, {}
-        l=0
-
+        list_t_i = {}
         for t_id in self.tumor_groups.keys():
 
-            self.list_tumor_group_names.append("Tumor Group" + str(t_id))
-
+            self.list_tumor_group_names.append("Tumor Group " + str(t_id))
+            list_t_i[t_id] = {}
             for srs_id, t_g in self.tumor_groups[t_id]["mask"].items():
+                biggest_size, b_idx, b_id = 0, -1, -1
                 for i in range(len(t_g)):
-                    sl_id = self.tumor_groups[t_id]["mask"][srs_id][i][0]
-                    img = self.setCT_c_seg[srs_id][sl_id]["img"]
                     mask = self.tumor_groups[t_id]["mask"][srs_id][i][1]
-                    if np.count_nonzero(mask)>0:
-                        self.list_tumor_names.append(str(t_id)+"_"+str(srs_id)+"_"+str(i).zfill(3))
-                        print(t_id, srs_id, sl_id, type(img), type(mask))
-                        self.list_tumor_imgs.append(self.step_4.make_roi(img, mask))
-                        list_t_i.append(self.__convert_img_to_binary(self.step_4.make_roi(img, mask)))
+                    if biggest_size < np.count_nonzero(mask):
+                        biggest_size = np.count_nonzero(mask)
+                        b_idx = i
+                        b_id = self.tumor_groups[t_id]["mask"][srs_id][i][0]
 
+                list_t_i[t_id][srs_id] = self.__convert_img_to_binary(self.step_4.make_roi(self.setCT_c_seg[srs_id][b_id]["img"], self.tumor_groups[t_id]["mask"][srs_id][b_idx][1]))
 
-        for i in list(self.setCT_c_tumor.keys()):       # Series
-            for j in list(self.setCT_c_tumor[i].keys()):    # Slice
-                idx_j = list(self.setCT_c_tumor[i].keys()).index(j)
-                for k in range(len(self.setCT_c_tumor[i][j])):  # Tumor
-                    if str(idx_j)+"_"+str(k) not in list(self.list_tumor_groups.keys()):
-                        self.list_tumor_group_names.append("Tumor Group"+str(l))
-                        self.list_tumor_groups[str(idx_j)+"_"+str(k)] = {}
-                        list_t_i[str(idx_j)+"_"+str(k)] = {}
-                        l+=1
-                    self.list_tumor_groups[str(idx_j)+"_"+str(k)][str(i)] = self.setCT_c_tumor[i][j][k]
-                    list_t_i[str(idx_j)+"_"+str(k)][str(i)] = self.__convert_img_to_binary(self.setCT_c_tumor[i][j][k])
-        print(len(self.list_tumor_names))
-        print(len(self.list_tumor_imgs))
         self.step_5.clear_session()
         self.step_5.load_model()
+        self.step_5.sort_img_features()
         return self.list_tumor_group_names, list_t_i
 
-    def determin_tumor_type(self):
-        self.step_5.determine_tumor_type(None)
-        result = "HCC"
-        result = result+" ("+str(random.randrange(90, 101))+"%)"
-        return result
+    def determin_tumor_type(self, tumor_group_id):
+        t_id = int(tumor_group_id)
+        result = self.step_5.predict_tumor_type_new(t_id)
 
+        print("Current Tumor Group", tumor_group_id, result)
+        result = str(result["Tumor Type"].name)+ " ("+str(round(result["wholeConf"][0][0]*100, 2))+"%)"
+        return result
 
     #### Method for Step 6
     def get_tumor_group_data_step6(self):
+        self.step_6.set_tumor_groups(self.step_5.get_tumor_groups())
+        list_t_type = self.step_6.get_tumor_type()
+        list_aphe = self.step_6.get_APHE_type()
+        list_lesion_size = self.step_6.compute_lesion_size(self.step_1.voxels)
+        list_capsule = self.step_6.check_capsule()
+        list_washout = self.step_6.check_washout()
+        self.step_6.set_prv_data("")
+        self.step_6.set_setCT_a(self.set_med_img)
+        th_growths = self.step_6.compute_threshold_growth()
+        self.step_6.detect_vein_location(self.setCT_a)
+        tivs = self.step_6.compute_tumor_in_vein()
+        self.step_6.generate_major_feature_list(list_t_type, list_aphe, list_lesion_size, list_capsule, list_washout, th_growths, tivs)
         self.list_tumor_group_names_step6= []
-        l=0
-        for i in list(self.setCT_c_tumor.keys()):       # Series
-            for j in list(self.setCT_c_tumor[i].keys()):    # Slice
-                idx_j = list(self.setCT_c_tumor[i].keys()).index(j)
-                for k in range(len(self.setCT_c_tumor[i][j])):  # Tumor
-                    if str(idx_j)+"_"+str(k) not in list(self.list_tumor_groups.keys()):
-                        self.list_tumor_group_names_step6.append("Tumor Group"+str(l))
-        print("?>?", len(self.list_tumor_group_names_step6))
+        for t_id in self.tumor_groups.keys():
+            self.list_tumor_group_names_step6.append("Tumor Group "+str(t_id))
         return self.list_tumor_group_names_step6
 
-    def compute_lirads_features(self):
-        size= random.randrange(32, 36)
-        if self.max_size <size:
-            self.max_size = size
-        result = {"AHPE_type": "Nonrim APHE", "tumor_size": str(size)+" mm", "capsule":True, "washout":True, "treshold_growth":None}
+    def compute_lirads_features(self, t_id):
+        t_groups = self.step_6.get_tumor_groups()
+        cur_mf = t_groups[t_id]["major_features"]
+        print(t_groups[t_id]["major_features"].keys())
+        result = {"AHPE_type": cur_mf["APHE_Type"], "tumor_size": str(cur_mf["Lesion_Size"]["length"])+" mm",
+                  "capsule": cur_mf["Capsule"], "washout": cur_mf["Washout"], "Threshold_growth": cur_mf["Threshold_Growth"]}
         return result
 
     #### Method for Step 7
     def get_tumor_info(self):
-        result = {"tumor_type": "HCC", "AHPE_type": "Nonrim APHE", "tumor_size": str(self.max_size)+" mm", "number_m_f":2}
-        return result
+        self.step_7.set_tumor_groups(self.step_6.get_tumor_groups())
+        self.step_7.load_model()
+        self.step_7.classify_stage()
+        t_groups = self.step_7.get_tumor_groups()
+        results = {}
+        for t_id, t_g in t_groups.items():
+            cur_mf = t_groups[t_id]["major_features"]
+            results[t_id] = {"tumor_type": t_groups[t_id]["type"]["Tumor Type"].name, "APHE_Type": cur_mf["APHE_Type"],
+                              "tumor_size": str(cur_mf["Lesion_Size"]["length"])+" mm", "capsule": cur_mf["Capsule"],
+                              "washout": cur_mf["Washout"], "Threshold_growth": cur_mf["Threshold_Growth"],
+                              "number_m_f": cur_mf["Num_Major_Features"], "tiv": cur_mf["tiv"]}
+        # result = {"tumor_type": "HCC", "AHPE_type": "Nonrim APHE", "tumor_size": str(self.max_size)+" mm", "number_m_f":2}
+        return results
 
-    def predict_stage(self):
-        return "LR-5"
+    def predict_stage(self, t_id):
+        t_groups = self.step_7.get_tumor_groups()
+        cur_stage = t_groups[int(t_id)]["stage"][0][0]
+        if type(cur_stage)!= str:
+            cur_stage = "LR-"+str(cur_stage)
+        return cur_stage
 
 
     def __convert_img_to_binary(self, img):

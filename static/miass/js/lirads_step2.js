@@ -1,8 +1,13 @@
 (function () {
     var isPause = false;
+    var isPause_pp = false;
     var idx= 0;
     var intervalSegment = null;
     var d;
+    var is_segment_finished = false;
+    var pp_step = 1;
+    var intervalPP = null;
+
     $(document).ready(function(){
         write_log_in_console("Step 2. segmenting liver organ is started.");
         write_log_in_console("The liver organ segmentation model is being prepared.");
@@ -123,6 +128,7 @@
                                 isPause = false;
                                 idx = 0;
                                 clearInterval(intervalSegment);
+                                is_segment_finished = true;
                                 write_log_in_console("Segmenting liver organ is finished.");
                             }
                             idx+=1;
@@ -134,6 +140,7 @@
                 }
             });
         });
+
         $("#btn_pause_segment_liver").on("click", function () {
             $("#div_init").css("display", "none");
             $("#div_start").css("display", "none");
@@ -158,7 +165,106 @@
             isPause = false;
         });
 
+
+        $("#btn_post_process_liver").on("click", function () {
+            if (is_segment_finished){   // Segmentation is not finished
+                $("#div_pp_init").css("display", "none");
+                $("#div_pp_start").css("display", "block");
+                $("#div_pp_pause").css("display", "none");
+                write_log_in_console("Post-processing of segmenting liver is started.");
+                isPause_pp = false;
+                intervalPP = setInterval(function () {
+                    if(!isPause_pp){
+                        $.ajax({
+                            url: "/api/post-process_liver",
+                            async: false,
+                            method: 'POST',
+                            data: {"data": JSON.stringify({"step":pp_step})},
+                            data_type: "text",
+                            success: function (data) {
+
+                                var text = data["console"];
+                                var slice = data["img"]
+                                if (text>0)
+                                    write_log_in_console("Liver organ in CT slice "+d[idx]+" is segmented. (Area: "+text.toLocaleString()+" mm^2)");
+                                else
+                                    write_log_in_console("Liver organ in CT slice "+d[idx]+" is not detected.");
+
+                                $("#list_img_part").children().removeClass("active");
+                                $("#sl_id_part").children().removeClass("active");
+                                $("#list_"+idx+"_list").addClass("active");
+                                $("#list_"+idx).addClass("active");
+                                $("#img_liver_seg_"+idx).attr("src","data:image/png;base64,"+slice);
+
+                                try{
+                                    let y_position = document.querySelector("#list_"+(idx-1)+"_list").offsetTop;
+                                    $("#list_img_part").scrollTop(y_position);
+                                }catch (e) {
+                                   let y_position = document.querySelector("#list_"+(idx)+"_list").offsetTop;
+                                   $("#list_img_part").scrollTop(y_position);
+                                }
+
+                                if (idx >= (numImgs-1)){
+                                    // $("#div_process").css("display", "none");
+                                   $("#div_start").css("display", "none");
+                                    $("#div_init").css("display", "block");
+                                    isPause = false;
+                                    idx = 0;
+                                    clearInterval(intervalSegment);
+                                    write_log_in_console("Segmenting liver organ is finished.");
+                                }
+                                idx+=1;
+                            }, error: function (){
+                                idx+=1;
+
+                            }
+                        });
+
+                    }
+
+                });
+            }
+            else{
+
+            }
+
+        });
+
+        $("#btn_pause_post_process_liver").on("click", function () {
+            $("#div_pp_init").css("display", "none");
+            $("#div_pp_start").css("display", "none");
+            $("#div_pp_pause").css("display", "block");
+            write_log_in_console("Post-processing of segmenting liver is paused.");
+            isPause_pp = true;
+        });
+        $("#btn_stop_post_process_liver").on("click", function () {
+            idx=0;
+            $("#div_pp_init").css("display", "block");
+            $("#div_pp_start").css("display", "none");
+            $("#div_pp_pause").css("display", "none");
+            write_log_in_console("Post-processing of segmenting liver  is stopped.");
+            isPause_pp = false;
+            clearInterval(intervalPP);
+        });
+        $("#btn_resume_post_process_liver").on("click", function () {
+            $("#div_pp_init").css("display", "none");
+            $("#div_pp_start").css("display", "block");
+            $("#div_pp_pause").css("display", "none");
+            write_log_in_console("Post-processing of segmenting liver is resumed.");
+            isPause_pp = false;
+        });
+
         $("#btn_lirads_step2_back").on("click", function () {
+            $.ajax({
+                url: "/api/initialize_diagnosis_env",
+                async: true,
+                method: 'POST',
+                data_type: "text",
+                success: function (data) {
+                    console.log("INITIALIZED");
+                }, error: function (){
+                }
+            });
             $("#smartwizard").smartWizard("prev");
             $("#btn_step2").removeClass("done");
             $("#step-2").css("display", "none");

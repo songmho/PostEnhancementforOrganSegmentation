@@ -65,6 +65,12 @@ class TumorTypeDeterminer:
             # f.write(str(t_id)+"  :  "+str(self.tumor_groups[t_id]["type"]))
             # f.close()
 
+    def predict_tumor_type_new(self, t_id):
+        result = self.t_type_classifier.predict([[self.img_features[t_id]]])
+        self.tumor_groups[t_id]["type"] = self.t_type_classifier.get_tumor_type(result)
+        return self.tumor_groups[t_id]["type"]
+
+
     def get_tumor_groups(self):
         return self.tumor_groups
 

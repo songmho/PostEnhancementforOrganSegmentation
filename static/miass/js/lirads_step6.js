@@ -8,8 +8,9 @@
     $(document).ready(function(){
 
         write_log_in_console("Step 6. Computing Li-RADS features is started.");
+        write_log_in_console("The tumor data is being loaded.");
         $.ajax({
-        url:"/api/get_tumor_group_data",
+        url:"/api/load_tumor_group_list_step6",
         async: true,
         method: "POST",
         data: {"data": JSON.stringify({})},
@@ -106,7 +107,7 @@
                             url: "/api/compute_lirads_feature",
                             async: false,
                             method: "POST",
-                            data: {"data": JSON.stringify({})},
+                            data: {"data": JSON.stringify({"tumor_id":idx})},
                             data_type: "text",
                             success: function (data) {
                                 var features = data["data"];
@@ -117,8 +118,8 @@
                                     num_major+=1;
                                 if (features["threshold_growth"])
                                     num_major+=1;
-                                write_log_in_console("LI-RADS features for "+d[idx]+"is computed; APHE Type: "+ features["AHPE_type"].split(" ")[0]+ ", Size: "+features["tumor_size"]+" , # of Major Features: "+num_major);
-                                $("#txt_aphe_type_"+idx).text(features["AHPE_type"]);
+                                write_log_in_console("LI-RADS features for "+d[idx]+"is computed; APHE Type: "+ features["APHE_Type"]+ ", Size: "+features["tumor_size"]+" , # of Major Features: "+num_major);
+                                $("#txt_aphe_type_"+idx).text(features["APHE_Type"]);
                                 $("#txt_tumor_size_"+idx).text(features["tumor_size"]);
                                 $("#txt_capsule_"+idx).text(features["capsule"]);
                                 $("#txt_washout_"+idx).text(features["washout"]);

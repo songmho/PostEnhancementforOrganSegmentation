@@ -70,6 +70,18 @@
     }
 
     $(document).ready(function(){
+
+        $.ajax({
+            url: "/api/initialize_diagnosis_env",
+            async: true,
+            method: 'POST',
+            data_type: "text",
+            success: function (data) {
+                console.log("INITIALIZED");
+            }, error: function (){
+            }
+        });
+
         write_log_in_console("Step 1. Loading target medical image is started.");
         $("#btn_lirads_step1_next").on("click", function () {
 

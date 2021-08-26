@@ -26,8 +26,22 @@
         <div id="list_img_part" role="tablist" class="list-group border border-dark" style="width: 22%; overflow-x: hidden; max-height: 100%; -ms-overflow-style:none">
 
         </div>
-        <div id="sl_id_part" style="width: 78%;" class="tab-content">
+        <div style="width: 78%;">
+            <div id="sl_id_part" style="width:100%"  class="tab-content">
 
+            </div>
+            <div style=" width: 100%; height: 6%; position:absolute; right:  27px; bottom: 70px;">
+                <div id="div_pp_init">
+                    <button class="btn btn-outline-info float-right" id="btn_post_process_liver">Post-processing</button>
+                </div>
+                <div id="div_pp_start" style="display: none;">
+                    <button class="btn btn-outline-info float-right" id="btn_stop_post_process_liver">Stop</button>
+                    <button class="btn btn-outline-info float-right mr-2" id="btn_pause_post_process_liver">Pause</button>
+                </div>
+                <div id="div_pp_pause"  style="display: none;">
+                    <button class="btn btn-outline-info float-right" id="btn_resume_post_process_liver">Resume</button>
+                </div>
+            </div>
         </div>
     </div>
     <div class="w-100">

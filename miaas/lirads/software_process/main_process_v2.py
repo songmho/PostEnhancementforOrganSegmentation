@@ -70,8 +70,8 @@ class MainProcess:
         self.step2.set_setCT_b(setCT_a, setMed_img)
         print("    Task 1. Segment Liver Region")
         self.step2.segment_liver_regions()
-        # print("    Task 2. Discard Insignificant Slices")
-        # self.step2.discard_insig_slices()
+        print("    Task 2. Discard Insignificant Slices")
+        self.step2.discard_insig_slices()
         # print("    Task 3. Detect Liver Hepatic Segments (Not Completed)")
         # step2.detect_liver_hepatic_segments()
 

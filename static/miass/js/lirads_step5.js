@@ -17,11 +17,11 @@
         success: function (data) {
             d = data["data"];
             var img_list = data["imgs"];
-            numImgs = d.length;
-            console.log(img_list);
+            numImgs = Object.keys(img_list).length;
+            console.log(img_list.length, img_list);
             var img_list_keys = Object.keys(img_list);
-            for (var i in d){
-                slice = img_list[img_list_keys[i]];
+            for (var i = 0; i < d.length; i++){
+                slice = img_list[i];
 
                 console.log(slice);
                 if (i==0){
@@ -36,9 +36,9 @@
                         "                    <div id=\"div_img\" class='border border-dark p-2' style=\"width: 47.44%; height: 75%\">\n"+
                         "                            <h5  class='text-center'>Tumor Images</h5>" +
                         "                        <div style=\"height: 50%;\" class=\"row mx-0\">\n";
-                    if (Object.keys(slice).includes("plain")){
+                    if (Object.keys(slice).includes("PLAIN")){
                         structure+=                         "                            <div class=\"w-50\">\n" +
-                        "                            <img id=\"img_plain_"+i+"\" src=data:image/png;base64,"+slice["plain"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
+                        "                            <img id=\"img_plain_"+i+"\" src=data:image/png;base64,"+slice["PLAIN"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
                         "                                <h6 class=\"text-center\">Plain</h6>\n" +
                         "                            </div>\n";
                     }else{
@@ -47,9 +47,9 @@
                         "                                <h6 class=\"text-center\">Plain</h6>\n" +
                         "                            </div>\n";
                     }
-                    if(Object.keys(slice).includes("arterial")){
+                    if(Object.keys(slice).includes("ARTERIAL")){
                         structure+=                         "                            <div class=\"w-50 mx-auto\">\n" +
-                        "                            <img id=\"img_ap_"+i+"\"  src=data:image/png;base64,"+slice["arterial"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
+                        "                            <img id=\"img_ap_"+i+"\"  src=data:image/png;base64,"+slice["ARTERIAL"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
                         "                                <h6 class=\"text-center\">Arterial Phase</h6>\n" +
                         "                            </div>\n" ;
                     }else{
@@ -62,11 +62,11 @@
                     structure +=
                         "                        </div>\n" +
                         "                        <div style=\"height: 50%;\"  class=\"row mx-0\">\n";
-                    if (Object.keys(slice).includes("venous")){
+                    if (Object.keys(slice).includes("VENOUS")){
                         structure+=
                         "                            <div class=\"w-50\" >\n" +
                         "\n" +
-                        "                            <img id=\"img_pvp_"+i+"\" src=data:image/png;base64,"+slice["venous"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
+                        "                            <img id=\"img_pvp_"+i+"\" src=data:image/png;base64,"+slice["VENOUS"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
                         "                                <h6 class=\"text-center\">Portal Venous Phase</h6>\n" +
                         "                            </div>\n";
                     }else{
@@ -77,11 +77,11 @@
                         "                                <h6 class=\"text-center\">Portal Venous Phase</h6>\n" +
                         "                            </div>\n";
                     }
-                    if (Object.keys(slice).includes("delay")){
+                    if (Object.keys(slice).includes("DELAY")){
                         structure +=
                         "                            <div class=\"w-50\">\n" +
                         "\n" +
-                        "                            <img id=\"img_dp_"+i+"\"  src=data:image/png;base64,"+slice["delay"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
+                        "                            <img id=\"img_dp_"+i+"\"  src=data:image/png;base64,"+slice["DELAY"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
                         "                                <h6 class=\"text-center\">Delayed Phase</h6>\n" +
                         "                            </div>\n";
                     }else{
@@ -118,9 +118,9 @@
                         "                    <div id=\"div_img\" class='border border-dark p-2' style=\"width: 47.44%; height: 75%\">\n"+
                         "                            <h5  class='text-center'>Tumor Images</h5>" +
                         "                        <div style=\"height: 50%;\" class=\"row mx-0\">\n";
-                    if (Object.keys(slice).includes("plain")){
+                    if (Object.keys(slice).includes("PLAIN")){
                         structure+=                         "                            <div class=\"w-50\">\n" +
-                        "                            <img id=\"img_plain_"+i+"\" src=data:image/png;base64,"+slice["plain"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
+                        "                            <img id=\"img_plain_"+i+"\" src=data:image/png;base64,"+slice["PLAIN"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
                         "                                <h6 class=\"text-center\">Plain</h6>\n" +
                         "                            </div>\n";
                     }else{
@@ -129,9 +129,9 @@
                         "                                <h6 class=\"text-center\">Plain</h6>\n" +
                         "                            </div>\n";
                     }
-                    if(Object.keys(slice).includes("arterial")){
+                    if(Object.keys(slice).includes("ARTERIAL")){
                         structure+=                         "                            <div class=\"w-50 mx-auto\">\n" +
-                        "                            <img id=\"img_ap_"+i+"\"  src=data:image/png;base64,"+slice['arterial']+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
+                        "                            <img id=\"img_ap_"+i+"\"  src=data:image/png;base64,"+slice['ARTERIAL']+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
                         "                                <h6 class=\"text-center\">Arterial Phase</h6>\n" +
                         "                            </div>\n" ;
                     }else{
@@ -144,11 +144,11 @@
                     structure +=
                         "                        </div>\n" +
                         "                        <div style=\"height: 50%;\"  class=\"row mx-0\">\n";
-                    if (Object.keys(slice).includes("venous")){
+                    if (Object.keys(slice).includes("VENOUS")){
                         structure+=
                         "                            <div class=\"w-50\" >\n" +
                         "\n" +
-                        "                            <img id=\"img_pvp_"+i+"\" src=data:image/png;base64,"+slice["venous"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
+                        "                            <img id=\"img_pvp_"+i+"\" src=data:image/png;base64,"+slice["VENOUS"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
                         "                                <h6 class=\"text-center\">Portal Venous Phase</h6>\n" +
                         "                            </div>\n";
                     }else{
@@ -159,11 +159,11 @@
                         "                                <h6 class=\"text-center\">Portal Venous Phase</h6>\n" +
                         "                            </div>\n";
                     }
-                    if (Object.keys(slice).includes("delay")){
+                    if (Object.keys(slice).includes("DELAY")){
                         structure +=
                         "                            <div class=\"w-50\">\n" +
                         "\n" +
-                        "                            <img id=\"img_dp_"+i+"\"  src=data:image/png;base64,"+slice["delay"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
+                        "                            <img id=\"img_dp_"+i+"\"  src=data:image/png;base64,"+slice["DELAY"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
                         "                                <h6 class=\"text-center\">Delayed Phase</h6>\n" +
                         "                            </div>\n";
                     }else{
@@ -247,7 +247,7 @@
                         url: "/api/determin_tumor_type",
                         async: false,
                         method: "POST",
-                        data: {"data": JSON.stringify({})},
+                        data: {"data": JSON.stringify({"tumor_id":idx})},
                         data_type: "text",
                         success: function (data) {
                             var tumor_type = data["data"];
