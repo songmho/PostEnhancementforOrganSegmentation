@@ -1941,9 +1941,10 @@ def post_process_liver(request):
     if request.method == "POST":
         data = json.loads(request.POST.get("data"))
         step = data["step"]
-        container.mias_container.lirads_process.post_process_liver(step)
-        list_data, list_imgs = container.mias_container.lirads_process.get_tumor_img_data()
-        return JsonResponse({"state": True, "data": list_data, "imgs": list_imgs})
+        srs = data["cur_phase_id"]
+        list_img, list_console = container.mias_container.lirads_process.post_process_liver(srs, step)
+        print("Number of Imagess: ", len(list_img))
+        return JsonResponse({"state": True, "img": list_img, "console": list_console})
     else:
         return JsonResponse({"state": False})
 
@@ -2011,8 +2012,8 @@ def step1_convert_color_depth(request):
 @csrf_exempt
 def load_file_list(request):
     if request.method == "POST":
-        list_data, list_imgs = container.mias_container.lirads_process.get_whole_img_data()
-        return JsonResponse({"state": True, "data": list_data, "imgs": list_imgs})
+        list_data, list_imgs, phase_info = container.mias_container.lirads_process.get_whole_img_data()
+        return JsonResponse({"state": True, "data": list_data, "imgs": list_imgs, "phase_info": phase_info})
     else:
         return JsonResponse({"state": False})
 

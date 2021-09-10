@@ -3,6 +3,7 @@ Date: 2020.03.31.
 Programmer: MH
 Description: Code for extracting tumor features based on CNN
 """
+import csv
 import locale
 import math
 import os
@@ -22,6 +23,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn import metrics
 
 import miaas.lirads.constant
 from miaas.lirads.util.tumor_progress_diagnosis import LesionTypeClassifier
@@ -32,10 +34,10 @@ class LesionImagingFeatureClassifier:
         """
         To initialize variables
         """
-        self.epochs = 160
-        self.batch_size = 5
+        self.epochs = 250
+        self.batch_size = 8
         self.n_classes = 9
-        self.th_confidence = 0.6
+        self.th_confidence = 0.8
         self.IMAGE_DIMS = (128, 128, 1)
         self.labels = ["Calcification",
                        "Capsule",
@@ -110,7 +112,7 @@ class LesionImagingFeatureClassifier:
         To load dataset and split dataset
         :return: None
         """
-        data_loc = r"E:\1. Lab\Daily Results\2021\2108\0811\Dataset\Tumor Image Features"
+        data_loc = r"F:\Dataset\LLU Dataset for Sub Data (Image Features)\Images"
         data = []
         labels = []
 
@@ -164,7 +166,7 @@ class LesionImagingFeatureClassifier:
         """
         start_time = time.time()
         checkpoint_path = r"./backup/tumor_img_feature_classifier/tumor_image_feature_classifier_{epoch:05d}.h5"
-        cp_callback = callbacks.ModelCheckpoint(filepath=checkpoint_path, save_weights_only=False, verbose=1, period=1)
+        cp_callback = callbacks.ModelCheckpoint(filepath=checkpoint_path, save_weights_only=False, verbose=1, period=5)
 
         tb_callback = callbacks.TensorBoard(log_dir=r"./backup/tumor_img_feature_classifier/log", histogram_freq=1)
         self.history = self.model.fit_generator(
@@ -198,7 +200,7 @@ class LesionImagingFeatureClassifier:
         :return:
         """
         m_json = self.model.to_json()
-        with open(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Image_Features_Classification\model_binary_sigmoid_'+str(self.epochs)+'.json', 'w') as json_file:
+        with open(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Image_Features_Classification\model_binary_sigmoid.json', 'w') as json_file:
             json_file.write(m_json)     # To save trained model
         self.model.save(r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Image_Features_Classification\weight_binary_sigmoid_"+str(self.epochs)+".h5") # To save weight
 
@@ -207,14 +209,15 @@ class LesionImagingFeatureClassifier:
         To load saved model
         :return:
         """
-        json_file = open(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Image_Features_Classification\model_binary_sigmoid_'+str(self.epochs)+'.json', 'r')
+        json_file = open(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Image_Features_Classification\model_binary_sigmoid.json', 'r')
         self.model = json_file.read()   # To load json file
         json_file.close()
         self.model = model_from_json(self.model)    # To convert json file to model
 
         if k==None:
             # self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Image_Features_Classification\weight_binary_sigmoid_'+str(self.epochs)+".h5") # To load weight
-            self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\tumor_image_feature_classifier_00101.h5') # To load weight
+            # self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier, prv\tumor_image_feature_classifier_00101.h5') # To load weight
+            self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\tumor_image_feature_classifier_00230.h5') # To load weight
         else:
             self.model.load_weights(r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\tumor_image_feature_classifier_"+str(k).zfill(5)+".h5")
         self.model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])  # To compile model stacked
@@ -286,40 +289,129 @@ def extract_major_features(list_features):
 
 
 if __name__ == '__main__':
+    labels = ["Calcification",
+              "Capsule",
+              "CentralScar",
+              "Hypoattenuating",
+              "NoAPHE",
+              "Nodular",
+              "NonrimAPHE",
+              "Unenhanced",
+              "Washout"]
+
     lfc = LesionImagingFeatureClassifier()
-    # lfc.define_structure()
-    # lfc.load_data()
+    lfc.define_structure()
+    # data = lfc.load_data()
     # lfc.train()
     # lfc.save_model()
-    float_formatter = "{:.3f}".format
+
+
+    float_formatter = "{:.5f}".format
     np.set_printoptions(formatter={'float_kind': float_formatter})
 
-    for k in range(101, 102, 1):
-        lfc.load_model(k)
-        p_root = r"E:\1. Lab\Daily Results\2021\2108\0812\tumors\Data for Partial Tumor Imagesl"
-        for aa in os.listdir(p_root):
-            print(aa)
-            for i in os.listdir(os.path.join(p_root, aa)):
-                list_data = {lfc.labels[0]:0, lfc.labels[1]:0, lfc.labels[2]:0, lfc.labels[3]:0, lfc.labels[4]:0,
-                             lfc.labels[5]:0, lfc.labels[6]:0, lfc.labels[7]:0, lfc.labels[8]:0}
+    p_root = r"E:\1. Lab\Daily Results\2021\2108\0811\Dataset\Tumor Image Features Test"
+    # p_root = r"F:\Dataset\LLU Dataset for Sub Data (Image Features)\Images"
+    # list_data = {lfc.labels[0]:0, lfc.labels[1]:0, lfc.labels[2]:0, lfc.labels[3]:0, lfc.labels[4]:0,
+    #              lfc.labels[5]:0, lfc.labels[6]:0, lfc.labels[7]:0, lfc.labels[8]:0}
+
+    list_label_data = []
+    for i in os.listdir(p_root):
+        list_cur_feature = i.split("_")
+        cur_list = []
+        for l in list_cur_feature:
+            cur_list.append(labels.index(l))
+        for j in os.listdir(os.path.join(p_root, i)):
+            list_label_data.append(cur_list)
+    print(len(list_label_data))
+    list_label_data_mb = []
+    for i in list_label_data:
+        cur_list = []
+        for j in range(len(labels)):
+            if j in i:
+                cur_list.append(1)
+            else:
+                cur_list.append(0)
+        list_label_data_mb.append(cur_list)
+
+    # mlb = MultiLabelBinarizer()
+    # list_label_data_mb = mlb.fit_transform(list_label_data)
+    lfc.load_model()
+    p = r"F:\Dataset\LLU Dataset for Sub Data (Image Features)\tumor_image"
+    results = {"target":[], "conf":[], "result":[]}
+    for i in os.listdir(p):
+        for j in os.listdir(os.path.join(p, i)):
+            img = cv2.imread(os.path.join(p, i, j))
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            img = img.reshape((img.shape[0], img.shape[1]))
+            results['target'].append(j)
+            results['conf'].append(lfc.predict(img)[0])
+            prd = lfc.get_features(lfc.predict(img)[0])
+            results['result'].append(prd["Labels"])
+            print(i, j, results["target"][-1], results["conf"][-1], results["result"][-1])
+
+    results = pd.DataFrame(results)
+    results.to_csv(r"E:\1. Lab\Daily Results\2021\2109\0907\result.csv")
+
+    for k in range(5, 255, 5):
+        # list_data = {lfc.labels[0]:0, lfc.labels[1]:0, lfc.labels[2]:0, lfc.labels[3]:0, lfc.labels[4]:0,
+        #              lfc.labels[5]:0, lfc.labels[6]:0, lfc.labels[7]:0, lfc.labels[8]:0}
+        list_data_mb = []
+        for i in os.listdir(p_root):
+            if "json" in i:
+                continue
+            for j in os.listdir(os.path.join(p_root, i)):
+                img = cv2.imread(os.path.join(p_root, i, j))
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                img = img.reshape((img.shape[0], img.shape[1]))
+                prd = lfc.get_features(lfc.predict(img)[0])
+                list_cur = []
+                for l in range(len(prd["WholeConf"])):
+                    if prd["WholeConf"][l] > 0.5:
+                        list_cur.append(l)
+
                 list_d = []
-                for j in os.listdir(os.path.join(p_root, aa, i)):
-                    img = cv2.imread(os.path.join(p_root, aa, i, j))
-                    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                    img = img.reshape((img.shape[0], img.shape[1]))
-                    print(type(img), img.dtype, img.shape)
-                    prd = lfc.get_features(lfc.predict(img)[0])
-                    # print(prd["WholeConf"])
-                    list_d.append(prd)
-                    for k in range(len(prd["WholeConf"])):
-                        if prd["WholeConf"][k]>0.5:
-                            list_data[lfc.labels[k]]+=1
-                list_d = extract_major_features(list_d)
-                # print(i, "    ",  len(os.listdir(os.path.join(p_root, aa, i))), "    ", list_data)
-                # print("        ", list_d )
-            print("\n\n")
-            break
-        break
+                for a in range(len(labels)):
+                    if a in list_cur:
+                        list_d.append(1)
+                    else:
+                        list_d.append(0)
+                list_data_mb.append(list_d)
+            # list_data.append(list_d)
+                        # list_data[lfc.labels[l]] += 1
+        print("[", str(k).zfill(3), "]")
+        list_label_data_mb = np.array(list_label_data_mb)
+        list_data_mb = np.array(list_data_mb)
+
+        # list_data_mb = mlb.fit_transform(list_data)
+        print("Accuracy: ", metrics.accuracy_score(list(list_label_data_mb), list(list_data_mb)))
+        print("Precision: ", metrics.precision_score(list(list_label_data_mb), list(list_data_mb), average='samples'))
+        print("Recall: ", metrics.recall_score(list(list_label_data_mb), list(list_data_mb), average='samples'))
+        print("\n\n")
+
+
+    #     for aa in os.listdir(p_root):
+    #         print(aa)
+    #         for i in os.listdir(os.path.join(p_root, aa)):
+    #             list_data = {lfc.labels[0]:0, lfc.labels[1]:0, lfc.labels[2]:0, lfc.labels[3]:0, lfc.labels[4]:0,
+    #                          lfc.labels[5]:0, lfc.labels[6]:0, lfc.labels[7]:0, lfc.labels[8]:0}
+    #             list_d = []
+    #             for j in os.listdir(os.path.join(p_root, aa, i)):
+    #                 img = cv2.imread(os.path.join(p_root, aa, i, j))
+    #                 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #                 img = img.reshape((img.shape[0], img.shape[1]))
+    #                 print(type(img), img.dtype, img.shape)
+    #                 prd = lfc.get_features(lfc.predict(img)[0])
+    #                 # print(prd["WholeConf"])
+    #                 list_d.append(prd)
+    #                 for k in range(len(prd["WholeConf"])):
+    #                     if prd["WholeConf"][k]>0.5:
+    #                         list_data[lfc.labels[k]]+=1
+    #             list_d = extract_major_features(list_d)
+    #             # print(i, "    ",  len(os.listdir(os.path.join(p_root, aa, i))), "    ", list_data)
+    #             # print("        ", list_d )
+    #         print("\n\n")
+    #         break
+    #     break
 
 
         # p_root = r"E:\1. Lab\Daily Results\2021\2108\0811\Dataset\Tumor Image Features Test"

@@ -80,20 +80,26 @@ class LiverRegionSegmentater:
         if loc[0] not in list(self.setCT_b_seg.keys()):
             self.setCT_b_seg[loc[0]] = {}
         result = self.ml_liver_seg.segment(slice)
-        try:
-            zeros = np.zeros((result["masks"].shape[0], result["masks"].shape[1], 1), dtype=np.uint8)
-            if result["masks"].shape[2] > 1:
-                for k in range(result["masks"].shape[2]):
-                    cur = np.array(np.expand_dims(result["masks"][:, :, k], axis=-1), dtype=np.uint8)
-                    zeros = np.add(cur, zeros)
-                result["masks"] = zeros
-            elif result["masks"].shape[2] == 0:
-                result["masks"] = zeros
-            result["masks"] = np.array(result["masks"], dtype=np.uint8)
-            self.setCT_b_seg[loc[0]][loc[1]] = result
-            return result
-        except:
-            return result
+        # try:
+        zeros = np.zeros((result["masks"].shape[0], result["masks"].shape[1], 1), dtype=np.uint8)
+        if result["masks"].shape[2] > 1:
+            for k in range(result["masks"].shape[2]):
+                cur = np.array(np.expand_dims(result["masks"][:, :, k], axis=-1), dtype=np.uint8)
+                zeros = np.add(cur, zeros)
+            result["masks"] = zeros
+        elif result["masks"].shape[2] == 0:
+            result["masks"] = zeros
+        result["masks"] = np.array(np.where(result["masks"]>0, 255, 0), dtype=np.uint8)
+        self.setCT_b_seg[loc[0]][loc[1]] = result
+        print(os.path.join(r"E:\1. Lab\Daily Results\2021\2108\0827\test0",
+                                 str(loc[0]) + "_" + str(loc[1]) + ".png"),
+              type(self.setCT_b_seg[loc[0]][loc[1]]["masks"]), np.unique(self.setCT_b_seg[loc[0]][loc[1]]["masks"]),
+              self.setCT_b_seg[loc[0]][loc[1]]["masks"].shape)
+        cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2021\2108\0827\test0",
+                                 str(loc[0]) + "_" + str(loc[1]) + ".png"), self.setCT_b_seg[loc[0]][loc[1]]["masks"])
+        #     return result
+        # except:
+        return result
 
     def discard_insig_slices(self):
         """
@@ -105,7 +111,7 @@ class LiverRegionSegmentater:
         # self.setMed_img     # For slice before transform
         # path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step2"
         for srs_name, imgs in self.setCT_b.items():   # For Image
-            print("       [", srs_name,"]")
+            print("       [", srs_name,"]", )
             # if not os.path.isdir(os.path.join(path_save, self.std_name)):
             #     os.mkdir(os.path.join(path_save, self.std_name))
             # if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
@@ -119,6 +125,39 @@ class LiverRegionSegmentater:
             for i in range(len(self.setCT_b_seg[srs_name].values())):
                 self.setCT_b_seg[srs_name][list(self.setCT_b_seg[srs_name].keys())[i]]["masks"] = seqs[i][1]
                 # cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, list(self.setCT_b_seg[srs_name].keys())[i] + ".png"), seqs[i][1])
+
+    def proceed_post_step1(self, srs_id):
+        srs_name = list(self.setCT_b.keys())[srs_id]
+        imgs = self.setCT_b[srs_name]
+        for sl_id, data in self.setCT_b_seg[srs_name].items():
+            cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2021\2108\0827\test1", str(srs_name)+"_"+str(sl_id)+".png"), data["masks"])
+        self.post_processor.initialize(self.setCT_b_seg[srs_name], self.setMed_img[srs_name], imgs)
+        self.post_processor.initialize_model()
+        self.post_processor.split_t_f_sequence()
+
+    def proceed_post_step2(self):
+        self.post_processor.check_continuity_false()
+
+    def proceed_post_step3(self):
+        self.post_processor.revise_sequences()
+
+    def proceed_post_step4(self, srs_id):
+        srs_name = list(self.setCT_b.keys())[srs_id]
+        self.post_processor.discard_sequence()
+        seqs = self.post_processor.return_target_seq()
+        for i in range(len(self.setCT_b_seg[srs_name].values())):
+            self.setCT_b_seg[srs_name][list(self.setCT_b_seg[srs_name].keys())[i]]["masks"] = seqs[i][1]
+
+    def get_mask_list(self, srs_id):
+        srs_name = list(self.setCT_b.keys())[srs_id]
+        list_masks = []
+        count = 0
+        for sl_id, data in self.setCT_b_seg[srs_name].items():
+            print(type(data["masks"]))
+            print(data["masks"].shape)
+            list_masks.append(data["masks"])
+            cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2021\2108\0827\test", str(srs_name)+"_"+str(sl_id)+".png"), data["masks"])
+        return list_masks
 
     def detect_liver_hepatic_segments(self):
         """

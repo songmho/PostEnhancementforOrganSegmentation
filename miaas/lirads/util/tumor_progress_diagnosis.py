@@ -154,9 +154,9 @@ class LesionTypeClassifier:
 
         # self.history = self.model.fit(self.train_x, self.train_y, batch_size=1, epochs=self.epochs,
         #                               validation_data=([self.test_x], self.test_y), )
-        checkpoint_path = r"./backup/tumor_type_classifier/tumor_type_classifier_{epoch:05d}.h5"
+        checkpoint_path = r"./backup/tumor_type_classifier, new/tumor_type_classifier_{epoch:05d}.h5"
         cp_callback = callbacks.ModelCheckpoint(filepath=checkpoint_path, save_weights_only=False, verbose=1, period=1)
-        tb_callback = callbacks.TensorBoard(log_dir=r"./backup/tumor_type_classifier/log", histogram_freq=1)
+        tb_callback = callbacks.TensorBoard(log_dir=r"./backup/tumor_type_classifier, new/log", histogram_freq=1)
 
         self.history = self.model.fit(self.train_x, self.train_y, epochs=self.epochs,
                                       validation_data=(self.test_x, self.test_y), callbacks=[cp_callback, tb_callback])
@@ -180,7 +180,7 @@ class LesionTypeClassifier:
         json_file.close()
         self.model = model_from_json(self.model)
 
-        self.model.load_weights(r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_type_classifier\tumor_type_classifier_00040.h5")
+        self.model.load_weights(r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_type_classifier\tumor_type_classifier_00020.h5")
         # self.model.load_weights("..\\models\\Tumor_Type_Progression\\weight_1_rnn.h5")
         # self.model.load_weights("..\\models\\Tumor_Type_Progression\\weight_1_None.h5")
         # self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -197,10 +197,20 @@ if __name__ == '__main__':
     tpd = LesionTypeClassifier()
     tpd.load_data()
     tpd.define_structure()
-    tpd.train()
-    tpd.save_model()
-    # tpd.load_model()
-
+    # tpd.train()
+    # tpd.save_model()
+    tpd.load_model()
+    data = [[[0.00000, 0.19943, 0.00000, 0.00000, 0.00000, 0.00000, 0.00002, 1.00000, 0.00000],
+        [0.00000, 0.31063, 0.00000, 0.00011, 0.00000, 0.00000, 0.08663, 0.00012, 0.00338],
+             [0.00000, 0.99973, 0.00196, 0.00002, 0.00000, 0.00003, 0.00630, 0.00003, 0.00007],
+        [0.00000, 0.06142, 0.00010, 0.00000, 0.00000, 0.00004, 0.16014, 0.00019, 0.01393],
+    ]]
+    # data = [[[0.00000, 0.00050, 0.00000, 0.00054, 0.00000, 0.00000, 0.09201, 1.0000, 0.00001],
+    #     [0.00000, 0.00001, 0.00000, 0.00000, 0.00000, 0.00000, 0.99989, 0.00054, 0.00003],
+    #     [0.00000, 0.00007, 0.00001, 0.00001, 0.00000, 0.00003, 0.00758, 0.00000, 0.99975],
+    #     [0.00000, 0.99994, 0.00001, 0.00000, 0.00065, 0.00000, 0.00003, 0.00121, 0.00040]
+    # ]]
+    print(tpd.predict(data))
 
     # print(len(tpd.model.get_weights()))
     # print(tpd.model.layers[0].output)
@@ -227,12 +237,12 @@ if __name__ == '__main__':
     #          [7.090e-02, 2.700e-01, 8.970e-02, 1.692e-01, 1.000e+00]]
     # ]
 
-    data = [[[0.00014269351959228516, 0.0008907318115234375, 0.0017977356910705566, 0.001090407371520996, 0.7774741649627686, 0.0124015212059021, 0.0047570765018463135, 0.0005503296852111816, 0.10258907079696655],
-             [0.0013817250728607178, 0.0003587007522583008, 0.0022447705268859863, 0.000646442174911499, 0.00042504072189331055, 0.0007336735725402832, 0.729873538017273, 0.001232832670211792, 0.022673452273011208],
-             [0.0002327561378479004, 0.0009062588214874268, 0.0003070831298828125, 0.0004570186138153076, 0.0003897547721862793, 0.0009983181953430176, 0.9935452342033386, 0.00036084651947021484, 0.006552666891366243],
-             [5.3882598876953125e-05, 0.0363619327545166, 0.0016061961650848389, 0.1852993369102478, 0.10823121666908264, 0.00019308924674987793, 0.5056161880493164, 0.0044442713260650635, 0.0005840439698658884]],
-            ]
-    print(tpd.predict(data)[0][0])
+    # data = [[[0.00014269351959228516, 0.0008907318115234375, 0.0017977356910705566, 0.001090407371520996, 0.7774741649627686, 0.0124015212059021, 0.0047570765018463135, 0.0005503296852111816, 0.10258907079696655],
+    #          [0.0013817250728607178, 0.0003587007522583008, 0.0022447705268859863, 0.000646442174911499, 0.00042504072189331055, 0.0007336735725402832, 0.729873538017273, 0.001232832670211792, 0.022673452273011208],
+    #          [0.0002327561378479004, 0.0009062588214874268, 0.0003070831298828125, 0.0004570186138153076, 0.0003897547721862793, 0.0009983181953430176, 0.9935452342033386, 0.00036084651947021484, 0.006552666891366243],
+    #          [5.3882598876953125e-05, 0.0363619327545166, 0.0016061961650848389, 0.1852993369102478, 0.10823121666908264, 0.00019308924674987793, 0.5056161880493164, 0.0044442713260650635, 0.0005840439698658884]],
+    #         ]
+    # print(tpd.predict(data)[0][0])
     # data = [[
     #          [3.5583973e-05, 9.9994862e-01, 2.3841858e-07, 8.9406967e-07, 3.7401915e-05, 2.9802322e-07, 8.5532665e-06, 0.0000000e+00, 3.7835594e-03],
     #          [3.3587217e-05, 1.5825033e-05, 2.3347139e-04, 8.1360340e-06, 5.6624413e-07, 5.2756071e-04, 9.9998391e-01, 9.9999487e-01, 7.6607540e-07],

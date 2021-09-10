@@ -13,7 +13,9 @@ from tensorflow.keras.layers import Dense, Dropout, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
 import tensorflow.compat.v1 as tf
 from keras import backend as K
+from tensorflow.python.keras.backend import clear_session
 tf.disable_v2_behavior()
+
 
 
 config = tf.ConfigProto()
@@ -31,8 +33,11 @@ class SimilarityMeasurer:
         To prepare model 
         :return: 
         """
-        self.model = self._define_model_structure()
+        self.model = self.__define_model_structure()
         self.model.load_weights(self.weight_path)
+
+    def clear_session(self):
+        clear_session()
 
     def predict(self, img):
         """
@@ -61,7 +66,7 @@ class SimilarityMeasurer:
 
         return distance
 
-    def _define_model_structure(self):
+    def __define_model_structure(self):
         """
         To define model structure
         :return:

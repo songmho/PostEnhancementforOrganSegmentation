@@ -5,8 +5,9 @@
     var intervalSegment = null;
     var d;
     var is_segment_finished = false;
-    var pp_step = 1;
+    var pp_step = 0;
     var intervalPP = null;
+    var phase_info = null;
 
     $(document).ready(function(){
         write_log_in_console("Step 2. segmenting liver organ is started.");
@@ -21,6 +22,8 @@
                 // var data = JSON.parse(data);
                 d = data["data"];
                 img_list = data["imgs"];
+                phase_info = data["phase_info"];
+
                 numImgs = d.length;
                 for (var i in d){
                     // var slice = toUTF8Array(img_list[i]);
@@ -167,62 +170,62 @@
 
 
         $("#btn_post_process_liver").on("click", function () {
+            console.log(phase_info);
             if (is_segment_finished){   // Segmentation is not finished
                 $("#div_pp_init").css("display", "none");
                 $("#div_pp_start").css("display", "block");
                 $("#div_pp_pause").css("display", "none");
                 write_log_in_console("Post-processing of segmenting liver is started.");
                 isPause_pp = false;
+                var cur_phase_id = 0;
+                var cur_img_num = 0;
                 intervalPP = setInterval(function () {
+                    if (pp_step === 0)
+                        pp_step = 1;
                     if(!isPause_pp){
                         $.ajax({
                             url: "/api/post-process_liver",
                             async: false,
                             method: 'POST',
-                            data: {"data": JSON.stringify({"step":pp_step})},
+                            data: {"data": JSON.stringify({"cur_phase_id":cur_phase_id, "step":pp_step})},
                             data_type: "text",
                             success: function (data) {
 
                                 var text = data["console"];
-                                var slice = data["img"]
-                                if (text>0)
-                                    write_log_in_console("Liver organ in CT slice "+d[idx]+" is segmented. (Area: "+text.toLocaleString()+" mm^2)");
-                                else
-                                    write_log_in_console("Liver organ in CT slice "+d[idx]+" is not detected.");
+                                write_log_in_console("Step "+String(pp_step)+" of post-processing for "+String(Object.keys(phase_info)[cur_phase_id])+" phase is done.")
+                                if (pp_step >= 4){
+                                    pp_step = 0;
+                                    var slice = data["img"]
 
-                                $("#list_img_part").children().removeClass("active");
-                                $("#sl_id_part").children().removeClass("active");
-                                $("#list_"+idx+"_list").addClass("active");
-                                $("#list_"+idx).addClass("active");
-                                $("#img_liver_seg_"+idx).attr("src","data:image/png;base64,"+slice);
-
-                                try{
-                                    let y_position = document.querySelector("#list_"+(idx-1)+"_list").offsetTop;
-                                    $("#list_img_part").scrollTop(y_position);
-                                }catch (e) {
-                                   let y_position = document.querySelector("#list_"+(idx)+"_list").offsetTop;
-                                   $("#list_img_part").scrollTop(y_position);
+                                    for (let i=0; i<Object.keys(phase_info)[cur_phase_id]; i++){
+                                        cur_img_num+=phase_info[Object.keys(phase_info)[cur_phase_id]];
+                                    }
+                                    console.log(cur_img_num, slice.length)
+                                    for (var i in slice){
+                                        console.log(String(parseInt(cur_img_num)+parseInt(i)), "#img_liver_seg_"+String(parseInt(cur_img_num)+parseInt(i)))
+                                        // $("#img_liver_seg_"+String(parseInt(cur_img_num)+parseInt(i))).attr("src","");
+                                        $("#img_liver_seg_"+String(parseInt(cur_img_num)+parseInt(i))).attr("src","data:image/png;base64,"+slice[i]);
+                                    }
+                                    write_log_in_console("Post-processing of segmenting liver for "+String(Object.keys(phase_info)[cur_phase_id])+" phase is done.");
+                                    cur_phase_id++;
                                 }
-
-                                if (idx >= (numImgs-1)){
-                                    // $("#div_process").css("display", "none");
-                                   $("#div_start").css("display", "none");
+                                pp_step+=1;
+                                if (cur_phase_id >= Object.keys(phase_info).length){
+                                    $("#div_start").css("display", "none");
                                     $("#div_init").css("display", "block");
                                     isPause = false;
-                                    idx = 0;
-                                    clearInterval(intervalSegment);
-                                    write_log_in_console("Segmenting liver organ is finished.");
+                                    pp_step = 0;
+                                    cur_phase_id = 0;
+                                    write_log_in_console("Post-processing of segmenting liver is done.");
+                                    clearInterval(intervalPP);
                                 }
-                                idx+=1;
                             }, error: function (){
-                                idx+=1;
-
                             }
                         });
 
                     }
 
-                });
+                }, 500);
             }
             else{
 

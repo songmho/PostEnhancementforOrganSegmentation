@@ -10,7 +10,6 @@ import os
 import numpy as np
 from miaas.lirads.util.slice_similarity_measurer import SimilarityMeasurer
 
-
 class PostProcessLiver:
     def __init__(self):
         self.mask_similarity_measurer = SimilarityMeasurer()
@@ -45,6 +44,10 @@ class PostProcessLiver:
             self.srs.append(v["image"])
         self.srs = np.array(self.srs)
         self.imgs = imgs
+
+    def initialize_model(self):
+        self.mask_similarity_measurer.clear_session()
+        self.mask_similarity_measurer.prepare_model()
 
     def split_t_f_sequence(self):
         """

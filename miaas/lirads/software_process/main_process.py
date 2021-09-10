@@ -82,12 +82,14 @@ class LiradsProcess:
 
     def get_whole_img_data(self):
         self.list_labels, self.list_imgs, list_img_convs = [], [], []
+        phase_info = {}
         self.get_get_id_info()
         for i in list(self.list_slice_id.keys()):   # To gather labels
             for j in self.list_slice_id[i]:
                 self.list_labels.append(i+"_"+str(j).zfill(5))
         std_id = list(self.set_med_img.keys())[0]
         for i in list(self.set_med_img[std_id].keys()): # Series
+            phase_info[i] = len(self.set_med_img[std_id][i].keys())
             for j in self.set_med_img[std_id][i].keys():       # slices
 
                 self.list_imgs.append(self.setCT_a[std_id][i][j])
@@ -95,7 +97,7 @@ class LiradsProcess:
         self.step_2.set_setCT_b(self.setCT_a, self.set_med_img)
         self.step_2.clear_session()
         self.step_2.load_model()
-        return self.list_labels, list_img_convs
+        return self.list_labels, list_img_convs, phase_info
 
     # Method for Step 2
     def alleviate_noise_data(self, series_id, slice_id):
@@ -136,10 +138,21 @@ class LiradsProcess:
         self.step_3.load_model()
         return self.list_labels_setCT_b, list_img_convs
 
-    def post_process_liver(self, step):
-
-
-        return
+    def post_process_liver(self, cur_phase_id, step):
+        list_img, list_console = [], []
+        if step == 1:
+            self.step_2.proceed_post_step1(cur_phase_id)
+            list_console = [""]
+        elif step == 2:
+            self.step_2.proceed_post_step2()
+        elif step == 3:
+            self.step_2.proceed_post_step3()
+        elif step == 4:
+            self.step_2.proceed_post_step4(cur_phase_id)
+            list_img = self.step_2.get_mask_list(cur_phase_id)
+            for i in range(len(list_img)):
+                list_img[i] = self.__convert_img_to_binary(list_img[i])
+        return list_img, list_console
 
     # Method for Step 3
     def segment_tumor_region(self, img_id):
