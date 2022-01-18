@@ -25,7 +25,7 @@
 
 
 ## Configuration
-Based on Django Project Structure
+Based on Django Project Structure  
 **Project**  
   ├ **Test/examples**  
   ├ **miaas**: Folder for Containing  
@@ -59,12 +59,12 @@ python manage.py runserver 0.0.0.0:8000
 To use the file in the location; miaas/lirads/software_process/main_process_v2.py  
 https://github.com/Medical-Liver-Cancer-with-LI-RADS/LiverCancerAnalyzer/blob/master/miaas/lirads/software_process/main_process_v2.py   
 1. Set path of medical images based on DICOM Format
-    The medical images consist of the Following structure;
+    The medical images consist of the Following structure;  
     **Medical Image**  
     ├ MRN  
-        ├ MRN+"_"+ACQUIRED_DATE  
-            ├ PHASE 1  
-            ├ PHASE 2  
-            ├ ...  
+    &nbsp;&nbsp;├ MRN+"_"+ACQUIRED_DATE  
+    &nbsp;&nbsp;&nbsp;&nbsp;├ PHASE 1  
+    &nbsp;&nbsp;&nbsp;&nbsp;├ PHASE 2  
+    &nbsp;&nbsp;&nbsp;&nbsp;├ ...  
             
 2. Run code 
