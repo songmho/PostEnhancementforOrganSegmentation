@@ -47,7 +47,11 @@ python manage.py makemigrations
 python.manage.py migrate
 ```
 #### Importing Tables in MySQL 
-...  
+After installing MySQL, import the tables in mysql_tables folder.  
+https://github.com/Medical-Liver-Cancer-with-LI-RADS/LiverCancerAnalyzer/tree/master/mysql_tables  
+Before the tables are imported, mias schema mush be generated in MySQL.  
+
+
 #### Running Django Project
 Enter the following commend in the console.  
 The file location of the console is the root location of the project.  
