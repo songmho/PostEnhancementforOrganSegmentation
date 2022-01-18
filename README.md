@@ -28,13 +28,13 @@
 Based on Django Project Structure
 **Project**  
   ├ **Test/examples**  
-  ├ **miaas**: Folder for Containing
-  ├ **miaas_server**: Folder for Project Settings 
-  ├ **refer/bootstrap-3.3.6**  
-  ├ **static** : Folder for Static Files (JS, CSS, Libraries based JS) 
-  ├ **templates/miaas** : Folder for html files
-  ├ **db.sqlite3** : Database for Project
-  └ **manage.py**: Python File for Managing Django Project 
+  ├ **miaas**: Folder for Containing  
+  ├ **miaas_server**: Folder for Project Settings   
+  ├ **refer/bootstrap-3.3.6**    
+  ├ **static** : Folder for Static Files (JS, CSS, Libraries based JS)   
+  ├ **templates/miaas** : Folder for html files  
+  ├ **db.sqlite3** : Database for Project  
+  └ **manage.py**: Python File for Managing Django Project   
   
   
 ## Implementation
