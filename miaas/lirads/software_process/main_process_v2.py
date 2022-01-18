@@ -230,14 +230,15 @@ if __name__ == '__main__':
     # Only NII: 1553442, 1604844, 7006698
 
     # for std_name in ["7083077", "7159233", "8112000", "8523522", "1383803", "1611730", "1668171",  "7048295", "7064369"]:
-    for std_name in os.listdir(r"E:\1. Lab\Daily Results\2022\2201\0117"):
+    path_root = r"E:\1. Lab\Daily Results\2022\2201\0117"
+    for std_name in os.listdir(path_root):
         if "(x)" in std_name or std_name is "result":
             continue
         if len(std_name.split(" ")) > 1:
             print("["+std_name.split(" ")[1]+"]")
         else:
             print("["+std_name+"]")
-        path_mi = r"E:\1. Lab\Daily Results\2022\2201\0117"+"\\"+str(std_name)+"\\00. DICOM\\target"              # 4 Phases, 2 Tumors ([Nonrim, WO], [Nonrim, WO])
+        path_mi = path_root+"\\"+str(std_name)+"\\00. DICOM\\target"              # 4 Phases, 2 Tumors ([Nonrim, WO], [Nonrim, WO])
     # path_mi = r"E:\1. Lab\Daily Results\2021\2107\0728\LLU Dataset\1611730\00. DICOM-COPY\target"              # 4 Phases, 2 Tumors ([Nonrim, WO], [Nonrim, WO])
     # std_name = "1611730"
         lirads_process.initialize(std_name)
