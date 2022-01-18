@@ -64,6 +64,7 @@ urlpatterns = [
     url(r'^api/load_lirads_img_nii', apis.step1_save_lirads_imgs),
     url(r'^api/check_extension', apis.step1_check_extension),
     url(r'^api/load_medical_img', apis.step1_load_medical_img),
+    url(r"^api/load_prv_img_data_from_local", apis.step1_load_prv_img_data_from_local),
     url(r'^api/convert_color_depth', apis.step1_convert_color_depth),
     url(r"^api/load_file_list", apis.load_file_list),
     url(r"^api/segment_liver", apis.segment_liver),
@@ -126,7 +127,7 @@ urlpatterns = [
 
     url(r'^view/diagnose_abnormality_ml', views.diagnose_abnormality_ml),
     url(r'^view/diagnose_abnormality', views.diagnose_abnormality),
-    url(r'^view/diagnose/(?P<diagnosis_id>[a-zA-Z0-9]+)$', views.diagnosis_detail),
+    url(r'^view/diagnose', views.diagnosis_detail),
 
     url(r'^view/annotate/(?P<img_id>[a-zA-Z0-9]+)$', views.annotate),
     url(r'^view/main', views.main),
@@ -160,6 +161,8 @@ urlpatterns = [
     url(r"^api/predict_stage", apis.predict_stage),
     url(r"^api/initialize_diagnosis_env", apis.initialize_diagnosis_env),
     url(r"^api/post-process_liver", apis.post_process_liver),
+    url(r"^api/register_diagnosis_liver", apis.register_diagnosis),
+    url(r"^api/retrieve_diagnosis_liver", apis.retrieve_diagnosis),
     # url(r'^api/register_test_item', apis.register_test_item),
     # url(r'^api/invite_user', apis.invite_user),
     # url(r'^api/check_invitation_code', apis.check_invitation_code),

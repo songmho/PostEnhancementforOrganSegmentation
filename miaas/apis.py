@@ -15,6 +15,7 @@ import constants, cloud_db, email_auth
 from image_manager import ImageManager, ImageRetriever
 from miaas.users import User, Staff, Physician, Patient
 from miaas.images import Image
+from miaas.diagnosis import Diagnosis
 from miaas.sessions import Session
 from miaas.mias_smtp import MailSender
 from miaas.generate_random import ActivationKeyGenerator
@@ -172,15 +173,17 @@ def upload_images(request):
             examination_source = data['examination_source']
             interpretation = data['interpretation']
             description = data['description']
+            medical_record_number = data["medical_record_number"]
             print("files: ", request.FILES.getlist("images"))
-            t = str(int(time.time()))
-            t_folder = 'E:\\1. Lab\\Projects\\Medical Image Analytics System\\Test\\mias\\media\\'+str(uploader_id)+"_"+t
-            # t_folder = 'E:\\1. Lab\\Projects\\Medical Image Analytics System\\Test\\mias\\media\\'+str(455)+"_"+t
+            t_folder = 'E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\medical_image\\'+str(medical_record_number)
             if not os.path.isdir(t_folder):
+                os.mkdir(t_folder)
+            t_folder_cur = os.path.join(t_folder, medical_record_number+"_"+str(acq_date).replace("/", ""))
+            if not os.path.isdir(t_folder_cur):
                 os.mkdir(t_folder)
             try:
                 for k in keys:
-                    k_folder = t_folder+"\\"+k.split("_")[1]
+                    k_folder = t_folder_cur+"\\"+k.split("_")[1]
                     if not os.path.isdir(k_folder):
                         os.mkdir(k_folder)
                     for c, x in enumerate(request.FILES.getlist(k)):
@@ -192,14 +195,17 @@ def upload_images(request):
                                     destination.write(chunk)
                         process(x)
                 i = Image()
-                result = i.register_images(uploader_id, img_type, t_folder + '\\', acq_date, first_name, last_name,
-                                           birthday, gender, examination_source, interpretation, description)
+                result = i.register_images(uploader_id, img_type, t_folder_cur, first_name, last_name,
+                                           birthday, gender, examination_source, interpretation, description, medical_record_number)
                 return JsonResponse({"state": result})
-            except:
+            except Exception as e:
+                print(e)
                 return JsonResponse({"state": False})
-        except:
+        except Exception as e:
+            print(e)
             return JsonResponse({"state": False})
     else:
+        print("else")
         return JsonResponse({"state": False})
 
 
@@ -1960,6 +1966,9 @@ def step1_save_lirads_imgs(request):
         acq_date = data["acq_date"]
         acq_date = acq_date.replace("-", "")
         files = request.FILES.getlist("files")
+        container.mias_container.lirads_process.set_mrn(mrn)
+        container.mias_container.lirads_process.set_patient_name(pat_name)
+        container.mias_container.lirads_process.set_birthday(pat_birth)
         root_path = r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\medical_image"
         cur_path = ""
         # To generate folders to save slices
@@ -1968,6 +1977,8 @@ def step1_save_lirads_imgs(request):
         container.mias_container.lirads_process.set_mi_path(os.path.join(root_path, mrn))
         if not os.path.isdir(os.path.join(root_path, mrn, mrn+"_"+acq_date)):
             os.mkdir(os.path.join(root_path, mrn, mrn+"_"+acq_date))
+
+        container.mias_container.lirads_process.set_img_path((os.path.join(root_path, mrn, mrn+"_"+acq_date)))
         if not os.path.isdir(os.path.join(root_path, mrn, mrn+"_"+acq_date, phase)):
             cur_path = os.path.join(root_path, mrn, mrn+"_"+acq_date, phase)
             os.mkdir(cur_path)
@@ -1977,6 +1988,22 @@ def step1_save_lirads_imgs(request):
                     for chunk in f.chunks():
                         destination.write(chunk)
             process(x)
+        return JsonResponse({'state': True})
+    else:
+        return JsonResponse({'state': False})
+
+
+@csrf_exempt
+def step1_load_prv_img_data_from_local(request):
+    if request.method == "POST":
+        data = json.loads(request.POST.get("data"))
+        pat_name = data["pat_name"]
+        pat_birth = data["pat_birth"]
+        mrn = data["mrn"]
+        container.mias_container.lirads_process.set_mrn(mrn)
+        container.mias_container.lirads_process.set_patient_name(pat_name)
+        container.mias_container.lirads_process.set_birthday(pat_birth)
+        container.mias_container.lirads_process.set_mi_path(data["img_path"])
         return JsonResponse({'state': True})
     else:
         return JsonResponse({'state': False})
@@ -2138,5 +2165,34 @@ def predict_stage(request):
         data = json.loads(request.POST.get("data"))
         stage = container.mias_container.lirads_process.predict_stage(data["tumor_id"])
         return JsonResponse({"state": True, "stage": stage})
+    else:
+        return JsonResponse({"state": False})
+
+
+@csrf_exempt
+def register_diagnosis(request):
+    if request.method == "POST":
+        ds = Diagnosis()
+        data = json.loads(request.POST.get("data"))
+
+        pat_name = container.mias_container.lirads_process.get_patient_name()
+        mrn = container.mias_container.lirads_process.get_mrn()
+        birthday = container.mias_container.lirads_process.get_birthday()
+        img_id = container.mias_container.lirads_process.get_img_path()
+
+        ds.register_diagnosis(pat_name, mrn, birthday, img_id,
+                              data["tumor_types"], data["aphe_types"], data["tumor_sizes"], data["num_mfs"], data["stages"])
+        return JsonResponse({"state": True})
+    else:
+        return JsonResponse({"state": False})
+
+
+@csrf_exempt
+def retrieve_diagnosis(request):
+    if request.method == "POST":
+        ds = Diagnosis()
+        data = json.loads(request.POST.get("data"))
+        list_diagnosis = ds.retrieve_diagnosis(data["diagnosis_id"])
+        return JsonResponse({"state": True, "data": list_diagnosis})
     else:
         return JsonResponse({"state": False})

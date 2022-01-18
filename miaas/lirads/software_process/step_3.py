@@ -11,11 +11,12 @@ from tensorflow.python.keras.backend import clear_session
 
 from miaas.lirads.util import tumor
 import miaas.lirads.util.mrcnn.model as modellib
-
+from miaas.utils.polygon_drawer import PolygonDrawer
 
 import tensorflow as tf
 gpus = tf.config.experimental.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(gpus[0], True)
+# tf.config.experimental.set_memory_growth(gpus[0], True)
+
 
 class LegionSegmentor:
     def __init__(self):
@@ -24,6 +25,8 @@ class LegionSegmentor:
         self.config = tumor.TumorConfig()
         self.tumor_class_names = ['None', 'Tumor']
         self.is_contain_target = False
+        self.margin = 10
+        self.poly_drawer = PolygonDrawer()
 
     def initialize(self, std_name):
         self.setCT_C_Seg = {}
@@ -67,6 +70,22 @@ class LegionSegmentor:
         else:   # Not in plain phase in the CT Study
             return True
 
+
+    def segment(self, img):
+        results = self.tumor_detector.detect([img], verbose=0)
+        result = results[0]
+        rois = result['rois']
+        final_rois = []
+        for i in range(len(rois)):
+            roi = rois[i]
+            final_rois.append(img[roi[0] - self.margin:roi[2] + self.margin, roi[1] - self.margin:roi[3] + self.margin])
+        result['rois'] = final_rois
+        try:
+            result['roi'] = rois[0]
+        except:
+            result['roi'] = []
+        return result
+
     def segment_lesion(self, setCT_b, setCT_b_seg):
         setCT_b = setCT_b[list(setCT_b.keys())[0]]
 
@@ -74,14 +93,14 @@ class LegionSegmentor:
             self.setCT_C_Seg[name] = {}
             self.setCT_C_tumor[name] = {}
 
-        # path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step3"
+        path_save = r"E:\1. Lab\Daily Results\2022\2201\0117\result\step3"
         for srs_name, slices in setCT_b.items():
             count = 0
             keys = []
-            # if not os.path.isdir(os.path.join(path_save, self.std_name)):
-            #     os.mkdir(os.path.join(path_save, self.std_name))
-            # if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
-            #     os.mkdir(os.path.join(path_save, self.std_name, srs_name))
+            if not os.path.isdir(os.path.join(path_save, self.std_name)):
+                os.mkdir(os.path.join(path_save, self.std_name))
+            if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
+                os.mkdir(os.path.join(path_save, self.std_name, srs_name))
             for key, sl in slices.items():
                 results = self.tumor_detector.detect([sl], verbose=0)
                 mask_result, roi_result, conf_value_result, roi_imgs_result = \
@@ -108,7 +127,7 @@ class LegionSegmentor:
                     keys.append(key)
                 # cv2.imshow("img", sl)
                 # cv2.imshow("mask", msks_new)
-                # cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, key+".png"), msks_new)
+                cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, key+".png"), msks_new)
                 # cv2.waitKey(5)
 
                 self.setCT_C_Seg[srs_name][key] = {"masks": masks, 'rois': rois, "confidence_values": conf_values, "rois_img":rois_img, "img": sl}
@@ -155,6 +174,33 @@ class LegionSegmentor:
     def get_setCT_C_tumor(self):
         return self.setCT_C_tumor
 
+    def revise_seged_tumors(self):
+        for sr_id, sls in self.setCT_C_Seg.items():
+            for sl_id, data in sls.items():
+                # key = self.display_result(self.setCT_C_Seg[sr_id][sl_id])
+                # if key == ord("n"):     # No, need to fix
+                #     self.poly_drawer.set_img(self.setCT_C_Seg[sr_id][sl_id]["img"])
+                #     self.poly_drawer.run()
+                #     result = self.poly_drawer.return_seg_data()
+                #     self.setCT_C_Seg[sr_id][sl_id] = result
+                #     msks_new = np.zeros(result["img"].shape)
+                #     for i in result["masks"]:
+                #         msks_new += i
+                #     self.setCT_C_tumor[sr_id][sl_id] = msks_new
+                # elif key == ord("p"):     # Pass
+                    pass
+
+    def display_result(self, data):
+        """
+        To display segmented tumors data
+        """
+        # To display seg results
+        # To receive input key
+        cv2.imshow("Tumor Segmentation Result", data["img"])
+        key = cv2.waitKey(0)
+
+        return key
+
     def __enhance_seg_tumor_data(self, cur_organ_msk, cur_tumor_msk):
         """
         To discard tumor segmented results that are not located in target organ
@@ -177,3 +223,27 @@ class LegionSegmentor:
             new_mask = np.zeros(img.shape)
             result.append(np.array(cv2.drawContours(new_mask, [k], -1, color=255, thickness=cv2.FILLED), dtype=np.uint8))
 
+
+if __name__ == "__main__":
+    ls = LegionSegmentor()
+    ls.load_model()
+    path_std = r"D:\Dataset\LLU Dataset\6218843_07202017 (MR)\01. Original Study\img\test-resized"
+    path_save = r"E:\1. Lab\Daily Results\2022\2201\0115\lesion\6218843_07202017 (MR)"
+    if not os.path.isdir(path_save):
+        os.mkdir(path_save)
+
+    for j in os.listdir(path_std):
+        path_srs = os.path.join(path_std, j)
+        os.mkdir(os.path.join(path_save, j))
+        for i in os.listdir(path_srs):
+            result = ls.segment(cv2.imread(os.path.join(path_srs, i)))
+            result["masks"] = np.array(np.where(result["masks"] > 0, 255, 0), dtype=np.uint8)
+            result_mask = np.zeros((512, 512))
+            if result["masks"].shape[2] > 0:
+                for k in range(result["masks"].shape[2]):
+                    result_mask += result["masks"][:, :, k]
+            print(i)
+            cv2.imshow("origin", cv2.imread(os.path.join(path_srs, i)))
+            cv2.imshow("test", np.array(result_mask, np.uint8))
+            cv2.imwrite(os.path.join(path_save, j, i), np.array(result_mask, np.uint8))
+            cv2.waitKey(5)

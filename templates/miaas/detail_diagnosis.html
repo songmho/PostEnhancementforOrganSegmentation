@@ -11,94 +11,70 @@
 <body>
 
     {% include 'miaas/header.html' %}
+    <div id="cur_id" hidden>{{ img_id }}</div>
 
     <div class="container">
         <div class="mt-5">
             <form autocomplete="off" id="diagnosis_form" class="w-75 mx-auto">
 
-                <div class="col-12 border rounded p-2">
+                <div class="col-12 p-2">
                     <div class="row ">
-                        <h4 class="col-10">Patient Information</h4>
+                        <h5 class="col-10">Patient Information</h5>
                     </div>
                     <div class="row ml-1">
-                        <h5 class="col-2">Name </h5>
-                        <h5 class="col-9" id="txt_patient_name"> Test</h5>
+                        <p class="col-3">Name </p>
+                        <p class="col-9" id="txt_patient_name"> </p>
                     </div>
                     <div class="row ml-1">
-                        <h5 class="col-2">Gender </h5>
-                        <h5 class="col-9" id="txt_patient_gender"> Female</h5>
+                        <p class="col-3">Medical Record Number  </p>
+                        <p class="col-9" id="txt_patient_mrn"> </p>
                     </div>
                     <div class="row ml-1">
-                        <h5 class="col-2">Age </h5>
-                        <h5 class="col-9" id="txt_patient_name"> 43</h5>
+                        <p class="col-3">Birthday </p>
+                        <p class="col-9" id="txt_birthday"> </p>
                     </div>
 
                 </div>
 
-                <div class="col-12 border rounded p-2 mt-2">
-                    <h4 class="col-12">Diagnosis Information</h4>
-
-                    <div class="ml-2">
-                        <h5 class="col-3">Symptoms</h5>
-                        <div class="ml-3">
-                            <div class="row mx-0">
-                                <h5 class="col-3">Symptom Name</h5>
-                                <h5 class="col-8" id="txt_symptom_name"></h5>
-                            </div>
-                            <div class="row mx-0 mt-1">
-                                <h5 class="col-3">Symptom Part</h5>
-                                <h5 class="col-8" id="txt_symptom_part"> </h5>
-                            </div>
-                            <div class="row mx-0 mt-1">
-                                <h5 class="col-3">Soreness</h5>
-                                <h5 class="col-8" id="txt_soreness"></h5>
-                            </div>
-                        </div>
+                <div class="col-12 p-2 mt-2">
+                    <h5>LIRADS Stage Information</h5>
+                    <div class="row ml-2 mb-1">
+                        <p class="col-3 mb-1">Tumor Type</p>
+                        <p class="col-2 ml-2 mb-1 px-1" id="txt_tumor_type"></p>
                     </div>
-                    <div  class="row ml-2 mt-2">
-                        <h5 class="col-3 ">Medical Image</h5>
-                        <h5 class="col-7" id="txt_selected_img"></h5>
+                    <div class="row ml-2 mb-1">
+                        <p class="col-3 mb-1">Image Features</p>
+                        <p class="col-2 mb-1 px-1" id="txt_tumor_img_features">
                     </div>
-                    <div  class="row ml-2 mt-2">
-                        <h5 class="col-3">Opinion</h5>
-                        <h5 class="col-8" id="txt_disease"></h5>
+                    <div class="row ml-4 mb-1 ">
+                        <p class="col-3 mb-1">APHE Type</p>
+                        <p class="col-2 mb-1 px-1" id="txt_tumor_aphe_type"></p>
                     </div>
-                    <div  class="row ml-2 mt-2">
-                        <h5 class="col-3">Disease</h5>
-                        <h5 class="col-8" id="txt_disease"></h5>
+                    <div class="row ml-4 mb-1">
+                        <p class="col-3 mb-1">Tumor Size</p>
+                        <p class="col-2 mb-1 px-1" id="txt_tumor_size"></p>
+                    </div>
+                    <div class="row ml-4 mb-1">
+                        <p class="col-3 mb-1"># of Major Features</p>
+                        <p class="col-2 mb-1 px-1" id="txt_number_major_feature"></p>
+                    </div>
+                    <div class="row ml-4 mb-1">
+                        <p class="col-3 mb-1">Stage</p>
+                        <p class="col-2 mb-1 px-1" id="txt_stage"></p>
                     </div>
                 </div>
 
-                <div class="col-12 border rounded p-2 mt-2">
-                    <h4 class="col-12">ML Based Diagnosis</h4>
-                    <div class="row ml-4 mt-2">
-                        <h5 class="col-3  p-0">ML Model</h5>
-                        <h5 class="col-6" id="txt_selected_model"></h5>
-                    </div>
-                    <div class="ml-4 mt-2">
-                        <h5 class="">Predicted Result</h5>
-                        <div class="row ml-4">
-                            <h5 class="col-2">Disease</h5>
-                            <h5 id="txt_disease">HCC</h5>
-                        </div>
-                        <div class="row ml-4">
-                            <h5 class="col-2">Stage</h5>
-                            <h5 id="txt_stage">LR-3</h5>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 border rounded p-2 mt-4">
-                    <h4 class="col-12">Diagnosis Management</h4>
-                    <div class="row m-0">
-                        <h5 class="col-10 ml-2">Data Modification</h5>
-                        <button class="btn btn-primary" id="btn_modify">Modify</button>
-                    </div>
-                    <div class="row m-0">
-                        <h5 class="col-10  ml-2">Data Deletion</h5>
-                        <button class="btn btn-danger" id="btn_delete">Delete </button>
-                    </div>
-                </div>
+{#                <div class="col-12 border rounded p-2 mt-4">#}
+{#                    <h4 class="col-12">Diagnosis Management</h4>#}
+{#                    <div class="row m-0">#}
+{#                        <h5 class="col-10 ml-2">Data Modification</h5>#}
+{#                        <button class="btn btn-primary" id="btn_modify">Modify</button>#}
+{#                    </div>#}
+{#                    <div class="row m-0">#}
+{#                        <h5 class="col-10  ml-2">Data Deletion</h5>#}
+{#                        <button class="btn btn-danger" id="btn_delete">Delete </button>#}
+{#                    </div>#}
+{#                </div>#}
 
             </form>
 

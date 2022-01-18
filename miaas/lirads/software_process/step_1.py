@@ -50,6 +50,7 @@ class MedicalImageLoader:
         :return:
         """
         self.path_medimg = img_path
+        print("PATH_MEDIMG: ", self.path_medimg)
         if info_path is None:
             self.path_info = img_path
         else:
@@ -74,6 +75,7 @@ class MedicalImageLoader:
 
         :return:
         """
+        print(">>>> ", self.path_medimg)
         list_studies = os.listdir(self.path_medimg)
         for std in list_studies:
             list_series = os.listdir(os.path.join(self.path_medimg, std))
@@ -137,6 +139,14 @@ class MedicalImageLoader:
                 for slice in os.listdir(os.path.join(self.path_medimg, study, series)):
                     # try:
                         dcm = pydicom.dcmread(os.path.join(self.path_medimg, study, series, slice))
+                        if (0x0028, 0x1052) in dcm.keys():
+                            rescaleIntercept = float(dcm[0x0028, 0x1052].value)
+                        else:
+                            rescaleIntercept = 0
+                        if (0x0028, 0x1053) in dcm.keys():
+                            rescaleSlope = float(dcm[0x0028, 0x1053].value)
+                        else:
+                            rescaleSlope = 1
                         if dcm[0x0008, 0x103E].value not in self.setMed_img[study].keys():
                             if "w/o" in str(dcm[0x0008, 0x103E].value).lower() or "pre" in str(dcm[0x0008, 0x103E].value).lower() or "plain" in str(dcm[0x0008, 0x103E].value).lower() or "non con" in str(dcm[0x0008, 0x103E].value).lower():
                                 if "PLAIN" not in self.setMed_img[study].keys():
@@ -155,8 +165,11 @@ class MedicalImageLoader:
                                     self.setMed_img[study]["DELAY"] = {}
                                     cur_srs = "DELAY"
                             else:
-                                self.setMed_img[study][dcm[0x0008, 0x103E].value] = {}
-                                cur_srs = dcm[0x0008, 0x103E].value
+
+                                # self.setMed_img[study][dcm[0x0008, 0x103E].value] = {}
+                                # cur_srs = dcm[0x0008, 0x103E].value
+                                self.setMed_img[study][series] = {}
+                                cur_srs = series
                         if type(dcm[0x0028, 0x1051].value) == pydicom.valuerep.DSfloat:  #If ww is set to only a number
                             cur_ww = float(dcm[0x0028, 0x1051].value)
                         else:               # if ww is set to two numbers
@@ -167,15 +180,16 @@ class MedicalImageLoader:
                             cur_wc = float(dcm[0x0028, 0x1050].value[0])
                         info = {"voxel": float(dcm[0x0028, 0x0030].value[0]), "acq_date": str(dcm[0x0008, 0x0022].value),
                                 "slice_location": float(dcm[0x0020, 0x1041].value), "ww":cur_ww,
-                                "wc":cur_wc, "rescaleIntercept":float(dcm[0x0028, 0x1052].value),
-                                "rescaleSlope":float(dcm[0x0028, 0x1053].value)}
+                                "wc":cur_wc, "rescaleIntercept":float(rescaleIntercept),
+                                "rescaleSlope":float(rescaleSlope)}
                         self.acquisition_date = str(dcm[0x0008, 0x0022].value)
                         self.voxels = float(dcm[0x0028, 0x0030].value[0])
+                        print(cur_srs, dcm[0x0020, 0x0013].value)
                         self.setMed_img[study][cur_srs][str(dcm[0x0020, 0x0013].value).zfill(5)] = {"image": dcm.pixel_array, "info":info}
                         self.ww_liver = cur_ww
                         self.wc_liver = cur_wc
-                        self.rescale_intercept = float(dcm[0x0028, 0x1052].value)
-                        self.rescale_slope = float(dcm[0x0028, 0x1053].value)
+                        self.rescale_intercept = rescaleIntercept
+                        self.rescale_slope = rescaleSlope
                     # except:
                     #     pass    # To pass loading file whose extension is not *.dcm.
                 print("       >>", cur_srs, len(list(self.setMed_img[study][cur_srs])))
@@ -258,7 +272,8 @@ class MedicalImageLoader:
                     wc = slices[dc]["info"]["wc"]
                     ymin = 0
                     ymax = 255
-                    img = np.reshape(img, (512, 512, 1))
+                    y, x = img.shape[0], img.shape[1]
+                    img = np.reshape(img, (y, x, 1))
                     # To convert color depth applying numpy where method (To reduce computation time)
                     idx_high = img >= wc+ww/2
                     idx_low = img <= wc-ww/2

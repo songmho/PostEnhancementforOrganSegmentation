@@ -16,9 +16,9 @@ class Image:
         self.img_path = None
 
     def register_images(self, uploader_id, img_type, img_path, acq_date, first_name, last_name, birthday, gender,
-                        examination_source, interpretation, description):
+                        examination_source, interpretation, description, medical_record_number):
         result = self.db.register_images(uploader_id, img_type, img_path, acq_date, first_name, last_name, birthday, gender,
-                        examination_source, interpretation, description)
+                        examination_source, interpretation, description, medical_record_number)
         return result
 
     def retrieve_images(self, uploader_id=None, img_id=None, img_path=None):
@@ -59,15 +59,15 @@ class DBImages:
             self.conn = None
 
     def register_images(self, uploader_id, img_type, img_path, acq_date, first_name, last_name, birthday, gender,
-                        examination_source, interpretation, description):
+                        examination_source, interpretation, description, medical_record_number):
         sql = "INSERT INTO images (uploader_id, img_type, img_path, acquisition_date," \
-              " first_name, last_name, birthday, gender, examination_source, interpretation, description)" \
-              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+              " first_name, last_name, birthday, gender, examination_source, interpretation, description, medical_record_number)" \
+              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         try:
             with self.conn.cursor() as cursor:
                 cursor.execute(sql, (uploader_id, str(img_type), str(img_path), str(acq_date), str(first_name),
                                      str(last_name), str(birthday), str(gender), str(examination_source), str(interpretation),
-                                     str(description)))
+                                     str(description), str(medical_record_number)))
             self.conn.commit()
             return True
         except:
@@ -95,6 +95,7 @@ class DBImages:
                 return result
         except:
             return []
+
     def modify_images(self, imag_id, img_path=None, img_datetime=None):
         sql = "UPDATE images SET "
         if img_path is not None:

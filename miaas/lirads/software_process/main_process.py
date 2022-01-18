@@ -61,6 +61,30 @@ class LiradsProcess:
         self.img_path = path
         self.step_1.set_path(self.img_path)
 
+    def set_patient_name(self, p_n):
+        self.patient_name = p_n
+
+    def set_mrn(self, mrn):
+        self.mrn = mrn
+
+    def set_birthday(self, b_d):
+        self.birthday = b_d
+
+    def set_img_path(self, i_p):
+        self.img_path = i_p
+
+    def get_patient_name(self):
+        return self.patient_name
+
+    def get_mrn(self):
+        return self.mrn
+
+    def get_birthday(self):
+        return self.birthday
+
+    def get_img_path(self):
+        return self.img_path
+
     def check_extension(self):
         self.step_1.check_mi_type()
 
@@ -267,7 +291,7 @@ class LiradsProcess:
         self.step_6.detect_vein_location(self.setCT_a)
         tivs = self.step_6.compute_tumor_in_vein()
         self.step_6.generate_major_feature_list(list_t_type, list_aphe, list_lesion_size, list_capsule, list_washout, th_growths, tivs)
-        self.list_tumor_group_names_step6= []
+        self.list_tumor_group_names_step6 = []
         for t_id in self.tumor_groups.keys():
             self.list_tumor_group_names_step6.append("Tumor Group "+str(t_id))
         return self.list_tumor_group_names_step6
@@ -276,7 +300,7 @@ class LiradsProcess:
         t_groups = self.step_6.get_tumor_groups()
         cur_mf = t_groups[t_id]["major_features"]
         print(t_groups[t_id]["major_features"].keys())
-        result = {"AHPE_type": cur_mf["APHE_Type"], "tumor_size": str(cur_mf["Lesion_Size"]["length"])+" mm",
+        result = {"APHE_Type": cur_mf["APHE_Type"], "tumor_size": str(cur_mf["Lesion_Size"]["length"])+" mm",
                   "capsule": cur_mf["Capsule"], "washout": cur_mf["Washout"], "Threshold_growth": cur_mf["Threshold_Growth"]}
         return result
 
@@ -298,9 +322,11 @@ class LiradsProcess:
 
     def predict_stage(self, t_id):
         t_groups = self.step_7.get_tumor_groups()
+        print(t_groups)
         cur_stage = t_groups[int(t_id)]["stage"][0][0]
-        if type(cur_stage)!= str:
-            cur_stage = "LR-"+str(cur_stage)
+        print(cur_stage)
+        # if type(cur_stage) != str:
+        cur_stage = "LR-"+str(cur_stage)
         return cur_stage
 
 

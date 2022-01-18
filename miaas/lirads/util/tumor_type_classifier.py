@@ -305,88 +305,91 @@ if __name__ == '__main__':
     # lfc.train()
     # lfc.save_model()
 
+    #
+    # float_formatter = "{:.5f}".format
+    # np.set_printoptions(formatter={'float_kind': float_formatter})
+    #
+    # p_root = r"E:\1. Lab\Daily Results\2021\2108\0811\Dataset\Tumor Image Features Test"
+    # # p_root = r"F:\Dataset\LLU Dataset for Sub Data (Image Features)\Images"
+    # # list_data = {lfc.labels[0]:0, lfc.labels[1]:0, lfc.labels[2]:0, lfc.labels[3]:0, lfc.labels[4]:0,
+    # #              lfc.labels[5]:0, lfc.labels[6]:0, lfc.labels[7]:0, lfc.labels[8]:0}
+    #
+    # list_label_data = []
+    # for i in os.listdir(p_root):
+    #     list_cur_feature = i.split("_")
+    #     cur_list = []
+    #     for l in list_cur_feature:
+    #         cur_list.append(labels.index(l))
+    #     for j in os.listdir(os.path.join(p_root, i)):
+    #         list_label_data.append(cur_list)
+    # print(len(list_label_data))
+    # list_label_data_mb = []
+    # for i in list_label_data:
+    #     cur_list = []
+    #     for j in range(len(labels)):
+    #         if j in i:
+    #             cur_list.append(1)
+    #         else:
+    #             cur_list.append(0)
+    #     list_label_data_mb.append(cur_list)
+    #
+    # # mlb = MultiLabelBinarizer()
+    # # list_label_data_mb = mlb.fit_transform(list_label_data)
+    # lfc.load_model()
+    # p = r"F:\Dataset\LLU Dataset for Sub Data (Image Features)\tumor_image"
+    # results = {"target":[], "conf":[], "result":[]}
+    # for i in os.listdir(p):
+    #     for j in os.listdir(os.path.join(p, i)):
+    #         img = cv2.imread(os.path.join(p, i, j))
+    #         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #         img = img.reshape((img.shape[0], img.shape[1]))
+    #         results['target'].append(j)
+    #         results['conf'].append(lfc.predict(img)[0])
+    #         prd = lfc.get_features(lfc.predict(img)[0])
+    #         results['result'].append(prd["Labels"])
+    #         print(i, j, results["target"][-1], results["conf"][-1], results["result"][-1])
+    #
+    # results = pd.DataFrame(results)
+    # results.to_csv(r"E:\1. Lab\Daily Results\2021\2109\0907\result.csv")
+    #
+    # for k in range(5, 255, 5):
+    #     # list_data = {lfc.labels[0]:0, lfc.labels[1]:0, lfc.labels[2]:0, lfc.labels[3]:0, lfc.labels[4]:0,
+    #     #              lfc.labels[5]:0, lfc.labels[6]:0, lfc.labels[7]:0, lfc.labels[8]:0}
+    #     list_data_mb = []
+    #     for i in os.listdir(p_root):
+    #         if "json" in i:
+    #             continue
+    #         for j in os.listdir(os.path.join(p_root, i)):
+    #             img = cv2.imread(os.path.join(p_root, i, j))
+    #             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #             img = img.reshape((img.shape[0], img.shape[1]))
+    #             prd = lfc.get_features(lfc.predict(img)[0])
+    #             list_cur = []
+    #             for l in range(len(prd["WholeConf"])):
+    #                 if prd["WholeConf"][l] > 0.5:
+    #                     list_cur.append(l)
+    #
+    #             list_d = []
+    #             for a in range(len(labels)):
+    #                 if a in list_cur:
+    #                     list_d.append(1)
+    #                 else:
+    #                     list_d.append(0)
+    #             list_data_mb.append(list_d)
+    #         # list_data.append(list_d)
+    #                     # list_data[lfc.labels[l]] += 1
+    #     print("[", str(k).zfill(3), "]")
+    #     list_label_data_mb = np.array(list_label_data_mb)
+    #     list_data_mb = np.array(list_data_mb)
+    #
+    #     # list_data_mb = mlb.fit_transform(list_data)
+    #     print("Accuracy: ", metrics.accuracy_score(list(list_label_data_mb), list(list_data_mb)))
+    #     print("Precision: ", metrics.precision_score(list(list_label_data_mb), list(list_data_mb), average='samples'))
+    #     print("Recall: ", metrics.recall_score(list(list_label_data_mb), list(list_data_mb), average='samples'))
+    #     print("\n\n")
 
-    float_formatter = "{:.5f}".format
-    np.set_printoptions(formatter={'float_kind': float_formatter})
 
-    p_root = r"E:\1. Lab\Daily Results\2021\2108\0811\Dataset\Tumor Image Features Test"
-    # p_root = r"F:\Dataset\LLU Dataset for Sub Data (Image Features)\Images"
-    # list_data = {lfc.labels[0]:0, lfc.labels[1]:0, lfc.labels[2]:0, lfc.labels[3]:0, lfc.labels[4]:0,
-    #              lfc.labels[5]:0, lfc.labels[6]:0, lfc.labels[7]:0, lfc.labels[8]:0}
 
-    list_label_data = []
-    for i in os.listdir(p_root):
-        list_cur_feature = i.split("_")
-        cur_list = []
-        for l in list_cur_feature:
-            cur_list.append(labels.index(l))
-        for j in os.listdir(os.path.join(p_root, i)):
-            list_label_data.append(cur_list)
-    print(len(list_label_data))
-    list_label_data_mb = []
-    for i in list_label_data:
-        cur_list = []
-        for j in range(len(labels)):
-            if j in i:
-                cur_list.append(1)
-            else:
-                cur_list.append(0)
-        list_label_data_mb.append(cur_list)
-
-    # mlb = MultiLabelBinarizer()
-    # list_label_data_mb = mlb.fit_transform(list_label_data)
-    lfc.load_model()
-    p = r"F:\Dataset\LLU Dataset for Sub Data (Image Features)\tumor_image"
-    results = {"target":[], "conf":[], "result":[]}
-    for i in os.listdir(p):
-        for j in os.listdir(os.path.join(p, i)):
-            img = cv2.imread(os.path.join(p, i, j))
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            img = img.reshape((img.shape[0], img.shape[1]))
-            results['target'].append(j)
-            results['conf'].append(lfc.predict(img)[0])
-            prd = lfc.get_features(lfc.predict(img)[0])
-            results['result'].append(prd["Labels"])
-            print(i, j, results["target"][-1], results["conf"][-1], results["result"][-1])
-
-    results = pd.DataFrame(results)
-    results.to_csv(r"E:\1. Lab\Daily Results\2021\2109\0907\result.csv")
-
-    for k in range(5, 255, 5):
-        # list_data = {lfc.labels[0]:0, lfc.labels[1]:0, lfc.labels[2]:0, lfc.labels[3]:0, lfc.labels[4]:0,
-        #              lfc.labels[5]:0, lfc.labels[6]:0, lfc.labels[7]:0, lfc.labels[8]:0}
-        list_data_mb = []
-        for i in os.listdir(p_root):
-            if "json" in i:
-                continue
-            for j in os.listdir(os.path.join(p_root, i)):
-                img = cv2.imread(os.path.join(p_root, i, j))
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                img = img.reshape((img.shape[0], img.shape[1]))
-                prd = lfc.get_features(lfc.predict(img)[0])
-                list_cur = []
-                for l in range(len(prd["WholeConf"])):
-                    if prd["WholeConf"][l] > 0.5:
-                        list_cur.append(l)
-
-                list_d = []
-                for a in range(len(labels)):
-                    if a in list_cur:
-                        list_d.append(1)
-                    else:
-                        list_d.append(0)
-                list_data_mb.append(list_d)
-            # list_data.append(list_d)
-                        # list_data[lfc.labels[l]] += 1
-        print("[", str(k).zfill(3), "]")
-        list_label_data_mb = np.array(list_label_data_mb)
-        list_data_mb = np.array(list_data_mb)
-
-        # list_data_mb = mlb.fit_transform(list_data)
-        print("Accuracy: ", metrics.accuracy_score(list(list_label_data_mb), list(list_data_mb)))
-        print("Precision: ", metrics.precision_score(list(list_label_data_mb), list(list_data_mb), average='samples'))
-        print("Recall: ", metrics.recall_score(list(list_label_data_mb), list(list_data_mb), average='samples'))
-        print("\n\n")
 
 
     #     for aa in os.listdir(p_root):

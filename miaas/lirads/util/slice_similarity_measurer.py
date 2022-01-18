@@ -11,16 +11,16 @@ from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from skimage import transform
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
-import tensorflow.compat.v1 as tf
-from keras import backend as K
+import tensorflow as tf
+from tensorflow.keras import backend as K
 from tensorflow.python.keras.backend import clear_session
-tf.disable_v2_behavior()
-
-
-
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-session = tf.InteractiveSession(config=config)
+# tf.disable_v2_behavior()
+#
+#
+#
+# config = tf.ConfigProto()
+# config.gpu_options.allow_growth = True
+# session = tf.InteractiveSession(config=config)
 
 
 class SimilarityMeasurer:
@@ -30,8 +30,8 @@ class SimilarityMeasurer:
 
     def prepare_model(self):
         """
-        To prepare model 
-        :return: 
+        To prepare model
+        :return:
         """
         self.model = self.__define_model_structure()
         self.model.load_weights(self.weight_path)

@@ -109,13 +109,13 @@ class LiverRegionSegmentater:
 
         # self.setCT_b_seg    # For mask
         # self.setMed_img     # For slice before transform
-        # path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step2"
+        path_save = r"E:\1. Lab\Daily Results\2022\2201\0117\result\step2"
         for srs_name, imgs in self.setCT_b.items():   # For Image
             print("       [", srs_name,"]", )
-            # if not os.path.isdir(os.path.join(path_save, self.std_name)):
-            #     os.mkdir(os.path.join(path_save, self.std_name))
-            # if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
-            #     os.mkdir(os.path.join(path_save, self.std_name, srs_name))
+            if not os.path.isdir(os.path.join(path_save, self.std_name)):
+                os.mkdir(os.path.join(path_save, self.std_name))
+            if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
+                os.mkdir(os.path.join(path_save, self.std_name, srs_name))
             self.post_processor.initialize(self.setCT_b_seg[srs_name], self.setMed_img[srs_name], imgs)
             self.post_processor.split_t_f_sequence()
             self.post_processor.check_continuity_false()
@@ -124,7 +124,7 @@ class LiverRegionSegmentater:
             seqs = self.post_processor.return_target_seq()
             for i in range(len(self.setCT_b_seg[srs_name].values())):
                 self.setCT_b_seg[srs_name][list(self.setCT_b_seg[srs_name].keys())[i]]["masks"] = seqs[i][1]
-                # cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, list(self.setCT_b_seg[srs_name].keys())[i] + ".png"), seqs[i][1])
+                cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, list(self.setCT_b_seg[srs_name].keys())[i] + ".png"), seqs[i][1])
 
     def proceed_post_step1(self, srs_id):
         srs_name = list(self.setCT_b.keys())[srs_id]

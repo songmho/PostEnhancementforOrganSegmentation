@@ -34,7 +34,7 @@ function write_log_in_console(text){
     dict_data["text"] = text
 
     if (text.includes("start") || text.includes("finish") || text.includes("stop") || text.includes("prepare")  || text.includes("upload")  || text.includes("Stage")){
-        speech(text)
+        // speech(text)
     }
     list_console.push(dict_data);
     if (list_console.length >8)

@@ -208,9 +208,9 @@ def breast_abnormality_diagnosis(request):
 def stomach_abnormality_diagnosis(request):
     return render(request, "miaas/stomach_abnormality_diagnosis.html")
 
-def diagnosis_detail(request, diagnosis_id):
-    context = {'diagnosis_id': diagnosis_id}
-    return render(request, "miaas/detail_diagnosis.html", context)
+def diagnosis_detail(request):
+    # context = {'diagnosis_id': diagnosis_id}
+    return render(request, "miaas/detail_diagnosis.html")
 
 def diagnose_abnormality_ml(request):
     return render(request, "miaas/diagnose_abnormality_ml.html")

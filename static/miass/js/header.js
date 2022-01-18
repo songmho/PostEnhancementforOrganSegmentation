@@ -27,6 +27,10 @@
         location.replace(SERVER_ADDRESS+"/view/liver_abnormality_diagnosis");
     });
 
+    $("#nav_diagnosing").click(function () {
+        location.replace(SERVER_ADDRESS+"/view/diagnose_abnormality_ml#step-1");
+    });
+
     $("#nav_lung_abnormality").click(function () {
         location.replace(SERVER_ADDRESS+"/view/lung_abnormality_diagnosis");
     });

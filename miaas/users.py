@@ -418,12 +418,14 @@ class DBUser:
         if activation_code is not None:
             sql += "activation_code='" + str(activation_code) + "'"
 
+        print(sql)
         try:
             with self.conn.cursor() as cursor:
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 return result
-        except:
+        except Exception as e:
+            print(e)
             return []
 
     def modify_user(self, identification_number, first_name=None, last_name=None, email=None, phone_number=None,

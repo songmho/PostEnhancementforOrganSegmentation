@@ -457,7 +457,7 @@ class PostProcessLiver:
         set flow of change sequences using # CT slices from i, j (|i-j| = 1, # is set to 8 but can be changed considering remained slices)
         change_seq_i := [... , i-2, i-1, i]
         change_seq_j := [j, j+1, j+2, ...]
-        checking change of each sequence. 
+        checking change of each sequence.
           if the change of whole seqs are constant, don't revise i and j
           if the change of seq_i or seq_j is highly different, revise sl in another sequences following the correct seqs
 
@@ -468,7 +468,7 @@ class PostProcessLiver:
         len(sub_seg_i) = x or <x
         if (sign(j- (i-1)) == sign(j- (i))) and (sign(j- (i-1)) == sign((i-1)-(i))) # Same sequence
             maintain
-        else      
+        else
 
         """
 

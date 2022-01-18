@@ -126,6 +126,7 @@ var cur_preview = 1;
     });
 
     $("#btn_submit").click(function () {
+        var mrn = $("#txt_medical_record_number").val();
         var fir_name = $("#txt_fir_name").val();
         var last_name = $("#txt_last_name").val();
         var birthday = $("#txt_Birthday").val();
@@ -166,6 +167,9 @@ var cur_preview = 1;
         } if (exam_src==="" ) {
             $("#txt_exam_src").addClass("is-invalid");
             is_possible = false;
+        } if (mrn === ""){
+           $("#txt_medical_record_number").addClass("is-invalid");
+            is_possible = false;
         }
         console.log(is_possible);
         if(is_possible) {
@@ -175,7 +179,7 @@ var cur_preview = 1;
             data = {"fir_name": fir_name, "last_name": last_name, "birthday": birthday, "gender": gender,
                 "acquisition_date": acq_date, "examination_source":exam_src, "interpretation":interpretation,
                 "description": description, 'uploader_id':get_current_user()['identification_number'],"blood_type":blood_type,
-                "height":height,"weight":weight, "img_type":img_type}
+                "height":height,"weight":weight, "img_type":img_type, "medical_record_number": mrn}
 
             file_data.append("data", JSON.stringify(data))
             for (var j in selected_series_id) {

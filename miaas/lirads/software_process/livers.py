@@ -3,6 +3,7 @@ Date: 2020. 10. 13.
 Programmer: MH
 Description: Code for ML models related to Liver
 """
+import os
 
 import cv2
 from tensorflow.python.keras.backend import clear_session
@@ -88,15 +89,59 @@ if __name__ == '__main__':
 
     # for file in os.listdir("E:\\1. Lab\\Dataset\\Liver\\LiverCTCancerArchive\\Custom, DICOM\\TCGA-DD-A4NL\\07-11-2001\\2 Venous\\"):
 
-    dc = pydicom.dcmread("E:\\1. Lab\\Dataset\\Liver\\LiverCTCancerArchive\\Custom, DICOM\\TCGA-DD-A1EH\\06-29-2001\\3 Delay\\000001.dcm")
-    img = dc.pixel_array
-    print("Dicom Pixel Array Type: ", img.dtype)
-    img1 = img.astype(np.uint8)
-    print(img1)
-    print(img1.shape, img1.dtype)
-    cv2.imwrite("Delay.png", img1)
-    cv2.imshow("TEST", img1)
-    cv2.waitKey(0)
+    # dc = pydicom.dcmread("E:\\1. Lab\\Dataset\\Liver\\LiverCTCancerArchive\\Custom, DICOM\\TCGA-DD-A1EH\\06-29-2001\\3 Delay\\000001.dcm")
+    # img = dc.pixel_array
+    # print("Dicom Pixel Array Type: ", img.dtype)
+    # img1 = img.astype(np.uint8)
+    # print(img1)
+    # print(img1.shape, img1.dtype)
+    # cv2.imwrite("Delay.png", img1)
+    # cv2.imshow("TEST", img1)
+    # cv2.waitKey(0)
+
+    ls = LiverSegmenter()
+    ls.load_model()
+    path_std = r"D:\Dataset\LLU Dataset\8082200_08312017, MR\01. Original CT Study\03. PNG resized"
+    path_save = r"E:\1. Lab\Daily Results\2022\2201\0115\8082200_08312017 (MR)"
+    if not os.path.isdir(path_save):
+        os.mkdir(path_save)
+
+    for j in os.listdir(path_std):
+        path_srs = os.path.join(path_std, j)
+        os.mkdir(os.path.join(path_save, j))
+        for i in os.listdir(path_srs):
+            result = ls.segment(cv2.imread(os.path.join(path_srs, i)))
+            result["masks"] = np.array(np.where(result["masks"] > 0, 255, 0), dtype=np.uint8)
+            result_mask = np.zeros((512, 512))
+            if result["masks"].shape[2] > 0:
+                for k in range(result["masks"].shape[2]):
+                    result_mask += result["masks"][:, :, k]
+            print(i)
+            cv2.imshow("origin", cv2.imread(os.path.join(path_srs, i)))
+            cv2.imshow("test", np.array(result_mask, np.uint8))
+            cv2.imwrite(os.path.join(path_save, j, i), np.array(result_mask, np.uint8))
+            cv2.waitKey(5)
+
+    # path_save = r"E:\1. Lab\Daily Results\2021\2109\0924\CHAOS_Train_seg_result"
+    # path = r"E:\1. Lab\Daily Results\2021\2109\0924\CHAOS_Train"
+    # for i in os.listdir(path):
+    #     path_cur = os.path.join(path, i, "T1DUAL", "0")
+    #     os.mkdir(os.path.join(path_save, i))
+    #     os.mkdir(os.path.join(path_save, i, "T1DUAL"))
+    #     os.mkdir(os.path.join(path_save, i, "T1DUAL", "0"))
+    #     for sl in os.listdir(path_cur):
+    #         img = cv2.imread(os.path.join(path_cur, sl))
+    #         cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #         result = ls.segment(img)
+    #
+    #         masks = result["masks"]
+    #         result = np.zeros((img.shape[0], img.shape[1]))
+    #         for j in range(masks.shape[-1]):
+    #             result += masks[:,:,j]
+    #         print(sl, "    ", masks.shape[-1])
+    #         cv2.imwrite(os.path.join(path_save, i, "T1DUAL", "0", sl), result)
+    #     print()
+    #
 
     # s = int(dc.RescaleSlope)
     # b = int(dc.RescaleIntercept)

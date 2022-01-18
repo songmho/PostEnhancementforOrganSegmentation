@@ -4,6 +4,7 @@ Programmer: MH
 Description: Code for LI-RADS Process
 """
 import os
+import shutil
 
 import cv2
 
@@ -50,8 +51,8 @@ class MainProcess:
         self.step6.initialize(std_name)
         self.step7.initialize(std_name)
 
-    def diagnose(self):
-        path_save_data = r"E:\1. Lab\Daily Results\2021\2108\0825\LIRADS_PROCESSING_RESULTS"
+    def diagnose(self, std_name):
+        path_save_data = r"E:\1. Lab\Daily Results\2022\2201\0117\result"
         # Step 1. Load Medical Image
         print("Step 1. Load Medical Image")
         self.step1.set_path(self.path_mi)
@@ -70,8 +71,10 @@ class MainProcess:
         self.step2.set_setCT_b(setCT_a, setMed_img)
         print("    Task 1. Segment Liver Region")
         self.step2.segment_liver_regions()
-        print("    Task 2. Discard Insignificant Slices")
-        self.step2.discard_insig_slices()
+
+        # print("    Task 2. Discard Insignificant Slices")
+        # self.step2.discard_insig_slices()
+
         # print("    Task 3. Detect Liver Hepatic Segments (Not Completed)")
         # step2.detect_liver_hepatic_segments()
 
@@ -97,6 +100,7 @@ class MainProcess:
         self.step3.segment_lesion(setCT_a, setCT_b_seg)
         # print("    Task 3. Detecting Hepatic Segments for Each Lesion (Not Completed)")
         # step3.detect_hepatic_segments()
+        self.step3.revise_seged_tumors()
 
         setCT_c_tumor = self.step3.get_setCT_C_tumor()
         setCT_c_seg = self.step3.get_setCT_c_seg()
@@ -226,16 +230,18 @@ if __name__ == '__main__':
     # Only NII: 1553442, 1604844, 7006698
 
     # for std_name in ["7083077", "7159233", "8112000", "8523522", "1383803", "1611730", "1668171",  "7048295", "7064369"]:
-    for std_name in ["7083077"]:
+    for std_name in os.listdir(r"E:\1. Lab\Daily Results\2022\2201\0117"):
+        if "(x)" in std_name or std_name is "result":
+            continue
         if len(std_name.split(" ")) > 1:
             print("["+std_name.split(" ")[1]+"]")
         else:
             print("["+std_name+"]")
-        path_mi = r"E:\1. Lab\Daily Results\2021\2107\0728\LLU Dataset"+"\\"+str(std_name)+"\\00. DICOM\\target - Copy"              # 4 Phases, 2 Tumors ([Nonrim, WO], [Nonrim, WO])
+        path_mi = r"E:\1. Lab\Daily Results\2022\2201\0117"+"\\"+str(std_name)+"\\00. DICOM\\target"              # 4 Phases, 2 Tumors ([Nonrim, WO], [Nonrim, WO])
     # path_mi = r"E:\1. Lab\Daily Results\2021\2107\0728\LLU Dataset\1611730\00. DICOM-COPY\target"              # 4 Phases, 2 Tumors ([Nonrim, WO], [Nonrim, WO])
     # std_name = "1611730"
         lirads_process.initialize(std_name)
         lirads_process.set_path(path_mi, path_prv_data=r"")
-        lirads_process.diagnose()
+        lirads_process.diagnose(std_name)
         lirads_process.print_diagnosis_result()
         print("\n\n")

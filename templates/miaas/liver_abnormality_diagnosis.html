@@ -17,10 +17,11 @@
                 <thead>
                     <tr>
                         <th scope="col"></th>
-                        <th scope="col">Diagnosis Date</th>
                         <th scope="col">Patient Name</th>
-                        <th scope="col">Physician Name</th>
-                        <th scope="col">Disease Name</th>
+                        <th scope="col">Birthday</th>
+                        <th scope="col">Diagnosis Date</th>
+                        <th scope="col"># of Tumors</th>
+                        <th scope="col">Stages</th>
                     </tr>
                 </thead>
 
@@ -29,10 +30,14 @@
                 </tbody>
             </table>
 
-            <div class="row float-right mt-3">
-                <button class="btn btn-primary mr-2" id="btn_diagnose_ml">Diagnose by SW LI-RADS</button>
-                <button class="btn btn-primary" id="btn_diagnose_pat">Diagnose by MD</button>
-            </div>
+    <form id="form-detail_diagnosis" action="diagnose" style="display: none">
+        <input id="input_diagnosis_id" name="diagnosis_id">
+    </form>
+{#            <div class="row float-right mt-3">#}
+{#                <button class="btn btn-primary mr-2" id="btn_diagnose_ml">Diagnose by SW LI-RADS</button>#}
+{#                <button class="btn btn-primary" id="btn_diagnose_pat">Diagnose by MD</button>#}
+{#            </div>#}
+
         </div>
     </div>
 

@@ -59,9 +59,9 @@
                     data_type: "text",
                     success: function (data) {
                         var stage = data["stage"];
-                        if (!stage.include("LR"))
-                            stage = "LR-"+stage
-                        total_stages += stage
+                        // if (!stage.include("LR"))
+                        stage = String(stage);
+                        total_stages += stage+" ";
                         idx +=1;
                         write_log_in_console("Stage of Tumor: "+stage);
                         if (idx >= max_num_tumor){
@@ -86,6 +86,22 @@
         });
 
         $("#btn_lirads_step7_done").on("click", function () {
+
+            $.ajax({
+                url:"/api/register_diagnosis_liver",
+                async: true,
+                method: "POST",
+                data: {"data": JSON.stringify({"tumor_types":$("#txt_tumor_type").text(), "aphe_types":$("#txt_tumor_aphe_type").text(),
+                         "tumor_sizes":$("#txt_tumor_size").text(), "num_mfs":$("#txt_number_major_feature").text(),
+                        "stages":$("#txt_lirad_stage").text()})},
+                data_type: "text",
+                success: function (data) {
+
+                }, error: function () {
+                clearInterval(interval);
+                }
+            });
+
             // $("#step-7").empty();
             // $("#step-6").css("display", "none");
             // $("#step-7").css("display", "block");

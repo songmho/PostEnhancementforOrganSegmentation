@@ -149,8 +149,10 @@ class ImageFeatureEvaluator:
             trg_img = srs["sl_start_end_img"]
             new_group = []
             new_group_img = []
-            cur_new = trg[0]
+
+            print(len(srs["sl_start_end"]), srs["sl_start_end"])
             cur_new_img = trg_img[0]
+            cur_new = trg[0]
             new_info_tumors[srs_name] = {"sl_start_end": [], "sl_start_end_img": []}
             for i in range(1, len(list(trg))):
                 if int(cur_new[1])+self.th_sl_num > int(trg[i][0])-self.th_sl_num:
@@ -164,7 +166,7 @@ class ImageFeatureEvaluator:
                     new_group_img.append(cur_new_img)
                     cur_new = trg[i]
                     cur_new_img = trg_img[i]
-            if int(cur_new[1]) + self.th_sl_num > int(trg[-1][0]) - self.th_sl_num:
+            if int(cur_new[1]) + int(self.th_sl_num) > int(trg[-1][0]) - int(self.th_sl_num):
                 diff = int(trg[-1][0])-int(cur_new[1])
                 cur_new = (cur_new[0], trg[-1][1])
                 for dddd in range(1, diff):
@@ -312,7 +314,6 @@ class ImageFeatureEvaluator:
         # for k, v in dict_result.items():
         #     dict_result[k] = round(v / len(selected_list), 3)
         return list(dict_result.values())
-
 
     def check_treatment(self):
         """

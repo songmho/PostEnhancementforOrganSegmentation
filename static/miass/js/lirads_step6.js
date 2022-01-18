@@ -111,6 +111,7 @@
                             data_type: "text",
                             success: function (data) {
                                 var features = data["data"];
+                                console.log(features);
                                 var num_major = 0;
                                 if (features["capsule"])
                                     num_major+=1;

@@ -36,7 +36,7 @@ import skimage.draw
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../../")
-ROOT_DIR = r"E:\2. Project\Python\LiverDiseaseDetection\models\liver_seg"
+ROOT_DIR = r"E:\2. Project\Python\LiverDiseaseDetection\models\liver_segment"
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
@@ -45,6 +45,7 @@ from mrcnn import model as modellib, utils
 
 # Path to trained weights file
 COCO_WEIGHTS_PATH = os.path.join(ROOT_DIR, "../backup/mask_rcnn_coco.h5")
+COCO_WEIGHTS_PATH = os.path.join(ROOT_DIR, "mask_rcnn_liver_000070.h5")
 
 # Directory to save logs and model checkpoints, if not provided
 # through the command line argument --logs
@@ -112,7 +113,7 @@ class LiverDataset(utils.Dataset):
         # We mostly care about the x and y coordinates of each region
         # Note: In VIA 2.0, regions was changed from a dict to a list.
         annotations = json.load(open(os.path.join(dataset_dir, "via2_01_liver.json")))
-        print("Sucess to load json")
+        print("Success to load json")
         annotations = list(annotations.values())  # don't need the dict keys
 
         # The VIA tool saves images in the JSON even if they don't have any
@@ -182,13 +183,14 @@ class LiverDataset(utils.Dataset):
 def train(model):
     """Train the model."""
     # Training dataset.
+    dataset = r"E:\1. Lab\Daily Results\2022\2201\0117\data\img\liver"
     dataset_train = LiverDataset()
-    dataset_train.load_Liver(args.dataset, "train")
+    dataset_train.load_Liver(dataset, "train")
     dataset_train.prepare()
 
     # Validation dataset
     dataset_val = LiverDataset()
-    dataset_val.load_Liver(args.dataset, "val")
+    dataset_val.load_Liver(dataset, "val")
     dataset_val.prepare()
 
     # *** This training schedule is an example. Update to your needs ***
@@ -283,12 +285,12 @@ if __name__ == '__main__':
     # Parse command line arguments
     parser = argparse.ArgumentParser(
         description='Train Mask R-CNN to detect Livers.')
-    parser.add_argument("command",
-                        metavar="<command>",
-                        help="'train' or 'splash'")
-    parser.add_argument('--dataset', required=True,
-                        metavar="/path/to/balloon/dataset/",
-                        help='Directory of the Balloon dataset')
+    # parser.add_argument("command",
+    #                     metavar="<command>",
+    #                     help="'train' or 'splash'")
+    # parser.add_argument('--dataset', required=True,
+    #                     metavar="/path/to/balloon/dataset/",
+    #                     help='Directory of the Balloon dataset')
     parser.add_argument('--weights', required=True,
                         metavar="/path/to/weights.h5",
                         help="Path to weights .h5 file or 'coco'")
@@ -303,16 +305,16 @@ if __name__ == '__main__':
                         metavar="path or URL to video",
                         help='Video to apply the color splash effect on')
     args = parser.parse_args()
-
+    command = "train"
     # Validate arguments
-    if args.command == "train":
-        assert args.dataset, "Argument --dataset is required for training"
-    elif args.command == "splash":
-        assert args.image or args.video,\
-               "Provide --image or --video to apply color splash"
+    # if command == "train":
+    #     assert args.dataset, "Argument --dataset is required for training"
+    # elif command == "splash":
+    #     assert args.image or args.video,\
+    #            "Provide --image or --video to apply color splash"
 
     # Configurations
-    if args.command == "train":
+    if command == "train":
         config = LiverConfig()
     else:
         class InferenceConfig(LiverConfig):
@@ -324,7 +326,7 @@ if __name__ == '__main__':
     config.display()
 
     # Create model
-    if args.command == "train":
+    if command == "train":
         model = modellib.MaskRCNN(mode="training", config=config,
                                   model_dir=args.logs)
     else:
@@ -355,12 +357,12 @@ if __name__ == '__main__':
         model.load_weights(weights_path, by_name=True)
 
     # Train or evaluate
-    if args.command == "train":
+    if command == "train":
         train(model)
         # model.save("./live_model_0219.h5")
-    elif args.command == "splash":
+    elif command == "splash":
         detect_and_color_splash(model, image_path=args.image,
                                 video_path=args.video)
     else:
         print("'{}' is not recognized. "
-              "Use 'train' or 'splash'".format(args.command))
+              "Use 'train' or 'splash'".format(command))
