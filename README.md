@@ -51,7 +51,9 @@ python.manage.py migrate
 #### Running Django Project
 Enter the following commend in the console.  
 The file location of the console is the root location of the project.  
-'''python manage.py runserver 0.0.0.0:8000'''
+'''
+python manage.py runserver 0.0.0.0:8000
+'''
 
 ### Implementation as Console Based System  
 To use the file in the location; miaas/lirads/software_process/main_process_v2.py  
