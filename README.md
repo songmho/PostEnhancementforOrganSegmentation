@@ -42,18 +42,18 @@ Based on Django Project Structure
 #### Defining Tables in Django Default   
 Enter the following commend in the console.  
 The file location of the console is the root location of the project.  
-'''
+```
 python manage.py makemigrations
 python.manage.py migrate
-'''
+```
 #### Importing Tables in MySQL 
 ...  
 #### Running Django Project
 Enter the following commend in the console.  
 The file location of the console is the root location of the project.  
-'''
+```
 python manage.py runserver 0.0.0.0:8000
-'''
+```
 
 ### Implementation as Console Based System  
 To use the file in the location; miaas/lirads/software_process/main_process_v2.py  
