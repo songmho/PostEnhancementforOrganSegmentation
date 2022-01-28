@@ -4,6 +4,7 @@ Programmer: MH
 Description: Code for LI-RADS Process
 """
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 import shutil
 
 import cv2
@@ -26,9 +27,10 @@ if gpus:
             [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=2048)])
     except:
         pass
-class MainProcess:
+class LiradsProcess:
     def __init__(self):
         self.cur_std_name = ""
+        self.mi_type = "MRI"
         self.step1 = MedicalImageLoader()
         self.step2 = LiverRegionSegmentater()
         self.step3 = LegionSegmentor()
@@ -36,6 +38,9 @@ class MainProcess:
         self.step5 = TumorTypeDeterminer()
         self.step6 = LIRADSFeatureComputer()
         self.step7 = LIRADSStageClassifier()
+
+    def set_mi_type(self, mi_type):
+        self.mi_type = mi_type
 
     def set_path(self, path_mi, path_prv_data):
         self.path_mi = path_mi
@@ -67,10 +72,12 @@ class MainProcess:
         setMed_img = self.step1.get_setMed_img()
 
         # Step 2. Segment Liver Region
+        self.step2.set_mi_type(self.mi_type)
         print("\n\nStep 2. Segment Liver Region")
         self.step2.set_setCT_b(setCT_a, setMed_img)
         print("    Task 1. Segment Liver Region")
         self.step2.segment_liver_regions()
+        # self.step2.clear_session()
 
         # print("    Task 2. Discard Insignificant Slices")
         # self.step2.discard_insig_slices()
@@ -93,7 +100,7 @@ class MainProcess:
 
         # Step 3. Segment Lesions
         print("\n\nStep 3. Segment Lesions")
-        self.step3.load_model()
+        self.step3.load_model(self.mi_type)
         print("    Task 1. Checking Presence of Lesion")
         result = self.step3.check_target_presence(setCT_a, setCT_b_seg)
         print("    Task 2. Segmenting Lesions")
@@ -101,6 +108,7 @@ class MainProcess:
         # print("    Task 3. Detecting Hepatic Segments for Each Lesion (Not Completed)")
         # step3.detect_hepatic_segments()
         self.step3.revise_seged_tumors()
+        # self.step3.clear_session()
 
         setCT_c_tumor = self.step3.get_setCT_C_tumor()
         setCT_c_seg = self.step3.get_setCT_c_seg()
@@ -114,6 +122,7 @@ class MainProcess:
                 cv2.imwrite(os.path.join(path_save, self.cur_std_name, srs_name, key+".png"), setCT_c_tumor[srs_name][key])
 
         # Step 4. Evaluate Image Features
+        self.step4.load_model(self.mi_type)
         print("\n\nStep 4. Evaluate Image Features")
         print("    Task 1. Generate CT Slice Group")
         self.step4.generate_slice_group(self.step1.med_type, setMed_img)
@@ -125,6 +134,7 @@ class MainProcess:
         self.step4.evaluate_image_feature(setCT_c_seg)
         print("    Task 5. Discard Insignificant Image Features")
         self.step4.discard_insignificant_image_features()
+        # self.step4.clear_session()
 
         tumor_groups = self.step4.get_tumor_groups()
         path_save = path_save_data+r"\step4"
@@ -142,8 +152,10 @@ class MainProcess:
         self.step5.sort_img_features()
         print("    Task 2. Predict Tumor Type")
         self.step5.predict_tumor_type()
+        # self.step5.clear_session()
 
         tumor_groups = self.step5.get_tumor_groups()
+        # print(tumor_groups)
 
         path_save = path_save_data+r"\step5"
         for t_id, list_features in tumor_groups.items():
@@ -215,7 +227,7 @@ class MainProcess:
 
 
 if __name__ == '__main__':
-    lirads_process = MainProcess()
+    lirads_process = LiradsProcess()
     # 7083077:  4 Phases, 2 Tumors ([Nonrim, WO], [Nonrim, WO]), [LR5, LR5]
     # 1611730:  4 Phases, 1 Tumor ([Nonrim, WO, Capsule]), LR5
     # 7064369:  4 Phases, 1 Tumor ([Nonrim, WO,]), LR5
@@ -230,10 +242,9 @@ if __name__ == '__main__':
     # Only NII: 1553442, 1604844, 7006698
 
     # for std_name in ["7083077", "7159233", "8112000", "8523522", "1383803", "1611730", "1668171",  "7048295", "7064369"]:
-    path_root = r"E:\1. Lab\Daily Results\2022\2201\0117"
-    for std_name in os.listdir(path_root):
-        if "(x)" in std_name or std_name is "result":
-            continue
+    path_root = r"E:\1. Lab\Daily Results\2022\2201\0117\target"
+    # for std_name in os.listdir(path_root):
+    for std_name in [ "8082200","7064369", "6218843",]:
         if len(std_name.split(" ")) > 1:
             print("["+std_name.split(" ")[1]+"]")
         else:

@@ -75,11 +75,11 @@
             </div>
         </div>
 
-        <div class="ml-2 mt-3">
+        <div class="ml-3 mt-3">
             <h6>Uploaded Data Information</h6>
-            <div class="row ml-2 mb-1">
-                <p class="col-3 my-auto">Acquired Date</p>
-                <button class="btn btn-outline-info col-2" id="btn_start_step1">Load Information</button>
+            <div class="row ml-3 mb-1">
+                <p class="col-3 my-auto">Load Information</p>
+                <button class="btn btn-outline-info col-1" id="btn_start_step1">Proceed</button>
             </div>
         </div>
     </div>
@@ -88,8 +88,6 @@
     <div class="bottom-">
         <button id="btn_lirads_step1_next" class="col-1 btn btn-primary float-right">Next</button>
     </div>
-
-
 
     <!-- Modal for Previous Images List -->
     <div id="modal_prv_data" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -120,7 +118,44 @@
         </div>
     </div>
 
+    <div id="modal_img_type" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Medical Image Type Selection</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body" id="modal_prv_img_body">
+                    <div class="container-fluid">
+                        <p>
+                            The uploaded series file format is not DICOM. Please select the type of medical image.
+                        </p>
+                        <div class="ml-3 mb-4">
+                            <p class="form-check form-check-inline mr-3"> Medical Image Type</p>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="imgType" id="rdoCT" value="CT">
+                                <label class="form-check-label" for="rdoCT">CT</label>
+                            </div>
+                            <div class="form-check form-check-inline ml-5">
+                                <input class="form-check-input" type="radio" name="imgType" id="rdoMRI" value="MRI">
+                                <label class="form-check-label" for="rdoMRI">MRI</label>
+                            </div>
+                        </div>
+                        <p id="div_error_case" style="color:red" class="invisible">
+                            Select an image type.
+                        </p>
+                    </div>
+                </div>
 
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btn_select_img_type">Select</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 <script src="{% static "miass/js/console.js" %}"></script>

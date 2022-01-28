@@ -16,6 +16,7 @@ from tensorflow.keras.layers import RNN, LSTM, GRU, ConvLSTM2D, Dense, Lambda, T
 from sklearn.model_selection import train_test_split
 import ast
 
+from tensorflow.keras.optimizers import Adam
 
 from miaas.lirads import constant
 
@@ -30,9 +31,9 @@ class LesionTypeClassifier:
         """
         self.n_classes = 9
         self.n_phases = 4
-        self.epochs = 200
-        self.batch_size = 30
-        self.n_tumor_types = 1
+        self.epochs = 500
+        self.batch_size = 25
+        self.n_tumor_types = 5  #1
         self.model = Sequential()
         pd.set_option("display.max_rows", None, "display.max_columns", None)    # To print whole contents in data frame
         pd.set_option('expand_frame_repr', False)
@@ -54,15 +55,28 @@ class LesionTypeClassifier:
         # self.features = self._change_to_list(self.features)
 
         # Code for loading TSV file
-        self.data = pd.read_csv(r"E:\1. Lab\Daily Results\2021\2108\0811\Dataset\Tumor Type Classification\data ver2.tsv", sep='\t', header=0)
-        self.data = self.data.iloc[:, 1:6]  # To choose only the parts of features and labels (Label[3], features[4, 5, 6, 7])
-        self.features, self.labels = self.data.iloc[:, 1:5], self.data.iloc[:, 0]   # To get Features and labels
-        self.labels = self._change_labels_to_num(self.labels)       # To change
-        self.features = self._change_to_list_for_tsv(self.features)
-        self.train_x, self.test_x, self.train_y, self.test_y = train_test_split(self.features, self.labels,
-                                                                                test_size=0.4, shuffle=True, random_state=42)
-        d = pd.DataFrame.from_records(self.features)
+        # self.data = pd.read_csv(r"E:\1. Lab\Daily Results\2021\2108\0811\Dataset\Tumor Type Classification\data ver2.tsv", sep='\t', header=0)
+        # self.data = self.data.iloc[:, 1:6]  # To choose only the parts of features and labels (Label[3], features[4, 5, 6, 7])
+        # self.features, self.labels = self.data.iloc[:, 1:5], self.data.iloc[:, 0]   # To get Features and labels
+        # self.labels = self._change_labels_to_num(self.labels)       # To change
+        # self.features = self._change_to_list_for_tsv(self.features)
+        # self.train_x, self.test_x, self.train_y, self.test_y = train_test_split(self.features, self.labels,
+        #                                                                         test_size=0.4, shuffle=True, random_state=42)
         # print(d)
+
+        self.data = pd.read_csv(r"E:\1. Lab\Daily Results\2022\2201\0125\04. Tumor Type Classification\train.tsv", sep='\t',header=0)
+        # self.data = self.data.sample(frac=1).reset_index(drop=True)
+        # self.data = self.data.iloc[:,1:6]  # To choose only the parts of features and labels (Label[3], features[4, 5, 6, 7])
+        self.train_x, self.train_y = self.data.iloc[:, 4:8], self.data.iloc[:, 0]  # To get Features and labels
+        self.train_y = self._change_labels_to_num(self.train_y)  # To change
+        self.train_x = self._change_to_list_for_tsv(self.train_x)
+
+        self.data = pd.read_csv(r"E:\1. Lab\Daily Results\2022\2201\0125\04. Tumor Type Classification\test.tsv", sep='\t',header=0)
+        # self.data = self.data.sample(frac=1).reset_index(drop=True)
+        # self.data = self.data.iloc[:,1:6]  # To choose only the parts of features and labels (Label[3], features[4, 5, 6, 7])
+        self.test_x, self.test_y = self.data.iloc[:, 4:8], self.data.iloc[:, 0]  # To get Features and labels
+        self.test_y = self._change_labels_to_num(self.test_y)  # To change
+        self.test_x = self._change_to_list_for_tsv(self.test_x)
 
     def generate_batches(self):
         """
@@ -89,16 +103,19 @@ class LesionTypeClassifier:
 
     def _change_labels_to_num(self, labels):
         result = []
-        # for i in constant.TumorType:
-        #     labels = labels.replace(i.name, i.value)
-        # for i in range(len(labels)):
-        #     r = [0]*self.n_tumor_types
-        #     r[labels[i]] = 1
-        #     result.append(r)
-        # result = np.array(result)
-        for i in labels:
-            result.append(i)
+        names = labels.copy()
+        for i in constant.TumorType:
+            labels = labels.replace(i.name, i.value)
+        for i in range(len(labels)):
+            r = [0]*self.n_tumor_types
+
+            r[labels[i]] = 1
+            result.append(r)
+            print(i, names[i], labels[i], result[-1])
         result = np.array(result)
+        # for i in labels:
+        #     result.append(i)
+        # result = np.array(result)
         return result
 
     def _change_to_list_for_tsv(self, df):
@@ -127,26 +144,26 @@ class LesionTypeClassifier:
         s = s.split("]")[0]
 
         result = []
-        for d in s.split(","):
+        for d in s.split(". "):
             result.append(float(d))
         return result
 
     def define_structure(self):
-        # self.model = Sequential()
-        # self.model.add(LSTM(self.n_phases, input_shape=(None, self.n_classes)))
-        # self.model.add(Dense(self.n_tumor_types, activation='softmax'))
+        self.model = Sequential()
+        self.model.add(LSTM(self.n_phases, activation="tanh", input_shape=(None, self.n_classes)))
+        self.model.add(Dense(self.n_tumor_types, activation='softmax'))
 
-        input = Input(shape=(None, self.n_classes))
-        o, h, c = LSTM(self.n_phases, activation='tanh', return_state=True)(input)
+        # input = Input(shape=(None, self.n_classes))
+        # o, h, c = LSTM(self.n_phases, activation='tanh', return_state=True)(input)
         # o = SimpleRNN(None, activation='tanh')(input)
-        output = Dense(self.n_tumor_types, activation='sigmoid')(o)
-        self.model = Model(inputs=input, outputs=output)
+        # output = Dense(self.n_tumor_types, activation='softmax')(o)
+        # self.model = Model(inputs=input, outputs=output)
 
-        # self.model.compile(loss="categorical_crossentropy", optimizer='adam', metrics=['accuracy'])
-        self.model.compile(loss="binary_crossentropy", optimizer='adam',
-                           metrics=['accuracy', tf.keras.metrics.Precision(name="precision"),
-                                    tf.keras.metrics.Recall(name="recall"), tf.keras.metrics.FalsePositives(name="false_positive"),
-                                    tf.keras.metrics.FalseNegatives(name="false_negative")])
+        self.model.compile(loss="categorical_crossentropy", optimizer=Adam(lr=0.0005), metrics=['accuracy'])
+        # self.model.compile(loss="binary_crossentropy", optimizer='adam',
+        #                    metrics=['accuracy', tf.keras.metrics.Precision(name="precision"),
+        #                             tf.keras.metrics.Recall(name="recall"), tf.keras.metrics.FalsePositives(name="false_positive"),
+        #                             tf.keras.metrics.FalseNegatives(name="false_negative")])
         self.model.summary()
 
     def train(self):
@@ -154,11 +171,11 @@ class LesionTypeClassifier:
 
         # self.history = self.model.fit(self.train_x, self.train_y, batch_size=1, epochs=self.epochs,
         #                               validation_data=([self.test_x], self.test_y), )
-        checkpoint_path = r"./backup/tumor_type_classifier, new/tumor_type_classifier_{epoch:05d}.h5"
+        checkpoint_path = r"./backup/tumor_type_classifier, mri/tumor_type_classifier_{epoch:05d}.h5"
         cp_callback = callbacks.ModelCheckpoint(filepath=checkpoint_path, save_weights_only=False, verbose=1, period=1)
-        tb_callback = callbacks.TensorBoard(log_dir=r"./backup/tumor_type_classifier, new/log", histogram_freq=1)
+        tb_callback = callbacks.TensorBoard(log_dir=r"./backup/tumor_type_classifier, mri/log", histogram_freq=1)
 
-        self.history = self.model.fit(self.train_x, self.train_y, epochs=self.epochs,
+        self.history = self.model.fit(self.train_x, self.train_y, epochs=self.epochs, batch_size=self.batch_size,
                                       validation_data=(self.test_x, self.test_y), callbacks=[cp_callback, tb_callback])
         print("Elapsed Time: ", int(time.time()-start_time), "Seconds")
 
@@ -170,7 +187,7 @@ class LesionTypeClassifier:
         m_json = self.model.to_json()
         with open(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Type_Classification_RNN\model_1_rnn.json', 'w') as json_file:
             json_file.write(m_json)
-        self.model.save(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Type_Classification_RNN\model_1_rnn.h5')
+        self.model.save(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Type_Classification_RNN\model_1_rnn_mri.h5')
 
     def load_model(self):
         json_file = open(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Type_Classification_RNN\model_1_rnn.json', 'r')
@@ -180,16 +197,17 @@ class LesionTypeClassifier:
         json_file.close()
         self.model = model_from_json(self.model)
 
-        self.model.load_weights(r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_type_classifier\tumor_type_classifier_00020.h5")
+        # self.model.load_weights(r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_type_classifier\tumor_type_classifier_00200.h5")
+        self.model.load_weights(r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_type_classifier, mri\tumor_type_classifier_00295.h5")
         # self.model.load_weights("..\\models\\Tumor_Type_Progression\\weight_1_rnn.h5")
         # self.model.load_weights("..\\models\\Tumor_Type_Progression\\weight_1_None.h5")
-        # self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-        self.model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+        self.model.compile(loss='categorical_crossentropy',  optimizer=Adam(lr=0.0005), metrics=['accuracy'])
+        # self.model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
         # self.model.summary()
 
     def get_tumor_type(self, result):
-        # id = np.argmax(result)
-        id = round(result[0][0])
+        id = np.argmax(result)
+        # id = round(result[0][0])
         return {"id": id, "Tumor Type": constant.TumorType(id), "wholeConf":result}
 
 
@@ -199,18 +217,57 @@ if __name__ == '__main__':
     tpd.define_structure()
     # tpd.train()
     # tpd.save_model()
+
     tpd.load_model()
-    data = [[[0.00000, 0.19943, 0.00000, 0.00000, 0.00000, 0.00000, 0.00002, 1.00000, 0.00000],
-        [0.00000, 0.31063, 0.00000, 0.00011, 0.00000, 0.00000, 0.08663, 0.00012, 0.00338],
-             [0.00000, 0.99973, 0.00196, 0.00002, 0.00000, 0.00003, 0.00630, 0.00003, 0.00007],
-        [0.00000, 0.06142, 0.00010, 0.00000, 0.00000, 0.00004, 0.16014, 0.00019, 0.01393],
-    ]]
-    # data = [[[0.00000, 0.00050, 0.00000, 0.00054, 0.00000, 0.00000, 0.09201, 1.0000, 0.00001],
-    #     [0.00000, 0.00001, 0.00000, 0.00000, 0.00000, 0.00000, 0.99989, 0.00054, 0.00003],
-    #     [0.00000, 0.00007, 0.00001, 0.00001, 0.00000, 0.00003, 0.00758, 0.00000, 0.99975],
-    #     [0.00000, 0.99994, 0.00001, 0.00000, 0.00065, 0.00000, 0.00003, 0.00121, 0.00040]
-    # ]]
+
+    data = [[
+        [0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 1]
+             ],
+        [
+            [0, 0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 1]
+        ],
+        [
+            [0,0,0,1,0,0,0,0,0],
+            [0,0,0,1,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,1]
+        ],
+        [
+            [1.550020278795472e-07, 5.5071168454061995e-08, 8.959763378843125e-08, 0.9205795584945008,
+             1.6341530644872364e-06, 8.656126899708738e-08, 0.01405459630787467, 8.469006573808002e-08,
+             0.17221032480908263],
+            [1.6830057229006673e-07, 9.702100305296137e-08, 8.683280861010445e-08, 0.7816197477313145,
+             3.8776669016523024e-07, 6.107429714741208e-08, 0.07107445970672992, 9.020180712380041e-08,
+             0.25856387025909316],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [3.8270862603440035e-07, 1.3518639576659553e-07, 9.465504469119423e-08, 0.05908140527297974,
+             6.29299348964274e-08, 4.1250830733474687e-07, 4.4019473949674645e-05, 1.6452806885780547e-07,
+             0.978549861907959]
+        ]
+    ]
     print(tpd.predict(data))
+
+
+
+    #
+    # tpd.load_model()
+    # data = [[[0.00000, 0.19943, 0.00000, 0.00000, 0.00000, 0.00000, 0.00002, 1.00000, 0.00000],
+    #     [0.00000, 0.31063, 0.00000, 0.00011, 0.00000, 0.00000, 0.08663, 0.00012, 0.00338],
+    #          [0.00000, 0.99973, 0.00196, 0.00002, 0.00000, 0.00003, 0.00630, 0.00003, 0.00007],
+    #     [0.00000, 0.06142, 0.00010, 0.00000, 0.00000, 0.00004, 0.16014, 0.00019, 0.01393],
+    # ]]
+    # # data = [[[0.00000, 0.00050, 0.00000, 0.00054, 0.00000, 0.00000, 0.09201, 1.0000, 0.00001],
+    # #     [0.00000, 0.00001, 0.00000, 0.00000, 0.00000, 0.00000, 0.99989, 0.00054, 0.00003],
+    # #     [0.00000, 0.00007, 0.00001, 0.00001, 0.00000, 0.00003, 0.00758, 0.00000, 0.99975],
+    # #     [0.00000, 0.99994, 0.00001, 0.00000, 0.00065, 0.00000, 0.00003, 0.00121, 0.00040]
+    # # ]]
+    # print(tpd.predict(data))
 
     # print(len(tpd.model.get_weights()))
     # print(tpd.model.layers[0].output)

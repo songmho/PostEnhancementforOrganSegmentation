@@ -17,6 +17,7 @@ from miaas.lirads.software_process.step_2 import LiverRegionSegmentater
 from miaas.lirads.software_process.step_3 import LegionSegmentor
 from miaas.lirads.software_process.step_4 import ImageFeatureEvaluator
 
+
 class LIRADSFeatureComputer:
     def __init__(self):
         self.num_major_features = 0
@@ -25,11 +26,15 @@ class LIRADSFeatureComputer:
         self.has_capsule = False
         self.has_washout = False
         self.has_threshold_growth = False
+        self.mi_type = "CT"
         self.setCT_tumor_info = {}
 
         self.setCT_a = {}
         self.list_lirad_features = {}
         self.voxel = 0.0
+
+    def set_mi_type(self, mi_type):
+        self.mi_type = mi_type
 
     def initialize(self, std_name):
         self.num_major_features = 0
@@ -81,7 +86,7 @@ class LIRADSFeatureComputer:
             setCT_b_seg = prv_step2.get_setCT_b_seg()
 
             # Step 3. Segment Lesions
-            prv_step3.load_model()
+            prv_step3.load_model(self.mi_type)
             prv_step3.segment_lesion(prv_setCT_a, setCT_b_seg)
             prv_setCT_c_tumor = prv_step3.get_setCT_C_tumor()
             prv_setCT_c_seg = prv_step3.get_setCT_c_seg()
@@ -326,6 +331,7 @@ class LIRADSFeatureComputer:
             # f = open(os.path.join(path_save, self.std_name, "step_6.txt"), "w")
             # f.write(str(t_id)+"  :  "+str(self.tumor_groups[t_id]["major_features"]))
             # f.close()
+
     def get_tumor_groups(self):
         return self.tumor_groups
 

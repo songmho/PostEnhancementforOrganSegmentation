@@ -37,12 +37,15 @@ class LegionSegmentor:
     def clear_session(self):
         clear_session()
 
-    def load_model(self):
+    def load_model(self, mi_type):
         # TUMOR_SEG_MODEL_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\tumor_segment\\logs"
         # TUMOR_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\tumor_segment\\mask_rcnn_lesion_0100.h5"
 
         TUMOR_SEG_MODEL_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\tumor_segment_2\\logs"
-        TUMOR_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\tumor_segment_2\\mask_rcnn_tumor_000140.h5"
+        if mi_type == "CT":
+            TUMOR_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\tumor_segment_2\\mask_rcnn_tumor_000140.h5"
+        else:
+            TUMOR_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\tumor_segment_2\\mask_rcnn_lesion_mri_1700.h5"
         self.tumor_detector = modellib.MaskRCNN(mode="inference", model_dir=TUMOR_SEG_MODEL_DIR, config=self.config)
         self.tumor_detector.load_weights(TUMOR_SEG_WEIGHT_DIR, by_name=True)
 
@@ -93,7 +96,7 @@ class LegionSegmentor:
             self.setCT_C_Seg[name] = {}
             self.setCT_C_tumor[name] = {}
 
-        path_save = r"E:\1. Lab\Daily Results\2022\2201\0117\result\step3"
+        path_save = r"E:\1. Lab\Daily Results\2022\2201\0121\result\step3"
         for srs_name, slices in setCT_b.items():
             count = 0
             keys = []
@@ -115,9 +118,9 @@ class LegionSegmentor:
                 msks_new = self.__enhance_seg_tumor_data(msk_cur_liver, masks)
                 masks, rois, conf_values, rois_img = [], [], [], []
                 for k in range(len(mask_result[0, 0, :])):    # Tumor Mask ID
-                    cur_lesion = np.array(np.expand_dims(mask_result[:, :, k], axis=-1), dtype=np.uint8)
+                    cur_lesion = np.array(np.where(mask_result[:,:,k] == True, 255, 0), dtype=np.uint8)
                     msks_new = self.__enhance_seg_tumor_data(msk_cur_liver, cur_lesion)
-                    if np.count_nonzero(msks_new)>0:
+                    if np.count_nonzero(msks_new) > 0:
                         masks.append(cur_lesion)
                         rois.append(roi_result[k])
                         conf_values.append(conf_value_result[k])
@@ -206,6 +209,8 @@ class LegionSegmentor:
         To discard tumor segmented results that are not located in target organ
         :return:
         """
+        cur_organ_msk = np.array(cur_organ_msk, np.uint8)
+        cur_tumor_msk = np.array(cur_tumor_msk, np.uint8)
         cur_cnt, _ = cv2.findContours(cur_tumor_msk, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         cur_mask = np.zeros(cur_tumor_msk.shape)
         for k in cur_cnt:
@@ -226,7 +231,7 @@ class LegionSegmentor:
 
 if __name__ == "__main__":
     ls = LegionSegmentor()
-    ls.load_model()
+    ls.load_model("mri")
     path_std = r"D:\Dataset\LLU Dataset\6218843_07202017 (MR)\01. Original Study\img\test-resized"
     path_save = r"E:\1. Lab\Daily Results\2022\2201\0115\lesion\6218843_07202017 (MR)"
     if not os.path.isdir(path_save):

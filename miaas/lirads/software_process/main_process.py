@@ -32,6 +32,7 @@ if gpus:
 class LiradsProcess:
     def __init__(self):
         self.img_path = ""
+        self.img_type = None
         self.step_1 = MedicalImageLoader()
         self.step_2 = LiverRegionSegmentater()
         self.step_3 = LegionSegmentor()
@@ -47,6 +48,7 @@ class LiradsProcess:
         self.setCT_c_tumor = {}
 
         self.max_size = 0
+
     def initialize_env(self):
         self.step_1.initialize()
         self.step_2.initialize("")
@@ -95,6 +97,13 @@ class LiradsProcess:
         self.step_1.convert_color_depth()
         self.set_med_img = self.step_1.get_setMed_img()
         self.setCT_a = self.step_1.get_setCT_a()
+
+    def set_mi_type(self, img_type):
+        self.img_type = img_type
+        self.step_2.set_mi_type(self.img_type)
+
+    def get_mi_type(self):
+        return self.img_type
 
     def get_get_id_info(self):
         self.list_series_id = list(self.set_med_img.keys())
@@ -159,7 +168,7 @@ class LiradsProcess:
                 self.list_imgs_setCT_b.append(self.setCT_b[i][j])
                 list_img_convs.append(self.__convert_img_to_binary(self.setCT_b[i][j]))
         self.step_3.clear_session()
-        self.step_3.load_model()
+        self.step_3.load_model(self.img_type)
         return self.list_labels_setCT_b, list_img_convs
 
     def post_process_liver(self, cur_phase_id, step):
@@ -224,7 +233,7 @@ class LiradsProcess:
                         self.list_tumor_imgs.append(self.step_4.make_roi(img, mask))
                         list_t_i.append(self.__convert_img_to_binary(self.step_4.make_roi(img, mask)))
         self.step_4.clear_session()
-        self.step_4.load_model()
+        self.step_4.load_model(self.img_type)
         return self.list_tumor_names, list_t_i
 
     def evaluate_img_features(self, img_id):

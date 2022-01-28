@@ -1955,6 +1955,17 @@ def post_process_liver(request):
         return JsonResponse({"state": False})
 
 @csrf_exempt
+def set_img_type(request):
+    if request.method == "POST":
+        print(request.POST.get("data"))
+        data = json.loads(request.POST.get("data"))
+        img_type = data["type"]
+        container.mias_container.lirads_process.set_mi_type(img_type)
+        return JsonResponse({"state":True})
+    else:
+        return JsonResponse({"state":False})
+
+@csrf_exempt
 def step1_save_lirads_imgs(request):
     if request.method == "POST":
         data = json.loads(request.POST.get("data"))
@@ -1982,13 +1993,21 @@ def step1_save_lirads_imgs(request):
         if not os.path.isdir(os.path.join(root_path, mrn, mrn+"_"+acq_date, phase)):
             cur_path = os.path.join(root_path, mrn, mrn+"_"+acq_date, phase)
             os.mkdir(cur_path)
+        format = None
         for c, x in enumerate(files):
             def process(f):
                 with open(cur_path + '/' + str(f).zfill(5), 'wb+') as destination:
+                    print(destination.name)
+                    format = destination.name.split(".")[-1]
                     for chunk in f.chunks():
                         destination.write(chunk)
-            process(x)
-        return JsonResponse({'state': True})
+                return format
+            format = process(x)
+        print(format)
+        if format == "dcm":
+            container.mias_container.lirads_process.set_mi_type(...)
+        type = container.mias_container.lirads_process.get_mi_type()
+        return JsonResponse({'state': True, "data":{"format":format, "type":type}})
     else:
         return JsonResponse({'state': False})
 

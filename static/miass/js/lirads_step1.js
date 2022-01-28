@@ -12,7 +12,8 @@
         for(var i=0; i<fileList.length;i++){
             selected_img.push(fileList[i].name);
         }
-        var data = {"img":selected_img, "phase":phase, "pat_name": pat_name, "mrn":mrn, "pat_birth":pat_birth, "acq_date":acq_date}
+        var data = {"img":selected_img, "phase":phase, "pat_name": pat_name, "mrn":mrn, "pat_birth":pat_birth,
+            "acq_date":acq_date}
         cur_form_data_tmp.append("data", JSON.stringify(data));
         var splited = selected_img[0].split(".");
         let format = splited[splited.length-1];
@@ -23,7 +24,7 @@
         $.ajax({
             type:"POST",
             enctype: 'multipart/form-data',
-            url: '/api/load_lirads_img_nii/',
+            url: '/api/load_lirads_img/',
             data: cur_form_data_tmp,
             processData: false,
             contentType: false,
@@ -31,6 +32,12 @@
             timeout: 600000,
             async: false,
             success: function (data) {
+                console.log(data["data"]);
+                var type = data["data"]["type"]
+                var format = data["data"]["format"]
+                if (format === "nii" && type === null) {
+                    $("#modal_img_type").modal("show");
+                }
                 write_log_in_console("CT slices in "+phase+" phase are uploaded.");
             }, error: function (){
             }
@@ -131,7 +138,7 @@
                 url: "/api/retrieve_images",
                 async: true,
                 method: 'POST',
-                data: JSON.stringify({"uid": null,}),
+                data: JSON.stringify({"uid": null}),
                 success: function (data) {
                     var d = data["data"];
                     console.log(d);
@@ -176,6 +183,47 @@
 
                 }
             });
+        });
+
+        $("#btn_select_img_type").on("click", function () {
+            var img_type = $("input[name='imgType']:checked").val();
+            console.log(img_type)
+            if (img_type === undefined){
+                $("#div_error_case").removeClass("invisible").addClass("visible");
+
+            }else if (img_type === "MRI"){
+                $("#div_error_case").addClass("invisible").removeClass("visible");
+                $.ajax({
+                    url: "/api/set_img_type",
+                    async: true,
+                    method: 'POST',
+                    data: {"data":JSON.stringify({"type": "MRI"})},
+                    success: function (data) {
+                        $("#modal_prv_data").modal("hide");
+                        write_log_in_console("Current Medical Image's Type is determined to MRI.");
+
+                    }, error: function (){
+                    $("#div_error_case").removeClass("invisible").addClass("visible");
+                    }
+                });
+            } else if (img_type === "CT"){
+                $("#div_error_case").addClass("invisible").removeClass("visible");
+                $.ajax({
+                    url: "/api/set_img_type",
+                    async: true,
+                    method: 'POST',
+                    data: {"data":JSON.stringify({"type": "CT"})},
+                    success: function (data) {
+                        $("#modal_prv_data").modal("hide");
+                        write_log_in_console("Current Medical Image's Type is determined to CT.");
+                    }, error: function (){
+                    $("#div_error_case").removeClass("invisible").addClass("visible");
+                    }
+                });
+
+            }else {
+
+            }
         });
 
 

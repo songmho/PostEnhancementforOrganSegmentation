@@ -20,13 +20,17 @@ class LiverSegmenter:
         self.margin = 15
         self.config = liver.LiverConfig()
 
-    def load_model(self):
+    def load_model(self, mi_type="CT"):
         # LIVER_SEG_MODEL_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment\\logs"
         # LIVER_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment\\mask_rcnn_liver_0100.h5"
 
         LIVER_SEG_MODEL_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment_2\\logs"
-        LIVER_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment\\mask_rcnn_liver_000180.h5"
-
+        LIVER_SEG_MODEL_DIR = r"F:\model_save"
+        if mi_type== "CT":
+            LIVER_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment\\mask_rcnn_liver_000180.h5"
+        else:
+            LIVER_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment\\mask_rcnn_liver_mri_1110.h5"
+            LIVER_SEG_WEIGHT_DIR = r"F:\model_save\liver_2\mask_rcnn_face_trouble_1110.h5"
 
         self.liver_detector = modellib.MaskRCNN(mode='inference',
                                                 model_dir=LIVER_SEG_MODEL_DIR,
@@ -100,27 +104,33 @@ if __name__ == '__main__':
     # cv2.waitKey(0)
 
     ls = LiverSegmenter()
-    ls.load_model()
-    path_std = r"D:\Dataset\LLU Dataset\8082200_08312017, MR\01. Original CT Study\03. PNG resized"
-    path_save = r"E:\1. Lab\Daily Results\2022\2201\0115\8082200_08312017 (MR)"
+    ls.load_model("MRI")
+    path_std = r"E:\1. Lab\Daily Results\2022\2201\0117\Liver Segmentation Dataset\Imgs\origin"
+    path_save = r"E:\1. Lab\Daily Results\2022\2201\0121\liver_seg_result"
     if not os.path.isdir(path_save):
         os.mkdir(path_save)
+    for i in os.listdir(path_std):
+        print(i)
+        result = ls.segment(cv2.imread(os.path.join(path_std, i)))
+        cv2.imwrite(os.path.join(path_save, i), np.array(result["masks"], np.uint8))
+        # cv2.waitKey(5)
 
-    for j in os.listdir(path_std):
-        path_srs = os.path.join(path_std, j)
-        os.mkdir(os.path.join(path_save, j))
-        for i in os.listdir(path_srs):
-            result = ls.segment(cv2.imread(os.path.join(path_srs, i)))
-            result["masks"] = np.array(np.where(result["masks"] > 0, 255, 0), dtype=np.uint8)
-            result_mask = np.zeros((512, 512))
-            if result["masks"].shape[2] > 0:
-                for k in range(result["masks"].shape[2]):
-                    result_mask += result["masks"][:, :, k]
-            print(i)
-            cv2.imshow("origin", cv2.imread(os.path.join(path_srs, i)))
-            cv2.imshow("test", np.array(result_mask, np.uint8))
-            cv2.imwrite(os.path.join(path_save, j, i), np.array(result_mask, np.uint8))
-            cv2.waitKey(5)
+
+    # for j in os.listdir(path_std):
+    #     path_srs = os.path.join(path_std, j)
+    #     os.mkdir(os.path.join(path_save, j))
+    #     for i in os.listdir(path_srs):
+    #         result = ls.segment(cv2.imread(os.path.join(path_srs, i)))
+    #         result["masks"] = np.array(np.where(result["masks"] > 0, 255, 0), dtype=np.uint8)
+    #         result_mask = np.zeros((512, 512))
+    #         if result["masks"].shape[2] > 0:
+    #             for k in range(result["masks"].shape[2]):
+    #                 result_mask += result["masks"][:, :, k]
+    #         print(i)
+    #         cv2.imshow("origin", cv2.imread(os.path.join(path_srs, i)))
+    #         cv2.imshow("test", np.array(result_mask, np.uint8))
+    #         cv2.imwrite(os.path.join(path_save, j, i), np.array(result_mask, np.uint8))
+    #         cv2.waitKey(5)
 
     # path_save = r"E:\1. Lab\Daily Results\2021\2109\0924\CHAOS_Train_seg_result"
     # path = r"E:\1. Lab\Daily Results\2021\2109\0924\CHAOS_Train"

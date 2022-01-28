@@ -5,12 +5,13 @@ Description: Code for evaluating image features for lesion's images
 """
 import os
 
-from miaas.lirads.util.tumor_type_classifier import LesionImagingFeatureClassifier
+from miaas.lirads.util.tumor_image_feature_classifier import LesionImagingFeatureClassifier
 import numpy as np
 import cv2
 from miaas.lirads.constant import ImageType
 
 from tensorflow.python.keras.backend import clear_session
+
 
 class ImageFeatureEvaluator:
     def __init__(self):
@@ -18,24 +19,26 @@ class ImageFeatureEvaluator:
         self.setCT_seg = {}
         self.setCT_tumor_seg = {}
         self.feature_classifier = LesionImagingFeatureClassifier()
-        self.feature_classifier.load_model()
         self.features = {}
         self.list_phases = []
 
         self.setCT_sl_groups = {}
-        self.MARGIN = 15
+        self.MARGIN = 10
         self.tumor_groups = {}
         self.th_sl_num = 3
         self.LEN_FEATURES = 9
         self.tumor_features = {}
         self.tumor_groups = {}
 
+    def load_model(self, mi_type):
+        self.feature_classifier.load_model(mi_type)
+
     def initialize(self, std_name):
         self.features = {}
         self.list_phases = []
 
         self.setCT_sl_groups = {}
-        self.MARGIN = 15
+        self.MARGIN = 10
         self.tumor_groups = {}
         self.th_sl_num = 3
         self.LEN_FEATURES = 9
@@ -46,9 +49,6 @@ class ImageFeatureEvaluator:
 
     def clear_session(self):
         clear_session()
-
-    def load_model(self):
-        self.feature_classifier.load_model()
 
     def generate_slice_group(self, med_type, setMed_img):
         """
@@ -75,6 +75,7 @@ class ImageFeatureEvaluator:
         To make groups of lesions considering multiple CT slices
         :return:
         """
+
         self.setCT_tumor_grps = {}
         for srs_name, srs in setCT_tumor_seg.items():
             self.setCT_tumor_grps[srs_name] = {}
@@ -149,8 +150,8 @@ class ImageFeatureEvaluator:
             trg_img = srs["sl_start_end_img"]
             new_group = []
             new_group_img = []
-
-            print(len(srs["sl_start_end"]), srs["sl_start_end"])
+            if len(srs["sl_start_end"]) == 0:
+                continue
             cur_new_img = trg_img[0]
             cur_new = trg[0]
             new_info_tumors[srs_name] = {"sl_start_end": [], "sl_start_end_img": []}
@@ -225,12 +226,18 @@ class ImageFeatureEvaluator:
                 list_srs = []
                 for t_info in list_tumors:
                     msk = t_info[1]
-                    if np.count_nonzero(msk)==0:
+
+                    if np.count_nonzero(msk) == 0:
+                        print("Current Tumor", t_info[0],"are not detected.")
                         list_srs.append({"High Id": [], "Labels": [], 'ConfidenceScores': [], "WholeConf": [0.0]*self.LEN_FEATURES})
                     else:
+
                         sl = setCT_c_seg[srs_id][t_info[0]]["img"]
                         cur_roi = self.make_roi(sl, msk)
-                        result = self.feature_classifier.predict(cur_roi)
+                        print("Current Tumor", t_info[0],"are  detected.", end="    ")
+                        # cv2.imshow("tumor", cur_roi)
+                        # cv2.waitKey()
+                        result = self.feature_classifier.predict(cur_roi/255)
                         list_srs.append(self.get_image_features(result))
                 self.tumor_groups[tumor_id]["features"][srs_id] = list_srs
 
@@ -239,7 +246,7 @@ class ImageFeatureEvaluator:
         if "features" not in list(self.tumor_groups[tumor_id].keys()):
             self.tumor_groups[tumor_id]["features"]={}
         if np.count_nonzero(img) >0:
-            result = self.get_image_features(self.feature_classifier.predict(img))
+            result = self.get_image_features(self.feature_classifier.predict(img/255))
         else:
             result = {"High Id": [], "Labels": [], 'ConfidenceScores': [], "WholeConf": [0.0]*self.LEN_FEATURES}
         if srs_id not in list(self.tumor_groups[tumor_id]["features"]):
@@ -249,6 +256,7 @@ class ImageFeatureEvaluator:
 
     def get_image_features(self, list_conf):
         result = self.feature_classifier.get_features(list_conf[0])
+        print(result)
         return result
 
     def discard_insignificant_image_features(self):
@@ -310,7 +318,7 @@ class ImageFeatureEvaluator:
             try:
                 dict_result[k] = v/len(selected_list)
             except:
-                dict_result[k] =0
+                dict_result[k] = 0
         # for k, v in dict_result.items():
         #     dict_result[k] = round(v / len(selected_list), 3)
         return list(dict_result.values())

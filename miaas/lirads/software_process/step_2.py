@@ -21,7 +21,10 @@ class LiverRegionSegmentater:
         self.setCT_b_liver = {}
         self.setCT_b_seg = {}
         # self.ml_liver_seg.clear_session()
-        self.ml_liver_seg.load_model()
+
+    def set_mi_type(self, mi_type):
+        self.mi_type = mi_type
+        self.ml_liver_seg.load_model(self.mi_type)
 
     def initialize(self, std_name):
         self.setCT_b = None
@@ -59,15 +62,32 @@ class LiverRegionSegmentater:
                 self.setCT_b_liver[srs_name][i] = sl
                 # if result["masks"].shape[2]> 0:
                 zeros = np.zeros((result["masks"].shape[0], result["masks"].shape[1], 1), dtype=np.uint8)
+                #
+                # msks = result["masks"]
+                # msk = np.zeros((512, 512))
+                # for i in range(msks.shape[2]):
+                #     ii = np.where(msks[:, :, i] == True, 255, 0)
+                #     ii = np.array(ii, np.uint8)
+                #     msk += ii
+                # msk[msk > 0] = 255
+                # msk[msk == 0] = 0
+                # result["masks"] = msk
+
                 if result["masks"].shape[2] > 1:
                     for q in range(result["masks"].shape[2]):
-                        cur = np.array(np.expand_dims(result["masks"][:, :, q], axis=-1), dtype=np.uint8)
-                        zeros = np.add(cur, zeros)
+                        ii = np.array(np.expand_dims(np.where(result["masks"][:,:,q] == True, 255, 0), axis=-1), dtype=np.uint8)
+                        zeros += ii
+                    zeros[zeros >0] = 255
+                    zeros[zeros == 0] = 0
                     result["masks"] = zeros
+
                 elif result["masks"].shape[2] == 0:
                     result["masks"] = zeros
                 result["masks"] = np.array(np.where(result["masks"] > 0, 255, 0), dtype=np.uint8)
                 self.setCT_b_seg[srs_name][k] = result
+                cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2022\2201\0121\result\step2",
+                                         str(srs_name) + "_" + str(k) + ".png"),
+                            self.setCT_b_seg[srs_name][k]["masks"])
                 i+=1
 
     def clear_session(self):

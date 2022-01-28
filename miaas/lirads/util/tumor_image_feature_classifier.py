@@ -8,6 +8,8 @@ import locale
 import math
 import os
 import time
+from datetime import datetime
+
 import pandas as pd
 
 import cv2
@@ -21,12 +23,9 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score
 from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn import metrics
-
-import miaas.lirads.constant
-from miaas.lirads.util.tumor_progress_diagnosis import LesionTypeClassifier
+from tensorflow.keras.optimizers import Adam
 
 
 class LesionImagingFeatureClassifier:
@@ -34,20 +33,12 @@ class LesionImagingFeatureClassifier:
         """
         To initialize variables
         """
-        self.epochs = 250
-        self.batch_size = 8
-        self.n_classes = 9
-        self.th_confidence = 0.8
+        self.epochs = 2000
+        self.batch_size = 25    # Previous: , 20
+        self.th_confidence = 0.7
         self.IMAGE_DIMS = (128, 128, 1)
-        self.labels = ["Calcification",
-                       "Capsule",
-                       "CentralScar",
-                       "Hypoattenuating",
-                       "NoAPHE",
-                       "Nodular",
-                       "NonrimAPHE",
-                       "Unenhanced",
-                       "Washout"]
+        self.labels = ["Calcification", "Capsule", "CentralScar", "Hypoattenuating", "NoAPHE", "Nodular","NonrimAPHE","Unenhanced","Washout"]
+        self.n_classes = len(self.labels)
         self.model = Sequential()
         # K.set_image_dim_ordering('tf')
         # config = tf.ConfigProto()
@@ -101,11 +92,65 @@ class LesionImagingFeatureClassifier:
         out = Activation("sigmoid")(x)                  # To transform values using activation function (ReLU)
         self.model = Model(inputs=input, outputs=out)   # To define structure using input layer and output layer
 
-        self.model.compile(loss="binary_crossentropy", optimizer='adam',
+        self.model.compile(loss="binary_crossentropy", optimizer=Adam(lr=0.0005),
                            metrics=['accuracy', tf.keras.metrics.Precision(name="precision"),
                                     tf.keras.metrics.Recall(name="recall"), tf.keras.metrics.FalsePositives(name="false_positive"),
                                     tf.keras.metrics.FalseNegatives(name="false_negative")])  # To compile the structure
         self.model.summary()        # To print information of each layer
+
+    def load_data_new(self, path=r"E:\1. Lab\Daily Results\2022\2201\0117\data for classifying tumor image features from 5 studies\Increasing Size-ESRGAN"):
+        """
+        To load subsets from local
+        """
+        # To load training set
+        path_train = os.path.join(path, "train")
+        df_train = pd.read_csv(os.path.join(path, "train.csv"))
+        self.train_x = []
+        self.train_y = []
+
+        for i in os.listdir(path_train):
+            img = cv2.imread(os.path.join(path_train, i), cv2.IMREAD_GRAYSCALE)
+            img = cv2.resize(img, (self.IMAGE_DIMS[1], self.IMAGE_DIMS[0]))
+            img = img_to_array(img)
+            self.train_x.append(img)
+        self.train_y = np.array(df_train.iloc[:, 7:16])
+
+        path_val = os.path.join(path, "val")
+        df_val = pd.read_csv(os.path.join(path, "val.csv"))
+        self.val_x = []
+        self.val_y = []
+        for i in os.listdir(path_val):
+            img = cv2.imread(os.path.join(path_val, i), cv2.IMREAD_GRAYSCALE)
+            img = cv2.resize(img, (self.IMAGE_DIMS[1], self.IMAGE_DIMS[0]))
+            img = img_to_array(img)
+            self.val_x.append(img)
+        self.val_y = np.array(df_val.iloc[:, 7:16])
+
+
+        path_test = os.path.join(path, "test")
+        df_test = pd.read_csv(os.path.join(path, "test.csv"))
+        self.test_x = []
+        self.test_y = []
+        for i in os.listdir(path_test):
+            img = cv2.imread(os.path.join(path_test, i), cv2.IMREAD_GRAYSCALE)
+            img = cv2.resize(img, (self.IMAGE_DIMS[1], self.IMAGE_DIMS[0]))
+            img = img_to_array(img)
+            self.test_x.append(img)
+        self.test_y = np.array(df_test.iloc[:, 7:16])
+
+        img_gen = ImageDataGenerator()
+        img_gen_origin = ImageDataGenerator()
+        self.train_x = np.array(self.train_x, dtype="float32")/255
+        self.train_y = np.array(self.train_y, dtype="float64")
+        self.val_x = np.array(self.test_x, dtype="float32")/255
+        self.val_y = np.array(self.test_y, dtype="float64")
+        self.test_x = np.array(self.test_x, dtype="float32")/255
+        self.test_y = np.array(self.test_y, dtype="float64")
+        self.train_data_gen = img_gen.flow(self.train_x, self.train_y, batch_size=self.batch_size)
+        self.test_data_gen = img_gen_origin.flow(self.test_x, self.test_y, batch_size=self.batch_size)
+        self.num_total_train = len(self.train_x)
+        self.num_total_test = len(self.test_x)
+
 
     def load_data(self):
         """
@@ -121,9 +166,9 @@ class LesionImagingFeatureClassifier:
             f_path = os.path.join(data_loc, i)
             for j in os.listdir(os.path.join(data_loc, i)):
                 img_path = os.path.join(f_path, j)
-                image = cv2.imread(img_path) ## To load image data
-                image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # To change image color to gray scale
-                image = cv2.resize(image, (self.IMAGE_DIMS[1], self.IMAGE_DIMS[0])) # To resize (128, 128)
+                image = cv2.imread(img_path)    ## To load image data
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)     # To change image color to gray scale
+                image = cv2.resize(image, (self.IMAGE_DIMS[1], self.IMAGE_DIMS[0]))     # To resize (128, 128)
                 image = img_to_array(image)     # To change image to array
                 data.append(image)              # To store image data
                 label = i.split("_")    # To make labels list splitting current file name
@@ -139,10 +184,9 @@ class LesionImagingFeatureClassifier:
         (self.train_x, self.test_x, self.train_y, self.test_y) = train_test_split(data, labels,
                                                                                   test_size=0.2, random_state=42)
         img_gen = ImageDataGenerator()
-        # print(self.train_x, self.train_y)
-
+        img_gen_normal = ImageDataGenerator()
         self.train_data_gen = img_gen.flow(self.train_x, self.train_y, batch_size=self.batch_size)
-        self.test_data_gen = img_gen.flow(self.test_x, self.test_y, batch_size=self.batch_size)
+        self.test_data_gen = img_gen_normal.flow(self.test_x, self.test_y, batch_size=self.batch_size)
         self.num_total_train = len(self.train_x)
         self.num_total_test = len(self.test_x)
 
@@ -155,9 +199,31 @@ class LesionImagingFeatureClassifier:
 
     def compute_performance(self):
         y_pred = []
+        for x in self.train_x:
+            y_pred.append((self.predict(x)[0]>self.th_confidence))
+            # print(y_pred[-1])
+        print("[Training Set]")
+        print("Accuracy: ", accuracy_score(self.train_y, y_pred))
+        print("Precision: ", precision_score(self.train_y, y_pred, pos_label="positive", average='micro'))
+        print("Recall: ", recall_score(self.train_y, y_pred,pos_label="positive",average='micro'))
+
+        y_pred = []
+        for x in self.val_x:
+            y_pred.append((self.predict(x)[0] > self.th_confidence))
+            # print(y_pred[-1])
+        print("[Validation Set]")
+        print("Accuracy: ", accuracy_score(self.val_y, y_pred))
+        print("Precision: ", precision_score(self.val_y, y_pred, pos_label="positive", average='micro'))
+        print("Recall: ", recall_score(self.val_y, y_pred, pos_label="positive", average='micro'))
+
+        y_pred = []
         for x in self.test_x:
-            y_pred.append(self.predict(x[0])[0])
-        print(accuracy_score(self.test_y, y_pred))
+            y_pred.append((self.predict(x)[0]>self.th_confidence))
+            # print(y_pred[-1])
+        print("[Test Set]")
+        print("Accuracy: ", accuracy_score(self.test_y, y_pred))
+        print("Precision: ", precision_score(self.test_y, y_pred,pos_label="positive",average='micro'))
+        print("Recall: ", recall_score(self.test_y, y_pred,pos_label="positive",average='micro'))
 
     def train(self):
         """
@@ -165,14 +231,14 @@ class LesionImagingFeatureClassifier:
         :return:
         """
         start_time = time.time()
-        checkpoint_path = r"./backup/tumor_img_feature_classifier/tumor_image_feature_classifier_{epoch:05d}.h5"
+        checkpoint_path = r"./backup/tumor_img_feature_classifier/0127a-esrgan_batch_40/tumor_image_feature_classifier_{epoch:05d}.h5"
         cp_callback = callbacks.ModelCheckpoint(filepath=checkpoint_path, save_weights_only=False, verbose=1, period=5)
 
-        tb_callback = callbacks.TensorBoard(log_dir=r"./backup/tumor_img_feature_classifier/log", histogram_freq=1)
+        tb_callback = callbacks.TensorBoard(log_dir=r"./backup/tumor_img_feature_classifier/0127a-esrgan_batch_40/log", histogram_freq=1)
         self.history = self.model.fit_generator(
             self.train_data_gen,
             epochs=self.epochs,
-            validation_data=(self.test_x, self.test_y),
+            validation_data=(self.train_x, self.train_y),
             steps_per_epoch=math.ceil(self.num_total_train/self.batch_size),
             validation_steps=math.ceil(self.num_total_test/self.batch_size),
             callbacks=[cp_callback, tb_callback]
@@ -187,6 +253,10 @@ class LesionImagingFeatureClassifier:
         """
         # if len(test_imgs[0,0,:])>1:
         #     test_imgs = cv2.cvtColor(test_imgs, cv2.COLOR_BGR2GRAY)
+        # t =  np.array(test_imgs*255, dtype=np.uint8)
+        # cv2.imshow("test", t)
+        # print(t.dtype, t.shape, np.unique(t))
+        # cv2.waitKey()
         image = cv2.resize(test_imgs, (128, 128))
         image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
@@ -200,11 +270,12 @@ class LesionImagingFeatureClassifier:
         :return:
         """
         m_json = self.model.to_json()
-        with open(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Image_Features_Classification\model_binary_sigmoid.json', 'w') as json_file:
+        with open(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Image_Features_Classification\mri\model_binary_sigmoid.json', 'w') as json_file:
             json_file.write(m_json)     # To save trained model
-        self.model.save(r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Image_Features_Classification\weight_binary_sigmoid_"+str(self.epochs)+".h5") # To save weight
+        d = datetime.now()
+        self.model.save(r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Image_Features_Classification\mri\tumor_image_feature_classifier_"+str(self.epochs)+"_2022-01-24a.h5") # To save weight
 
-    def load_model(self, k=None):
+    def load_model(self, k=None, i=250):
         """
         To load saved model
         :return:
@@ -214,13 +285,27 @@ class LesionImagingFeatureClassifier:
         json_file.close()
         self.model = model_from_json(self.model)    # To convert json file to model
 
-        if k==None:
+        if k == "CT":
             # self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Image_Features_Classification\weight_binary_sigmoid_'+str(self.epochs)+".h5") # To load weight
             # self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier, prv\tumor_image_feature_classifier_00101.h5') # To load weight
-            self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\tumor_image_feature_classifier_00230.h5') # To load weight
-        else:
-            self.model.load_weights(r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\tumor_image_feature_classifier_"+str(k).zfill(5)+".h5")
-        self.model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])  # To compile model stacked
+            self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\model\tumor_image_feature_classifier_00230.h5') # To load weight
+
+        else:   # MRI
+            # self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\model\tumor_image_feature_classifier_mri_00250.h5') # To load weight
+            # self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\models\Tumor_Image_Features_Classification\mri\tumor_image_feature_classifier_00300.h5') # To load weight
+            # self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\0124a\tumor_image_feature_classifier_01000.h5') # To load weight
+
+
+
+            # self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\0124c\tumor_image_feature_classifier_'+str(i).zfill(5)+'.h5') # To load weight
+            # self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\0124c\tumor_image_feature_classifier_00750.h5') # To load weight
+
+            self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\0127a-esrgan_batch_40\tumor_image_feature_classifier_00375.h5') # To load weight
+
+            # self.model.load_weights(r'E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\0127a-esrgan_batch_40\tumor_image_feature_classifier_'+str(i).zfill(5)+'.h5') # To load weight
+
+            # self.model.load_weights(r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier\tumor_image_feature_classifier_"+str(k).zfill(5)+".h5")
+        self.model.compile( optimizer=Adam(lr=0.0005), loss='binary_crossentropy', metrics=['accuracy'])  # To compile model stacked
         # self.model.summary()
         # self.model.make_predict_function()
 
@@ -287,8 +372,9 @@ def extract_major_features(list_features):
     return dict_result
 
 
-
 if __name__ == '__main__':
+    gpus = tf.config.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(gpus[0], True)
     labels = ["Calcification",
               "Capsule",
               "CentralScar",
@@ -301,7 +387,22 @@ if __name__ == '__main__':
 
     lfc = LesionImagingFeatureClassifier()
     lfc.define_structure()
-    # data = lfc.load_data()
+    data = lfc.load_data_new(r"E:\1. Lab\Daily Results\2022\2201\0117\data for classifying tumor image features from 5 studies\Increasing Size-ESRGAN")
+    lfc.train()
+    # lfc.save_model()
+
+    for i in range(2000, 0, -25):
+        print("["+str(i)+"]")
+        lfc.load_model("MRI", i)
+        lfc.compute_performance()
+        print("\n\n")
+
+    # path =r"E:\1. Lab\Daily Results\2022\2201\0117\data for classifying tumor image features\val"
+    # for i in os.listdir(path):
+    #     img = cv2.imread(os.path.join(path, i), cv2.IMREAD_GRAYSCALE)
+    #     result = lfc.predict(img)
+    #     print(result)
+
     # lfc.train()
     # lfc.save_model()
 
