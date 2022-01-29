@@ -33,8 +33,8 @@ class LesionImagingFeatureClassifier:
         """
         To initialize variables
         """
-        self.epochs = 2000
-        self.batch_size = 25    # Previous: , 20
+        self.epochs = 200
+        self.batch_size = 20    # Previous: , 20
         self.th_confidence = 0.7
         self.IMAGE_DIMS = (128, 128, 1)
         self.labels = ["Calcification", "Capsule", "CentralScar", "Hypoattenuating", "NoAPHE", "Nodular","NonrimAPHE","Unenhanced","Washout"]
@@ -103,7 +103,7 @@ class LesionImagingFeatureClassifier:
         To load subsets from local
         """
         # To load training set
-        path_train = os.path.join(path, "train")
+        path_train = os.path.join(path, "Training Set")
         df_train = pd.read_csv(os.path.join(path, "train.csv"))
         self.train_x = []
         self.train_y = []
@@ -115,19 +115,19 @@ class LesionImagingFeatureClassifier:
             self.train_x.append(img)
         self.train_y = np.array(df_train.iloc[:, 7:16])
 
-        path_val = os.path.join(path, "val")
-        df_val = pd.read_csv(os.path.join(path, "val.csv"))
-        self.val_x = []
-        self.val_y = []
-        for i in os.listdir(path_val):
-            img = cv2.imread(os.path.join(path_val, i), cv2.IMREAD_GRAYSCALE)
-            img = cv2.resize(img, (self.IMAGE_DIMS[1], self.IMAGE_DIMS[0]))
-            img = img_to_array(img)
-            self.val_x.append(img)
-        self.val_y = np.array(df_val.iloc[:, 7:16])
+        # path_val = os.path.join(path, "val")
+        # df_val = pd.read_csv(os.path.join(path, "val.csv"))
+        # self.val_x = []
+        # self.val_y = []
+        # for i in os.listdir(path_val):
+        #     img = cv2.imread(os.path.join(path_val, i), cv2.IMREAD_GRAYSCALE)
+        #     img = cv2.resize(img, (self.IMAGE_DIMS[1], self.IMAGE_DIMS[0]))
+        #     img = img_to_array(img)
+        #     self.val_x.append(img)
+        # self.val_y = np.array(df_val.iloc[:, 7:16])
 
 
-        path_test = os.path.join(path, "test")
+        path_test = os.path.join(path, "Test Set")
         df_test = pd.read_csv(os.path.join(path, "test.csv"))
         self.test_x = []
         self.test_y = []
@@ -140,17 +140,16 @@ class LesionImagingFeatureClassifier:
 
         img_gen = ImageDataGenerator()
         img_gen_origin = ImageDataGenerator()
-        self.train_x = np.array(self.train_x, dtype="float32")/255
+        self.train_x = np.array(self.train_x, dtype="float32")
         self.train_y = np.array(self.train_y, dtype="float64")
-        self.val_x = np.array(self.test_x, dtype="float32")/255
-        self.val_y = np.array(self.test_y, dtype="float64")
-        self.test_x = np.array(self.test_x, dtype="float32")/255
+        # self.val_x = np.array(self.test_x, dtype="float32")
+        # self.val_y = np.array(self.test_y, dtype="float64")
+        self.test_x = np.array(self.test_x, dtype="float32")
         self.test_y = np.array(self.test_y, dtype="float64")
         self.train_data_gen = img_gen.flow(self.train_x, self.train_y, batch_size=self.batch_size)
         self.test_data_gen = img_gen_origin.flow(self.test_x, self.test_y, batch_size=self.batch_size)
         self.num_total_train = len(self.train_x)
         self.num_total_test = len(self.test_x)
-
 
     def load_data(self):
         """
@@ -208,15 +207,6 @@ class LesionImagingFeatureClassifier:
         print("Recall: ", recall_score(self.train_y, y_pred,pos_label="positive",average='micro'))
 
         y_pred = []
-        for x in self.val_x:
-            y_pred.append((self.predict(x)[0] > self.th_confidence))
-            # print(y_pred[-1])
-        print("[Validation Set]")
-        print("Accuracy: ", accuracy_score(self.val_y, y_pred))
-        print("Precision: ", precision_score(self.val_y, y_pred, pos_label="positive", average='micro'))
-        print("Recall: ", recall_score(self.val_y, y_pred, pos_label="positive", average='micro'))
-
-        y_pred = []
         for x in self.test_x:
             y_pred.append((self.predict(x)[0]>self.th_confidence))
             # print(y_pred[-1])
@@ -231,10 +221,10 @@ class LesionImagingFeatureClassifier:
         :return:
         """
         start_time = time.time()
-        checkpoint_path = r"./backup/tumor_img_feature_classifier/0127a-esrgan_batch_40/tumor_image_feature_classifier_{epoch:05d}.h5"
+        checkpoint_path = r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier, mris\Case B\tumor_image_feature_classifier_{epoch:05d}.h5"
         cp_callback = callbacks.ModelCheckpoint(filepath=checkpoint_path, save_weights_only=False, verbose=1, period=5)
 
-        tb_callback = callbacks.TensorBoard(log_dir=r"./backup/tumor_img_feature_classifier/0127a-esrgan_batch_40/log", histogram_freq=1)
+        tb_callback = callbacks.TensorBoard(log_dir=r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads\util\backup\tumor_img_feature_classifier, mris\Case B\log", histogram_freq=1)
         self.history = self.model.fit_generator(
             self.train_data_gen,
             epochs=self.epochs,
@@ -387,15 +377,15 @@ if __name__ == '__main__':
 
     lfc = LesionImagingFeatureClassifier()
     lfc.define_structure()
-    data = lfc.load_data_new(r"E:\1. Lab\Daily Results\2022\2201\0117\data for classifying tumor image features from 5 studies\Increasing Size-ESRGAN")
+    data = lfc.load_data_new(r"E:\1. Lab\Daily Results\2022\2201\0129\Tumor Image Type Dataset\Dataset (Margin 7px)")
     lfc.train()
     # lfc.save_model()
 
-    for i in range(2000, 0, -25):
-        print("["+str(i)+"]")
-        lfc.load_model("MRI", i)
-        lfc.compute_performance()
-        print("\n\n")
+    # for i in range(2000, 0, -25):
+    #     print("["+str(i)+"]")
+    #     lfc.load_model("MRI", i)
+    #     lfc.compute_performance()
+    #     print("\n\n")
 
     # path =r"E:\1. Lab\Daily Results\2022\2201\0117\data for classifying tumor image features\val"
     # for i in os.listdir(path):
