@@ -18,7 +18,7 @@ import numpy as np
 sys.path.append(r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\miaas\lirads")
 from miaas.lirads.util.hepatic_segmentator import HepaticSegmentsSegmentator
 from step_1 import MedicalImageLoader
-from step_3 import LegionSegmentor
+from step_3 import LesionSegmentor
 
 
 class Step2HepaticSegmentSegmentator:
@@ -36,8 +36,10 @@ class Step2HepaticSegmentSegmentator:
         self.n_slices_contain_liver = 0
         self.sl_start, self.sl_end = -1, -1
         self.path_save = r""
+
     def set_cur_save_path(self, p):
         self.path_save = p
+
     def set_target_study(self, std_org, std_cvt):
         self.target_study = std_org
         self.target_study_cvt = std_cvt
@@ -76,29 +78,30 @@ class Step2HepaticSegmentSegmentator:
             # To combine results segmented to same hepatic segment ID
             list_scores = []
             list_rois = []
-            cur_masks = None
-            for j in np.unique(detail[i]["class_ids"]): # To select Unique IDs
+            revised_mask = None
+            for j in np.unique(detail[i]["class_ids"]): # To select unique IDs
                 list_cur_id = np.where(detail[i]["class_ids"] == j)[0]  # select a result
                 mask_cur = detail[i]["masks"][:,:,list_cur_id[0]]
                 list_scores.append(detail[i]["scores"][list_cur_id[0]])
                 list_rois.append(detail[i]["rois"][list_cur_id[0]])
                 for k in list_cur_id[1:]:   # To combine segmented results for each segment ID
                     mask_cur = np.where(detail[i]["masks"][:,:,k]== True, True, mask_cur)
-                if cur_masks is None:
-                    cur_masks = mask_cur
-                    cur_masks = np.reshape(cur_masks, (512, 512, 1))
+                if revised_mask is None:       # If the segmented hepatic segment is the first to be saved at revised_mask
+                    revised_mask = mask_cur
+                    revised_mask = np.reshape(revised_mask, (512, 512, 1))
                 else:
-                    cur_masks = np.dstack((cur_masks, mask_cur))
-            if cur_masks is None:
-                cur_masks = np.array((512, 512, 1))
-                cur_masks.fill(False)
-            detail[i]["masks"] = cur_masks
+                    revised_mask = np.dstack((revised_mask, mask_cur))    # To connect the current mask to the last of revised_mask
+            if revised_mask is None:    # If any hepatic segment is not segmented
+                revised_mask = np.array((512, 512, 1))
+                revised_mask.fill(False)
+            detail[i]["masks"] = revised_mask
 
             # To discard applied data
             detail[i]["rois"] = list_rois
             detail[i]["scores"] = list_scores
             detail[i]["class_ids"] = np.unique(detail[i]["class_ids"])
 
+            # To generate an image expressing each hepatic segment using grayscale color
             msk = np.zeros((512, 512))
             for j in range(len(detail[i]["class_ids"])):
                 msk = np.where(detail[i]["masks"][:, :, j] == True, int(detail[i]["class_ids"][j] * 28), msk)
@@ -106,9 +109,11 @@ class Step2HepaticSegmentSegmentator:
             self.hepatic_segments_detail[self.cur_std_id][self.list_cur_srs[self.cur_srs_id]][list_keys[i]] = detail[i]
             self.hepatic_segments[self.cur_std_id][self.list_cur_srs[self.cur_srs_id]][list_keys[i]] = msk
 
+            # To save segmented hepatic segment with each segment's name
             cv2.imwrite(os.path.join(self.path_save,r"hepatic_segs", self.list_cur_srs[self.cur_srs_id] + "_" +list_keys[i] + ".png"),
                         self.__add_seg_id_in_img(msk, self.target_study_cvt[self.cur_std_id][self.list_cur_srs[self.cur_srs_id]][list_keys[i]]))
 
+        # To save each segmented hepatic segment in each slice
         i = self.list_cur_srs[self.cur_srs_id]
         for j in list(self.setCT_b_seg[i].keys()):  # Slice
             if len(np.unique(np.where(self.hepatic_segments_detail[self.cur_std_id][i][j]["masks"] == True)))>1:
@@ -134,30 +139,29 @@ class Step2HepaticSegmentSegmentator:
                 if self.sl_start!= -1 and self.sl_end==-1:
                     self.sl_end = int(j)-1
 
-
-        # Case 2. Not same Location and Shape of Liver to the results of liver segmentation
+        # TACTIC 2. Remaining Hepatic Segments in Liver Region (Problem 4 in Challenge 4) (DONE)
+        #  To refine segmented results considering Not same Location and Shape of Liver to the results of liver segmentation
         i = self.list_cur_srs[self.cur_srs_id]
         for j in list(self.setCT_b_seg[i].keys()):   # Slice
             list_new_class_ids = []
             cur_liver_seg = np.array(np.reshape(self.setCT_b_seg[i][j]["masks"], (512, 512)), np.uint8)
-            # if j =="00047":
-            #     cv2.imshow("prv", cur_hep_seg)
-            cur_masks = self.hepatic_segments_detail[self.cur_std_id][i][j]["masks"]
-            list_cur_classes = self.hepatic_segments_detail[self.cur_std_id][i][j]["class_ids"]
+            cur_masks = self.hepatic_segments_detail[self.cur_std_id][i][j]["masks"]            # List of Segmented Hepatic Segments mask
+            list_cur_classes = self.hepatic_segments_detail[self.cur_std_id][i][j]["class_ids"] # List of segmented Hepatic Segments ID
             msk_revised = np.zeros((512, 512))
             new_masks = None
             for idx in range(len(list_cur_classes)):
                 cur_mask_img = np.array(np.where(cur_masks[:,:,idx]==True, 255, 0), np.uint8)
-                overlapped_cur = np.bitwise_and(cur_liver_seg, cur_mask_img)
-                if len(np.unique(overlapped_cur)) > 1:
+                overlapped_cur = np.bitwise_and(cur_liver_seg, cur_mask_img)            # To compute inclusion relationship between two segmented results
+                if len(np.unique(overlapped_cur)) > 1:                      # If any area is overlapped
                     list_new_class_ids.append(self.hepatic_segments_detail[self.cur_std_id][i][j]["class_ids"][idx])
-                    if new_masks is None:
-                        new_masks = np.where(overlapped_cur>0, True, False)
+                    if new_masks is None:   # Case of First hepatic segment to be saved at new_masks
+                        new_masks = np.where(overlapped_cur > 0, True, False)
                         new_masks = np.reshape(new_masks, (512, 512, 1))
-                    else:
-                        new_masks= np.dstack((new_masks, np.where(overlapped_cur>0, True, False)))
+                    else:       # To save current mask to the last of new_masks (512*512*n) (n: # of stacked masks)
+                        new_masks = np.dstack((new_masks, np.where(overlapped_cur>0, True, False)))
                     msk_revised = np.array( np.where(new_masks[:, :, -1] == True, int(self.hepatic_segments_detail[self.cur_std_id][i][j]["class_ids"][idx] * 28), msk_revised), np.uint8)
 
+            # To save refined result to local
             if new_masks is None:
                 new_masks = np.zeros((512, 512, 1))
                 new_masks.fill(False)
@@ -171,6 +175,7 @@ class Step2HepaticSegmentSegmentator:
                                      i + "_" + j + ".png"),
                         self.__add_seg_id_in_img(msk_revised, self.target_study_cvt[self.cur_std_id][i][j]))
 
+            # To save each section of segmented hepatic segment considering ID of hepatic segment
             if len(np.unique(msk_revised))>1:
                 for k in range(1, 10):
                     if k in self.hepatic_segments_detail[self.cur_std_id][i][j]["class_ids"]:
@@ -178,7 +183,8 @@ class Step2HepaticSegmentSegmentator:
                         cur_msk_select = np.array(np.where(self.hepatic_segments_detail[self.cur_std_id][i][j]["masks"][:, :, cur_idx]==True, 255, 0), np.uint8)
                         cv2.imwrite(os.path.join(self.path_save, r"hepatic_segs_refined2_detail",i + "_" + j + "_"+str(k)+".png"), cur_msk_select)
 
-        # Case 3.Comparing with the possible combination of hepatic segments considering the location of a slice
+        # TACTIC 4. Checking possible combinations of hepatic segments considering slice location in a series
+        # To refine segmented results considering Comparing with the possible combination of hepatic segments considering the location of a slice  (Challenge 2)
         i = self.list_cur_srs[self.cur_srs_id]
         for j in list(self.setCT_b_seg[i].keys()):   # Slice
             cur_masks = self.hepatic_segments_detail[self.cur_std_id][i][j]["masks"]
@@ -197,28 +203,7 @@ class Step2HepaticSegmentSegmentator:
                     else:
                         pass
                 msk_revised = np.array(np.where(cur_masks[:, :, idx] == True, int(cur_id * 28), msk_revised), np.uint8)
-            # for idx in range(len(list_cur_classes)):
-            #     cur_id = list_cur_classes[idx]
-            #     if cur_id in list_discarded_ids:
-            #         continue
-            #     new_classes.append(cur_id)
-            #     if new_masks is None:
-            #         new_masks = cur_masks[:,:,idx]
-            #         new_masks = np.reshape(new_masks, (512, 512, 1))
-            #     else:
-            #         new_masks = np.dstack((new_masks, cur_masks[:,:,idx]))
-            #
-            #     msk_revised = np.array(np.where(new_masks[:, :, -1] == True, int(cur_id * 28), msk_revised), np.uint8)
-            #
-            # if new_masks is None:
-            #     new_masks = np.zeros((512, 512, 1))
-            #     new_masks.fill(False)
-            #
-            #
-            # self.hepatic_segments_detail[self.cur_std_id][i][j]["masks"] = new_masks
-            # self.hepatic_segments_detail[self.cur_std_id][i][j]["class_ids"] = new_classes
-            cv2.imwrite(os.path.join(self.path_save,r"hepatic_segs_refined3",
-                                     i + "_" + j + ".png"),
+            cv2.imwrite(os.path.join(self.path_save,r"hepatic_segs_refined3", i + "_" + j + ".png"),
                         self.__add_seg_id_in_img(msk_revised, self.target_study_cvt[self.cur_std_id][i][j]))
 
             if len(np.unique(msk_revised))>1:
@@ -230,14 +215,17 @@ class Step2HepaticSegmentSegmentator:
         # TODO: To check the location of each section
         pass
 
-        # Case 1-2. Checking Overlapped Segmented Results
-        # SUBCase 1. Whole Overlapped hepatic segments are in possible combination --> Remain / Assign part of each section
-        # SUBCase 2. Some Overlapped are not in possibles --> Remove the section (Already Removed)
-        # SUBCase 3. Whole Overlapped not in possibles --> Remove whole sections (Already Removed)
+        # TACTIC 5-1. To refine segmented results considering Checking Overlapped Segmented Results (Problem 1 in Challenge 4)
+        # Case of Overlapped Hepatic Segments
+        # Case 1. Overlapped Hepatic Segments that can be reflected at the slice
+        # Case 2. some hepatic segments can't be reflected at the slice
+        # Case 3. Overlapped Hepatic Segments that can be reflected at the slice
         for j in list(self.setCT_b_seg[i].keys()):  # Slice
             list_cur_classes = self.hepatic_segments_detail[self.cur_std_id][i][j]["class_ids"]
             msk_revised = np.zeros((512, 512))
+            self.__compute_discarded_segments()
             for idx in range(len(list_cur_classes)):
+
                 masks_cur = np.array(np.where(self.hepatic_segments_detail[self.cur_std_id][i][j]["masks"][:, :, idx]== True, 255, 0), dtype=np.uint8)
                 for idx_other in range(len(list_cur_classes)):
                     if idx >= idx_other:
@@ -263,7 +251,22 @@ class Step2HepaticSegmentSegmentator:
                         cur_msk_select = np.array(np.where(self.hepatic_segments_detail[self.cur_std_id][i][j]["masks"][:, :, cur_idx]==True, 255, 0), np.uint8)
                         cv2.imwrite(os.path.join(self.path_save, r"hepatic_segs_refined4_detail",i + "_" + j + "_"+str(k)+".png"), cur_msk_select)
 
-        # Case 1. Multiple Sections for A hepatic Segment
+        # TACTIC 3. Revising shape of segmented result filling segmented iver region
+        # TODO:  To refine segmented results considering inter-slice relationship
+        # Case 4. Checking Continuity of Each Hepatic Segment in adjacent Slices (Consider shape, location, size)
+        i = self.list_cur_srs[self.cur_srs_id]
+        for j in list(self.setCT_b_seg[i].keys()):  # Slice
+            cur_liver_seg = np.array(np.reshape(self.setCT_b_seg[i][j]["masks"], (512, 512)), np.uint8)
+            cur_masks = self.hepatic_segments_detail[self.cur_std_id][i][j]["masks"]
+            list_cur_classes = self.hepatic_segments_detail[self.cur_std_id][i][j]["class_ids"]
+            total_area = 0
+            for idx in range(len(list_cur_classes)):
+                total_area += np.count_nonzero(np.where(cur_masks[:,:,idx]==True, 255, 0))
+
+            if np.count_nonzero(cur_liver_seg) > 20000:
+                print("    ",i,"    ",j, "    ", np.count_nonzero(cur_liver_seg), "    ", total_area, "    ", np.abs(np.count_nonzero(cur_liver_seg)-total_area))
+
+        # TACTIC 5-2. To refine segmented results considering Multiple Sections for A hepatic Segment (Problem 2 in Challenge 4)
         i = self.list_cur_srs[self.cur_srs_id]
         for j in list(self.setCT_b_seg[i].keys()):  # Slice
             list_cur_classes = self.hepatic_segments_detail[self.cur_std_id][i][j]["class_ids"]
@@ -277,7 +280,7 @@ class Step2HepaticSegmentSegmentator:
                     for cnt in ctns:
                         area.append(cv2.contourArea(cnt))
                     if len(area)>0:
-                        list_enough_area = np.where(np.array(area)/max(area) > 0.1)[0] # To remain the area is bigger than 30% of maximum size
+                        list_enough_area = np.where(np.array(area)/max(area) > 0.3)[0] # To remain the area is bigger than 30% of maximum size
                         cvt_masks = np.zeros((512, 512))
                         cvt_masks.fill(False)
                         for selected in list_enough_area:
@@ -299,7 +302,9 @@ class Step2HepaticSegmentSegmentator:
                         cur_msk_select = np.array(np.where(self.hepatic_segments_detail[self.cur_std_id][i][j]["masks"][:, :, cur_idx]==True, 255, 0), np.uint8)
                         cv2.imwrite(os.path.join(self.path_save, r"hepatic_segs_refined1_detail",i + "_" + j + "_"+str(k)+".png"), cur_msk_select)
 
-        # Case 4. Checking Continuity of Each Hepatic Segment in adjacent Slices (Consider shape, location, size)
+        # TACTIC 6.
+        # # TODO:  To refine segmented results considering inter-slice relationship
+        # # Case 4. Checking Continuity of Each Hepatic Segment in adjacent Slices (Consider shape, location, size)
         # i = self.list_cur_srs[self.cur_srs_id]
         # for j in list(self.setCT_b_seg[i].keys()):  # Slice
         #     cur_liver_seg = np.array(np.reshape(self.setCT_b_seg[i][j]["masks"], (512, 512)), np.uint8)
@@ -312,7 +317,6 @@ class Step2HepaticSegmentSegmentator:
         #     if np.count_nonzero(cur_liver_seg) > 20000:
         #         print("    ",i,"    ",j, "    ", np.count_nonzero(cur_liver_seg), "    ", total_area, "    ", np.abs(np.count_nonzero(cur_liver_seg)-total_area))
 
-            # Considering the location groups
 
         # To remain a section for a hepatic segment class in a slice
         i = self.list_cur_srs[self.cur_srs_id]
@@ -362,9 +366,6 @@ class Step2HepaticSegmentSegmentator:
         Source: https://radiologyassistant.nl/abdomen/liver/segmental-anatomy
         """
         possible_combs_1 = [[1, 2, 4, 8, 9]]
-        possible_combs_2 = [[1, 3, 4, 8, 9]]
-        possible_combs_3 = [[1, 3, 5, 8, 9]]
-        possible_combs_4 = [[1, 3, 5, 6, 7]]
         possible_combs_5 = [[3, 5, 6, 7]]
         result= []
         classes_to_change = {}  # {before:after}
@@ -390,70 +391,6 @@ class Step2HepaticSegmentSegmentator:
                 classes_to_change[8] = 7
             if 9 in result:
                 classes_to_change[9] = 6
-
-        # if self.sl_start<=int(sl_id) and self.sl_start+int((self.n_slices_contain_liver)*0.10)>int(sl_id):    # [1]
-        #     # print(sl_id, "Case [1]", ids, self.__return_not_contained_ids(possible_combs_1, ids))
-        #     result = self.__return_not_contained_ids(possible_combs_1, ids)
-        #     if 3 in result:
-        #         classes_to_change[3] = 2
-        #     if 5 in result:
-        #         classes_to_change[5] = 4
-        #     if 6 in result:
-        #         classes_to_change[6] = 9
-        #     if 7 in result:
-        #         classes_to_change[7] = 8
-        #
-        # elif self.sl_start+int((self.n_slices_contain_liver)*0.10)<=int(sl_id) and self.sl_start+int((self.n_slices_contain_liver)*0.25)>int(sl_id): # [2]
-        #     # print(sl_id, "Case [2]", ids, self.__return_not_contained_ids(possible_combs_2, ids))
-        #     result = self.__return_not_contained_ids(possible_combs_2, ids)
-        #     if 3 in result:
-        #         classes_to_change[3] = 2
-        #     if 5 in result:
-        #         classes_to_change[5] = 4
-        #     if 6 in result:
-        #         classes_to_change[6] = 9
-        #     if 7 in result:
-        #         classes_to_change[7] = 8
-        #
-        # elif self.sl_start+int((self.n_slices_contain_liver)*0.25)<=int(sl_id) and self.sl_start+int((self.n_slices_contain_liver)*0.35)>int(sl_id): # [3]
-        #     # print(sl_id, "Case [2] or [3]", ids, self.__return_not_contained_ids(possible_combs_3, ids))
-        #     result = self.__return_not_contained_ids(possible_combs_3, ids)
-        #     if 2 in result:
-        #         classes_to_change[2] = 3
-        #     if 4 in result:
-        #         classes_to_change[4] = 5
-        #     if 6 in result:
-        #         classes_to_change[6] = 9
-        #     if 7 in result:
-        #         classes_to_change[7] = 8
-        #
-        # elif self.sl_start+int((self.n_slices_contain_liver)*0.35)<=int(sl_id) and self.sl_start+int((self.n_slices_contain_liver)*0.65)>int(sl_id): # [4]
-        #     # print(sl_id, "Case [3]", ids, self.__return_not_contained_ids(possible_combs_4, ids))
-        #     result = self.__return_not_contained_ids(possible_combs_4, ids)
-        #
-        #     if 2 in result:
-        #         classes_to_change[2] = 3
-        #     if 4 in result:
-        #         classes_to_change[4] = 5
-        #     if 8 in result:
-        #         classes_to_change[8] = 7
-        #     if 9 in result:
-        #         classes_to_change[9] = 6
-        # elif self.sl_start+int((self.n_slices_contain_liver)*0.65)<=int(sl_id) and self.sl_start+int((self.n_slices_contain_liver)*1.0)>=int(sl_id): # [4]
-        #     # print(sl_id, "Case [4]", ids, self.__return_not_contained_ids(possible_combs_5, ids))
-        #     result = self.__return_not_contained_ids(possible_combs_5, ids)
-        #
-        #     if 2 in result:
-        #         classes_to_change[2] = 3
-        #     if 4 in result:
-        #         classes_to_change[4] = 5
-        #     if 8 in result:
-        #         classes_to_change[8] = 7
-        #     if 9 in result:
-        #         classes_to_change[9] = 6
-        else:   # [5]
-            pass
-            # print(sl_id, "Case [5]", ids, self.__return_not_contained_ids([[]], ids))
         return result, classes_to_change
 
     def __return_not_contained_ids(self, src, trg):
@@ -506,7 +443,6 @@ class Step2HepaticSegmentSegmentator:
                         cx_arrow = cx_new +10
                     elif i == 2 or i == 3:  # Seg II and Seg III
                         # cy --
-
                         list_trg = np.array(np.where(background[:, cx] == 0)[0])
                         list_slct_y = list_trg[np.where(list_trg < cy)[0]]
                         cy_new = list_slct_y[-1]-15
@@ -577,7 +513,7 @@ class LiverLesionSegmentator:
         self.list_cur_srs = []
         self.cur_std_id = ""
         self.hepatic_segment = {}
-        self.lesion_segmentator = LegionSegmentor()
+        self.lesion_segmentator = LesionSegmentor()
         self.list_cur_sl = []
         self.info_lesions = {}   # {Lesion_ID#1:
                                  #      {location: None, masks: {PhaseName:{SLICEID: mask, ...}, .. }},
@@ -664,7 +600,7 @@ class LiverLesionSegmentator:
                 cur_liver_seg = np.array(self.setCT_b_seg[i][j]["masks"], np.uint8)
                 cur_liver_lesions = np.array(self.liver_lesions[self.cur_std_id][i][j], np.uint8)
                 cur_hep_seg_refined = np.zeros((512, 512, 1))
-                overlapped_cur = np.bitwise_and(cur_liver_seg, cur_liver_lesions)
+                overlapped_cur = np.bitwise_and(cur_liver_seg, cur_liver_lesions)   # To check inclusion relationship
                 cur_hep_seg_refined = np.array(np.where(overlapped_cur == 255, 255, cur_hep_seg_refined), dtype=np.uint8)
                 self.liver_lesions[self.cur_std_id][i][j] = cur_hep_seg_refined
                 cv2.imwrite(os.path.join(self.path_save,r"tumors_refined",
@@ -674,7 +610,7 @@ class LiverLesionSegmentator:
 
         # Case 3. Lesion's Location Synchronization Considering Inter-Series
 
-    def set_lesion_location(self):
+    def locate_lesions_on_segments(self):
         """
         To measure the lesion location applying hepatic segments
         When the lesion's location is detected, the overlapped relationship is applied.
@@ -686,8 +622,8 @@ class LiverLesionSegmentator:
                 cur_sl_lesion = self.liver_lesions[self.cur_std_id][cur_phase_id][cur_sl_id]
                 cur_sl_hep_seg = self.hepatic_segment[self.cur_std_id][cur_phase_id][cur_sl_id]
                 cur_sl_hep_seg = np.reshape(cur_sl_hep_seg, (512, 512, 1))
-                overlapped = np.where(cur_sl_lesion==255, cur_sl_hep_seg, 0)
-                overlapped_pixels = np.array(np.unique(overlapped)/28, dtype=np.uint8)
+                overlapped = np.where(cur_sl_lesion==255, cur_sl_hep_seg, 0)    # To overlap segmented lesions and hepatic segments
+                overlapped_pixels = np.array(np.unique(overlapped)/28, dtype=np.uint8)  # To extract class of overlapped hepatic segments
                 if len(overlapped_pixels) > 1 or (len(overlapped_pixels)==1 and overlapped_pixels[0] != 0):
                     print("      >>", cur_phase_id + "_" + cur_sl_id, ": ", overlapped_pixels, self.__convert_hepatic_segs(overlapped_pixels))
                 else:
@@ -700,7 +636,17 @@ class LiverLesionSegmentator:
                 cv2.imwrite(os.path.join(self.path_save,r"overlapped",
                                      cur_phase_id + "_" + cur_sl_id+"_"+",".join([str(x) for x in overlapped_pixels]) + ".png"), result)
 
+    def visualize(self):
+        """
+        TODO
+        To visualize statistics of the relationship between hepatic segments and lesions
+        """
+        pass
+
     def __convert_hepatic_segs(self, list_id):
+        """
+        To convert hepatic segments' class id to hepatic segment name (Roman Textual Name)
+        """
         result = []
         for i in list_id:
             if i == 0:
@@ -730,9 +676,6 @@ class LiverLesionSegmentator:
             result = np.zeros((512, 512, 3))
         else:
             result = cv2.cvtColor(np.array(org, np.uint8), cv2.COLOR_GRAY2BGR)
-        # alpha_channel = np.ones((512, 512, 1), dtype=np.uint8)*255
-        # result = np.concatenate((result, alpha_channel), axis=2)
-        # lesion = np.concatenate((lesion, alpha_channel), axis=2)
         rgb = [(135, 75, 0), (0, 205, 255), (68, 106, 0), (45, 39, 193), (190, 173, 0),
                (176, 0, 166), (0, 104, 204), (28, 95, 62), (153, 87, 94)]
         img_ = cv2.cvtColor(np.array(img, np.uint8), cv2.COLOR_BGR2GRAY)
@@ -760,7 +703,6 @@ class LiverLesionSegmentator:
         return result
 
 
-
 if __name__ == '__main__':
     warnings.filterwarnings(action='ignore')
     # INITIALIZATION
@@ -769,15 +711,22 @@ if __name__ == '__main__':
     p_save = r"E:\1. Lab\Daily Results\2022\2203\0319"
 
     for cur_srs in os.listdir(path):
-        print(">>>>>>>>> ["+str(cur_srs)+"]")
+        print("["+str(cur_srs)+"]")
         if os.path.isdir(os.path.join(p_save, cur_srs)):
             continue
         hss = Step2HepaticSegmentSegmentator()
+        liver_region_segmentor = LiverRegionSegmentater()
         lls = LiverLesionSegmentator()
         mil = MedicalImageLoader()
+
         hss.set_cur_save_path(os.path.join(p_save, cur_srs))
         lls.set_cur_save_path(os.path.join(p_save, cur_srs))
-        path_dcm = os.path.join(path,cur_srs, r"00. DICOM\target")
+        liver_region_segmentor.set_cur_save_path(os.path.join(p_save, cur_srs))
+        liver_region_segmentor.initialize(hss.cur_std_id)
+        liver_region_segmentor.set_mi_type("CT")
+
+        # To make folders to save each step's result
+        path_dcm = os.path.join(path, cur_srs, r"00. DICOM\target")
         if not os.path.isdir(os.path.join(p_save, cur_srs)):
             os.mkdir(os.path.join(p_save, cur_srs))
         if not os.path.isdir(os.path.join(p_save, cur_srs, r"cvt_img")):
@@ -811,61 +760,62 @@ if __name__ == '__main__':
             os.mkdir(os.path.join(p_save, cur_srs, r"hepatic_segs_refined4_detail"))
 
         # LOADING TARGET STUDY FROM LOCAL
-        print("Step 1. Loading Target Study from Local")
-        print("    Task . Set Path of Applied CT Study")
-        mil.set_path(path_dcm)
-        print("    Task . Check the Medical Image's Extension")
-        mil.check_mi_type()
-        print("    Task . Load Medical Images from Local")
-        mil.load_medical_img()
-        print("    Task . Convert Color Depth to Focus on Target Organ")
-        mil.convert_color_depth()
+        print("Section 1. Segmenting Liver Regions")
+        # Step 1. Load a medical images from local
+        print("    Step 1. Load a Medical Image")
+        mil.set_path(path_dcm)              # To set path of applied CT study
+        mil.check_mi_type()                 # To check the medical image's extension
+        mil.load_medical_img()              # To load medical images from local
+        mil.convert_color_depth()           # To convert color depth to focus on target organ
         setMed_img = mil.get_setMed_img()   # Original Slices
         setCT_a = mil.get_setCT_a()         # Converted Slices
 
         hss.set_target_study(setMed_img, setCT_a)   # To receive loaded target study
-        print("    Task . Segment Liver Regions")
-        liver_region_segmentor = LiverRegionSegmentater()
-        liver_region_segmentor.initialize(hss.cur_std_id)
-        liver_region_segmentor.set_mi_type("CT")
-        liver_region_segmentor.set_setCT_b(setCT_a, setMed_img)
-        liver_region_segmentor.set_cur_save_path(os.path.join(p_save, cur_srs))
-        liver_region_segmentor.segment_liver_regions()
-        liver_region_segmentor.discard_insig_slices()
+        # Step 2. segment liver regions on loaded slices
+        print("    Step 2. Segment Liver Regions")
+        liver_region_segmentor.set_setCT_b(setCT_a, setMed_img)     # set loaded medical images (converted and original)
+        liver_region_segmentor.segment_liver_regions()              # To segment liver region in the whole input series
 
-        setCT_b = liver_region_segmentor.get_setCT_b()
-        setCT_b_seg = liver_region_segmentor.get_setCT_b_seg()
+        # Step 3. refine segmented liver regions
+        print("    Step 3. Refine Segmented Liver Regions")
+        liver_region_segmentor.discard_insig_slices()               # To discard insignificant slices
+                                                                    # To consider continuity of liver's  appearance, size, location, shape, HU value in a series
+        setCT_b_seg = liver_region_segmentor.get_setCT_b_seg()      # To get refined result
 
         # Code for Segmenting Hepatic Segments
-        print("Step 2. Segmenting Hepatic Segments")
+        print("Section 2. Segmenting Hepatic Segments")
         is_srs_remained = True
         hss.set_seged_liver_regions(setCT_b_seg)            # To receive segmented liver regions
         while is_srs_remained:      # Loop for Loading Series
-            print("    Task 1. Load a Series [Current Series: "+hss.list_cur_srs[hss.cur_srs_id+1]+"]")
-            is_srs_remained = hss.set_target_series()       # T1. Load a Series
-            print("    Task 2. Segment Hepatic Segments")
-            hss.segment_hepatic_segments()                  # T2. Segment Hepatic Segments
-            print("    Task 3. Refine Hepatic Segments")
-            hss.refine_hepatic_segments()                   # T3. Refine Segmented Hepatic Segments
-        hepatic_segments = hss.get_hepatic_segments()
+            is_srs_remained = hss.set_target_series()       # To load a series
+            # Step 4. segment hepatic segments in whole slices of each series
+            print("    Step 4. Segment Hepatic Segments  [Current Series: "+hss.list_cur_srs[hss.cur_srs_id+1]+"]")
+            hss.segment_hepatic_segments()                  # To segment hepatic segments
+            # Step 5. refine segmented hepatic segments applying segmented result for a series
+            print("    Step 5. Refine Segmented Hepatic Segments  [Current Series: "+hss.list_cur_srs[hss.cur_srs_id+1]+"]")
+            hss.refine_hepatic_segments()                   # To refine segmented hepatic segments
+        hepatic_segments = hss.get_hepatic_segments()       # To get refined result
 
         # # Code for Segmenting Liver Lesions
-        # print("Step 3. Segmenting Liver lesions")
-        # lls.set_target_study(setMed_img, setCT_a)   # To receive loaded target study
-        # lls.set_hepatic_segments(hepatic_segments)  # To receive hepatic segments results
-        # lls.set_seged_liver_regions(setCT_b_seg)    # To receive segmented liver regions
-        # is_srs_remained = True
-        # while is_srs_remained:  # Loop for Loading Series
-        #     print("    Task 4. Load a Series [Current Series: "+lls.list_cur_srs[lls.cur_srs_id+1]+"]")
-        #     is_srs_remained = lls.set_target_series()       # T4. Load a Series
-        #     is_sl_remained = True
-        #     while is_sl_remained:   # Loop for Loading slices
-        #         print("    Task 5. Load Slice [Current Slice ID: "+str(lls.cur_sl_id+1)+"]")
-        #         is_sl_remained = lls.set_target_slice()     # T5. Load Slice
-        #         print("    Task 6. Segment Liver Lesion in Slice ")
-        #         lls.segment_liver_lesion()                  # T6. Segment Liver Lesion
-        # print("    Task 7. Refine Segment Lesions")
-        # lls.refine_liver_lesions()                          # T7. Refine Segmented Lesions
-        # print("    Task 8. Set Lesion Location")
-        # lls.set_lesion_location()                           # T8. Set Lesion Location
-
+        print("Section 3. Segmenting Liver lesions")
+        lls.set_target_study(setMed_img, setCT_a)   # To receive loaded medical images (converted and original)
+        lls.set_hepatic_segments(hepatic_segments)  # To receive hepatic segments results
+        lls.set_seged_liver_regions(setCT_b_seg)    # To receive segmented liver regions
+        is_srs_remained = True
+        # Step 6. Segment liver lesions in whole slices
+        while is_srs_remained:  # Loop for Loading Series
+            is_srs_remained = lls.set_target_series()       # To load a series
+            is_sl_remained = True
+            print("    Step 6. Segment Liver Lesion in Slice ")
+            while is_sl_remained:   # Loop for Loading slices
+                is_sl_remained = lls.set_target_slice()     # To load slice
+                lls.segment_liver_lesion()                  # To segment liver lesion
+        # Step 7. Refine segment lesions
+        print("    Step 7. Refine Segment Lesions")
+        lls.refine_liver_lesions()                          # To refine segmented lesions
+        # Step 8. locate lesions on segments
+        print("    Step 8. Locate Lesions on Segments")
+        lls.locate_lesions_on_segments()                           # To set lesion location based on hepatic segments
+        # Step 9. Visualize Results
+        print("    Task 9. Visualize")
+        lls.visualize()                           # To visualize the statistics
