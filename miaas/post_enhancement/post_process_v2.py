@@ -56,11 +56,25 @@ class PostEnhancement:
         self.list_sls = []
         self.list_imgs = []
 
-    def encode_medical_images(self):
-        pass
+    # Step 1. Load Medical Images
 
+    def encode_medical_images(self):
+        self.__load_mask_data()
+
+    # Step 2. Identify Continuity Sequences
     def identify_continuity_sequences(self):
-        pass
+        cur_seq = []
+        cur_tag = True
+        for id in range(len(self.list_sls)):
+            is_contain = len(np.unique(self.list_sls[id]))>1
+            if cur_tag != is_contain:  # If changed appearance
+                if len(cur_seq)>0:
+                    self.list_seqs_t_f.append([cur_tag, cur_seq])    # To save current sequence
+                cur_tag = is_contain                                # To reset values
+                cur_seq = []
+            cur_seq.append([self.list_sl_ids[id], self.list_sls[id]])
+        if len(cur_seq) > 0:
+            self.list_seqs_t_f.append([cur_tag, cur_seq])
 
     def remedy_appearance_violation(self):
         pass
@@ -77,7 +91,6 @@ class PostEnhancement:
     def remedy_hu_scale_violation(self):
         pass
 
-
     def split_t_f_sequence(self):
         """
         Step 1
@@ -85,7 +98,6 @@ class PostEnhancement:
         :return:
         """
         # To consider A/N VVP
-        self.__load_mask_data()
         cur_seq = []
         cur_tag = True
         for id in range(len(self.list_sls)):

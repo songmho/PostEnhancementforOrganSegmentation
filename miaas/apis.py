@@ -1380,25 +1380,6 @@ def update_session(old_user, updated_user):
             old_user[key] = value
     return old_user
 
-
-@csrf_exempt
-def handle_test(request):
-    logger.info(request)
-    if len(request.body) == 0:
-        logger.info('no data')
-    else:
-        logger.info('=== API Handler Test ===')
-        logger.info(request.body)
-
-        user_info = {
-            'user_id': 'hanter',
-            'name': 'Hanter Jung',
-            'email': 'hanterkr@gmail.com'
-        }
-        email_auth.send_auth_mail(user_info, '9fudsiu32q984rhds98')
-
-    return JsonResponse(constants.CODE_SUCCESS)
-
 @csrf_exempt
 def initialize_diagnosis_env(request):
     if request.method == "POST":
