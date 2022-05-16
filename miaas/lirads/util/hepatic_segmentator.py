@@ -14,7 +14,7 @@ class HepaticSegmentsSegmentator:
     def load_model(self):
         if self.type == "MRCNN": # The Type is MASKRCNN
             self.hepatic_segements_model = HepaticSegSegmentatorMRCNN()
-            self.path_model = r"F:\model_save\hepatic_segments\hepatic_segments20220312T1652\mask_rcnn_hepatic_segments_00800.h5"
+            self.path_model = r"F:\model_save\hepatic_segments\hepatic_segments20220312T1652\mask_rcnn_hepatic_segments_02750.h5"
             self.hepatic_segements_model.initialize_structure("inference", path=self.path_model)
             pass
         else:   # The Type is UNET

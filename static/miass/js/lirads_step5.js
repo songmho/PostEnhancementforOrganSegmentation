@@ -5,312 +5,98 @@
     var d;
     var intervalSegment = null;
     $(document).ready(function(){
-        write_log_in_console("Step 5. Determining tumor type is started.");
-        write_log_in_console("The tumor type classification model is being prepared.");
+        write_log_in_console("Step 5 is to remedy size violation.");
+
 
         $.ajax({
-        url:"/api/get_tumor_group_data",
-        async: true,
-        method: "POST",
-        data: {"data": JSON.stringify({})},
-        data_type: "text",
-        success: function (data) {
-            d = data["data"];
-            var img_list = data["imgs"];
-            numImgs = Object.keys(img_list).length;
-            console.log(img_list.length, img_list);
-            var img_list_keys = Object.keys(img_list);
-            for (var i = 0; i < d.length; i++){
-                slice = img_list[i];
+            url: "/api/load_img_list_step5",
+            async: true,
+            method: 'POST',
+            data: {"data": JSON.stringify({})},
+            data_type: "text",
+            success: function (data) {
+                // var data = JSON.parse(data);
+                d = data["data"];
+                var ids = d["ids"];
+                var sls = d["sls"];
+                var segs = d["segs"];
+                var seqs = d["seqs"];
+                console.log(seqs);
 
-                console.log(slice);
-                if (i==0){
-                    $("#list_slices_step_5").append("<a class='list-group-item list-group-item-action active w-100'" +
-                        " role='tab' id='list_"+i+"_list_tumors_step5"+"' data-toggle='list' href='#list_"+i+"_step5'>"+d[i]+"</a>");
-
-
-                    var structure =
-                        "            <div class=\"h-100 tab-pane show active\" id=\"list_"+i+"_step5\" role=\"tabpanel\" aria-labelledby=\"list_"+i+"_list_tumors_step5\">\n" +
-                        "                <div class=\"row h-100\">\n" +
-                        "                    <div style='width: 2.56%'></div>\n" +
-                        "                    <div id=\"div_img\" class='border border-dark p-2' style=\"width: 47.44%; height: 75%\">\n"+
-                        "                            <h5  class='text-center'>Tumor Images</h5>" +
-                        "                        <div style=\"height: 50%;\" class=\"row mx-0\">\n";
-                    if (Object.keys(slice).includes("PLAIN")){
-                        structure+=                         "                            <div class=\"w-50\">\n" +
-                        "                            <img id=\"img_plain_"+i+"\" src=data:image/png;base64,"+slice["PLAIN"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Plain</h6>\n" +
-                        "                            </div>\n";
-                    }else{
-                                                structure+=                         "                            <div class=\"w-50\">\n" +
-                        "                            <img id=\"img_plain_"+i+"\" src=data: class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Plain</h6>\n" +
-                        "                            </div>\n";
-                    }
-                    if(Object.keys(slice).includes("ARTERIAL")){
-                        structure+=                         "                            <div class=\"w-50 mx-auto\">\n" +
-                        "                            <img id=\"img_ap_"+i+"\"  src=data:image/png;base64,"+slice["ARTERIAL"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Arterial Phase</h6>\n" +
-                        "                            </div>\n" ;
-                    }else{
-                        structure+=                         "                            <div class=\"w-50 mx-auto\">\n" +
-                        "                            <img id=\"img_ap_"+i+"\"  src=data: class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Arterial Phase</h6>\n" +
-                        "                            </div>\n" ;
-
-                    }
-                    structure +=
-                        "                        </div>\n" +
-                        "                        <div style=\"height: 50%;\"  class=\"row mx-0\">\n";
-                    if (Object.keys(slice).includes("VENOUS")){
-                        structure+=
-                        "                            <div class=\"w-50\" >\n" +
-                        "\n" +
-                        "                            <img id=\"img_pvp_"+i+"\" src=data:image/png;base64,"+slice["VENOUS"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Portal Venous Phase</h6>\n" +
-                        "                            </div>\n";
-                    }else{
-                        structure+=
-                        "                            <div class=\"w-50\" >\n" +
-                        "\n" +
-                        "                            <img id=\"img_pvp_"+i+"\" src=data: class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Portal Venous Phase</h6>\n" +
-                        "                            </div>\n";
-                    }
-                    if (Object.keys(slice).includes("DELAY")){
-                        structure +=
-                        "                            <div class=\"w-50\">\n" +
-                        "\n" +
-                        "                            <img id=\"img_dp_"+i+"\"  src=data:image/png;base64,"+slice["DELAY"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Delayed Phase</h6>\n" +
-                        "                            </div>\n";
-                    }else{
-                        structure +=
-                        "                            <div class=\"w-50\">\n" +
-                        "\n" +
-                        "                            <img id=\"img_dp_"+i+"\"  src=data: class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Delayed Phase</h6>\n" +
-                        "                            </div>\n";
-
-                    }
-                    structure+=    "                        </div>\n" +
-                        "                    </div>\n" +
-                        "                    <div style='width: 2.56%'></div>\n" +
-                        "                    <div id=\"div_features_"+i+"\" style='width: 47.44%' class=\"mx-0 p-2 border border-dark h-75\">\n" +
-                        "                        <h5 class='text-center'>Predicted Tumor Type</h5>\n" +
-                        "<h6 id='txt_tumor_type"+i+"'></h6>"+
-                        "                    </div>\n" +
-                        "                </div>\n" +
-                        "            </div>\n" +
-                        "        " +
-                        "";
-
-                    $("#sl_id_tumor_groups").append(structure);
-
-                }else{
-                    $("#list_slices_step_5").append("<a class='list-group-item list-group-item-action w-100'" +
-                        " role='tab' id='list_"+i+"_list_tumors_step5"+"' data-toggle='list' href='#list_"+i+"_step5'>"+d[i]+"</a>");
-
-                    var structure =
-                        "            <div class=\"h-100 tab-pane\" id=\"list_"+i+"_step5\" role=\"tabpanel\" aria-labelledby=\"list_"+i+"_list_tumors_step5\">\n" +
-                        "                <div class=\"row h-100\">\n" +
-                        "                    <div style='width: 2.56%'></div>\n" +
-                        "                    <div id=\"div_img\" class='border border-dark p-2' style=\"width: 47.44%; height: 75%\">\n"+
-                        "                            <h5  class='text-center'>Tumor Images</h5>" +
-                        "                        <div style=\"height: 50%;\" class=\"row mx-0\">\n";
-                    if (Object.keys(slice).includes("PLAIN")){
-                        structure+=                         "                            <div class=\"w-50\">\n" +
-                        "                            <img id=\"img_plain_"+i+"\" src=data:image/png;base64,"+slice["PLAIN"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Plain</h6>\n" +
-                        "                            </div>\n";
-                    }else{
-                        structure+=                         "                            <div class=\"w-50\">\n" +
-                        "                            <img id=\"img_plain_"+i+"\" src=data: class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Plain</h6>\n" +
-                        "                            </div>\n";
-                    }
-                    if(Object.keys(slice).includes("ARTERIAL")){
-                        structure+=                         "                            <div class=\"w-50 mx-auto\">\n" +
-                        "                            <img id=\"img_ap_"+i+"\"  src=data:image/png;base64,"+slice['ARTERIAL']+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Arterial Phase</h6>\n" +
-                        "                            </div>\n" ;
-                    }else{
-                        structure+=                         "                            <div class=\"w-50 mx-auto\">\n" +
-                        "                            <img id=\"img_ap_"+i+"\"  src=data: class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Arterial Phase</h6>\n" +
-                        "                            </div>\n" ;
-
-                    }
-                    structure +=
-                        "                        </div>\n" +
-                        "                        <div style=\"height: 50%;\"  class=\"row mx-0\">\n";
-                    if (Object.keys(slice).includes("VENOUS")){
-                        structure+=
-                        "                            <div class=\"w-50\" >\n" +
-                        "\n" +
-                        "                            <img id=\"img_pvp_"+i+"\" src=data:image/png;base64,"+slice["VENOUS"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Portal Venous Phase</h6>\n" +
-                        "                            </div>\n";
-                    }else{
-                        structure+=
-                        "                            <div class=\"w-50\" >\n" +
-                        "\n" +
-                        "                            <img id=\"img_pvp_"+i+"\" src=data: class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Portal Venous Phase</h6>\n" +
-                        "                            </div>\n";
-                    }
-                    if (Object.keys(slice).includes("DELAY")){
-                        structure +=
-                        "                            <div class=\"w-50\">\n" +
-                        "\n" +
-                        "                            <img id=\"img_dp_"+i+"\"  src=data:image/png;base64,"+slice["DELAY"]+" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Delayed Phase</h6>\n" +
-                        "                            </div>\n";
-                    }else{
-                        structure +=
-                        "                            <div class=\"w-50\">\n" +
-                        "\n" +
-                        "                            <img id=\"img_dp_"+i+"\"  src=data: class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                        "                                <h6 class=\"text-center\">Delayed Phase</h6>\n" +
-                        "                            </div>\n";
-
-                    }
-                    structure+=    "                        </div>\n" +
-                        "                    </div>\n" +
-                        "                    <div style='width: 2.56%'></div>\n" +
-                        "                    <div id=\"div_features_"+i+"\" style='width: 47.44%' class=\"mx-0 p-2 border border-dark h-75\">\n" +
-                        "                        <h5 class='text-center'>Predicted Tumor Type</h5>\n" +
-                        "<h6 id='txt_tumor_type"+i+"'></h6>"+
-                        "                    </div>\n" +
-                        "                </div>\n" +
-                        "            </div>\n" +
-                        "        " +
-                        "";
-
-                    $("#sl_id_tumor_groups").append(structure);
-
-
-                    // $("#sl_id_tumor_groups").append(
-                    //     "            <div class=\"h-100  ml-2 mt-4 tab-pane\" id=\"list_"+i+"\" role=\"tabpanel\" aria-labelledby=\"list_"+i+"_list_tumors_step5\">\n" +
-                    //     "                <div class=\"row h-100\">\n" +
-                    //     "                    <div id=\"div_img\" style=\"width: 50%; height: 70%\">\n" +
-                    //     "                        <div style=\"height: 50%;\" class=\"row mx-0\">\n" +
-                    //     "                            <div class=\"w-50\">\n" +
-                    //     "                            <img id=\"img_plain_"+i+"\"  class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                    //     "                                <h6 class=\"text-center\">Plain</h6>\n" +
-                    //     "                            </div>\n" +
-                    //     "                            <div class=\"w-50 mx-auto\">\n" +
-                    //     "                            <img id=\"img_ap_"+i+"\"  class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                    //     "                                <h6 class=\"text-center\">Arterial Phase</h6>\n" +
-                    //     "                            </div>\n" +
-                    //     "                        </div>\n" +
-                    //     "                        <div style=\"height: 50%;\"  class=\"row mx-0\">\n" +
-                    //     "                            <div class=\"w-50\" >\n" +
-                    //     "\n" +
-                    //     "                            <img id=\"img_pvp_"+i+"\" class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                    //     "                                <h6 class=\"text-center\">Portal Venous Phase</h6>\n" +
-                    //     "                            </div>\n" +
-                    //     "                            <div class=\"w-50\">\n" +
-                    //     "\n" +
-                    //     "                            <img id=\"img_dp_"+i+"\"  class=\"mx-auto d-block\" height=\"160px\" width=\"160px\">\n" +
-                    //     "                                <h6 class=\"text-center\">Delayed Phase</h6>\n" +
-                    //     "                            </div>\n" +
-                    //     "                        </div>\n" +
-                    //     "                    </div>\n" +
-                    //     "                    <div id=\"div_features_"+i+"\" class=\"w-50 mx-0 p-2 border border-info h-75\">\n" +
-                    //     "                        <h5>Predicted Tumor Type</h5>\n" +
-                    //     "                    </div>\n" +
-                    //     "                </div>\n" +
-                    //     "            </div>\n" +
-                    //     "        " +
-                    //     "")
-
+                $("#div_slice_step5").append("<div class=\"header \" style=\"width: 40px; vertical-align: middle; \"><h5 class='my-auto'>Slice ID</h5></div>");
+                $("#div_seg_step5").append("<div class=\"header\" style=\"width: 40px;vertical-align: middle; \"><h5>Seg. Result</h5></div>");
+                $("#div_seq_org_step5").append("<div class=\"header\" style=\"width: 40px; vertical-align: middle; \"><h5>Sequence ID</h5></div>");
+                $("#div_enh_step5").append("<div class=\"header\" style=\"width: 40px; height:150px;vertical-align: middle;\"><h5>Rem. Result</h5></div>");
+                $("#div_seq_enh_ste5").append("<div class=\"header\" style=\"width: 40px; vertical-align: middle;\"><h5>Sequence ID</h5></div>");
+                for (var i in ids){
+                    $("#div_slice_step5").append("<div class=\"title_seg\"><h4 class=\"h-100 mb-0\" style='width: 150px;'>"+ids[i]+"</h4></div>");
                 }
+                for (var i in sls){
+                    $("#div_seg_step5").append("<div class=\"item\" id='step5_seg_"+ids[i]+"'>" +
+                        "<img style='width: 150px; height: 150px;' src='data:image/png;base64,"+sls[i]+"'/>" +
+                        "</div>");
+                }
+                for (var i in seqs){
+                    $("#div_seq_org_step5").append("<div class=\"title_seg\"><h5 class=\"h-100 mb-0\" style='width: 150px;'>"+seqs[i]+"</h5></div>");
+                }
+
+            }, error: function (){
 
             }
+        });
 
-            write_log_in_console("Loading tumor groups is finished.");
-        },error: function (err) {
-
-        }
-    });
-
-    $("#btn_determine_type").on("click", function () {
-        write_log_in_console("Classifying tumor type is started.");
-        $("#div_init_step5").css("display", "none");
-        $("#div_start_step5").css("display", "block");
-        $("#div_pause_step5").css("display", "none");
-        isPause = false;
-        intervalSegment = setInterval(function () {
-            if (!isPause) {
-                    $.ajax({
-                        url: "/api/determin_tumor_type",
-                        async: false,
-                        method: "POST",
-                        data: {"data": JSON.stringify({"tumor_id":idx})},
-                        data_type: "text",
-                        success: function (data) {
-                            var tumor_type = data["data"];
-                            write_log_in_console("Tumor type of the "+d[idx]+" is classified to "+tumor_type.split(" ")[0]+".");
-
-                            $("#list_slices_step_5").children().removeClass("active");
-                            $("#sl_id_tumor_groups").children().removeClass("active");
-                            $("#list_"+idx+"_list_tumors_step5").addClass("active");
-                            $("#list_"+idx+"_step5").addClass("active");
-                            $("#txt_tumor_type"+idx).text(tumor_type);
-
-                            try{
-                                let y_position = document.querySelector("#list_"+(idx-1)+"_list_tumors_step5").offsetTop;
-                                $("#list_slices_step_5").scrollTop(y_position);
-                            }catch (e) {
-                               let y_position = document.querySelector("#list_"+(idx)+"_list_tumors_step5").offsetTop;
-                               $("#list_slices_step_5").scrollTop(y_position);
-                            }
-
-
-
-                            if (idx >= (numImgs-1)){
-                                // $("#div_process").css("display", "none");
-                               $("#div_start_step5").css("display", "none");
-                                $("#div_init_step5").css("display", "block");
-                                isPause = false;
-                                idx = 0;
-                                clearInterval(intervalSegment);
-                                write_log_in_console("Classifying tumor type is finished.");
-                            }
-                            idx+=1;
-                        }, error: function () {
-
-                        }
-                    });
+        $("#btn_detect_size").on("click", function () {
+            write_log_in_console("Detecting violation is started.");
+            $.ajax({
+                url: "/api/detect_size_violation",
+                async: false,
+                method: 'POST',
+                data: {"data": JSON.stringify()},
+                data_type: "text",
+                success: function (data) {
+                    d = data["data"];
+                    var diffs = d["diffs"];
+                    console.log(diffs);
+                    for (var i in diffs){
+                        $("#step5_seg_"+diffs[i]).css("border", "4px solid #FF0000");
+                    }
+                    write_log_in_console("The number of violating slices is "+diffs.length+".");
+                    write_log_in_console("Detecting violation is finished.");
+                }, error: function (){
+                    idx+=1;
 
                 }
-            }, 500);
-        });
+            });
 
-        $("#btn_pause_step5").on("click", function () {
-            write_log_in_console("Classifying tumor type is paused.");
-            $("#div_init_step5").css("display", "none");
-            $("#div_start_step5").css("display", "none");
-            $("#div_pause_step5").css("display", "block");
-            isPause = true;
         });
-        $("#btn_stop_step5").on("click", function () {
-            idx=0;
-            write_log_in_console("Classifying tumor type is stopped.");
-            $("#div_init_step5").css("display", "block");
-            $("#div_start_step5").css("display", "none");
-            $("#div_pause_step5").css("display", "none");
-            isPause = false;
-            clearInterval(intervalSegment);
-        });
-        $("#btn_resume_step5").on("click", function () {
+        $("#btn_remedy_size").on("click", function () {
+            write_log_in_console("Remedying violation is started.");
+            $.ajax({
+                url: "/api/remedy_size_violation",
+                async: false,
+                method: 'POST',
+                data: {"data": JSON.stringify({"target_img":idx})},
+                data_type: "text",
+                success: function (data) {
+                    d = data["data"];
+                    var seqs = d["seqs"];
+                    var imgs = d["imgs"];
+                    for (var i in imgs){
+                        $("#div_enh_step5").append("<div class=\"item\">" +
+                            "<img style='width: 150px; height: 150px;' src='data:image/png;base64,"+imgs[i]+"'/>" +
+                            "</div>");
+                    }
+                    for (var i in seqs){
+                        $("#div_seq_enh_ste5").append("<div class=\"title_seg\"><h5 class=\"h-100 mb-0\" style='width: 150px;'>"+seqs[i]+"</h5></div>");
+                    }
 
-            write_log_in_console("Classifying tumor type is resumed.");
-            $("#div_init_step5").css("display", "none");
-            $("#div_start_step5").css("display", "block");
-            $("#div_pause_step5").css("display", "none");
-            isPause = false;
+                    write_log_in_console("Remedying violation is finished.");
+
+                }, error: function (){
+                    idx+=1;
+
+                }
+            });
         });
 
 

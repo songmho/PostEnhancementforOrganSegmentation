@@ -18,14 +18,14 @@ gpus = tf.config.experimental.list_physical_devices('GPU')
 # tf.config.experimental.set_memory_growth(gpus[0], True)
 
 
-class LegionSegmentor:
+class LesionSegmentor:
     def __init__(self):
         self.setCT_C_Seg = {}
         self.setCT_C_tumor = {}
         self.config = tumor.TumorConfig()
         self.tumor_class_names = ['None', 'Tumor']
         self.is_contain_target = False
-        self.margin = 10
+        self.margin = 30
         self.poly_drawer = PolygonDrawer()
 
     def initialize(self, std_name):
@@ -45,7 +45,7 @@ class LegionSegmentor:
         if mi_type == "CT":
             TUMOR_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\tumor_segment_2\\mask_rcnn_tumor_000140.h5"
         else:
-            TUMOR_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\tumor_segment_2\\mask_rcnn_lesion_mri_1700.h5"
+            TUMOR_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\tumor_segment_2\\mask_rcnn_lesion_mri_02000_selected.h5"
         self.tumor_detector = modellib.MaskRCNN(mode="inference", model_dir=TUMOR_SEG_MODEL_DIR, config=self.config)
         self.tumor_detector.load_weights(TUMOR_SEG_WEIGHT_DIR, by_name=True)
 
@@ -73,7 +73,6 @@ class LegionSegmentor:
         else:   # Not in plain phase in the CT Study
             return True
 
-
     def segment(self, img):
         results = self.tumor_detector.detect([img], verbose=0)
         result = results[0]
@@ -89,6 +88,27 @@ class LegionSegmentor:
             result['roi'] = []
         return result
 
+    def segment_lesion_a_slice(self, sl):
+        results = self.tumor_detector.detect([sl], verbose=0)
+        mask_result, roi_result, conf_value_result, roi_imgs_result = \
+            results[0]["masks"], results[0]["rois"], results[0]["scores"], results[0]["rois_img"]
+        masks = np.array(np.zeros(shape=(512, 512, 1)), dtype=np.uint8)
+        # print(len(results[0]["masks"][0, 0, :]), results[0]["scores"], np.unique(results[0]["masks"][:, :, :]))
+
+        if len(results[0]["masks"][0, 0, :]) > 0:
+
+            for m in range(len(results[0]["masks"][0,0,:])):
+                cur_img = np.array(np.where(results[0]["masks"][:,:,m]==True, 255, 0), dtype=np.uint8)
+                if cur_img.shape == (512, 512):
+                    cur_img = np.expand_dims(cur_img, axis=-1)
+                masks += cur_img
+
+        masks = np.array(np.where(masks >0, 255, 0), dtype=np.uint8)
+        sl_a = cv2.cvtColor(sl, cv2.COLOR_GRAY2BGR)
+        masks_ = cv2.cvtColor(masks, cv2.COLOR_GRAY2BGR)
+        sl_a = np.array(np.where(masks_==(255, 255, 255), (0,255, 255), sl_a), np.uint8)
+        return masks, sl_a
+
     def segment_lesion(self, setCT_b, setCT_b_seg):
         setCT_b = setCT_b[list(setCT_b.keys())[0]]
 
@@ -97,24 +117,31 @@ class LegionSegmentor:
             self.setCT_C_tumor[name] = {}
 
         path_save = r"E:\1. Lab\Daily Results\2022\2201\0121\result\step3"
+        path_save_liver = r"E:\1. Lab\Daily Results\2022\2201\0121\result\step3_liver"
+        path_save_before = r"E:\1. Lab\Daily Results\2022\2201\0121\result\step3_tumor_before"
         for srs_name, slices in setCT_b.items():
             count = 0
             keys = []
-            if not os.path.isdir(os.path.join(path_save, self.std_name)):
-                os.mkdir(os.path.join(path_save, self.std_name))
-            if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
-                os.mkdir(os.path.join(path_save, self.std_name, srs_name))
+            # if not os.path.isdir(os.path.join(path_save, self.std_name)):
+            #     os.mkdir(os.path.join(path_save, self.std_name))
+            # if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
+            #     os.mkdir(os.path.join(path_save, self.std_name, srs_name))
             for key, sl in slices.items():
                 results = self.tumor_detector.detect([sl], verbose=0)
                 mask_result, roi_result, conf_value_result, roi_imgs_result = \
                     results[0]["masks"], results[0]["rois"], results[0]["scores"], results[0]["rois_img"]
                 masks = np.array(np.zeros(shape=(512, 512, 1)), dtype=np.uint8)
                 if len(results[0]["masks"][0, 0, :]) > 0:
-                    for m in results[0]["masks"][0,0,:]:
-                        if m.shape == (512, 512, 0):
-                            m = np.expand_dims(m, axis=-1)
-                        masks += m
+                    for m in range(len(results[0]["masks"][0,0,:])):
+                        cur_img = np.where(results[0]["masks"][:,:,m]==True, 255, 0)
+                        if cur_img.shape == (512, 512):
+                            cur_img = np.expand_dims(cur_img, axis=-1)
+                        masks += cur_img
+                masks = np.array(np.where(masks>0, 255, 0), dtype=np.uint8)
                 msk_cur_liver = np.array(setCT_b_seg[srs_name][key]["masks"], dtype=np.uint8)
+                cv2.imwrite(os.path.join(path_save_liver, str(self.std_name)+"_"+str(srs_name)+"_"+str(int(key)).zfill(5)+".png"), msk_cur_liver)
+                rrrr = np.array(np.where(masks==True, 255, 0), dtype=np.uint8)
+                cv2.imwrite(os.path.join(path_save_before, str(self.std_name)+"_"+str(srs_name)+"_"+str(int(key)).zfill(5)+".png"), rrrr)
                 msks_new = self.__enhance_seg_tumor_data(msk_cur_liver, masks)
                 masks, rois, conf_values, rois_img = [], [], [], []
                 for k in range(len(mask_result[0, 0, :])):    # Tumor Mask ID
@@ -130,12 +157,12 @@ class LegionSegmentor:
                     keys.append(key)
                 # cv2.imshow("img", sl)
                 # cv2.imshow("mask", msks_new)
-                cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, key+".png"), msks_new)
+                cv2.imwrite(os.path.join(path_save, str(self.std_name)+"_"+str(srs_name)+"_"+str()+"_"+str(int(key)).zfill(5)+".png"), msks_new)
                 # cv2.waitKey(5)
 
                 self.setCT_C_Seg[srs_name][key] = {"masks": masks, 'rois': rois, "confidence_values": conf_values, "rois_img":rois_img, "img": sl}
                 self.setCT_C_tumor[srs_name][key] = msks_new
-            print("       >>", srs_name, len(slices), count, keys)
+            print("       >> Phase and Slices ID Containing Liver: ", srs_name," / ",keys)
 
     def segment_lesion_new(self, cur_liver, img, ii):
 
@@ -211,7 +238,7 @@ class LegionSegmentor:
         """
         cur_organ_msk = np.array(cur_organ_msk, np.uint8)
         cur_tumor_msk = np.array(cur_tumor_msk, np.uint8)
-        cur_cnt, _ = cv2.findContours(cur_tumor_msk, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        cur_cnt, _ = cv2.findContours(cur_tumor_msk, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
         cur_mask = np.zeros(cur_tumor_msk.shape)
         for k in cur_cnt:
             new_mask = np.zeros(cur_tumor_msk.shape)
@@ -230,7 +257,7 @@ class LegionSegmentor:
 
 
 if __name__ == "__main__":
-    ls = LegionSegmentor()
+    ls = LesionSegmentor()
     ls.load_model("mri")
     path_std = r"D:\Dataset\LLU Dataset\6218843_07202017 (MR)\01. Original Study\img\test-resized"
     path_save = r"E:\1. Lab\Daily Results\2022\2201\0115\lesion\6218843_07202017 (MR)"
@@ -247,7 +274,6 @@ if __name__ == "__main__":
             if result["masks"].shape[2] > 0:
                 for k in range(result["masks"].shape[2]):
                     result_mask += result["masks"][:, :, k]
-            print(i)
             cv2.imshow("origin", cv2.imread(os.path.join(path_srs, i)))
             cv2.imshow("test", np.array(result_mask, np.uint8))
             cv2.imwrite(os.path.join(path_save, j, i), np.array(result_mask, np.uint8))

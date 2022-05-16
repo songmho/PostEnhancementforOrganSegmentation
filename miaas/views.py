@@ -19,9 +19,6 @@ from django.views.generic.edit import FormView
 from .forms import UploadForm
 from .users import User
 
-from miaas import sample_contexts as sctx
-from miaas import cloud_db
-from miaas import constants, cloud_db_copy, email_auth
 import sys
 import os
 sys.path.append("./miaas")
@@ -212,7 +209,7 @@ def diagnosis_detail(request):
     # context = {'diagnosis_id': diagnosis_id}
     return render(request, "miaas/detail_diagnosis.html")
 
-def diagnose_abnormality_ml(request):
+def proceed_post_enhancement(request):
     return render(request, "miaas/diagnose_abnormality_ml.html")
 
 def diagnose_abnormality(request):
@@ -280,13 +277,6 @@ def signup_page(request):
 
 def find_page(request):
     return render(request, 'miaas/find.html', None)
-
-
-def account_page(request):
-    db = cloud_db.DbManager()
-
-    context = _get_session_context(request, pw_contains=True)
-    return render(request, 'miaas/account.html', context)
 
 
 def profile_page(request):
@@ -1003,114 +993,6 @@ def physician_interpretation_page(request):
 
 def page_not_found_view(request):
     return render(request, 'miaas/404.html', context={"":""})
-
-
-class ArchiveUploadView(FormView):
-    template_name = 'miaas/patient_medical_image_upload.html'
-    form_class = UploadForm
-    success_url = '/json_res/success'
-
-    def get_context_data(self, **kwargs):
-        context = _get_session_context(self.request)
-        return context
-
-    def form_valid(self, form):
-        try:
-            image_files = form.cleaned_data['attachments']
-
-            if (len(image_files) <= 0 or 'image_info' not in self.request.POST):
-                raise Exception('Invalid Parameters.')
-
-            action = self.request.POST['action']
-            image_info = json.loads(self.request.POST['image_info'])
-
-            prev_timestamp = 0
-            if image_info.get('timestamp'):
-                prev_timestamp = image_info['timestamp']
-            image_info['timestamp'] = int(round(time.time() * 1000))
-
-            # if self.request.session['user']['user_id'] != image_info['user_id']:
-            #     raise Exception('logged in user is not match with request user')
-            if action != 'upload' and action != 'update':
-                raise Exception('Invalid Parameters.')
-
-            uploaded_path = None
-            im = ImageManager(image_files, image_info)
-            uploaded_path = im.upload_file()
-            # uploaded_path = uploaded_path.encode('UTF-8')
-
-            db = cloud_db.DbManager()
-
-            if action == 'upload':
-                try:
-                    image_info['image_dir'] = uploaded_path
-                    db.add_medical_image(image_info)
-                except Exception as e:
-                    if uploaded_path:
-                        ImageManager.delete_file(uploaded_path)
-                        im.delete_temp_file()
-                    raise e
-                # if not self.request.session.get('image_cnt'):
-                #     self.request.session['image_cnt'] += 1
-                return JsonResponse(dict(constants.CODE_SUCCESS))
-            elif action == 'update':
-                prev_path = image_info['image_dir']
-                try:
-                    image_info['image_dir'] = uploaded_path
-                    db.update_medical_image_dir(image_info)
-                except Exception as e:
-                    image_info['timestamp'] = prev_timestamp
-                    image_info['image_dir'] = prev_path
-                    # db.update_medical_image_dir(image_info)
-                    ImageManager.delete_file(uploaded_path)
-                    raise e
-
-                logger.info('remove old file: %s', prev_path)
-                ImageManager.delete_file(prev_path)
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'new_dir': image_info['image_dir']}))
-
-        except Exception as e:
-            logger.exception(e)
-            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
-        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': 'Unknown error.'}))
-        # return super(UploadView, self).form_valid(form)
-
-
-class ArchiveDetailView(ArchiveUploadView):
-    template_name = 'miaas/patient_medical_image.html'
-
-    def get_context_data(self, **kwargs):
-        context = _get_session_context(self.request)
-        if self.request.GET.get('lastPage'):
-            context['lastPage'] = self.request.GET['lastPage']
-        image_id = self.kwargs['image_id']
-
-        # try:
-        #     if not image_id or int(image_id) < 0:
-        #         context['image'] = None
-        #     else:
-        #         db = cloud_db.DbManager()
-        #         result = db.retrieve_image_and_intpr(image_id)
-        #         # logger.info(result)
-        #
-        #         if result.get('image') and isinstance(result.get('intpr'), list):
-        #             context['image'] = result['image']
-        #             context['intpr_list'] = result['intpr']
-        #             pprint (result['intpr'])
-        # except:
-        #     context['image'] = None
-        context['image'] = {'image_dir': './ecg.csv', "image_id": 1, 'image_cnt': 300, 'user_id':1, "subject": "Cancer",
-                            "image_type": "ECG", "taken_from": 'National Hospital', "physician": "John",
-                            "place": "National Hospital", "description": "", "size": 300, 'timestamp':1587097427000,
-                            "intpr_num":1,"taken_date":1587097427000, 'medical_department':"Internal Medicine"}
-        context['intpr_list'] = [{'intpr_id':1, 'physician_id':1, 'patient_id':1, 'image_id':1,
-                                  'level': 1, 'fee':300, 'timestamp':1587097427000, 'summary':'Tumors in Liver',
-                                  'request_id':1, 'suspected_disease': 'Liver Cancer',
-                                  'opinion': "The parts of tumor look serious.",
-                                  'recommendation': 'Urgent treatment'}] # List
-        context['is_list'] = []
-        return context
-
 
 # def opinion(request, opinion_id):
 #     return HttpResponse("Hello, opinion %s." % opinion_id)

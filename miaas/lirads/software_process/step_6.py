@@ -14,7 +14,7 @@ import datetime
 
 from miaas.lirads.software_process.step_1 import MedicalImageLoader
 from miaas.lirads.software_process.step_2 import LiverRegionSegmentater
-from miaas.lirads.software_process.step_3 import LegionSegmentor
+from miaas.lirads.software_process.step_3 import LesionSegmentor
 from miaas.lirads.software_process.step_4 import ImageFeatureEvaluator
 
 
@@ -67,7 +67,7 @@ class LIRADSFeatureComputer:
             # After Step 1~4, prv tumor group applied.
             prv_step1 = MedicalImageLoader()
             prv_step2 = LiverRegionSegmentater()
-            prv_step3 = LegionSegmentor()
+            prv_step3 = LesionSegmentor()
             prv_step4 = ImageFeatureEvaluator()
 
             # Step 1. Load Medical Image
@@ -92,7 +92,7 @@ class LIRADSFeatureComputer:
             prv_setCT_c_seg = prv_step3.get_setCT_c_seg()
 
             # Step 4. Evaluate Image Features
-            prv_step4.generate_slice_group(prv_step1.med_type, self.setCT_a_prv)
+            prv_step4.generate_slice_group(prv_step1.med_img_format, self.setCT_a_prv)
             prv_step4.make_lesion_group(prv_setCT_c_tumor)
             prv_step4.correct_segmented_lesion_location(prv_step1.acquisition_date)
             prv_step4.evaluate_image_feature(prv_setCT_c_seg)

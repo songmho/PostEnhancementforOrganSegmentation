@@ -5,7 +5,7 @@ Description: Code for classes related to lesion
 """
 
 import util.mrcnn.model as modellib
-from backup import lesion
+from miaas.lirads.util import lesion
 import numpy as np
 
 

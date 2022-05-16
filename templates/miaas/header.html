@@ -8,18 +8,18 @@
     <header style="z-index: 1000;">
         <nav class="navbar navbar-expand-sm justify-content-center px-0" id="nav" style="background-color: #0066FF;">
             <div  style="background-color: #ff0000; " class="my-auto py-0 px-4 ml-0 h-100  row">
-                <h3 class="navbar-brand title txt_nav_title txt_font mx-auto my-0 pt-1" style="font-size: 32px; letter-spacing: 1px; cursor: pointer;" id="nav_main">Liver Cancer Analyzer</h3>
+                <h3 class="navbar-brand title txt_nav_title txt_font mx-auto my-0 pt-1" style="font-size: 32px; letter-spacing: 1px; cursor: pointer;" id="nav_main">Post Enhancement of Segmentation</h3>
             </div>
             <div class="collapse navbar-collapse ml-4" id="navbarSupportedContent">
                 <ul class="nav-item dropdown my-auto py-0 pl-1">
-                    <li role="button" type="button" class="btn dropdown text-white txt_nav_button txt_font my-0 py-0" data-toggle="dropdown" style="font-size: 28px;" id="btn_images">
-                        Liver Images
+                    <li role="button" class="btn dropdown text-white txt_nav_button txt_font my-0 py-0" aria-haspopup="true" data-toggle="dropdown" style="font-size: 28px;" id="btn_images">
+                        Segmentation Results
                     </li>
                     <div class="dropdown-menu float-right" aria-labelledby="navbarDropdown">
-                      <a class="dropdown-item txt_font" href="#" id="nav_register_img">Register Images</a>
-                      <a class="dropdown-item txt_font" href="#" id="nav_browse_img">Browse Images</a>
-                      <a class="dropdown-item txt_font" href="#" id="nav_annotate_img">Annotate Images</a>
-                      <a class="dropdown-item txt_font" href="#" id="nav_remove_img">Remove Images</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_register_img">Register Segmented Result</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_browse_img">Browse Segmented Result</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_annotate_img">Modify Segmented Result</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_remove_img">Remove Segmented Result</a>
                     </div>
                 </ul>
 
@@ -34,47 +34,24 @@
 {#                      <a class="dropdown-item txt_font" href="#" id="nav_breast_abnormality">Breast Abnormality</a>#}
 {#                      <a class="dropdown-item txt_font" href="#" id="nav_stomach_abnormality">Stomach Abnormality</a>#}
 {#                    </div>#}
-                    <li role="button" class="btn dropdown text-white txt_nav_button txt_font my-0 py-0" data-toggle="dropdown" style="font-size: 28px;" id="nav_diagnosing">
-                        Diagnosis
+                    <li role="button" class="btn dropdown text-white txt_nav_button txt_font my-0 py-0" data-toggle="dropdown" style="font-size: 28px;" id="nav_enhancement">
+                        Post-Enhancement
                     </li>
+                    <div class="dropdown-menu float-right" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item txt_font" href="#" id="nav_refine_seg_result">Proceed Post-Enhancement</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_browse_img">Browse Enhanced Results</a>
+                      <a class="dropdown-item txt_font" href="#" id="nav_remove_img">Remove Enhanced Results</a>
+                    </div>
                 </ul>
 
                 <ul class="nav-item dropdown my-auto py-0  pl-1">
                     <li role="button" class="btn dropdown text-white txt_nav_button txt_font my-0 py-0" data-toggle="dropdown" style="font-size: 28px;" id="nav_liver_abnormality">
-                        Medical Reports
+                        ML Model Management
                     </li>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                       <a class="dropdown-item txt_font" id="nav_load_diagnosis" href="#">Load Diagnosis</a>
                       <a class="dropdown-item txt_font" id="nav_recommend_treatments" href="#">Recommend Treatments</a>
                       <a class="dropdown-item txt_font" id="nav_retrieve_diagnosis" href="#">Retrieve Diagnosis</a>
-                    </div>
-                </ul>
-
-
-                <ul class="nav-item dropdown my-auto py-0  pl-1" hidden>
-                    <li role="button" class="btn dropdown text-white txt_nav_button txt_font my-0 py-0" data-toggle="dropdown" style="font-size: 28px;">
-                        Treatment
-                    </li>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                      <a class="dropdown-item txt_font" id="nav_load_diagnosis" href="#">Load Diagnosis</a>
-                      <a class="dropdown-item txt_font" id="nav_recommend_treatments" href="#">Recommend Treatments</a>
-                      <a class="dropdown-item txt_font" id="nav_retrieve_diagnosis" href="#">Retrieve Diagnosis</a>
-                    </div>
-                </ul>
-
-                <ul class="navbar-nav nav-item dropdown  ml-auto" id="nav_user" hidden>
-                    <li role="button" type="button" class="btn dropdown text-white txt_font my-1 py-0  mr-3" data-toggle="dropdown" style="font-size: 22px;" id="txt_role">
-                    </li>
-                    <div class="w-100 dropdown-menu mx-auto" aria-labelledby="navbarDropdown" id="drop_profile">
-                        <div class="w-100 my-2 ">
-                            <div class="mx-auto" id="body_img_profile">
-                                <img src="{% static 'miass/images/perm_identity-24px.svg' %}" id="img_profile">
-                            </div>
-                        </div>
-                        <a class="dropdown-item txt_font mx-auto" id="nav_profile" href="#">Update Profile</a>
-                        <a class="dropdown-item txt_font" id="nav_change_role" href="#" data-target="#modal_chg_role" data-toggle="modal">Change Role</a>
-                        <a class="dropdown-item txt_font" id="nav_option" href="#" data-target="#modal_option" data-toggle="modal">Option</a>
-                        <a class="dropdown-item txt_font" id="nav_log_out" href="#">Logout</a>
                     </div>
                 </ul>
             </div>

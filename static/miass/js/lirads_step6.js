@@ -6,185 +6,99 @@
     var d;
     // var d = ["Tumor Group 1", "Tumor Group 2", "Tumor Group 3", "Tumor Group 4"];
     $(document).ready(function(){
+        write_log_in_console("Step 3 is to remedy shape violation.");
 
-        write_log_in_console("Step 6. Computing Li-RADS features is started.");
-        write_log_in_console("The tumor data is being loaded.");
         $.ajax({
-        url:"/api/load_tumor_group_list_step6",
-        async: true,
-        method: "POST",
-        data: {"data": JSON.stringify({})},
-        data_type: "text",
-        success: function (data) {
-            d = data["data"];
-            numImgs = d.length;
-            console.log(d);
-            console.log(numImgs);
-            for (var i in d) {
-                if (i == 0) {
-                    $("#list_slices_step_6").append("<a class='list-group-item list-group-item-action active w-100'" +
-                        " role='tab' id='list_"+i+"_list_tumors_step6"+"' data-toggle='list' href='#list_"+i+"_lirads'>"+d[i]+"</a>");
-                    $("#sl_id_lirads_features").append("" +
-                "            <div class=\"tab-pane show active\" id=\"list_"+i+"_lirads\" role=\"tabpanel\" aria-labelledby=\"list_"+i+"_list_tumors_step6"+"\">\n" +
-                "                <div class=\"row mx-0\">\n" +
-                "                    <h6>Type of APHE: </h6>\n" +
-                "                    <h6 id=\"txt_aphe_type_"+i+"\" class='ml-1'</h6>\n" +
-                "                </div>\n" +
-                "                <div class=\"row mx-0\">\n" +
-                "                    <h6>Tumor Size: </h6>\n" +
-                "                    <h6 id=\"txt_tumor_size_"+i+"\" class='ml-1'></h6>\n" +
-                "                </div>\n" +
-                "                <div class=\"mx-0\">\n" +
-                "                    <h6>Major Features </h6>\n" +
-                "                    <div class=\"row mx-0 ml-2\">\n" +
-                "                        <h6>Existence of Capsule: </h6>\n" +
-                "                        <h6 id=\"txt_capsule_"+i+"\" class='ml-1'></h6>\n" +
-                "                    </div>\n" +
-                "                    <div class=\"row mx-0 ml-2\">\n" +
-                "                        <h6>Existence of Washout: </h6>\n" +
-                "                        <h6 id=\"txt_washout_"+i+"\" class='ml-1'></h6>\n" +
-                "                    </div>\n" +
-                "                    <div class=\"row mx-0 ml-2\">\n" +
-                "                        <h6>Existence of Threshold Growth: </h6>\n" +
-                "                        <h6 id=\"txt_th_growth_"+i+"\" class='ml-1'></h6>\n" +
-                "                    </div>\n" +
-                "                </div>\n" +
-                "            </div>" +
-                "");
+            url: "/api/load_img_list_step6",
+            async: true,
+            method: 'POST',
+            data: {"data": JSON.stringify({})},
+            data_type: "text",
+            success: function (data) {
+                // var data = JSON.parse(data);
+                d = data["data"];
+                var ids = d["ids"];
+                var sls = d["sls"];
+                var segs = d["segs"];
+                var seqs = d["seqs"];
+                console.log(seqs);
 
-                } else {
-                    $("#list_slices_step_6").append("<a class='list-group-item list-group-item-action w-100'" +
-                        " role='tab' id='list_"+i+"_list_tumors_step6"+"' data-toggle='list' href='#list_"+i+"_lirads'>"+d[i]+"</a>");
-                    $("#sl_id_lirads_features").append("" +
-                "            <div class=\"tab-pane\" id=\"list_"+i+"_lirads\" role=\"tabpanel\" aria-labelledby=\"list_"+i+"_list_tumors_step6"+"\">\n" +
-                "                <div class=\"row mx-0\">\n" +
-                "                    <h6>Type of APHE: </h6>\n" +
-                "                    <h6 id=\"txt_aphe_type_"+i+"\" class='ml-1'</h6>\n" +
-                "                </div>\n" +
-                "                <div class=\"row mx-0\">\n" +
-                "                    <h6>Tumor Size: </h6>\n" +
-                "                    <h6 id=\"txt_tumor_size_"+i+"\" class='ml-1'></h6>\n" +
-                "                </div>\n" +
-                "                <div class=\"mx-0\">\n" +
-                "                    <h6>Major Features </h6>\n" +
-                "                    <div class=\"row mx-0 ml-2\">\n" +
-                "                        <h6>Existence of Capsule: </h6>\n" +
-                "                        <h6 id=\"txt_capsule_"+i+"\" class='ml-1'></h6>\n" +
-                "                    </div>\n" +
-                "                    <div class=\"row mx-0 ml-2\">\n" +
-                "                        <h6>Existence of Washout: </h6>\n" +
-                "                        <h6 id=\"txt_washout_"+i+"\" class='ml-1'></h6>\n" +
-                "                    </div>\n" +
-                "                    <div class=\"row mx-0 ml-2\">\n" +
-                "                        <h6>Existence of Threshold Growth: </h6>\n" +
-                "                        <h6 id=\"txt_th_growth_"+i+"\" class='ml-1'></h6>\n" +
-                "                    </div>\n" +
-                "                </div>\n" +
-                "            </div>" +
-                "");
+                $("#div_slice_step6").append("<div class=\"header \" style=\"width: 40px; vertical-align: middle; \"><h5 class='my-auto'>Slice ID</h5></div>");
+                $("#div_seg_step6").append("<div class=\"header\" style=\"width: 40px;vertical-align: middle; \"><h5>Seg. Result</h5></div>");
+                $("#div_seq_org_step6").append("<div class=\"header\" style=\"width: 40px; vertical-align: middle; \"><h5>Sequence ID</h5></div>");
+                $("#div_enh_step6").append("<div class=\"header\" style=\"width: 40px; height:150px;vertical-align: middle;\"><h5>Rem. Result</h5></div>");
+                $("#div_seq_enh_ste6").append("<div class=\"header\" style=\"width: 40px; vertical-align: middle;\"><h5>Sequence ID</h5></div>");
+                for (var i in ids){
+                    $("#div_slice_step6").append("<div class=\"title_seg\"><h4 class=\"h-100 mb-0\" style='width: 150px;'>"+ids[i]+"</h4></div>");
                 }
-            }
+                for (var i in sls){
+                    $("#div_seg_step6").append("<div class=\"item\" id='step6_seg_"+ids[i]+"'>" +
+                        "<img style='width: 150px; height: 150px;' src='data:image/png;base64,"+sls[i]+"'/>" +
+                        "</div>");
+                }
+                for (var i in seqs){
+                    $("#div_seq_org_step6").append("<div class=\"title_seg\"><h5 class=\"h-100 mb-0\" style='width: 150px;'>"+seqs[i]+"</h5></div>");
+                }
 
-            write_log_in_console("Finished loading tumor group data.");
-        }, error:function () {
+            }, error: function (){
 
             }
         });
 
-
-        $("#btn_load_prv_data").on("click", function () {
-
-        });
-        $("#btn_compute_feature").on("click", function () {
-            write_log_in_console("Computing LI-RADS features of tumors is started.");
-            $("#div_init_step6").css("display", "none");
-            $("#div_start_step6").css("display", "block");
-            $("#div_pause_step6").css("display", "none");
-            isPause = false;
-            intervalSegment = setInterval(function () {
-                if (!isPause) {
-                        $.ajax({
-                            url: "/api/compute_lirads_feature",
-                            async: false,
-                            method: "POST",
-                            data: {"data": JSON.stringify({"tumor_id":idx})},
-                            data_type: "text",
-                            success: function (data) {
-                                var features = data["data"];
-                                console.log(features);
-                                var num_major = 0;
-                                if (features["capsule"])
-                                    num_major+=1;
-                                if (features["washout"])
-                                    num_major+=1;
-                                if (features["threshold_growth"])
-                                    num_major+=1;
-                                write_log_in_console("LI-RADS features for "+d[idx]+"is computed; APHE Type: "+ features["APHE_Type"]+ ", Size: "+features["tumor_size"]+" , # of Major Features: "+num_major);
-                                $("#txt_aphe_type_"+idx).text(features["APHE_Type"]);
-                                $("#txt_tumor_size_"+idx).text(features["tumor_size"]);
-                                $("#txt_capsule_"+idx).text(features["capsule"]);
-                                $("#txt_washout_"+idx).text(features["washout"]);
-                                if (features["threshold_growth"]==null)
-                                    $("#txt_th_growth_"+idx).text("Not Input");
-                                else
-                                    $("#txt_th_growth_"+idx).text(features["threshold_growth"]);
-
-
-                                $("#list_slices_step_6").children().removeClass("active");
-                                $("#sl_id_lirads_features").children().removeClass("active");
-                                $("#list_"+idx+"_list_tumors_step6").addClass("active");
-                                $("#list_"+idx+"_lirads").addClass("active");
-
-                                try{
-                                    let y_position = document.querySelector("#list_"+(idx-1)+"_list_tumors_step6").offsetTop;
-                                    $("#list_slices_step_6").scrollTop(y_position);
-                                }catch (e) {
-                                   let y_position = document.querySelector("#list_"+(idx)+"_list_tumors_step6").offsetTop;
-                                   $("#list_slices_step_6").scrollTop(y_position);
-                                }
-
-                                if (idx >= (numImgs-1)){
-                                    // $("#div_process").css("display", "none");
-                                   $("#div_start_step5").css("display", "none");
-                                    $("#div_init_step5").css("display", "block");
-                                    isPause = false;
-                                    idx = 0;
-                                    clearInterval(intervalSegment);
-                                    write_log_in_console("Computing LI-RADS features of tumors is finished.");
-                                }
-                                idx+=1;
-                            }, error: function () {
-
-                            }
-                        });
-
+        $("#btn_detect_shape").on("click", function () {
+            write_log_in_console("Detecting violation is started.");
+            $.ajax({
+                url: "/api/detect_shape_violation",
+                async: false,
+                method: 'POST',
+                data: {"data": JSON.stringify()},
+                data_type: "text",
+                success: function (data) {
+                    d = data["data"];
+                    var diffs = d["diffs"];
+                    console.log(diffs);
+                    for (var i in diffs){
+                        $("#step6_seg_"+diffs[i]).css("border", "4px solid #FF0000");
                     }
-                }, 500);
+                    write_log_in_console("The number of violating slices is "+diffs.length+".");
+                    write_log_in_console("Detecting violation is finished.");
+                }, error: function (){
+                    idx+=1;
+
+                }
             });
 
-        $("#btn_pause_step6").on("click", function () {
-            write_log_in_console("Computing LI-RADS features of tumors is paused.");
-            $("#div_init_step6").css("display", "none");
-            $("#div_start_step6").css("display", "none");
-            $("#div_pause_step6").css("display", "block");
-            isPause = true;
         });
-        $("#btn_stop_step6").on("click", function () {
-            write_log_in_console("Computing LI-RADS features of tumors is stopped.");
-            idx=0;
-            $("#div_init_step6").css("display", "block");
-            $("#div_start_step6").css("display", "none");
-            $("#div_pause_step6").css("display", "none");
-            isPause = false;
-            clearInterval(intervalSegment);
+        $("#btn_remedy_shape").on("click", function () {
+            write_log_in_console("Remedying violation is started.");
+            $.ajax({
+                url: "/api/remedy_shape_violation",
+                async: false,
+                method: 'POST',
+                data: {"data": JSON.stringify({"target_img":idx})},
+                data_type: "text",
+                success: function (data) {
+                    d = data["data"];
+                    var seqs = d["seqs"];
+                    var imgs = d["imgs"];
+                    for (var i in imgs){
+                        $("#div_enh_step6").append("<div class=\"item\">" +
+                            "<img style='width: 150px; height: 150px;' src='data:image/png;base64,"+imgs[i]+"'/>" +
+                            "</div>");
+                    }
+                    for (var i in seqs){
+                        $("#div_seq_enh_step6").append("<div class=\"title_seg\"><h5 class=\"h-100 mb-0\" style='width: 150px;'>"+seqs[i]+"</h5></div>");
+                    }
+
+                    write_log_in_console("Remedying violation is finished.");
+
+                }, error: function (){
+                    idx+=1;
+
+                }
+            });
         });
-        $("#btn_resume_step6").on("click", function () {
-            write_log_in_console("Computing LI-RADS features of tumors is resumed.");
-            $("#div_init_step6").css("display", "none");
-            $("#div_start_step6").css("display", "block");
-            $("#div_pause_step6").css("display", "none");
-            isPause = false;
-        });
+
 
 
 

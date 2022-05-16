@@ -2,50 +2,48 @@
 
 <!DOCTYPE html>
 <html lang="en">
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+<link rel="stylesheet" href="{% static 'miass/css/enhance_body.css' %}">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
     <div class="w-100" style="height: 6%;">
-        <div id="div_init_step4">
-            <button class="btn btn-outline-info float-right" id="btn_evaluate_step4">Evaluate</button>
-        </div>
-        <div id="div_start_step4" style="display: none;">
-            <button class="btn btn-outline-info float-right" id="btn_stop_evaluate_step4">Stop</button>
-            <button class="btn btn-outline-info float-right mr-2" id="btn_pause_evaluate_step4">Pause</button>
-        </div>
-        <div id="div_pause_step4"  style="display: none;">
-            <button class="btn btn-outline-info float-right" id="btn_resume_evaluate_step4">Resume</button>
+        <div id="div_init">
+            <button class="btn btn-outline-info float-right" id="btn_remedy_location">Remedy Violation</button>
+            <button class="btn btn-outline-info float-right mr-1" id="btn_detect_location">Detect Violation</button>
         </div>
     </div>
     <div class="w-100 row" style="height: 84%">
-        <div id="list_slices_step_4" role="tablist" class="list-group border border-dark" style="width: 22%; overflow-x: hidden; max-height: 100%; -ms-overflow-style:none">
-
-        </div>
-        <div id="sl_id_tumors" style="width: 78%;" class="tab-content h-75">
-{#            <div class="h-100  ml-2 mt-4 tab-pane show active" id="list_i" role="tabpanel" aria-labelledby="list_i_list_tumors_step4">#}
-{#                <div class="row h-100">#}
-{#                    <div id="div_img" class="w-50 mr-0">#}
-{#                        <div class="div_area text-center h-100">#}
-{#                          <img src="{% static "/miass/images/tumors/HCC_2_AP 1_0.jpg"%}" width="250px" height="250px">#}
-{#                        </div>#}
-{#                    </div>#}
-{#                    <div id="div_features" class="w-50 border border-info p-2">#}
-{#                      <h5>Predicted Image Features</h5>#}
-{#                        <div id="div_img_features" class="ml-2">#}
-{#                          <h6>Hypoattenuating</h6>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
+        <div id="box" >
+            <div id="div_slice_step4">
+            </div>
+            <div id="div_seg_step4">
+            </div>
+            <div id="div_seq_org_step4">
+            </div>
+            <div id="div_enh_step4" class="mt-3">
+            </div>
+            <div id="div_seq_enh_ste4">
+            </div>
         </div>
     </div>
-    <div>
+    <div class="w-100">
         <button id="btn_lirads_step4_next" class="col-1 btn btn-primary float-right">Next</button>
         <button id="btn_lirads_step4_back" class="col-1 btn btn-primary float-right mr-1">Back</button>
     </div>
 </body>
+
 <script src="{% static "miass/js/console.js" %}"></script>
 <script src="{% static "miass/js/lirads_step4.js" %}"></script>
+
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
 </html>

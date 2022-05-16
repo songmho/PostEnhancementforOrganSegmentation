@@ -53,7 +53,7 @@ class DBImages:
         To define db connection
         """
         try:
-            self.conn = pymysql.connect(host=constants.HOST_ADDR, user='root', password='root', db='mias',
+            self.conn = pymysql.connect(host=constants.HOST_ADDR, user='root', password='root', db='post_enhancement',
                                         charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         except Exception as e:
             self.conn = None

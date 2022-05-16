@@ -1,17 +1,21 @@
 import base64
 import copy
 import glob
+import io
 import json
 import logging
+import math
 import os
 import time
 from pprint import pprint
 
+import cv2
+import numpy as np
 from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.cache import cache
 
-import constants, cloud_db, email_auth
+import constants
 from image_manager import ImageManager, ImageRetriever
 from miaas.users import User, Staff, Physician, Patient
 from miaas.images import Image
@@ -90,8 +94,6 @@ def register_profile_image(request):
             return JsonResponse({"state": True})
         except:
             return JsonResponse({"state": False})
-
-
 
 def retrieve_image_info(request):
     if request.method == "POST":
@@ -195,7 +197,7 @@ def upload_images(request):
                                     destination.write(chunk)
                         process(x)
                 i = Image()
-                result = i.register_images(uploader_id, img_type, t_folder_cur, first_name, last_name,
+                result = i.register_images(uploader_id, img_type, t_folder_cur, acq_date, first_name, last_name,
                                            birthday, gender, examination_source, interpretation, description, medical_record_number)
                 return JsonResponse({"state": result})
             except Exception as e:
@@ -302,6 +304,469 @@ def upload_txt(request):
             return JsonResponse({"state": False})
     else:
         return JsonResponse({"state": False})
+
+
+@csrf_exempt
+def encode_medical_img(request):
+    if request.method == "POST":
+        # TODO: To save medical images and segmentation results
+        # To save medical image
+
+        # To save segmentation results
+
+
+        # To enhance the medical images
+
+
+        return JsonResponse({"state": True, "data":{"num_slice": 86, "hu_start": -160, "hu_end": 240}})
+    else:
+        return JsonResponse({"state":False})
+
+
+@csrf_exempt
+def load_img_list_step2(request):
+    if request.method == "POST":
+        list_titles = []
+        list_imgs = []
+        list_segs = []
+        # To load slice
+        path_sl = r"D:\Dataset\Liver TUmor Dataset (Medical Decathlon)\images_Training\066"
+        path_seg = r"E:\1. Lab\Daily Results\2022\2205\0501\066\0. origin_seg"
+        for i in os.listdir(path_sl):
+            list_titles.append("SL"+str(int(i.split("_")[1].replace(".png", ""))).zfill(3))
+            list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sl, i), cv2.IMREAD_GRAYSCALE)))
+        for i in os.listdir(path_seg):
+            list_segs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_seg, i), cv2.IMREAD_GRAYSCALE)))
+
+        return JsonResponse({"state": True, "data":{"ids":list_titles, "sls":list_imgs, "segs": list_segs}})
+    else:
+        return JsonResponse({"state":False})
+
+@csrf_exempt
+def identify_continuity_sequence(request):
+    if request.method == "POST":
+        list_titles = []
+        list_imgs = []
+        list_segs = {}
+        # To load slice
+        path_sqs = r"E:\1. Lab\Daily Results\2022\2204\0425\Enhancement Results,1118a\066\0.sequences"
+        num_true = 1
+        num_false = 1
+        time.sleep(2)
+        cur = -1
+        for i in os.listdir(path_sqs):
+            if cur == -1:
+                cur = i
+            for j in os.listdir(os.path.join(path_sqs, i)):
+                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
+                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
+                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
+                else:
+                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
+        return JsonResponse({"state": True, "data":{"seqs": list_segs, "imgs":list_imgs, "num_seq": len(os.listdir(os.path.join(path_sqs)))}})
+    else:
+        return JsonResponse({"state":False})
+
+@csrf_exempt
+def load_img_list_step3(request):
+    if request.method == "POST":
+        list_titles = []
+        list_imgs = []
+        list_segs = []
+        list_seqs = {}
+        # To load slice
+        path_sl = r"D:\Dataset\Liver TUmor Dataset (Medical Decathlon)\images_Training\066"
+        path_seg = r"E:\1. Lab\Daily Results\2022\2205\0501\066\0. origin_seg"
+        path_sqs = r"E:\1. Lab\Daily Results\2022\2204\0425\Enhancement Results,1118a\066\0.sequences"
+        for i in os.listdir(path_sl):
+            list_titles.append("SL"+str(int(i.split("_")[1].replace(".png", ""))).zfill(3))
+            list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sl, i), cv2.IMREAD_GRAYSCALE)))
+        for i in os.listdir(path_seg):
+            list_segs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_seg, i), cv2.IMREAD_GRAYSCALE)))
+        cur = -1
+        for i in os.listdir(path_sqs):
+            if cur == -1:
+                cur = i
+            for j in os.listdir(os.path.join(path_sqs, i)):
+                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
+                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
+                    list_seqs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
+                else:
+                    list_seqs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
+        # To load
+
+        return JsonResponse({"state": True, "data":{"ids":list_titles, "sls":list_imgs, "segs": list_segs, "seqs": list_seqs}})
+    else:
+        return JsonResponse({"state":False})
+
+@csrf_exempt
+def detect_appearance_violation(request):
+    if request.method == "POST":
+        list_diffs = []
+        # To load slice
+        path_bef = r"E:\1. Lab\Daily Results\2022\2204\0425\Enhancement Results,1118a\066\0.sequences"
+        path_aft = r"E:\1. Lab\Daily Results\2022\2205\0501\066\1.appearance"
+        list_bef = []
+        list_aft = []
+        list_names = []
+        time.sleep(2)
+        for i in os.listdir(path_bef):
+            for j in os.listdir(os.path.join(path_bef, i)):
+                list_bef.append(cv2.imread(os.path.join(path_bef, i, j), cv2.IMREAD_GRAYSCALE))
+                list_names.append("SL"+str(int(j.replace(".png", ""))+1).zfill(3))
+        for i in os.listdir(path_aft):
+            for j in os.listdir(os.path.join(path_aft, i)):
+                list_aft.append(cv2.imread(os.path.join(path_aft, i, j), cv2.IMREAD_GRAYSCALE))
+
+        for i in range(len(list_names)):
+            if np.count_nonzero(cv2.subtract(list_bef[i], list_aft[i])) >0:
+                list_diffs.append(list_names[i])
+        return JsonResponse({"state": True, "data":{"diffs": list_diffs}})
+    else:
+        return JsonResponse({"state":False})
+
+@csrf_exempt
+def remedy_appearance_violation(request):
+    if request.method == "POST":
+        list_titles = []
+        list_imgs = []
+        list_segs = {}
+        # To load slice
+        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\1.appearance"
+        time.sleep(2)
+        cur = -1
+        for i in os.listdir(path_sqs):
+            if cur == -1:
+                cur = i
+            for j in os.listdir(os.path.join(path_sqs, i)):
+                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
+                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
+                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
+                else:
+                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
+        return JsonResponse({"state": True, "data":{"imgs": list_imgs, "seqs": list_segs}})
+    else:
+        return JsonResponse({"state":False})
+
+@csrf_exempt
+def load_img_list_step4(request):
+    if request.method == "POST":
+        list_titles = []
+        list_imgs = []
+        list_segs = []
+        list_seqs = {}
+        # To load slice
+        path_sl = r"D:\Dataset\Liver TUmor Dataset (Medical Decathlon)\images_Training\066"
+        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\1.appearance"
+        for i in os.listdir(path_sl):
+            list_titles.append("SL"+str(int(i.split("_")[1].replace(".png", ""))).zfill(3))
+        cur = -1
+        for i in os.listdir(path_sqs):
+            if cur == -1:
+                cur = i
+            for j in os.listdir(os.path.join(path_sqs, i)):
+                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
+                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
+                    list_seqs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
+                else:
+                    list_seqs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
+        # To load
+
+        return JsonResponse({"state": True, "data":{"ids":list_titles, "sls":list_imgs,  "seqs": list_seqs}})
+    else:
+        return JsonResponse({"state":False})
+
+@csrf_exempt
+def detect_location_violation(request):
+    if request.method == "POST":
+        list_diffs = []
+        # To load slice
+        path_bef = r"E:\1. Lab\Daily Results\2022\2204\0425\Enhancement Results,1118a\066\1.appearance"
+        path_aft = r"E:\1. Lab\Daily Results\2022\2205\0501\066\2.location"
+        list_bef = []
+        list_aft = []
+        list_names = []
+        time.sleep(2)
+        for i in os.listdir(path_bef):
+            for j in os.listdir(os.path.join(path_bef, i)):
+                list_bef.append(cv2.imread(os.path.join(path_bef, i, j), cv2.IMREAD_GRAYSCALE))
+                list_names.append("SL"+str(int(j.replace(".png", ""))+1).zfill(3))
+        for i in os.listdir(path_aft):
+            for j in os.listdir(os.path.join(path_aft, i)):
+                list_aft.append(cv2.imread(os.path.join(path_aft, i, j), cv2.IMREAD_GRAYSCALE))
+
+        for i in range(len(list_names)):
+            if np.count_nonzero(cv2.subtract(list_bef[i], list_aft[i])) >0:
+                list_diffs.append(list_names[i])
+        return JsonResponse({"state": True, "data":{"diffs": list_diffs}})
+    else:
+        return JsonResponse({"state":False})
+
+@csrf_exempt
+def remedy_location_violation(request):
+    if request.method == "POST":
+        list_titles = []
+        list_imgs = []
+        list_segs = {}
+        # To load slice
+        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\2.location"
+        time.sleep(2)
+        cur = -1
+        for i in os.listdir(path_sqs):
+            if cur == -1:
+                cur = i
+            for j in os.listdir(os.path.join(path_sqs, i)):
+                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
+                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
+                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
+                else:
+                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
+        return JsonResponse({"state": True, "data":{"imgs": list_imgs, "seqs": list_segs}})
+    else:
+        return JsonResponse({"state":False})
+
+@csrf_exempt
+def load_img_list_step5(request):
+    if request.method == "POST":
+        list_titles = []
+        list_imgs = []
+        list_segs = []
+        list_seqs = {}
+        # To load slice
+        path_sl = r"D:\Dataset\Liver TUmor Dataset (Medical Decathlon)\images_Training\066"
+        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\2.location"
+        for i in os.listdir(path_sl):
+            list_titles.append("SL"+str(int(i.split("_")[1].replace(".png", ""))).zfill(3))
+        cur = -1
+        for i in os.listdir(path_sqs):
+            if cur == -1:
+                cur = i
+            for j in os.listdir(os.path.join(path_sqs, i)):
+                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
+                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
+                    list_seqs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
+                else:
+                    list_seqs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
+        # To load
+
+        return JsonResponse({"state": True, "data":{"ids":list_titles, "sls":list_imgs,  "seqs": list_seqs}})
+    else:
+        return JsonResponse({"state":False})
+
+
+@csrf_exempt
+def detect_size_violation(request):
+    if request.method == "POST":
+        list_diffs = []
+        # To load slice
+        path_bef = r"E:\1. Lab\Daily Results\2022\2204\0425\Enhancement Results,1118a\066\2.location"
+        path_aft = r"E:\1. Lab\Daily Results\2022\2205\0501\066\3.size"
+        list_bef = []
+        list_aft = []
+        list_names = []
+        time.sleep(2)
+        for i in os.listdir(path_bef):
+            for j in os.listdir(os.path.join(path_bef, i)):
+                list_bef.append(cv2.imread(os.path.join(path_bef, i, j), cv2.IMREAD_GRAYSCALE))
+                list_names.append("SL"+str(int(j.replace(".png", ""))+1).zfill(3))
+        for i in os.listdir(path_aft):
+            for j in os.listdir(os.path.join(path_aft, i)):
+                list_aft.append(cv2.imread(os.path.join(path_aft, i, j), cv2.IMREAD_GRAYSCALE))
+
+        for i in range(len(list_names)):
+            if np.count_nonzero(cv2.subtract(list_bef[i], list_aft[i])) > 0:
+                list_diffs.append(list_names[i])
+        return JsonResponse({"state": True, "data": {"diffs": list_diffs}})
+    else:
+        return JsonResponse({"state": False})
+
+
+@csrf_exempt
+def remedy_size_violation(request):
+    if request.method == "POST":
+        list_titles = []
+        list_imgs = []
+        list_segs = {}
+        # To load slice
+        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\3.size"
+        time.sleep(2)
+        cur = -1
+        for i in os.listdir(path_sqs):
+            if cur == -1:
+                cur = i
+            for j in os.listdir(os.path.join(path_sqs, i)):
+                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
+                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
+                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
+                else:
+                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
+        return JsonResponse({"state": True, "data":{"imgs": list_imgs, "seqs": list_segs}})
+    else:
+        return JsonResponse({"state":False})
+
+
+@csrf_exempt
+def load_img_list_step6(request):
+    if request.method == "POST":
+        list_titles = []
+        list_imgs = []
+        list_segs = []
+        list_seqs = {}
+        # To load slice
+        path_sl = r"D:\Dataset\Liver TUmor Dataset (Medical Decathlon)\images_Training\066"
+        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\3.size"
+        for i in os.listdir(path_sl):
+            list_titles.append("SL"+str(int(i.split("_")[1].replace(".png", ""))).zfill(3))
+        cur = -1
+        for i in os.listdir(path_sqs):
+            if cur == -1:
+                cur = i
+            for j in os.listdir(os.path.join(path_sqs, i)):
+                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
+                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
+                    list_seqs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
+                else:
+                    list_seqs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
+        # To load
+
+        return JsonResponse({"state": True, "data":{"ids":list_titles, "sls":list_imgs,  "seqs": list_seqs}})
+    else:
+        return JsonResponse({"state":False})
+
+
+@csrf_exempt
+def detect_shape_violation(request):
+    if request.method == "POST":
+        list_diffs = []
+        # To load slice
+        path_bef = r"E:\1. Lab\Daily Results\2022\2204\0425\Enhancement Results,1118a\066\3.size"
+        path_aft = r"E:\1. Lab\Daily Results\2022\2205\0501\066\4.shape"
+        list_bef = []
+        list_aft = []
+        list_names = []
+        time.sleep(2)
+        for i in os.listdir(path_bef):
+            for j in os.listdir(os.path.join(path_bef, i)):
+                list_bef.append(cv2.imread(os.path.join(path_bef, i, j), cv2.IMREAD_GRAYSCALE))
+                list_names.append("SL"+str(int(j.replace(".png", ""))+1).zfill(3))
+        for i in os.listdir(path_aft):
+            for j in os.listdir(os.path.join(path_aft, i)):
+                list_aft.append(cv2.imread(os.path.join(path_aft, i, j), cv2.IMREAD_GRAYSCALE))
+
+        for i in range(len(list_names)):
+            if np.count_nonzero(cv2.subtract(list_bef[i], list_aft[i])) > 0:
+                list_diffs.append(list_names[i])
+        return JsonResponse({"state": True, "data": {"diffs": list_diffs}})
+    else:
+        return JsonResponse({"state": False})
+
+
+@csrf_exempt
+def remedy_shape_violation(request):
+    if request.method == "POST":
+        list_titles = []
+        list_imgs = []
+        list_segs = {}
+        # To load slice
+        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\4.shape"
+        time.sleep(2)
+        cur = -1
+        for i in os.listdir(path_sqs):
+            if cur == -1:
+                cur = i
+            for j in os.listdir(os.path.join(path_sqs, i)):
+                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
+                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
+                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
+                else:
+                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
+        return JsonResponse({"state": True, "data":{"imgs": list_imgs, "seqs": list_segs}})
+    else:
+        return JsonResponse({"state":False})
+
+
+@csrf_exempt
+def load_img_list_step7(request):
+    if request.method == "POST":
+        list_titles = []
+        list_imgs = []
+        list_segs = []
+        list_seqs = {}
+        # To load slice
+        path_sl = r"D:\Dataset\Liver TUmor Dataset (Medical Decathlon)\images_Training\066"
+        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\4.shape"
+        for i in os.listdir(path_sl):
+            list_titles.append("SL"+str(int(i.split("_")[1].replace(".png", ""))).zfill(3))
+        cur = -1
+        for i in os.listdir(path_sqs):
+            if cur == -1:
+                cur = i
+            for j in os.listdir(os.path.join(path_sqs, i)):
+                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
+                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
+                    list_seqs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
+                else:
+                    list_seqs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
+        # To load
+
+        return JsonResponse({"state": True, "data":{"ids":list_titles, "sls":list_imgs,  "seqs": list_seqs}})
+    else:
+        return JsonResponse({"state":False})
+
+
+@csrf_exempt
+def detect_hu_violation(request):
+    if request.method == "POST":
+        list_diffs = []
+        # To load slice
+        path_bef = r"E:\1. Lab\Daily Results\2022\2204\0425\Enhancement Results,1118a\066\4.shape"
+        path_aft = r"E:\1. Lab\Daily Results\2022\2205\0501\066\5.result"
+        list_bef = []
+        list_aft = []
+        list_names = []
+        time.sleep(2)
+        for i in os.listdir(path_bef):
+            for j in os.listdir(os.path.join(path_bef, i)):
+                list_bef.append(cv2.imread(os.path.join(path_bef, i, j), cv2.IMREAD_GRAYSCALE))
+                list_names.append("SL"+str(int(j.replace(".png", ""))+1).zfill(3))
+        for i in os.listdir(path_aft):
+            for j in os.listdir(os.path.join(path_aft, i)):
+                list_aft.append(cv2.imread(os.path.join(path_aft, i, j), cv2.IMREAD_GRAYSCALE))
+
+        for i in range(len(list_names)):
+            if np.count_nonzero(cv2.subtract(list_bef[i], list_aft[i])) > 0:
+                list_diffs.append(list_names[i])
+        return JsonResponse({"state": True, "data": {"diffs": list_diffs}})
+    else:
+        return JsonResponse({"state": False})
+
+
+@csrf_exempt
+def remedy_hu_violation(request):
+    if request.method == "POST":
+        list_titles = []
+        list_imgs = []
+        list_segs = {}
+        # To load slice
+        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\5.result"
+        time.sleep(2)
+        cur = -1
+        for i in os.listdir(path_sqs):
+            if cur == -1:
+                cur = i
+            for j in os.listdir(os.path.join(path_sqs, i)):
+                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
+                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
+                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
+                else:
+                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
+        return JsonResponse({"state": True, "data":{"imgs": list_imgs, "seqs": list_segs}})
+    else:
+        return JsonResponse({"state":False})
+
+
+
+
 
 
 @csrf_exempt
@@ -871,721 +1336,6 @@ def withdraw(request):
         else:
             return JsonResponse({'state': False})
 
-
-@csrf_exempt
-def handle_intpr_session_mgt(request):
-    db = cloud_db.DbManager()
-    if len(request.body) == 0:
-        raise Exception(MSG_NODATA)
-
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        try:
-            user_type = data['user_type']
-            if not user_type:
-                raise Exception(MSG_INVALID_PARAMS)
-            intpr_session = {}
-            if user_type == 'patient':
-                intpr_session['sessions'] = db.retrieve_patient_session(data['user_id'])
-                new_flag = 0
-                for session in intpr_session['sessions']:
-                    if session['type'] == 'select' or session['type'] == 'cancel':
-                        continue
-                    elif session['status'] == 0:
-                        new_flag = 1
-                intpr_session['new'] = new_flag
-            elif user_type == 'physician':
-                intpr_session['sessions'] = db.retrieve_physician_session(data['user_id'])
-                new_flag = 0
-                for session in intpr_session['sessions']:
-                    if session['type'] == 'response' or session['type'] == 'write':
-                        continue
-                    elif session['status'] == 0:
-                        new_flag = 1
-                intpr_session['new'] = new_flag
-            request.session['intpr_session'] = intpr_session
-            # pprint (intpr_session)
-            return JsonResponse(constants.CODE_SUCCESS)
-        except TypeError as te:
-            logger.exception(te)
-            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
-            logger.exception(e)
-        except Exception as e:
-            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_DB_FAILED}))
-
-    elif request.method == 'PUT':
-        data = json.loads(request.body)
-        pprint(data)
-        try:
-            action = data['action']
-            if not action:
-                raise Exception(MSG_INVALID_PARAMS)
-
-            elif action == 'read':
-                res = db.update_session(data['session_id'])
-                if res:
-                    intpr_session = request.session['intpr_session']
-                    sessions = intpr_session['sessions']
-                    for i in range(0, len(sessions)):
-                        if sessions[i]['session_id'] == int(data['session_id']):
-                            sessions[i]['status'] = 1
-                            break
-
-                    new_flag = 0
-                    if request.session['user']['user_type'] == 'patient':
-                        for session in intpr_session['sessions']:
-                            if session['type'] == 'select' or session['type'] == 'cancel':
-                                continue
-                            elif session['status'] == 0:
-                                new_flag = 1
-                    elif request.session['user']['user_type'] == 'physician':
-                        for session in intpr_session['sessions']:
-                            if session['type'] == 'response' or session['type'] == 'write':
-                                continue
-                            elif session['status'] == 0:
-                                new_flag = 1
-
-                    intpr_session['sessions'] = sessions
-                    intpr_session['new'] = new_flag
-                    request.session['intpr_session'] = intpr_session
-                    return JsonResponse(constants.CODE_SUCCESS)
-                else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
-            elif action == 'delete':
-                res = db.delete_session(data['session_id'])
-                if res:
-                    intpr_session = request.session['intpr_session']
-                    sessions = intpr_session['sessions']
-                    for i in range(0, len(sessions)):
-                        if sessions[i]['session_id'] == int(data['session_id']):
-                            sessions[i]['status'] = 2
-                            break
-
-                    new_flag = 0
-                    if request.session['user']['user_type'] == 'patient':
-                        for session in intpr_session['sessions']:
-                            if session['type'] == 'select' or session['type'] == 'cancel':
-                                continue
-                            elif session['status'] == 0:
-                                new_flag = 1
-                    elif request.session['user']['user_type'] == 'physician':
-                        for session in intpr_session['sessions']:
-                            if session['type'] == 'response' or session['type'] == 'write':
-                                continue
-                            elif session['status'] == 0:
-                                new_flag = 1
-
-                    intpr_session['sessions'] = sessions
-                    intpr_session['new'] = new_flag
-                    request.session['intpr_session'] = intpr_session
-                    return JsonResponse(constants.CODE_SUCCESS)
-                else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
-        except TypeError as te:
-            logger.exception(te)
-            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
-        except Exception as e:
-            logger.exception(e)
-            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_DB_FAILED}))
-
-    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
-
-
-@csrf_exempt
-def handle_session_mgt(request):
-    """
-    Handle login and logout requests.
-    :param request:
-    :return:
-    """
-    # db = cloud_db.DbManager()
-    try:
-        if request.method == 'POST':
-            ### login(signin) ###
-            # if len(request.body) == 0:
-            #     raise Exception(MSG_NODATA)
-            data = json.loads(request.body)
-            #
-            # if not data.get('user_id') or not data.get('password'):
-            #     raise Exception(MSG_INVALID_PARAMS)
-            # if request.session.get('user'):
-            #     raise Exception(MSG_ALREADY_LOGGEDIN)
-            # user_id = data['user_id']
-            # password = data['password']
-            #
-            # authenticated = db.check_authentication(user_id)
-            # if authenticated is None:
-            #     raise Exception(MSG_UNKNOWN_ERROR)
-            # elif authenticated is False:
-            #     return JsonResponse(constants.CODE_NEED_AUTH)
-            #
-            # user = {}
-            # intpr_session = {}
-            # user_type = db.retrieve_user_type(user_id, password)
-            # if user_type is None:
-            #     raise Exception(MSG_INVALID_IDPW)
-            # elif user_type == 'patient':
-            #     user = db.retrieve_patient(user_id, password)
-            #     intpr_session['sessions'] = db.retrieve_patient_session(data['user_id'])
-            # elif user_type == 'physician':
-            #     user = db.retrieve_physician(user_id, password)
-            #     intpr_session['sessions'] = db.retrieve_physician_session(data['user_id'])
-            # else:
-            #     raise Exception(MSG_INVALID_IDPW)
-            # if not user.get('user_id'):
-            #     raise Exception(MSG_INVALID_IDPW)
-            #
-            # # intpr session check
-            # new_flag = 0
-            # for session in intpr_session['sessions']:
-            #     if session['status'] == 0:
-            #         new_flag = 1
-            # intpr_session['new'] = new_flag
-            #
-            # # set sessions
-            # request.session['user'] = user
-            # # pprint(user)
-            # request.session['intpr_session'] = intpr_session
-            # # request.session['medical_image'] = {}
-            # # request.session.create('medical_image')
-            # logger.info('user %s logged in.' % user['user_id'])
-            user_id = data['user_id']
-            password = data['password']
-            if user_id == "patient":
-                request.session['user'] = {'session_id': 1, 'patient_id': 1, 'physician_id': 1,
-                                           'user_id': "user_id", 'password': "password", 'user_type': 'patient',
-                                           'first_name': 'Brown', 'last_name': 'Simpson', "name": "Brown Simpson"}
-            elif user_id == "physician":
-                request.session['user'] = {'session_id': 1, 'patient_id': 1, 'physician_id': 1,
-                                       'user_id': "user_id", 'password': "password", 'user_type': 'physician',
-                                           'first_name': 'John', 'last_name': 'Johns', "user_name": "John Johns", "name": "John Johns"}
-            else:
-                raise Exception(MSG_INVALID_IDPW)
-            return JsonResponse(constants.CODE_SUCCESS)
-
-        elif request.method == 'DELETE':
-            ### Logout ###
-            if request.session.get('user'):
-                # del request.session['user']
-                print(request.session.get('user'))
-                sess = Session()
-                result = sess.expire_session(request.session.get('user')['identification_number'])
-                if result:
-                    request.session.clear()
-                    return JsonResponse(constants.CODE_SUCCESS)
-                else:
-                    raise Exception(MSG_NO_USER_LOGGEDIN)
-            else:
-                raise Exception(MSG_NO_USER_LOGGEDIN)
-
-    except Exception as e:
-        logger.exception(e)
-        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
-
-    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
-
-
-@csrf_exempt
-def handle_user_mgt(request):
-    """
-    Retrieve, update, or inactivate a user.
-    :param request: The body of request is a JSON object of a user.
-    :return:
-    """
-    db = cloud_db.DbManager()
-    try:
-        if request.method == 'GET':
-            logger.info(request.GET)
-            action = request.GET.get('action')
-            if not action:
-                raise Exception(MSG_INVALID_PARAMS)
-
-            if action == 'checkEmail':
-                user_type = request.GET.get('user_type')
-                email = request.GET.get('email')
-                if not user_type or not email:
-                    raise Exception(MSG_INVALID_PARAMS)
-                return JsonResponse(dict(constants.CODE_SUCCESS,
-                                         **{'emailUsed': db.check_email(user_type, email)}))
-
-            user_id = request.GET.get('user_id')
-            if not user_id:
-                raise Exception(MSG_INVALID_PARAMS)
-
-            if action == 'getPatient':
-                user = db.retrieve_patient(user_id)
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
-
-            elif action == 'getPhysician':
-                user = db.retrieve_physician(user_id)
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'user': user}))
-
-            elif action == 'checkId':
-                # retrieve user_id ...
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'existedId': db.find_user(user_id)}))
-
-            elif action == 'resendAuth':
-                authenticated = db.check_authentication(user_id)
-                if authenticated is None:
-                    raise Exception(MSG_UNKNOWN_ERROR)
-                elif authenticated is True:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': 'Already authenticated email.'}))
-
-                user = db.retrieve_user_info(user_id)
-                if not user:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': 'User not found.'}))
-
-                auth_code = email_auth.generate_auth_code()
-                if not db.update_authentication(user_id, auth_code):
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
-                try:
-                    email_auth.send_auth_mail(user, auth_code)
-                except Exception as e:
-                    logger.exception(e)
-
-                return JsonResponse(constants.CODE_SUCCESS)
-
-            else:
-                return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
-
-        if request.method == 'POST':
-            # signup (register)
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
-            data = json.loads(request.body)
-
-            if not data.get('action'):
-                raise Exception(MSG_INVALID_PARAMS)
-            action = data['action']
-
-            if action == 'signup':
-                if not data.get('user'):
-                    raise Exception(MSG_INVALID_PARAMS)
-                user = data['user']
-                user_type = user['user_type']
-
-                signup_success = False
-                if user_type == 'patient':
-                    if db.add_patient(user):
-                        signup_success = True
-                elif user_type == 'physician':
-                    if db.add_physician(user):
-                        signup_success = True
-                else:
-                    raise Exception(MSG_INVALID_PARAMS)
-
-                if not signup_success:
-                    logger.info('signup fail')
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
-
-                auth_code = email_auth.generate_auth_code()
-                if not db.add_authentication(user['user_id'], auth_code):
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SIGNUP_FAILED}))
-                try:
-                    email_auth.send_auth_mail(user, auth_code)
-                except Exception as e:
-                    logger.exception(e)
-                    pass
-
-                return JsonResponse(constants.CODE_SUCCESS)
-
-            elif action == 'update':
-                if not data.get('user'):
-                    raise Exception(MSG_INVALID_PARAMS)
-                user = data['user']
-                logger.info(user)
-                user_type = user['user_type']
-
-                if not request.session.get('user'):
-                    raise Exception(MSG_NO_USER_LOGGEDIN)
-                if request.session['user']['user_id'] != user['user_id']:
-                    raise Exception(MSG_NOT_MATCHED_USER)
-
-                old_email = request.session['user']['email']
-                new_email = user['email']
-                is_email_same = (old_email == new_email)
-                print('old:%s, new:%s, isSame?%s' % (old_email, new_email, is_email_same))
-
-                if not is_email_same and db.check_email(user_type, new_email) == -1:
-                    raise Exception("The email is already used.")
-
-                email_wait_added = True
-                auth_code = None
-                if not is_email_same:
-                    user['email'] = old_email
-                    auth_code = email_auth.generate_auth_code()
-                    email_wait_added = db.update_authentication(user['user_id'], auth_code,
-                                                                'update_email', new_email)
-                    if not email_wait_added:
-                        raise Exception("Changing Email is failed.")
-
-                try:
-                    update_user_success = False
-                    pprint (request.session['user'])
-                    if user_type == 'patient':
-                        update_user_success = db.update_patient(user)
-                    elif user_type == 'physician':
-                        update_user_success = db.update_physician(user)
-                    else:
-                        raise Exception(MSG_INVALID_PARAMS)
-
-                    if update_user_success:
-                        request.session['user'] = update_session(request.session['user'], user)
-                        if email_wait_added and auth_code:
-                            user['email'] = new_email
-                            email_auth.send_email_change_mail(user, auth_code)
-                            return JsonResponse(constants.CODE_WAIT)
-                        else:
-                            return JsonResponse(constants.CODE_SUCCESS)
-                    else:
-                        if email_wait_added and auth_code:
-                            user['email'] = new_email
-                            email_auth.send_email_change_mail(user, auth_code)
-                            return JsonResponse(constants.CODE_WAIT)
-                        else:
-                            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_CHANGE}))
-                except Exception as ef:
-                    logger.exception(ef)
-                    if auth_code is not None:
-                        db.delete_authentication(user['user_id'], auth_code)
-
-                raise Exception(MSG_UNKNOWN_ERROR)
-
-            elif action == 'findid':
-                if not data.get('email') and not data.get('user_type'):
-                    raise Exception(MSG_INVALID_PARAMS)
-                user_id = db.find_id(data['email'], data['user_type'])
-                if user_id:
-                    return JsonResponse(dict(constants.CODE_SUCCESS, **{'user_id': user_id}))
-                else:
-                    raise Exception(MSG_NO_USER_FOUND)
-
-            elif action == 'findpw':
-                if not data.get('email') and not data.get('user_id'):
-                    raise Exception(MSG_INVALID_PARAMS)
-                password = db.find_passwd(data['user_id'], data['email'])
-                if password:
-                    user = db.retrieve_user_info(data['user_id'])
-                    if not user:
-                        raise Exception(MSG_NO_USER_FOUND)
-
-                    temp_pw = email_auth.generate_temp_password()
-                    if not db.change_password(data['user_id'], temp_pw):
-                        raise Exception("Finding Password failed.")
-
-                    try:
-                        del request.session['user']
-                        request.session.clear()
-                    except: pass
-
-                    email_auth.send_find_pw_mail(user, temp_pw)
-                    return JsonResponse(constants.CODE_SUCCESS)
-                else:
-                    raise Exception(MSG_NO_USER_FOUND)
-
-            # elif action == 'resetPassword':
-            #     result = db.reset_passwd(data.get('user_id'), data['password'])
-            #     if result:
-            #         return JsonResponse(dict(constants.CODE_SUCCESS, **{'msg': 'success'}))
-            #     else:
-            #         raise Exception(MSG_DB_FAILED)
-
-            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
-
-    except Exception as e:
-        logger.exception(e)
-        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
-
-    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
-
-
-@csrf_exempt
-def handle_patient_profile_mgt(request):
-    db = cloud_db.DbManager()
-    try:
-        if not request.session.get('user'):
-            raise Exception(MSG_NO_USER_LOGGEDIN)
-
-        if (request.method) == 'GET':
-            # retrieve patient profile
-            logger.info(request.GET)
-            user_id = request.GET.get('user_id')
-            if not user_id:
-                raise Exception(MSG_INVALID_PARAMS)
-
-            if request.session['user']['user_type'] == 'patient':
-                if request.session['user']['user_id'] != user_id:
-                    raise Exception(MSG_NOT_MATCHED_USER)
-            patient_profile = db.retrieve_patient_profile(user_id)
-            # print(patient_profile)
-            return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': patient_profile}))
-
-        elif (request.method) == 'POST':
-            # update patient profile
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
-            # logger.info(request.body)
-            # logger.info(request.body)
-            data = json.loads(request.body)
-            # logger.info(data)
-
-            if not data.get('profiles'):
-                raise Exception("No changed data")
-            if not data.get('user_id'):
-                raise Exception(MSG_INVALID_PARAMS)
-            user_id = data['user_id']
-
-            if request.session['user']['user_id'] != user_id:
-                raise Exception(MSG_NOT_MATCHED_USER)
-
-            pprint(data['profiles'])
-            # if not db.add_patient_profile(user_id, timestamp, data['profiles']):
-            if not db.update_patient_profile(user_id, data['profiles']):
-                raise Exception(MSG_PROFILE_NO_CHANGED)
-
-            return JsonResponse(constants.CODE_SUCCESS)
-
-    except Exception as e:
-        logger.exception(e)
-        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
-
-    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
-
-
-@csrf_exempt
-def handle_physician_profile_mgt(request):
-    db = cloud_db.DbManager()
-    try:
-        if not request.session.get('user'):
-            raise Exception(MSG_NO_USER_LOGGEDIN)
-
-        if (request.method) == 'GET':
-            # retrieve physician profile
-            logger.info(request.GET)
-            user_id = request.GET.get('user_id')
-            if not user_id:
-                raise Exception(MSG_INVALID_PARAMS)
-            # if request.session['user']['user_id'] != user_id:
-            #     raise Exception(MSG_NOT_MATCHED_USER)
-
-            physician_profile = db.retrieve_physician_profile(user_id)
-            # print(physician_profile)
-            return JsonResponse(dict(constants.CODE_SUCCESS, **{'profiles': physician_profile}))
-
-        elif (request.method) == 'POST':
-            # update physician profile
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
-            data = json.loads(request.body)
-            # logger.info(data)
-            # print(data)
-            if not data.get('user_id') or not data.get('profiles'):
-                raise Exception(MSG_INVALID_PARAMS)
-            user_id = data['user_id']
-            if request.session['user']['user_id'] != user_id:
-                raise Exception(MSG_NOT_MATCHED_USER)
-            physician_profile = {}
-            keys = []
-            values = []
-            for prof in data['profiles']:
-                keys.append(prof['type'])
-                values.append(prof['value'])
-            prof_updated = db.add_physician_profile(user_id, keys, values)
-            if prof_updated:
-                return JsonResponse(constants.CODE_SUCCESS)
-            else:
-                logger.info('update phsycian profile fail')
-                return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_CHANGE}))
-
-    except Exception as e:
-        logger.exception(e)
-        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
-
-    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
-
-
-@csrf_exempt
-def handle_image_uploading_progress(request):
-    progress_id = ''
-    if 'X-Progress-ID' in request.GET:
-        progress_id = request.GET['X-Progress-ID']
-    elif 'X-Progress-ID' in request.META:
-        progress_id = request.META['X-Progress-ID']
-
-    if progress_id:
-        cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], progress_id)
-        data = cache.get(cache_key)
-        jsondata = json.dumps(data)
-        # logger.info("cache_key=%s / json data=%s" % (cache_key, jsondata))
-        return HttpResponse(jsondata)
-    else:
-        return JsonResponse(dict(constants.CODE_FAILURE,
-                                 **{'msg': 'Server Error: You must provide X-Progress-ID header or query param.'}))
-
-
-@csrf_exempt
-def handle_medical_image_mgt(request):
-    db = cloud_db.DbManager()
-    try:
-        if not request.session.get('user'):
-            raise Exception(MSG_NO_USER_LOGGEDIN)
-
-        if request.method == 'GET':
-            # retrieve medical images
-            logger.info(request.GET)
-            action = request.GET.get('action')
-            if not action:
-                raise Exception(MSG_INVALID_PARAMS)
-            if action == 'getImage':
-                image_id = request.GET.get('image_id')
-                image = db.retrieve_medical_image_by_id(image_id)
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'medical_image': image}))
-                pass
-
-            elif action == 'getImages':
-                user_id = request.GET.get('user_id')
-                if request.session['user']['user_id'] != user_id:
-                    raise Exception(MSG_NOT_MATCHED_USER)
-
-                image_list = db.retrieve_medical_image(user_id)
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'image_list': image_list}))
-
-            elif action == 'getImageDirs':
-                user_id = request.GET.get('user_id')
-                if request.session['user']['user_type'] == 'patient' \
-                        and request.session['user']['user_id'] != user_id:
-                    raise Exception(MSG_NOT_MATCHED_USER)
-                image_id = request.GET.get('image_id')
-                image_dir = request.GET.get('image_dir')
-                # if request.session.get('archive') and request.session['archive'].get('now_image_id') and\
-                #         request.session['archive']['now_image_id'] != image_id:
-                #     raise Exception(MSG_NOT_MATCHED_IMAGE)
-
-                if not image_id or not image_dir:
-                    return Exception(MSG_INVALID_PARAMS)
-
-                # logger.info('from session image page: %s' % (request.session['medical_image']))
-                # image_dir = request.session['medical_image'][str(image_id)]['image_dir']
-                # image_dir = request.session['curr_image']['image_dir']
-                image_dirs_dict = ImageRetriever.get_image_list(image_dir)
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'image_list': image_dirs_dict}))
-
-            else:
-                raise Exception(MSG_INVALID_PARAMS)
-
-        elif request.method == 'PUT':
-            # update medical image
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
-            data = json.loads(request.body)
-
-            action = data['action']
-            if not action:
-                raise Exception(MSG_INVALID_PARAMS)
-            # To update image
-            elif action == 'update':
-                image_info = data['image_info']
-                if not image_info:
-                    raise Exception(MSG_INVALID_PARAMS)
-                if request.session['user']['user_id'] != image_info['user_id']:
-                    raise Exception(MSG_NOT_MATCHED_USER)
-                db.update_medical_image_by_id(image_info)
-                return JsonResponse(dict(constants.CODE_SUCCESS))
-            else:
-                raise Exception(MSG_INVALID_PARAMS)
-
-        elif request.method == 'DELETE':
-            # delete medical image
-            user_id = request.GET.get('user_id')
-            image_id = request.GET.get('image_id')
-            image_dir = request.GET.get('image_dir')
-            if not user_id or not image_id or not image_dir:
-                raise Exception(MSG_INVALID_PARAMS)
-            if request.session['user']['user_id'] != user_id:
-                raise Exception(MSG_NOT_MATCHED_USER)
-            db.delete_medical_image_by_id(image_id)
-            try:
-                ImageManager.delete_file(image_dir)
-                # ImageManager.delete_uploaded_archive_file(image_dir)
-            except:
-                pass
-            if request.session.get('image_cnt'):
-                request.session['image_cnt'] -= 1
-            return JsonResponse(dict(constants.CODE_SUCCESS))
-
-        elif request.method == 'POST':
-            # add medical iamge and upload medical image
-            if 'image_file' in request.FILES and 'image_info' in request.POST:
-                action = request.POST['action']
-
-                image_info = json.loads(request.POST['image_info'])
-                prev_timestamp = 0
-                if image_info.get('timestamp'):
-                    prev_timestamp = image_info['timestamp']
-                image_info['timestamp'] = int(round(time.time() * 1000))
-                image_file = request.FILES['image_file']
-
-                if request.session['user']['user_id'] != image_info['user_id']:
-                    raise Exception(MSG_NOT_MATCHED_USER)
-                if action != 'upload' and action != 'update':
-                    raise Exception(MSG_INVALID_PARAMS)
-
-                uploaded_path = None
-                im = ImageManager(image_file, image_info)
-                uploaded_path = im.upload_file()
-                # logger.info(uploaded_path)
-                # uploaded_path = uploaded_path.encode('UTF-8')
-                # logger.info(uploaded_path)
-
-                logger.info('image is uploaded to: %s', uploaded_path)
-
-                if action == 'upload':
-                    try:
-                        image_info['image_dir'] = uploaded_path
-                        db.add_medical_image(image_info)
-                    except Exception as e:
-                        if uploaded_path:
-                            ImageManager.delete_file(uploaded_path)
-                            im.delete_temp_file()
-                        raise e
-                    if not request.session.get('image_cnt'):
-                        request.session['image_cnt'] += 1
-                    return JsonResponse(dict(constants.CODE_SUCCESS))
-                elif action == 'update':
-                    prev_path = image_info['image_dir']
-                    try:
-                        image_info['image_dir'] = uploaded_path
-                        db.update_medical_image_dir(image_info)
-                    except Exception as e:
-                        image_info['timestamp'] = prev_timestamp
-                        image_info['image_dir'] = prev_path
-                        # db.update_medical_image_dir(image_info)
-                        ImageManager.delete_file(uploaded_path)
-                        raise e
-                    # remove here!
-                    image_id = int(image_info['image_id'])
-                    # request.session['image'][image_id] = dict()
-                    # request.session['medical_image'][image_id]['timestamp'] = image_info['timestamp']
-                    # request.session['medical_image'][image_id]['image_dir'] = image_info['image_dir']
-                    # request.session['curr_image'] = dict()
-                    # request.session['curr_image']['timestamp'] = image_info['timestamp']
-                    # request.session['curr_image']['image_dir'] = image_info['image_dir']
-                    # logger.info('curr_image session is updated: %s' % request.session['medical_image'][image_info['image_id']])
-
-                    logger.info('remove old file: %s', prev_path)
-                    ImageManager.delete_file(prev_path)
-                    return JsonResponse(dict(constants.CODE_SUCCESS, **{'new_dir': image_info['image_dir']}))
-
-            else:
-                raise Exception(MSG_INVALID_PARAMS)
-
-    except Exception as e:
-        logger.exception(e)
-        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
-
-    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
-
-
 @csrf_exempt
 def handle_multple_image_upload(request):
     try:
@@ -1601,277 +1351,6 @@ def handle_multple_image_upload(request):
         return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
 
     return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
-
-
-@csrf_exempt
-def handle_interpretation_mgt(request):
-    db = cloud_db.DbManager()
-    try:
-        # To handle patient and physician interpretation request
-        if request.method == 'PUT':
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
-            data = json.loads(request.body)
-            action = data['action']
-            if not action:
-                raise Exception(MSG_INVALID_PARAMS)
-            # To create a patient request
-            elif action == 'patientReq':
-                status = 3
-                timestamp = int(round(time.time() * 1000))
-                request = {
-                    'image_id': data['image_id'],
-                    'status': status,
-                    'subject': data['subject'],
-                    'message': data['message'],
-                    'timestamp': timestamp,
-                    'level': data['level']
-                }
-                if_inserted = db.add_patient_intpr_request(request)
-                if if_inserted:
-                    return JsonResponse(constants.CODE_SUCCESS)
-                else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
-            # To create a response on a patient request
-            elif action == 'physicianResp':
-                timestamp = int(round(time.time() * 1000))
-                status = 2
-                response = {
-                    'request_id': data['request_id'],
-                    'physician_id': data['physician_id'],
-                    'message': data['message'],
-                    'timestamp': timestamp,
-                    'status': status
-                }
-                if_inserted = db.add_physician_intpr_resp(response)
-                if if_inserted:
-                    value = {
-                        "request_id": data['request_id'],
-                        "request_subject": data['request_subject'],
-                        "acceptance_message": data['message']
-                    }
-                    res_session = db.add_session(data['patient_id'], data['physician_id'], 'response',
-                                                 json.dumps(value), timestamp)
-                    if res_session:
-                        return JsonResponse(constants.CODE_SUCCESS)
-                    else:
-                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SESSION_ERROR}))
-                else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
-
-            elif action == 'tempSaveIntpr':
-                intpr = {
-                    'summary': data['summary'],
-                    'request_id': data['request_id'],
-                    'suspected_disease': data['suspected_disease'],
-                    'opinion': data['opinion'],
-                    'recommendation': data['recommendation']
-                }
-                if_inserted = db.temp_save_intpr(intpr)
-                if if_inserted:
-                    return JsonResponse(constants.CODE_SUCCESS)
-                else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_NO_CHANGE}))
-
-            # To create an interpretation and update request and response
-            elif action == 'finishIntpr':
-                fee = 20
-                timestamp = int(round(time.time() * 1000))
-                request_id = data['request_id']
-                intpr = {
-                    'patient_id': data['patient_id'],
-                    'physician_id': data['physician_id'],
-                    'image_id': data['image_id'],
-                    'level': data['level'],
-                    'fee': fee,
-                    'timestamp': timestamp,
-                    'summary': data['summary'],
-                    'request_id': request_id,
-                    'suspected_disease': data['suspected_disease'],
-                    'opinion': data['opinion'],
-                    'recommendation': data['recommendation']
-                }
-                if_inserted = db.add_intpr(intpr)
-                db.update_medical_image_intprnum(data['image_id'])
-                if if_inserted:
-                    status = 0
-                    if_updated = db.update_req_and_resp(request_id, status, timestamp)
-                    db.delete_temp_intpr(request_id)
-                    if if_updated:
-                        value = {
-                            "request_id": data['request_id'],
-                            "request_subject": data['request_subject'],
-                            "summary": data['summary']
-                        }
-                        res_session = db.add_session(data['patient_id'], data['physician_id'], 'write',
-                                                     json.dumps(value), timestamp)
-                        if res_session:
-                            return JsonResponse(constants.CODE_SUCCESS)
-                        else:
-                            return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SESSION_ERROR}))
-                    else:
-                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
-                else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
-        # To handle 'GET' interpretation request
-        if request.method == 'GET':
-            logger.info(request.GET)
-            action = request.GET.get('action')
-            if not action:
-                raise Exception(MSG_INVALID_PARAMS)
-            # To get all interpretations of a patient
-            elif action == 'getPatientIntpr':
-                patient_id = request.GET.get('patient_id')
-                if not request.GET.get('time_from'):
-                    time_from = 0
-                intpr = db.retrieve_patient_intpr(patient_id, time_from)
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'intpr': intpr}))
-            # To get all interpretations of a physician
-            elif action == 'getPhysicianIntpr':
-                physician_id = request.GET.get('physician_id')
-                if not physician_id:
-                    raise Exception(MSG_INVALID_PARAMS)
-                if not request.GET.get('time_from'):
-                    time_from = 0
-                intpr = db.retrieve_physician_intpr(physician_id, time_from)
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'intpr': intpr}))
-            # To get all interpretations of a medical image
-            elif action == 'getImageIntpr':
-                image_id = request.GET.get('image_id')
-                if not image_id:
-                    raise Exception(MSG_INVALID_PARAMS)
-                time_from = request.GET.get('time_from')
-                if not time_from:
-                    time_from = 0
-                offset = request.GET.get('offset')
-                limit = request.GET.get('limit')
-                if (not offset) and (not limit):
-                    offset = None
-                    limit = None
-                intpr = db.retrieve_image_intpr(image_id, time_from, offset, limit)
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'intpr': intpr}))
-            else:
-                return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INVALID_PARAMS}))
-        # To handle 'POST' interpretation request
-        elif request.method == 'POST':
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
-            data = json.loads(request.body)
-            action = data['action']
-            if not action:
-                raise Exception(MSG_INVALID_PARAMS)
-            # To update a patient request and delete patient responses
-            elif action == 'patientSelReq':
-                request_id = data['request_id']
-                physician_id = data['physician_id']
-                status = 1
-                timestamp = int(round(time.time() * 1000))
-                if_updated = db.update_patient_request_by_selection(request_id, physician_id, status)
-                if if_updated:
-                    value = {
-                        "request_id": data['request_id'],
-                        "request_subject": data['request_subject'],
-                    }
-                    res_session = db.add_session(data['patient_id'], data['physician_id'], 'select',
-                                                 json.dumps(value), timestamp)
-                    if res_session:
-                        return JsonResponse(constants.CODE_SUCCESS)
-                    else:
-                        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_SESSION_ERROR}))
-                else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
-            # To update subject and message of a patient request
-            elif action == 'reqUpdate':
-                request_id = data['request_id']
-                subject = data['subject']
-                message = data['message']
-                timestamp = int(round(time.time() * 1000))
-                if_updated = db.update_patient_request(request_id, subject, message, timestamp)
-                if if_updated:
-                    return JsonResponse(constants.CODE_SUCCESS)
-                else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
-        # To handle 'DELETE' interpretation request
-        if request.method == 'DELETE':
-            logger.info(request.GET)
-            action = request.GET.get('action')
-            if not action:
-                raise Exception(MSG_INVALID_PARAMS)
-            # To delete a patient request and relevant physician responses
-            elif action == 'delPatientReq':
-                request_id = request.GET.get('request_id')
-                if_deleted = db.delete_patient_request(request_id)
-                if if_deleted:
-                    return JsonResponse(constants.CODE_SUCCESS)
-                else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_DELETE_ERROR}))
-    except Exception as e:
-        logger.exception(e)
-        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
-    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
-
-
-@csrf_exempt
-def handle_analytics_mgt(request):
-    db = cloud_db.DbManager()
-    try:
-        # To handle patient and physician interpretation request
-        if request.method == 'PUT':
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
-            data = json.loads(request.body)
-            action = data['action']
-            if not action:
-                raise Exception(MSG_INVALID_PARAMS)
-            elif action == 'addAnalytic':
-                timestamp = int(round(time.time() * 1000))
-                analytic = {
-                    'image_id': data['image_id'],
-                    'level': data['status'],
-                    'fee': data['subject'],
-                    'timestamp': timestamp,
-                    'summary': data['summary'],
-                    'result': data['result']
-                }
-                if_inserted = db.add_analytic(analytic)
-                if if_inserted:
-                    return JsonResponse(constants.CODE_SUCCESS)
-                else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_INSERT_ERROR}))
-        if (request.method) == 'POST':
-            if len(request.body) == 0:
-                raise Exception(MSG_NODATA)
-            data = json.loads(request.body)
-            action = data['action']
-            if not action:
-                raise Exception(MSG_INVALID_PARAMS)
-            elif action == 'updateAnalytic':
-                level = data['level']
-                fee = data['fee']
-                timestamp = int(round(time.time() * 1000))
-                summary = data['summary']
-                result = data['result']
-                anal_id = data['anal_id']
-                if_updated = db.update_analytic(level, fee, timestamp, summary, result, anal_id)
-                if if_updated:
-                    return JsonResponse(constants.CODE_SUCCESS)
-                else:
-                    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UPDATE_ERROR}))
-        if request.method == 'GET':
-            logger.info(request.GET)
-            action = request.GET.get('action')
-            if not action:
-                raise Exception(MSG_INVALID_PARAMS)
-            elif action == 'getPatientIntpr':
-                image_id = request.GET.get('image_id')
-                analytics = db.retrieve_analytic_by_image(image_id)
-                return JsonResponse(dict(constants.CODE_SUCCESS, **{'analytics': analytics}))
-    except Exception as e:
-        logger.exception(e)
-        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
-
-    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
-
 
 @csrf_exempt
 def handle_archive(request):
@@ -1892,20 +1371,6 @@ def handle_archive(request):
     else:
 
         return HttpResponseNotFound()
-
-
-@csrf_exempt
-def handle_payment_mgt(request):
-    db = cloud_db.DbManager()
-    try:
-        if (request.method) == 'GET':
-            pass
-
-    except Exception as e:
-        logger.exception(e)
-        return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': str(e)}))
-
-    return JsonResponse(dict(constants.CODE_FAILURE, **{'msg': MSG_UNKNOWN_ERROR}))
 
 
 @csrf_exempt
@@ -1966,33 +1431,28 @@ def set_img_type(request):
         return JsonResponse({"state":False})
 
 @csrf_exempt
-def step1_save_lirads_imgs(request):
+def step1_save_imgs(request):
     if request.method == "POST":
         data = json.loads(request.POST.get("data"))
+
         target = data["img"]
-        phase = data["phase"]
         pat_name = data["pat_name"]
-        pat_birth = data["pat_birth"]
-        mrn = data["mrn"]
-        acq_date = data["acq_date"]
-        acq_date = acq_date.replace("-", "")
+        type = data["type"]
         files = request.FILES.getlist("files")
-        container.mias_container.lirads_process.set_mrn(mrn)
-        container.mias_container.lirads_process.set_patient_name(pat_name)
-        container.mias_container.lirads_process.set_birthday(pat_birth)
+
         root_path = r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\medical_image"
         cur_path = ""
-        # To generate folders to save slices
-        if not os.path.isdir(os.path.join(root_path, mrn)):
-            os.mkdir(os.path.join(root_path, mrn))
-        container.mias_container.lirads_process.set_mi_path(os.path.join(root_path, mrn))
-        if not os.path.isdir(os.path.join(root_path, mrn, mrn+"_"+acq_date)):
-            os.mkdir(os.path.join(root_path, mrn, mrn+"_"+acq_date))
 
-        container.mias_container.lirads_process.set_img_path((os.path.join(root_path, mrn, mrn+"_"+acq_date)))
-        if not os.path.isdir(os.path.join(root_path, mrn, mrn+"_"+acq_date, phase)):
-            cur_path = os.path.join(root_path, mrn, mrn+"_"+acq_date, phase)
-            os.mkdir(cur_path)
+        if not os.path.isdir(os.path.join(root_path, pat_name)):
+            os.mkdir(os.path.join(root_path, pat_name))
+            cur_path = os.path.join(root_path, pat_name, "0")
+        else:
+            cur_path = os.path.join(root_path, pat_name, str(len(os.path.join(root_path, pat_name))))
+        if type == "srs":
+            cur_path = os.path.join(cur_path, "srs")
+        elif type == "seg_result":
+            cur_path = os.path.join(cur_path, "seg_result")
+
         format = None
         for c, x in enumerate(files):
             def process(f):
@@ -2004,8 +1464,6 @@ def step1_save_lirads_imgs(request):
                 return format
             format = process(x)
         print(format)
-        if format == "dcm":
-            container.mias_container.lirads_process.set_mi_type(...)
         type = container.mias_container.lirads_process.get_mi_type()
         return JsonResponse({'state': True, "data":{"format":format, "type":type}})
     else:
@@ -2215,3 +1673,23 @@ def retrieve_diagnosis(request):
         return JsonResponse({"state": True, "data": list_diagnosis})
     else:
         return JsonResponse({"state": False})
+
+
+
+
+
+
+## Functions called by APIs
+def convert_img_to_bytes(img):
+    scs, encoded_img = cv2.imencode(".png", img)
+    encoded_img = base64.b64encode(encoded_img.tobytes())
+    return encoded_img.decode('utf8')
+
+
+def convert_bytes_to_img(b):
+    bb = base64.b64decode(str(b))
+    bytes_io = io.BytesIO(bb)
+    img_a = Image.open(bytes_io)
+    img = np.array(img_a, dtype=np.uint8)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    return img

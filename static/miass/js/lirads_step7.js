@@ -3,78 +3,93 @@
     var interval = null;
     var max_num_tumor = 0;
     $(document).ready(function(){
-
-        write_log_in_console("Step 7. Predicting LR stage is started.");
-        write_log_in_console("The tumor stage classification model is being prepared.");
-
+        write_log_in_console("Step 7 is to remedy HU Scale violation.");
         $.ajax({
-            url:"/api/get_tumor_info",
-            async: false,
-            method: "POST",
+            url: "/api/load_img_list_step7",
+            async: true,
+            method: 'POST',
             data: {"data": JSON.stringify({})},
             data_type: "text",
             success: function (data) {
-                var d = data["data"];
-                console.log(d);
-                max_num_tumor = Object.keys(d).length;
-                var tumor_type = "";
-                var aphe_type = "";
-                var tumor_size = "";
-                var num_m_f = "";
-                var count = 0;
-                for (var i in d){
-                    tumor_type += d[i]["tumor_type"];
-                    aphe_type += d[i]["APHE_Type"];
-                    tumor_size += d[i]["tumor_size"];
-                    num_m_f += d[i]["number_m_f"];
-                    if (count < max_num_tumor-1){
-                        tumor_size += ", "
-                        tumor_type += ", "
-                        aphe_type += ", "
-                        num_m_f += ", "
-                    }
-                    count++;
+                // var data = JSON.parse(data);
+                d = data["data"];
+                var ids = d["ids"];
+                var sls = d["sls"];
+                var segs = d["segs"];
+                var seqs = d["seqs"];
+                console.log(seqs);
+
+                $("#div_slice_step7").append("<div class=\"header \" style=\"width: 40px; vertical-align: middle; \"><h5 class='my-auto'>Slice ID</h5></div>");
+                $("#div_seg_step7").append("<div class=\"header\" style=\"width: 40px;vertical-align: middle; \"><h5>Seg. Result</h5></div>");
+                $("#div_seq_org_step7").append("<div class=\"header\" style=\"width: 40px; vertical-align: middle; \"><h5>Sequence ID</h5></div>");
+                $("#div_enh_step7").append("<div class=\"header\" style=\"width: 40px; height:150px;vertical-align: middle;\"><h5>Rem. Result</h5></div>");
+                $("#div_seq_enh_ste7").append("<div class=\"header\" style=\"width: 40px; vertical-align: middle;\"><h5>Sequence ID</h5></div>");
+                for (var i in ids){
+                    $("#div_slice_step7").append("<div class=\"title_seg\"><h4 class=\"h-100 mb-0\" style='width: 150px;'>"+ids[i]+"</h4></div>");
                 }
-                $("#txt_tumor_type").text(tumor_type);
-                $("#txt_tumor_aphe_type").text(aphe_type);
-                $("#txt_tumor_size").text(tumor_size);
-                $("#txt_number_major_feature").text(num_m_f);
-                write_log_in_console("Target tumor's LI-RADS features are loaded.");
-            }, error: function () {
+                for (var i in sls){
+                    $("#div_seg_step7").append("<div class=\"item\" id='step7_seg_"+ids[i]+"'>" +
+                        "<img style='width: 150px; height: 150px;' src='data:image/png;base64,"+sls[i]+"'/>" +
+                        "</div>");
+                }
+                for (var i in seqs){
+                    $("#div_seq_org_step7").append("<div class=\"title_seg\"><h5 class=\"h-100 mb-0\" style='width: 150px;'>"+seqs[i]+"</h5></div>");
+                }
+            }, error: function (){
 
             }
         });
 
-        $("#btn_generate_report").on("click", function(){
-
-        });
-        var total_stages = "";
-        $("#btn_pred_hcc_stage").on("click", function(){
-            interval = setInterval(function () {
-                $.ajax({
-                    url:"/api/predict_stage",
-                    async: true,
-                    method: "POST",
-                    data: {"data": JSON.stringify({"tumor_id":idx})},
-                    data_type: "text",
-                    success: function (data) {
-                        var stage = data["stage"];
-                        // if (!stage.include("LR"))
-                        stage = String(stage);
-                        total_stages += stage+" ";
-                        idx +=1;
-                        write_log_in_console("Stage of Tumor: "+stage);
-                        if (idx >= max_num_tumor){
-                            clearInterval(interval);
-                            $("#txt_lirad_stage").text(stage);
-                        }else
-                            total_stages+=", "
-
-                    }, error: function () {
-                    clearInterval(interval);
+        $("#btn_detect_hu").on("click", function () {
+            write_log_in_console("Detecting violation is started.");
+            $.ajax({
+                url: "/api/detect_hu_violation",
+                async: false,
+                method: 'POST',
+                data: {"data": JSON.stringify()},
+                data_type: "text",
+                success: function (data) {
+                    d = data["data"];
+                    var diffs = d["diffs"];
+                    console.log(diffs);
+                    for (var i in diffs){
+                        $("#step3_seg_"+diffs[i]).css("border", "4px solid #FF0000");
                     }
-                });
-            }, 500);
+                    write_log_in_console("The number of violating slices is "+diffs.length+".");
+                    write_log_in_console("Detecting violation is finished.");
+                }, error: function (){
+                    idx+=1;
+
+                }
+            });
+        });
+
+        $("#btn_remedy_hu").on("click", function () {
+            write_log_in_console("Remedying violation is started.");
+            $.ajax({
+                url: "/api/remedy_hu_violation",
+                async: false,
+                method: 'POST',
+                data: {"data": JSON.stringify({"target_img":idx})},
+                data_type: "text",
+                success: function (data) {
+                    d = data["data"];
+                    var seqs = d["seqs"];
+                    var imgs = d["imgs"];
+                    for (var i in imgs){
+                        $("#div_enh_step7").append("<div class=\"item\">" +
+                            "<img style='width: 150px; height: 150px;' src='data:image/png;base64,"+imgs[i]+"'/>" +
+                            "</div>");
+                    }
+                    for (var i in seqs){
+                        $("#div_seq_enh_ste7").append("<div class=\"title_seg\"><h5 class=\"h-100 mb-0\" style='width: 150px;'>"+seqs[i]+"</h5></div>");
+                    }
+                    write_log_in_console("Remedying violation is finished.");
+                }, error: function (){
+                    idx+=1;
+
+                }
+            });
         });
 
         $("#btn_lirads_step7_back").on("click", function () {

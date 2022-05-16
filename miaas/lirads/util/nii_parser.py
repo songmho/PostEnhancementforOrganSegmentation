@@ -125,6 +125,7 @@ class SinglePhaseNIIParser:
 
     def set_mask_file_path(self, path):
         self.mask_file_path = path
+        print(self.mask_file_path)
 
     def set_save_file_path(self, path):
         self.save_path = path
@@ -174,14 +175,18 @@ class SinglePhaseNIIParser:
 
         print(self.img_header.get_data_shape())
 
-        for i in range(self.img_header.get_data_shape()[0]):
+        for i in range(self.img_header.get_data_shape()[2]):
+
             # cur_img = self.img_data[:, ::-1, self.img_header.get_data_shape()[2]-(i+1)]     # To need to change direction of series (x, y, z)
-            cur_img = self.img_data[i, :, :]     # To need to change direction of series (z, y, x) for kidney
-            if np.max(cur_img)/1000 > 10:
-                cur_img = cur_img/10
-                cur_img = cur_img[:, ::-1]
-            # cur_img = np.rot90(cur_img, 1)
+            cur_img = self.img_data[:, ::-1, self.img_header.get_data_shape()[2]-i-1]     # To need to change direction of series (z, y, x) for kidney
+            print(np.unique(cur_img))
+            # if np.max(cur_img)/1000 > 10:
+            #     cur_img = cur_img/10
+            #     cur_img = cur_img[::-1, ::-1]
+            cur_img = np.rot90(cur_img, -1)
+            print(np.max(cur_img), np.min(cur_img))
             cur_img = self.scl_slope*cur_img + self.scl_inter
+            print(np.max(cur_img), np.min(cur_img))
             cur_window = self.window[organ]
             ww = cur_window["ww"]
             wc = cur_window["wc"]
@@ -193,9 +198,14 @@ class SinglePhaseNIIParser:
             idx_low = cur_img <= wc - ww / 2
 
             cur_img = np.where(idx_high, ymax, cur_img)
+            print(np.max(cur_img), np.min(cur_img))
             cur_img = np.where(idx_low, ymin, cur_img)
+            print(np.max(cur_img), np.min(cur_img))
             cur_img = np.where(~idx_high & ~idx_low, ((cur_img - wc) / ww + 0.5) * (ymax - ymin) + ymin, cur_img)
+            print(np.max(cur_img), np.min(cur_img))
             cur_img = cur_img.astype(np.uint8)
+            print(np.max(cur_img), np.min(cur_img))
+            print("\n\n\n")
             self.cur_slices.append(cur_img)
             # cv2.imshow("asdfasdf", cur_img)
             # cv2.waitKey(5)
@@ -361,35 +371,32 @@ if __name__ == '__main__':
     #     jg.generate_json_file(result, os.path.join(path_img, i), "liver")
 
     spnp = SinglePhaseNIIParser()
-    path_root = r"E:\2. Project\Python\kits21\kits21\data"
-    path_save_root_img = r"E:\2. Project\Python\kits21\kits21\img"
-    path_save_root_mask = r"E:\2. Project\Python\kits21\kits21\mask"
+    path_root = r"D:\Dataset\LLU Dataset\7083077_10302013\01. Original CT Study\01. DICOM\niff"
+    path_save_root_img = r"E:\1. Lab\Daily Results\2022\2203\0314\series_img"
+    # path_save_root_mask = r"E:\2. Project\Python\kits21\kits21\mask"
 
-    for id in range(160, 161):
-        i = "case_"+str(id).zfill(5)
-        path = os.path.join(path_root, i)
-        path_save_img = os.path.join(path_save_root_img, i)
-        path_save_mask = os.path.join(path_save_root_mask, i)
-        # os.mkdir(path_save)
-        print(i)
-        for f in os.listdir(path):
-            if  f in ["imaging.nii.gz", "aggregated_AND_seg.nii.gz"]:
-                # path_cur_save = os.path.join(path_save, f.split(".")[0])
-                path_cur_save_img = os.path.join(path_save_img)
-                path_cur_save_mask = os.path.join(path_save_mask)
-                if not os.path.isdir(path_cur_save_img):
-                    os.mkdir(path_cur_save_img)
-                if not os.path.isdir(path_cur_save_mask):
-                    os.mkdir(path_cur_save_mask)
-                spnp.set_mask_file_path(os.path.join(path, f))
-                if f == "aggregated_AND_seg.nii.gz":
-                    print("MASK: ", end="")
-                    spnp.set_save_file_path(path_cur_save_mask)
-                    spnp.load_mask()
-                    # spnp.save_mask()
-                elif f == "imaging.nii.gz":
-                    print("IMG : ", end="")
-                    spnp.set_save_file_path(path_cur_save_img)
-                    spnp.load_slice()
-                    # spnp.save_slice()
+    # for id in os.listdir(path_root):
+    path = os.path.join(path_root)
+    path_save_img = os.path.join(path_save_root_img)
+    # path_save_mask = os.path.join(path_save_root_mask, i)
+    # os.mkdir(path_save)
+    for f in os.listdir(path):
+        # path_cur_save = os.path.join(path_save, f.split(".")[0])
+        path_cur_save_img = os.path.join(path_save_img, f)
+        # path_cur_save_mask = os.path.join(path_save_mask)
+        if not os.path.isdir(path_cur_save_img):
+            os.mkdir(path_cur_save_img)
+        # if not os.path.isdir(path_cur_save_mask):
+        #     os.mkdir(path_cur_save_mask)
+        spnp.set_mask_file_path(os.path.join(path, f))
+        # if f == "aggregated_AND_seg.nii.gz":
+        #     print("MASK: ", end="")
+        #     # spnp.set_save_file_path(path_cur_save_mask)
+        #     # spnp.load_mask()
+        #     # spnp.save_mask()
+        # elif f == "imaging.nii.gz":
+        print("IMG : ", end="")
+        spnp.set_save_file_path(path_cur_save_img)
+        spnp.load_slice()
+        spnp.save_slice()
         print("================================")

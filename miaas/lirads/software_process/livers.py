@@ -29,8 +29,8 @@ class LiverSegmenter:
         if mi_type== "CT":
             LIVER_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment\\mask_rcnn_liver_000180.h5"
         else:
-            LIVER_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment\\mask_rcnn_liver_mri_1110.h5"
-            LIVER_SEG_WEIGHT_DIR = r"F:\model_save\liver_2\mask_rcnn_face_trouble_1110.h5"
+            LIVER_SEG_WEIGHT_DIR = "E:\\1. Lab\\Projects\\Medical Image Analytics System\\mias_with_lirads\\mias\\miaas\\lirads\\models\\liver_segment\\mask_rcnn_liver_mri_3175.h5"
+            # LIVER_SEG_WEIGHT_DIR = r"F:\model_save\liver_2\mask_rcnn_face_trouble_1110.h5"
 
         self.liver_detector = modellib.MaskRCNN(mode='inference',
                                                 model_dir=LIVER_SEG_MODEL_DIR,

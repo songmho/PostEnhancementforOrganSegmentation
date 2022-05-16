@@ -33,7 +33,6 @@ class SliceResizer:
             new_img = np.zeros(self.sl_size)
             shape_img = self.list_sls[i].shape
             y, x = shape_img
-            print(y, x)
             if x < self.sl_size[0] and y <self.sl_size[1]:
                 margin_y = int((self.sl_size[0]-y)/2)
                 margin_x = int((self.sl_size[1]-x)/2)
@@ -68,13 +67,31 @@ class SliceResizer:
 
 
 if __name__ == '__main__':
-    path_cur_study = r"E:\1. Lab\Daily Results\2022\2201\0117\Resolution Increasement\mask - Tumor"
-    path_cur_study_save = r"E:\1. Lab\Daily Results\2022\2201\0117\Resolution Resizer\mask - Tumor"
     sr = SliceResizer()
-    for std in os.listdir(path_cur_study):
-        print(std)
-        for srs in os.listdir(os.path.join(path_cur_study, std)):
-            print(srs)
-            sr.load_trg_sl(os.path.join(path_cur_study, std, srs))
-            sr.resize()
-            sr.save(os.path.join(path_cur_study_save, std, srs))
+    path_src = r"E:\1. Lab\Daily Results\2022\2202\0215\MRI Data"
+    path_save = r"E:\1. Lab\Daily Results\2022\2202\0215\MRI Data-resize"
+    for i in ["Mask Liver", "Mask Tumor", "Slices"]:
+        sr.load_trg_sl(os.path.join(path_src, i))
+        sr.resize()
+        sr.save(os.path.join(path_save, i))
+
+
+    # for i in ["image", "mask"]:
+    #     if not os.path.isdir(os.path.join(path_save, i)):
+    #         os.mkdir(os.path.join(path_save, i))
+    #     for j in ["test_set", "training_set", "validation_set"]:
+    #         os.mkdir(os.path.join(path_save, i, j))
+    #         print(i, j)
+    #         sr.load_trg_sl(os.path.join(path_src, i, j))
+    #         sr.resize()
+    #         sr.save(os.path.join(path_save, i, j))
+
+    # path_cur_study = r"E:\1. Lab\Daily Results\2022\2201\0117\Resolution Increasement\mask - Tumor"
+    # path_cur_study_save = r"E:\1. Lab\Daily Results\2022\2201\0117\Resolution Resizer\mask - Tumor"
+    # for std in os.listdir(path_cur_study):
+    #     print(std)
+    #     for srs in os.listdir(os.path.join(path_cur_study, std)):
+    #         print(srs)
+    #         sr.load_trg_sl(os.path.join(path_cur_study, std, srs))
+    #         sr.resize()
+    #         sr.save(os.path.join(path_cur_study_save, std, srs))

@@ -62,29 +62,27 @@ class LiverConfig(Config):
     """
     # Give the configuration a recognizable name
     NAME = "Liver"
+    # Train on 1 GPU and 1 image per GPU. Batch size is 1 (GPUs * images/GPU).
     GPU_COUNT = 1
     IMAGES_PER_GPU = 1
     # Number of classes (including background)
     NUM_CLASSES = 1 + 1  # background + 1 (6 classes for face trouble)
     # image size
-    IMAGE_MIN_DIM = 64
-    IMAGE_MAX_DIM = 128
-    LEARNING_RATE = 0.0005              # 0.0005
-    STEPS_PER_EPOCH = 12    # Number of steps per epoch
-    VALIDATION_STEPS = 3
+    IMAGE_MIN_DIM = 512
+    IMAGE_MAX_DIM = 512
+    # LEARNING_RATE = 0.0005              # 0.0005
+    LEARNING_RATE = 0.001              # 0.0005
+    STEPS_PER_EPOCH = 25    # Number of steps per epoch
+    VALIDATION_STEPS = 1
     BACKBONE = 'resnet101'    # resnet101 following original setting
     RPN_ANCHOR_SCALES = (32, 64, 128, 256, 512)
-    RPN_NMS_THRESHOLD = 0.70
-    USE_MINI_MASK = False
-    TRAIN_ROIS_PER_IMAGE = 200
-    DETECTION_MIN_CONFIDENCE = 0.9
-    ROI_POSITIVE_RATIO = 0.5
-    DETECTION_NMS_THRESHOLD = 0.7
-    MAX_GT_INSTANCES = 50
-    POST_NMS_ROIS_INFERENCE = 100
-    POST_NMS_ROIS_TRAINING = 500
+    RPN_NMS_THRESHOLD = 0.7
+    TRAIN_ROIS_PER_IMAGE = 500
+    DETECTION_MIN_CONFIDENCE = 0.7
+    ROI_POSITIVE_RATIO = 0.7
+    DETECTION_NMS_THRESHOLD = 0.3
+    MAX_GT_INSTANCES = 100
     RPN_ANCHOR_RATIOS = [0.5, 1, 2]
-
 
 ############################################################
 #  Dataset

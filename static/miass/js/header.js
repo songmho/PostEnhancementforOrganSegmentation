@@ -1,6 +1,6 @@
 (function () {
-    $('#btn_images').click(function () {
-    });
+    // $('#btn_images').click(function () {
+    // });
     $("#nav_register_img").click(function () {
         location.replace(SERVER_ADDRESS+"/view/register_image");
     });
@@ -23,12 +23,12 @@
         location.replace(SERVER_ADDRESS+"/view/brain_abnormality_diagnosis");
     });
 
-    $("#nav_liver_abnormality").click(function () {
-        location.replace(SERVER_ADDRESS+"/view/liver_abnormality_diagnosis");
-    });
+    // $("#nav_liver_abnormality").click(function () {
+    //     location.replace(SERVER_ADDRESS+"/view/liver_abnormality_diagnosis");
+    // });
 
-    $("#nav_diagnosing").click(function () {
-        location.replace(SERVER_ADDRESS+"/view/diagnose_abnormality_ml#step-1");
+    $("#nav_refine_seg_result").click(function () {
+        location.replace(SERVER_ADDRESS+"/view/proceed_post_enhancement#step-1");
     });
 
     $("#nav_lung_abnormality").click(function () {

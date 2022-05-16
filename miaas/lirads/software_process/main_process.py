@@ -9,7 +9,7 @@ import time
 
 from miaas.lirads.software_process.step_1 import MedicalImageLoader
 from miaas.lirads.software_process.step_2 import LiverRegionSegmentater
-from miaas.lirads.software_process.step_3 import LegionSegmentor
+from miaas.lirads.software_process.step_3 import LesionSegmentor
 from miaas.lirads.software_process.step_4 import ImageFeatureEvaluator
 from miaas.lirads.software_process.step_5 import TumorTypeDeterminer
 from miaas.lirads.software_process.step_6 import LIRADSFeatureComputer
@@ -29,13 +29,14 @@ if gpus:
     except:
         pass
 
+
 class LiradsProcess:
     def __init__(self):
         self.img_path = ""
         self.img_type = None
         self.step_1 = MedicalImageLoader()
         self.step_2 = LiverRegionSegmentater()
-        self.step_3 = LegionSegmentor()
+        self.step_3 = LesionSegmentor()
         self.step_4 = ImageFeatureEvaluator()
         self.step_5 = TumorTypeDeterminer()
         self.step_6 = LIRADSFeatureComputer()
@@ -91,7 +92,9 @@ class LiradsProcess:
         self.step_1.check_mi_type()
 
     def load_medical_img(self):
-        self.step_1.load_medical_img()
+        format, type = self.step_1.load_medical_img()
+        if format == ImageType.DCM:
+            self.img_type = type
 
     def convert_color_depth(self):
         self.step_1.convert_color_depth()
@@ -216,7 +219,7 @@ class LiradsProcess:
         self.setCT_c_seg = self.step_3.get_setCT_c_seg()
         self.setCT_c_tumor = self.step_3.get_setCT_C_tumor()
 
-        self.step_4.generate_slice_group(self.step_1.med_type, self.set_med_img)
+        self.step_4.generate_slice_group(self.step_1.med_img_format, self.set_med_img)
         self.step_4.make_lesion_group(self.setCT_c_tumor)
         self.step_4.correct_segmented_lesion_location(self.step_1.acquisition_date)
         self.tumor_groups= self.step_4.get_tumor_groups()

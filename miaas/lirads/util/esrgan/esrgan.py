@@ -9,7 +9,7 @@ import glob
 import cv2
 import numpy as np
 import torch
-import RRDBNet_arch as arch
+import miaas.lirads.util.esrgan.RRDBNet_arch as arch
 
 class ESRGAN:
     def __init__(self):
@@ -21,7 +21,7 @@ class ESRGAN:
         """
         To load model from local
         """
-        self.model = arch.RRDBNet(3, 3, 64, 23, gc=23)
+        self.model = arch.RRDBNet(3, 3, 64, 23, gc=32)
         self.model.load_state_dict(torch.load(self.path_model), strict=True)
         self.model.eval()
         self.model = self.model.to(self.device)

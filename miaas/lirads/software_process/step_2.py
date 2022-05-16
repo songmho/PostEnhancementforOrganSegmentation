@@ -13,14 +13,20 @@ import numpy as np
 from scipy import ndimage
 from miaas.lirads.util.post_processing_liver import PostProcessLiver
 
+
 class LiverRegionSegmentater:
     def __init__(self):
         self.ml_liver_seg = LiverSegmenter()
         self.post_processor = PostProcessLiver()
         self.setCT_b = None
+        self.setCT_b = None
         self.setCT_b_liver = {}
         self.setCT_b_seg = {}
         # self.ml_liver_seg.clear_session()
+        self.path_save = r""
+
+    def set_cur_save_path(self, p):
+        self.path_save = p
 
     def set_mi_type(self, mi_type):
         self.mi_type = mi_type
@@ -54,8 +60,11 @@ class LiverRegionSegmentater:
         :return:
         """
         for srs_name, slices in self.setCT_b.items():
-            print("       >>", srs_name, len(slices))
             i = 0
+            # if not os.path.isdir(os.path.join(self.path_save, self.std_name)):
+            #     os.mkdir(os.path.join(self.path_save, self.std_name))
+            # if not os.path.isdir(os.path.join(self.path_save, self.std_name, srs_name)):
+            #     os.mkdir(os.path.join(self.path_save, self.std_name, srs_name))
             for k, sl in slices.items():
                 result = self.ml_liver_seg.segment(sl)  # To segment liver region
                 # if result["roi"] != []: # To append CT slices having liver region
@@ -85,9 +94,10 @@ class LiverRegionSegmentater:
                     result["masks"] = zeros
                 result["masks"] = np.array(np.where(result["masks"] > 0, 255, 0), dtype=np.uint8)
                 self.setCT_b_seg[srs_name][k] = result
-                cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2022\2201\0121\result\step2",
-                                         str(srs_name) + "_" + str(k) + ".png"),
+                cv2.imwrite(os.path.join(self.path_save, "step2", str(srs_name) + "_" + str(int(k)).zfill(5) + ".png"),
                             self.setCT_b_seg[srs_name][k]["masks"])
+                # cv2.imwrite(os.path.join(self.path_save, self.std_name,  str(self.std_name)+"_"+ str(srs_name) + "_" + str(int(k)).zfill(5) + ".png"),
+                #             self.setCT_b_seg[srs_name][k]["masks"])
                 i+=1
 
     def clear_session(self):
@@ -115,6 +125,7 @@ class LiverRegionSegmentater:
                                  str(loc[0]) + "_" + str(loc[1]) + ".png"),
               type(self.setCT_b_seg[loc[0]][loc[1]]["masks"]), np.unique(self.setCT_b_seg[loc[0]][loc[1]]["masks"]),
               self.setCT_b_seg[loc[0]][loc[1]]["masks"].shape)
+
         cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2021\2108\0827\test0",
                                  str(loc[0]) + "_" + str(loc[1]) + ".png"), self.setCT_b_seg[loc[0]][loc[1]]["masks"])
         #     return result
@@ -129,13 +140,12 @@ class LiverRegionSegmentater:
 
         # self.setCT_b_seg    # For mask
         # self.setMed_img     # For slice before transform
-        path_save = r"E:\1. Lab\Daily Results\2022\2201\0117\result\step2"
         for srs_name, imgs in self.setCT_b.items():   # For Image
             print("       [", srs_name,"]", )
-            if not os.path.isdir(os.path.join(path_save, self.std_name)):
-                os.mkdir(os.path.join(path_save, self.std_name))
-            if not os.path.isdir(os.path.join(path_save, self.std_name, srs_name)):
-                os.mkdir(os.path.join(path_save, self.std_name, srs_name))
+            if not os.path.isdir(os.path.join(self.path_save, self.std_name)):
+                os.mkdir(os.path.join(self.path_save, self.std_name))
+            # if not os.path.isdir(os.path.join(self.path_save, self.std_name, srs_name)):
+            #     os.mkdir(os.path.join(self.path_save, self.std_name, srs_name))
             self.post_processor.initialize(self.setCT_b_seg[srs_name], self.setMed_img[srs_name], imgs)
             self.post_processor.split_t_f_sequence()
             self.post_processor.check_continuity_false()
@@ -144,13 +154,15 @@ class LiverRegionSegmentater:
             seqs = self.post_processor.return_target_seq()
             for i in range(len(self.setCT_b_seg[srs_name].values())):
                 self.setCT_b_seg[srs_name][list(self.setCT_b_seg[srs_name].keys())[i]]["masks"] = seqs[i][1]
-                cv2.imwrite(os.path.join(path_save, self.std_name, srs_name, list(self.setCT_b_seg[srs_name].keys())[i] + ".png"), seqs[i][1])
+                # cv2.imwrite(os.path.join(self.path_save, self.std_name, srs_name, self.std_name+"_"+srs_name+"_"+list(self.setCT_b_seg[srs_name].keys())[i] + ".png"), seqs[i][1])
+                cv2.imwrite(os.path.join(self.path_save, "step2_refined", srs_name+"_"+list(self.setCT_b_seg[srs_name].keys())[i] + ".png"), seqs[i][1])
+
 
     def proceed_post_step1(self, srs_id):
         srs_name = list(self.setCT_b.keys())[srs_id]
         imgs = self.setCT_b[srs_name]
-        for sl_id, data in self.setCT_b_seg[srs_name].items():
-            cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2021\2108\0827\test1", str(srs_name)+"_"+str(sl_id)+".png"), data["masks"])
+        # for sl_id, data in self.setCT_b_seg[srs_name].items():
+        #     cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2021\2108\0827\test1", str(srs_name)+"_"+str(sl_id)+".png"), data["masks"])
         self.post_processor.initialize(self.setCT_b_seg[srs_name], self.setMed_img[srs_name], imgs)
         self.post_processor.initialize_model()
         self.post_processor.split_t_f_sequence()
@@ -176,7 +188,7 @@ class LiverRegionSegmentater:
             print(type(data["masks"]))
             print(data["masks"].shape)
             list_masks.append(data["masks"])
-            cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2021\2108\0827\test", str(srs_name)+"_"+str(sl_id)+".png"), data["masks"])
+            # cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2021\2108\0827\test", str(srs_name)+"_"+str(sl_id)+".png"), data["masks"])
         return list_masks
 
     def detect_liver_hepatic_segments(self):

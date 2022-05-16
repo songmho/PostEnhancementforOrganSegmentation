@@ -8,6 +8,7 @@ from pydicom import dcmread
 import os
 import cv2
 import mritopng
+from pydicom.pixel_data_handlers.util import apply_modality_lut, apply_voi_lut
 
 
 """
@@ -68,8 +69,8 @@ class MedicalImageLoader:
                 for i, sl in srs.items():
                     self.__mi_info[-1][sl[0x0020, 0x0013].value] = {"modality":sl[0x0008, 0x0060].value,
                                                                     "series description": sl[0x0008, 0x103E].value,
-                                                                    "examined": sl[0x018, 0x0015].value,
-                                                                    # "acquisition number": sl[0x0020, 0x0012].value,
+                                                                    # "examined": sl[0x0018, 0x0015].value,
+                                                                    "acquisition number": sl[0x0020, 0x0012].value,
                                                                     "instance number": sl[0x0020, 0x0013].value,
                                                                     "window center": sl[0x0028, 0x1050].value,
                                                                     "window width": sl[0x0028, 0x1051].value,
@@ -88,10 +89,17 @@ class MedicalImageLoader:
                 continue
             self.__mi_slices.append({})
             for j in list(self.__study[i].keys()):
+
                 cur_sl = self.__study[i][j].pixel_array
+                print(np.unique(cur_sl))
                 center = float(self.__mi_info[i][j]["window center"])
                 width = float(self.__mi_info[i][j]["window width"])
                 cur_sl = rescale_slope*cur_sl + rescale_intercept
+                print(np.unique(cur_sl))
+                # # slice.WindowCenter = self.__study[i][j][0x0028, 0x1050].value
+                # # slice.WindowWidth = self.__study[i][j][0x0028, 0x1051].value
+                # cur_sl = apply_modality_lut(cur_sl, self.__study[i][j])
+                # cur_sl = apply_voi_lut(cur_sl, self.__study[i][j])
                 ymin = 0
                 ymax = 255
                 # print(np.array(cur_sl).shape)
@@ -101,11 +109,13 @@ class MedicalImageLoader:
 
                 cur_sl = np.where(idx_high, ymax, cur_sl)
                 cur_sl = np.where(idx_low, ymin, cur_sl)
-
-                cur_sl = np.where(~idx_high & ~idx_low, ((cur_sl-center)/width+0.5)*(ymax-ymin)+ymin, cur_sl)
+                print(np.unique(cur_sl))
+                cur_sl = np.where(~(idx_high | idx_low), ((cur_sl-center)/width+0.5)*(ymax-ymin)+ymin, cur_sl)
                 cur_sl = cur_sl.astype(np.uint8)
+                print(np.unique(cur_sl))
+                # print(cur_sl.shape, center, width,  np.unique(cur_sl))
                 self.__mi_slices[-1][self.__mi_info[i][j]["instance number"]]= cur_sl
-
+                print("\n\n")
             self.__mi_slices[-1] = dict(sorted(self.__mi_slices[-1].items()))
             # self.__mi_slices[-1] = list(self.__mi_slices[-1].values())
 
@@ -181,8 +191,8 @@ if __name__ == '__main__':
     #     print()
 
 
-    path_root = r"D:\Dataset\LLU Dataset\6487537_05292016 (MR)\01. Original Image\01. DICOM"
-    path_save = r"D:\Dataset\LLU Dataset\6487537_05292016 (MR)\01. Original Image\03. PNG 2"
+    path_root = r"E:\1. Lab\Daily Results\2022\2203\0312\target\7083077\00. DICOM\target\7083077_10302013"
+    path_save = r"E:\1. Lab\Daily Results\2022\2203\0312\target\7083077\00. DICOM\result"
     # for srs in os.listdir(path_root):
         # os.mkdir(os.path.join(path_save, srs))
         # for sl in os.listdir(os.path.join(path_root, srs)):

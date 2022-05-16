@@ -76,7 +76,7 @@ class MedicalImageLoader:
         for std in list_studies:
             list_series = os.listdir(os.path.join(self.path_medimg, std))
             for srs in list_series:
-                if os.path.isdir(os.path.join(self.path_medimg, std, srs)): # dicom or normal images
+                if os.path.isdir(os.path.join(self.path_medimg, std, srs)):  # dicom or normal images
                     list_slices = os.listdir(os.path.join(self.path_medimg, std, srs))
                     for sl in list_slices:
                         ext = sl.split(".")[1:]
@@ -202,8 +202,8 @@ class MedicalImageLoader:
                 for sl_id in range(len(os.listdir(os.path.join(self.path_medimg, study, series)))):
                     slice = os.listdir(os.path.join(self.path_medimg, study, series))[sl_id]
                     info = {"voxel": 0.878906, "acq_date": study.split("_")[1], "slice_location": sl_id}
-                    self.setMed_img[study][series].append({"image": cv2.imread(os.path.join(self.path_medimg, study, series, slice)),
-                                                            "info": info})
+                    self.setMed_img[study][series][str(sl_id).zfill(5)] = {"image": cv2.imread(os.path.join(self.path_medimg, study, series, slice)),
+                                                            "info": info}
         self.ww_liver = 400
         self.wc_liver = 40
         self.rescale_intercept = -1024
@@ -211,21 +211,19 @@ class MedicalImageLoader:
 
     def __load_medical_img_nii(self):
         for study in os.listdir(self.path_medimg):
-            self.setMed_img[study] = {"plain": [], "arterial": [], "venous": [], "delay": []}
+            self.setMed_img[study] = {}
             for series in os.listdir(os.path.join(self.path_medimg, study)):
                 cur_srs_data = nib.load(os.path.join(self.path_medimg, study, series))
                 cur_srs_data = cur_srs_data.get_fdata()
-                cur_srs_data = cur_srs_data[:, :, ::-1]
-                result = []
+                cur_srs_data = cur_srs_data[::-1, :, ::-1]
+                result = {}
 
                 for sl in range(len(cur_srs_data[0, 0, :])):
                     cur_sl = np.array(cur_srs_data[:, :, sl])
                     cur_sl = np.array(np.rot90(cur_sl, 1), np.int)
-                    info = {"voxel": 0.878906, "acq_date": study.split("_")[1], "slice_location": sl}
-                    result.append({"image": cur_sl, "info": info})
-
-                cur_srs_data = np.array(result)
-                self.setMed_img[study][series.split(".")[0]] = cur_srs_data
+                    info = {"voxel": 0.878906, "acq_date": study.split("_")[1], "slice_location": sl, "rescaleSlope":1, "rescaleIntercept":0, "ww":400, "wc":40}
+                    result[str(sl).zfill(5)] = {"image": cur_sl, "info": info}
+                self.setMed_img[study][series.split(".")[0]] = result
         self.ww_liver = 400
         self.wc_liver = 40
         self.rescale_intercept = -1024
@@ -259,7 +257,8 @@ class MedicalImageLoader:
                 list_cur_series = {}
                 k=0
                 for dc in slices.keys():
-                    img = slices[dc]["image"]
+                    img = np.array(slices[dc]["image"], dtype=np.int16)
+                    img = img -1000
                     s = int(slices[dc]["info"]["rescaleSlope"])
                     b = int(slices[dc]["info"]["rescaleIntercept"])
                     img = s * img + b
@@ -278,11 +277,13 @@ class MedicalImageLoader:
                     img = np.where(~idx_high & ~idx_low, ((img-wc)/ww+0.5)*(ymax-ymin)+ymin, img)
                     if (img.shape[0], img.shape[1]) != (512, 512):
                         img = self.slice_resizer.resize(img)
+                    img = np.reshape(img, (512, 512, 1))
                     list_cur_series[dc] = img.astype(np.uint8)
-                    cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2022\2201\0121\result\step1", std_name+"_"+series+"_"+str(k).zfill(5)+".png"), list_cur_series[dc])
+                    # cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2022\2201\0121\result\step1", std_name+"_"+series+"_"+str(k).zfill(5)+".png"), list_cur_series[dc])
+                    cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2022\2203\0319\008\cvt_img", std_name+"_"+series+"_"+str(k).zfill(5)+".png"), list_cur_series[dc])
                     k+=1
                 self.setCT_a[std_name][series] = list_cur_series
-                print("       >>", series, "    ", len(self.setCT_a[std_name][series]))
+                # print("       >>", series, "    ", len(self.setCT_a[std_name][series]))
 
     def __convert_color_depth_nii(self):
         for std_name, studies in self.setMed_img.items():
@@ -299,12 +300,12 @@ class MedicalImageLoader:
                     wc = slices[idx]["info"]["wc"]
                     ymin = 0
                     ymax = 255
-                    img = np.reshape(img, (512, 512, 1))
                     idx_high = img >= wc+ww/2
                     idx_low = img <= wc-ww/2
                     img = np.where(idx_high, ymax, img)
                     img = np.where(idx_low, ymin, img)
                     img = np.where(~idx_high & ~idx_low, ((img-wc)/ww+0.5)*(ymax-ymin)+ymin, img)
+                    img = np.reshape(img, (512, 512, 1))
                     list_cur_series[idx] = img.astype(np.uint8)
                 self.setCT_a[std_name][series] = list_cur_series
 

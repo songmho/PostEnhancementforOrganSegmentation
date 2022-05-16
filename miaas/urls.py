@@ -5,6 +5,7 @@ from . import views, apis
 
 app_name = 'miaas'
 
+
 urlpatterns = [
     # url(r'^$', views.main_page, name='main'),
     # url(r'^$', views.index_page, name='index'),
@@ -21,14 +22,10 @@ urlpatterns = [
     url(r'^find$', views.find_page, name='find'),
     url(r'^profile$', views.profile_page, name='profile'),
     url(r'^physician$', views.physician_profile_page, name='physician_profile'),
-    url(r'^account$', views.account_page, name='account'),
 
     url(r'^archive$', views.archive_page, name='archive'),
     # url(r'^archive/upload$', views.archive_upload_page, name='archive_upload'),
-    url(r'^archive/upload$', views.ArchiveUploadView.as_view(), name='archive_upload'),
     # url(r'^archive/detail/(?P<image_id>[0-9]+)$', views.medical_image_page, name='archive_detail'),
-    url(r'^archive/detail/(?P<image_id>[0-9]+)$', views.ArchiveDetailView.as_view(), name='archive_detail'),
-
     url(r'^interpretation$', views.patient_interpretation_list_page, name='interpretation'),
     url(r'^interpretation/request$', views.patient_request_list_page, name='interpretation_request_list'),
     url(r'^interpretation/request/detail/(?P<request_id>[0-9]+)$', views.patient_interpretation_request_detail_page, name='interpretation_request_detail'),
@@ -50,18 +47,8 @@ urlpatterns = [
 
 
     ### for APIs ###
-    url(r'^api/sessions$', apis.handle_session_mgt),
-    url(r'^api/intpr_session$', apis.handle_intpr_session_mgt),
-    url(r'^api/user$', apis.handle_user_mgt),
-    url(r'^api/patient_profile$', apis.handle_patient_profile_mgt),
-    url(r'^api/physician_profile$', apis.handle_physician_profile_mgt),
-    url(r'^api/medical_image$', apis.handle_medical_image_mgt),
-    url(r'^api/interpretation$', apis.handle_interpretation_mgt),
-    url(r'^api/analytics$', apis.handle_analytics_mgt),
-    url(r'^api/payment$', apis.handle_payment_mgt),
-    url(r'^api/get_upload_progress$', apis.handle_image_uploading_progress),
     url(r'^api/image_upload$', apis.handle_multple_image_upload),
-    url(r'^api/load_lirads_img', apis.step1_save_lirads_imgs),
+    url(r'^api/load_img', apis.step1_save_imgs),
     url(r'^api/set_img_type', apis.set_img_type),
     url(r'^api/check_extension', apis.step1_check_extension),
     url(r'^api/load_medical_img', apis.step1_load_medical_img),
@@ -109,7 +96,28 @@ urlpatterns = [
     url(r'^api/change_pwd', apis.forgot_pwd),
     url(r'^api/get_cur_user_info', apis.get_current_user_info),
 
+    url(r'^api/encode_medical_img', apis.encode_medical_img),
+    url(r'^api/load_img_list_step2', apis.load_img_list_step2),
+    url(r'^api/identify_continuity_sequence', apis.identify_continuity_sequence),
+    url(r'^api/load_img_list_step3', apis.load_img_list_step3),
+    url(r'^api/detect_appearance_violation', apis.detect_appearance_violation),
+    url(r'^api/remedy_appearance_violation', apis.remedy_appearance_violation),
+    url(r'^api/load_img_list_step4', apis.load_img_list_step4),
+    url(r'^api/detect_location_violation', apis.detect_location_violation),
+    url(r'^api/remedy_location_violation', apis.remedy_location_violation),
+    url(r'^api/load_img_list_step5', apis.load_img_list_step5),
+    url(r'^api/detect_size_violation', apis.detect_size_violation),
+    url(r'^api/remedy_size_violation', apis.remedy_size_violation),
+    url(r'^api/load_img_list_step6', apis.load_img_list_step6),
+    url(r'^api/detect_shape_violation', apis.detect_shape_violation),
+    url(r'^api/remedy_shape_violation', apis.remedy_shape_violation),
+    url(r'^api/load_img_list_step7', apis.load_img_list_step7),
+    url(r'^api/detect_hu_violation', apis.detect_hu_violation),
+    url(r'^api/remedy_hu_violation', apis.remedy_hu_violation),
+
+    url(r'^api/get_cur_user_info', apis.get_current_user_info),
     url(r'^view/sign_in', views.sign_in_page),
+    url(r'^view/proceed_post_proces#step-1', views.proceed_post_enhancement),
     url(r'^view/browse_image_detail/(?P<img_id>[a-zA-Z0-9]+)', views.browse_image_detail),
     url(r'^view/browse_image_info/(?P<img_id>[a-zA-Z0-9]+)', views.browse_image_info),
     url(r'^view/browse_profile', views.browse_profile),
@@ -126,7 +134,7 @@ urlpatterns = [
     url(r'^view/breast_abnormality_diagnosis', views.breast_abnormality_diagnosis),
     url(r'^view/stomach_abnormality_diagnosis', views.stomach_abnormality_diagnosis),
 
-    url(r'^view/diagnose_abnormality_ml', views.diagnose_abnormality_ml),
+    url(r'^view/proceed_post_enhancement', views.proceed_post_enhancement),
     url(r'^view/diagnose_abnormality', views.diagnose_abnormality),
     url(r'^view/diagnose', views.diagnosis_detail),
 
@@ -164,11 +172,6 @@ urlpatterns = [
     url(r"^api/post-process_liver", apis.post_process_liver),
     url(r"^api/register_diagnosis_liver", apis.register_diagnosis),
     url(r"^api/retrieve_diagnosis_liver", apis.retrieve_diagnosis),
-    # url(r'^api/register_test_item', apis.register_test_item),
-    # url(r'^api/invite_user', apis.invite_user),
-    # url(r'^api/check_invitation_code', apis.check_invitation_code),
-    # url(r'^api/generate_invitation_code', apis.generate_invitation_code),
 
     url(r'^', views.page_not_found_view),
 ]
-

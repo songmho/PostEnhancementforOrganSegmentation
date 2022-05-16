@@ -56,10 +56,10 @@ class TumorTypeDeterminer:
         # path_save = r"E:\1. Lab\Daily Results\2021\2108\0820\result\step5"
 
         for t_id, list_features in self.img_features.items():
-            print(">>>>> ", list_features)
+            # print(">>>>> ", list_features)
             result = self.t_type_classifier.predict([[list_features]])
             self.tumor_groups[t_id]["type"] = self.t_type_classifier.get_tumor_type(result)
-            print(">>>", self.tumor_groups[t_id]["type"])
+            print(">>> Current Tumor Type: ", self.tumor_groups[t_id]["type"]["Tumor Type"])
             # if not os.path.isdir(os.path.join(path_save, self.std_name)):
             #     os.mkdir(os.path.join(path_save, self.std_name))
             # f = open(os.path.join(path_save, self.std_name, "step_5.txt"), "w")

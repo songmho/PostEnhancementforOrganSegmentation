@@ -23,7 +23,7 @@ class ImageFeatureEvaluator:
         self.list_phases = []
 
         self.setCT_sl_groups = {}
-        self.MARGIN = 10
+        self.MARGIN = 30
         self.tumor_groups = {}
         self.th_sl_num = 3
         self.LEN_FEATURES = 9
@@ -228,15 +228,16 @@ class ImageFeatureEvaluator:
                     msk = t_info[1]
 
                     if np.count_nonzero(msk) == 0:
-                        print("Current Tumor", t_info[0],"are not detected.")
+                        # print("Current Tumor", t_info[0],"are not detected.")
                         list_srs.append({"High Id": [], "Labels": [], 'ConfidenceScores': [], "WholeConf": [0.0]*self.LEN_FEATURES})
                     else:
 
                         sl = setCT_c_seg[srs_id][t_info[0]]["img"]
                         cur_roi = self.make_roi(sl, msk)
-                        print("Current Tumor", t_info[0],"are  detected.", end="    ")
+                        # print("Current Tumor", t_info[0],"are  detected.", end="    ")
                         # cv2.imshow("tumor", cur_roi)
                         # cv2.waitKey()
+                        cur_roi = cv2.resize(cur_roi, (80, 80), interpolation=cv2.INTER_CUBIC)
                         result = self.feature_classifier.predict(cur_roi/255)
                         list_srs.append(self.get_image_features(result))
                 self.tumor_groups[tumor_id]["features"][srs_id] = list_srs
@@ -256,7 +257,7 @@ class ImageFeatureEvaluator:
 
     def get_image_features(self, list_conf):
         result = self.feature_classifier.get_features(list_conf[0])
-        print(result)
+        # print(result)
         return result
 
     def discard_insignificant_image_features(self):

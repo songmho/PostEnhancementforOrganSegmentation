@@ -15,7 +15,7 @@ function speech(txt) {
     setVoiceList();
     var utterThis = new SpeechSynthesisUtterance();
     // utterThis.voice = voices[1];
-    utterThis.voice = window.speechSynthesis.getVoices()[get_voice()];
+    utterThis.voice = window.speechSynthesis.getVoices()[5];
 
     utterThis.lang = 'en-US';
     utterThis.pitch = 1;
@@ -33,9 +33,9 @@ function write_log_in_console(text){
         +dt.getHours().toString().padStart(2,"0")+":"+dt.getMinutes().toString().padStart(2,"0")+":"+dt.getSeconds().toString().padStart(2,"0")+"]";
     dict_data["text"] = text
 
-    if (text.includes("start") || text.includes("finish") || text.includes("stop") || text.includes("prepare")  || text.includes("upload")  || text.includes("Stage")){
-        // speech(text)
-    }
+    // if (text.includes("start") || text.includes("finish") || text.includes("stop") || text.includes("prepare")  || text.includes("upload")  || text.includes("Stage")){
+    speech(text);
+    // }
     list_console.push(dict_data);
     if (list_console.length >8)
         list_console.shift();
