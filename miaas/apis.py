@@ -309,18 +309,47 @@ def upload_txt(request):
 @csrf_exempt
 def encode_medical_img(request):
     if request.method == "POST":
+        path_src = r"E:\1. Lab\Projects\Post Enhancement\miaas\imgs"
+        if not os.path.isdir(path_src):
+            os.mkdir(path_src)
+        path_mi = os.path.join(path_src, "Medical Images")
+        if not os.path.isdir(path_mi):
+            os.mkdir(path_mi)
+        path_seg = os.path.join(path_src, "Segmentation Result")
+        if not os.path.isdir(path_seg):
+            os.mkdir(path_seg)
+        path_save = os.path.join(path_src, "Save")
+        if not os.path.isdir(path_save):
+            os.mkdir(path_save)
+
+        len_data = len(os.listdir(path_mi))
+        cur_name = len_data
+        if len_data > 0:
+            last_name = os.listdir(path_mi)[-1]
+            if int(last_name) != len_data-1:
+                cur_name = int(last_name)+1
+        path_cur_mi = os.path.join(path_mi, str(cur_name))
+        path_cur_seg = os.path.join(path_seg, str(cur_name))
+        path_cur_save = os.path.join(path_save, str(cur_name))
+        os.mkdir(path_cur_mi)
+        os.mkdir(path_cur_seg)
+        os.mkdir(path_cur_save)
+
         # TODO: To save medical images and segmentation results
         # To save medical image
 
         # To save segmentation results
 
-
         # To enhance the medical images
+        container.mias_container.post_enhancement_process.set_file_path()
+        container.mias_container.post_enhancement_process.load_med_imgs()
 
+        hu_start, hu_end = container.mias_container.post_enhancement_process.get_hu_scale()
+        num_slices = container.mias_container.post_enhancement_process.get_num_slices()
 
-        return JsonResponse({"state": True, "data":{"num_slice": 86, "hu_start": -160, "hu_end": 240}})
+        return JsonResponse({"state": True, "data": {"num_slice": num_slices, "hu_start": hu_start, "hu_end": hu_end}})
     else:
-        return JsonResponse({"state":False})
+        return JsonResponse({"state": False})
 
 
 @csrf_exempt

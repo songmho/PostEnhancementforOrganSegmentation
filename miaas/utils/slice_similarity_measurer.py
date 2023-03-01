@@ -23,7 +23,8 @@ session = tf.InteractiveSession(config=config)
 
 class SimilarityMeasurer:
     def __init__(self):
-        self.weight_path = "../model/deep_ranking/deepranking-v2-150000.h5"
+        # self.weight_path = "../model/deep_ranking/deepranking-v2-150000.h5"
+        self.weight_path = "./miaas/model/deep_ranking/deepranking-v2-150000.h5"
         self.prepare_model()
 
     def prepare_model(self):

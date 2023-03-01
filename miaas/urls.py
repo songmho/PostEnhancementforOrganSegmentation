@@ -62,7 +62,7 @@ urlpatterns = [
 
     url(r'^api/archive$', apis.handle_archive),
 
-    url(r'^api/test$', apis.handle_test),
+    # url(r'^api/test$', apis.handle_test),
     url(r'^json_res/success$', views.json_response_success),
 
     url(r'^activate/(?P<user_id>[-._a-zA-Z0-9]+)/(?P<auth_code>[a-zA-Z0-9]+)$', views.activate_user, name='auth_email'),

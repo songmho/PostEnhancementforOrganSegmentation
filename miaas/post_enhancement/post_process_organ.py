@@ -32,6 +32,12 @@ class MedImageEnhancer:
         self.img_visualizer = ImageVisualizer()
         self.display_result = display_result
         self.sequences = []
+        self.num_slices = 0
+    def get_hu_scale(self):
+        return self.wc-self.ww/2,self.wc+self.ww/2
+
+    def get_num_slices(self):
+        return self.num_slices
 
     # METHOD 1. Method for Refining Appearance Violation
     def refine_appearance_violation(self, display=False):
@@ -159,7 +165,6 @@ class MedImageEnhancer:
                 # slice and seg. result for next slice
                 nxt_seg = cur_seq[big_id]["img"]
                 nxt_img = self.srs_org_sl[big_id]["img"]
-                print(id, big_id, len(cur_seq), np.unique(nxt_seg), )
                 list_grvt = [self.compute_gravity(nxt_seg)]
                 for sl_id in range(big_id-1, -1, -1):    # Loop for slices containing segmented organs  From biggest to 0 (Decreasing Size)
                     # slice and seg. result for previous slice
@@ -632,7 +637,7 @@ class MedImageEnhancer:
             return (-1, -1)
         return (cx, cy)
 
-    def set_file_path(self, path_org_mi, path_org_sl, path_seg_result, path_save, path_org_label):
+    def set_file_path(self, path_org_mi, path_org_sl, path_seg_result, path_save):
         """
         Method for setting file path
         :param path_org_mi: string, path for original medical images (series)
@@ -645,7 +650,6 @@ class MedImageEnhancer:
         self.path_org_sl = path_org_sl
         self.path_seg_result = path_seg_result
         self.path_save = path_save
-        self.path_org_label = path_org_label
         self.srs_org_mi = []
         self.srs_org_sl = []
         self.srs_seg_sl = []
@@ -660,6 +664,7 @@ class MedImageEnhancer:
         self.srs_org_mi = self.srs_org_mi.get_fdata()            #  To select only image data
 
         # TO load slice images
+        # TODO: To change to the code for encoding medical image data
         list_fname = os.listdir(os.path.join(self.path_org_sl))
         for i in range(len(list_fname)):
             img = cv2.imread(os.path.join(self.path_org_sl, list_fname[i]))
@@ -673,6 +678,7 @@ class MedImageEnhancer:
             img = cv2.imread(os.path.join(self.path_seg_result, list_fname[i]))
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             self.srs_seg_sl.append({"id": i, "img": img})       # [{"id": id, "img":img}, {"id":, "img": }, ...]
+            self.num_slices += 1
 
         list_fname = os.listdir(os.path.join(self.path_org_label))
         labels = []
@@ -764,32 +770,46 @@ class MedImageEnhancer:
         :return:
         """
         new_mask = np.zeros((512, 512))
+        print(type(prv_seg), type(cur_seg), type(nxt_seg), type(prv_img), type(cur_img), type(nxt_img))
         if prv_seg is None:
             # Case of previous slice is None --> Apply next slice data (Re-selecting position and Erosion)
             range_mask = np.bitwise_and(nxt_seg, nxt_img)
             range_mask = np.unique(range_mask)  # To select the range of  segmented area's grayscale in next slice
-            range_mask = (min(range_mask), max(range_mask))
-            overlapped = np.bitwise_and(nxt_seg, cur_img)    # To overlap current slice and previous segmentation
-            new_mask = np.where((overlapped >= range_mask[0]+5) & (overlapped <= range_mask[1]-5), 255, 0)
+            range_mask = np.delete(range_mask, 0)
+            print(">>> CASE 1 MIN MAX: ", range_mask)
+            if len(range_mask)>0:
+                range_mask = (min(range_mask), max(range_mask))
+
+                overlapped = np.bitwise_and(nxt_seg, cur_img)    # To overlap current slice and previous segmentation
+                new_mask = np.where((overlapped >= range_mask[0]) & (overlapped <= range_mask[1]), 255, 0)
+            else:
+                new_mask = nxt_seg
             # TODO [for Improving]: add Erosion code
-        if nxt_seg is None:
+        elif nxt_seg is None:
             # Case of Next slice is None --> Apply previous slice data (Re-Selecting position and Dilation)
             range_mask = np.bitwise_and(prv_seg, prv_img)
             range_mask = np.unique(range_mask)  # To select the range of  segmented area's grayscale in next slice
-            range_mask = (min(range_mask), max(range_mask))
+            range_mask = np.delete(range_mask, 0)
+            print(">>> CASE 2 MIN MAX: ", range_mask)
+            if len(range_mask)>0:
+                range_mask = (min(range_mask), max(range_mask))
 
-            overlapped = np.bitwise_and(prv_seg, cur_img)    # To overlap current slice and previous segmentation
-            new_mask = np.where((overlapped >= range_mask[0]+5) & (overlapped <= range_mask[1]-5), 255, 0)
+                overlapped = np.bitwise_and(prv_seg, cur_img)    # To overlap current slice and previous segmentation
+                new_mask = np.where((overlapped >= range_mask[0]) & (overlapped <= range_mask[1]), 255, 0)
+            else:
+                new_mask = prv_seg
             # TODO [for Improving]: add Dilation code
 
         if prv_seg is not None and nxt_seg is not None:
             # Case of Previous and Next slices are None --> apply both slices data
             range_mask = np.bitwise_and(prv_seg, prv_img)
             range_mask = np.unique(range_mask)  # To select the range of  segmented area's grayscale in next slice
+            range_mask = np.delete(range_mask, 0)
+            print(">>> MIN MAX: ", range_mask)
             range_mask = (min(range_mask), max(range_mask))
 
             overlapped = np.bitwise_and(prv_seg, cur_img)    # To overlap current slice and previous segmentation
-            new_mask = np.where((overlapped >= range_mask[0]+15) & (overlapped <= range_mask[1]-15), 255, 0)
+            new_mask = np.where((overlapped >= range_mask[0]) & (overlapped <= range_mask[1]), 255, 0)
         return np.array(new_mask, dtype=np.uint8)
 
     def __move_empty_to_false_seq(self):
@@ -1022,7 +1042,6 @@ class ImageVisualizer:
         :param img_after:  list, images after enhancing
         :return: None
         """
-        print(len(img_after))
         self.imgs_before = []
         self.imgs_after = []
         for i_before in img_before:    # extracting images in before enhancing
@@ -1207,7 +1226,7 @@ if __name__ == '__main__':
     # for trg_srs_id in [22, 40, 49, 55, 57, 65, 83, 87, 104, 108, 114, 115]:
     # for trg_srs_id in [0, 2, 8, 10, 21, 22, 31, 34, 39, 40 ,42, 46, 49, 51]:
     for trg_srs_id in range(131):
-        if trg_srs_id <=3:
+        if trg_srs_id !=4:
             continue
     # for trg_srs_id in range(131):
         # Step 1. Initialize Locations for CT series and their segmentation results
