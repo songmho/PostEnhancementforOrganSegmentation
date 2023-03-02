@@ -36,15 +36,17 @@ import skimage.draw
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../../")
-ROOT_DIR = r"E:\2. Project\Python\LiverDiseaseDetection\models\liver_segment"
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
-from mrcnn.config import Config
-from mrcnn import model as modellib, utils
+# from mrcnn.config import Config
+# from mrcnn import model as modellib, utils
+
+from miaas.lirads.util.mrcnn.config import Config
+from miaas.lirads.util.mrcnn import model as modellib
+from miaas.lirads.util.mrcnn import utils
 
 # Path to trained weights file
-COCO_WEIGHTS_PATH = os.path.join(ROOT_DIR, "../backup/mask_rcnn_coco.h5")
 COCO_WEIGHTS_PATH = os.path.join(ROOT_DIR, "mask_rcnn_liver_000070.h5")
 
 # Directory to save logs and model checkpoints, if not provided
@@ -72,10 +74,10 @@ class LiverConfig(Config):
     IMAGE_MAX_DIM = 512
     # LEARNING_RATE = 0.0005              # 0.0005
     LEARNING_RATE = 0.001              # 0.0005
-    STEPS_PER_EPOCH = 25    # Number of steps per epoch
-    VALIDATION_STEPS = 1
+    STEPS_PER_EPOCH = 36  # Number of steps per epoch
+    VALIDATION_STEPS = 10
     BACKBONE = 'resnet101'    # resnet101 following original setting
-    RPN_ANCHOR_SCALES = (32, 64, 128, 256, 512)
+    RPN_ANCHOR_SCALES = (8, 16, 32, 64, 128)
     RPN_NMS_THRESHOLD = 0.7
     TRAIN_ROIS_PER_IMAGE = 500
     DETECTION_MIN_CONFIDENCE = 0.7

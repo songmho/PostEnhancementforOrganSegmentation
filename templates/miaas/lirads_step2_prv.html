@@ -14,31 +14,38 @@
 <body>
     <div class="w-100" style="height: 6%;">
         <div id="div_init">
-            <button class="btn btn-outline-info float-right" id="btn_remedy_hu">Remedy Violation</button>
-            <button class="btn btn-outline-info float-right mr-1" id="btn_detect_hu">Detect Violation</button>
+            <button class="btn btn-outline-info float-right" id="btn_segment_liver">Identify Sequence</button>
+        </div>
+        <div id="div_start" style="display: none;">
+            <button class="btn btn-outline-info float-right" id="btn_stop_segment_liver">Stop</button>
+            <button class="btn btn-outline-info float-right mr-2" id="btn_pause_segment_liver">Pause</button>
+        </div>
+        <div id="div_pause"  style="display: none;">
+            <button class="btn btn-outline-info float-right" id="btn_resume_segment_liver">Resume</button>
         </div>
     </div>
     <div class="w-100 row" style="height: 84%">
-        <div id="box" >
-            <div id="div_slice_step7">
+        <div id="box">
+            <div id="div_slice">
+
             </div>
-            <div id="div_seg_step7">
+            <div id="div_org">
             </div>
-            <div id="div_seq_org_step7">
+            <div id="div_seg" class="mt-3">
             </div>
-            <div id="div_enh_step7" class="mt-3">
-            </div>
-            <div id="div_seq_enh_step7">
+            <div id="div_seg1">
             </div>
         </div>
+
     </div>
-    <div>
-        <button id="btn_lirads_step7_done" class="col-1 btn btn-primary float-right">Done</button>
-        <button id="btn_lirads_step7_back" class="col-1 btn btn-primary float-right mr-1">Back</button>
+    <div class="w-100">
+        <button id="btn_lirads_step2_next" class="col-1 btn btn-primary float-right">Next</button>
+        <button id="btn_lirads_step2_back" class="col-1 btn btn-primary float-right mr-1">Back</button>
     </div>
 </body>
+
 <script src="{% static "miass/js/console.js" %}"></script>
-<script src="{% static "miass/js/lirads_step7.js" %}"></script>
+<script src="{% static "miass/js/lirads_step2_prv.js" %}"></script>
 
 <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>

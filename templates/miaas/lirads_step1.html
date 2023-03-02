@@ -13,67 +13,125 @@
     <title>Title</title>
 </head>
 <body>
-    <div class="w-100" style="height: 90%">
-        <h5 class="col-5">Load Target Medical Image</h5>
-        <div class="row ml-3 mb-1">
-            <p class="col-3 my-auto">Medical Image </p>
-            <label class="btn btn-outline-info col-2" id="btn_load_srs">Load
-                <form id="form_loader_srs" class="my-0" enctype="multipart/form-data">
-                    <input id="btn_loader_srs" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
-                </form>
-            </label>
-        </div>
-        <div class="row ml-3 mb-1">
-            <p class="col-3 my-auto">Medical Image Type</p>
-            <select class="form-select  col-2 px-1" aria-label="Medical Image Type">
-              <option value="DCM" selected>DICOM</option>
-              <option value="NII">NIfTI</option>
-              <option value="OTHER">Other</option>
-            </select>
+    <div class="w-100" style="height: 93%">
+        <div>
+            <h5 class="col-5">Load Target Medical Image</h5>
+            <div class="row ml-3">
+                <p class="col-3 my-auto">CT Series </p>
+                <label class="btn btn-outline-info col-1" id="btn_load_srs">Load
+                    <form id="form_loader_srs" class="my-0" enctype="multipart/form-data">
+                        <input id="input_loader_srs" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
+                    </form>
+                </label>
+            </div>
+            <div class=" mb-1">
+                <div class="row ml-3 mb-1">
+                    <p class="col-3 my-auto pl-5"># of Slices</p>
+                    <label class="" id="input_num_slices"></label>
+                </div>
+            </div>
+
+            <div class="row ml-3 mb-1">
+                <p class="col-3 my-auto">Segmentation Result</p>
+                <label class="btn btn-outline-info col-1" id="btn_load_seg_result_local">Load
+                    <form id="form_loader_seg_result" class="my-0" enctype="multipart/form-data">
+                        <input id="btn_loader_seg_result" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
+                    </form>
+                </label>
+            </div>
+
+            <div class=" mb-1">
+                <div class="row ml-3 mb-1">
+                    <p class="col-3 my-auto pl-5"># of Slices Containing Target Organ</p>
+                    <label class="" id="input_num_slices_having_organ"></label>
+                </div>
+            </div>
+
+            <div class="row ml-3 mb-1">
+                <p class="col-3 my-auto">Label Mask Data</p>
+                <label class="btn btn-outline-info col-1" id="btn_load_mask">Load
+                    <form id="form_loader_mask" class="my-0" enctype="multipart/form-data">
+                        <input id="btn_loader_mask" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
+                    </form>
+                </label>
+            </div>
+
+            <div class=" mb-1">
+                <div class="row ml-3 mb-1">
+                    <p class="col-3 my-auto pl-5"># of Slices Containing Target Organ</p>
+                    <label class="" id="input_num_slices_having_organ_label"></label>
+                </div>
+            </div>
         </div>
 
-        <div class="row ml-3 mb-1">
-            <p class="col-3 my-auto">Segmentation Result</p>
-            <label class="btn btn-outline-info col-2" id="btn_load_seg_result_local">From Local
-                <form id="form_loader_seg_result" class="my-0" enctype="multipart/form-data">
-                    <input id="btn_loader_seg_result" type="file" name="files"  multiple style="display: none;" webkitdirectory mozdirectory>
-                </form>
-            </label>
-            <label class="btn btn-outline-info col-2" id="btn_load_seg_result_uploaded">From Uploaded Data</label>
-        </div>
-        <div class="row ml-3 mb-1">
-            <p class="col-3 my-auto">Segmentation Result Type</p>
-            <select class="form-select  col-2 px-1" aria-label="Medical Image Type">
-              <option value="NOR" selected>Normal</option>
-              <option value="DCM">DICOM</option>
-              <option value="NII">NIfTI</option>
-            </select>
-        </div>
+        <div class="mt-4">
+            <div class="row">
+                <h5 class="col-3">Identify Continuity Sequences </h5>
+                <button class="btn btn-outline-info col-1" id="btn_identify_sequence">Start</button>
+            </div>
+            <div>
 
-        <h5 class="col-5 mt-5">Encode Target Medical Image</h5>
-        <div class="row ml-3 mb-1">
-            <p class="col-3 my-auto">Encode</p>
-            <label class="btn btn-outline-info col-2" id="btn_proceed">Proceed
-            </label>
+                <h6 class="ml-2">Result for Segmentation Result</h6>
+                <div class="row ml-2 mb-1">
+                    <p class="col-3 my-auto">Number of Continuity Sequences</p>
+                    <label class="col-3 px-1 ml-1 form-control-plaintext" id="inputNumSequences" style="padding-top: 1px; padding-bottom: 1px;"/>
+                </div>
+
+                <div style="position: relative; display: flex; align-items: flex-start;" class="ml-3">
+                    <div class="col-2">
+                        <table class="table mb-0">
+                            <tr class=" col-3">
+                                <th scope="col" class="summary_th">Sequence ID</th>
+                            </tr>
+                            <tr class=" col-3">
+                                <th scope="col" class="summary_th">CT Slices</th>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="overflow-x: auto;" class="col-11">
+                        <table class="table w-100" style="">
+                            <tr  id="thead_step1" class="w-100 summary_tr summary_tr_id">
+                            </tr>
+                            <tr id="tr_step1" class="summary_tr">
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <h6 class="ml-2 mt-2">Result for Label Data</h6>
+                <div class="row ml-2 mb-1">
+                    <p class="col-3 my-auto">Number of Continuity Sequences</p>
+                    <label class="col-3 px-1 ml-1 form-control-plaintext" id="inputNumSequences_label" style="padding-top: 1px; padding-bottom: 1px;"/>
+                </div>
+
+                <div style="position: relative; display: flex; align-items: flex-start;" class="ml-3">
+                    <div class="col-2">
+                        <table class="table mb-0">
+                            <tr class=" col-3">
+                                <th scope="col" class="summary_th_label">Sequence ID</th>
+                            </tr>
+                            <tr class=" col-3">
+                                <th scope="col" class="summary_th_label">CT Slices</th>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="overflow-x: auto;" class="col-11">
+                        <table class="table w-100" style="">
+                            <tr  id="thead_step1_lb" class="w-100 summary_tr summary_tr_id">
+                            </tr>
+                            <tr id="tr_step1_lb" class="summary_tr">
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
         </div>
-
-        <h5 class="col-5 mt-5">Information of Medical Image</h5>
-        <div class="row ml-3 mb-1">
-            <p class="col-3 my-auto"># of Slices</p>
-            <label class="" id="input_num_slices"></label>
-        </div>
-        <div class="row ml-3 mb-1">
-            <p class="col-3 my-auto">Applied HU Range</p>
-            <label class="" id="input_applied_hu_range"></label>
-        </div>
-
-
-
     </div>
 
 
     <div class="bottom-">
-        <button id="btn_lirads_step1_next" class="col-1 btn btn-primary float-right">Next</button>
+        <button id="btn_lirads_step1_next" class="col-1 btn btn-primary float-right">Next Step</button>
     </div>
 
     <!-- Modal for Previous Images List -->

@@ -1,86 +1,102 @@
 (function () {
     var isPause = false;
-    var isPause_pp = false;
     var idx= 0;
-    var intervalSegment = null;
     var d;
-    var is_segment_finished = false;
-    var pp_step = 0;
-    var intervalPP = null;
-    var phase_info = null;
-
+    var intervalSegment = null;
     $(document).ready(function(){
-        write_log_in_console("Step 2 is to identify continuity sequences.");
-        $.ajax({
-            url: "/api/load_img_list_step2",
-            async: true,
-            method: 'POST',
-            data: {"data": JSON.stringify({})},
-            data_type: "text",
-            success: function (data) {
-                // var data = JSON.parse(data);
-                d = data["data"];
-                var ids = d["ids"];
-                var sls = d["sls"];
-                var segs = d["segs"];
-                $("#div_slice").append("<div class=\"header \" style=\"width: 40px; vertical-align: middle; \"><h5 class='my-auto'>Slice ID</h5></div>");
-                $("#div_org").append("<div class=\"header\" style=\"width: 40px;vertical-align: middle; \"><h5>Slice</h5></div>");
-                $("#div_seg").append("<div class=\"header\" style=\"width: 40px; vertical-align: middle; \"><h5>Seg. Result</h5></div>");
-                $("#div_seg1").append("<div class=\"header\" style=\"width: 40px; vertical-align: middle;\"><h5>Sequence ID</h5></div>");
-                for (var i in ids){
-                    $("#div_slice").append("<div class=\"title_seg\"><h5 class=\"h-100 mb-0\" style='width: 150px;'>"+ids[i]+"</h5></div>");
-                }
-                for (var i in sls){
-                    $("#div_org").append("<div class=\"item\">" +
-                        "<img style='width: 150px; height: 150px;' src='data:image/png;base64,"+sls[i]+"'/>" +
-                        "</div>");
-                }
-                for (var i in segs){
-                    $("#div_seg").append("<div class=\"item\">" +
-                        "<img style='width: 150px; height: 150px;' src='data:image/png;base64,"+segs[i]+"'/>" +
-                        "</div>");
-                }
-            }, error: function (){
+        $(".class_step2_task2").css("display", "None");
+        $(".class_step2_task3").css("display", "None");
+        write_log_in_console("Step 3 is to remedy appearance violation.");
+        // $.ajax({
+        //     url: "/api/load_img_list_step3",
+        //     async: true,
+        //     method: 'POST',
+        //     data: {"data": JSON.stringify({})},
+        //     data_type: "text",
+        //     success: function (data) {
+        //         // var data = JSON.parse(data);
+        //         d = data["data"];
+        //         var ids = d["ids"];
+        //         var sls = d["sls"];
+        //         var segs = d["segs"];
+        //         var seqs = d["seqs"];
+        //         console.log(seqs);
+        //
+        //         $("#div_slice_step3").append("<div class=\"header \" style=\"width: 40px; vertical-align: middle; \"><h5 class='my-auto'>Slice ID</h5></div>");
+        //         $("#div_seg_step3").append("<div class=\"header\" style=\"width: 40px;vertical-align: middle; \"><h5>Seg. Result</h5></div>");
+        //         $("#div_seq_org_step3").append("<div class=\"header\" style=\"width: 40px; vertical-align: middle; \"><h5>Sequence ID</h5></div>");
+        //         $("#div_enh_step3").append("<div class=\"header\" style=\"width: 40px; height:150px;vertical-align: middle;\"><h5>Rem. Result</h5></div>");
+        //         $("#div_seq_enh_ste3").append("<div class=\"header\" style=\"width: 40px; vertical-align: middle;\"><h5>Sequence ID</h5></div>");
+        //         for (var i in ids){
+        //             $("#div_slice_step3").append("<div class=\"title_seg\"><h4 class=\"h-100 mb-0\" style='width: 150px;'>"+ids[i]+"</h4></div>");
+        //         }
+        //         for (var i in segs){
+        //             $("#div_seg_step3").append("<div class=\"item\" id='step3_seg_"+ids[i]+"'> <img style='width: 150px; height: 150px;' src='data:image/png;base64,"+segs[i]+"'/> </div>");
+        //         }
+        //         for (var i in seqs){
+        //             $("#div_seq_org_step3").append("<div class=\"title_seg\"><h5 class=\"h-100 mb-0\" style='width: 150px;'>"+seqs[i]+"</h5></div>");
+        //         }
+        //
+        //     }, error: function (){
+        //
+        //     }
+        // });
 
-            }
-        });
-
-        $("#btn_segment_liver").on("click", function () {
-            write_log_in_console("Identifying continuity sequences is started.");
+        $("#btn_detect_appearance").on("click", function () {
+            write_log_in_console("Detecting violation is started.");
             $.ajax({
-                url: "/api/identify_continuity_sequence",
+                url: "/api/detect_appearance_violation",
                 async: false,
                 method: 'POST',
-                data: {"data": JSON.stringify({"target_img":idx})},
+                data: {"data": JSON.stringify()},
+                data_type: "text",
+                success: function (data) {
+                    d = data["data"];
+                    var diffs = d["diffs"];
+                    console.log(diffs);
+                    for (var i in diffs){
+                        $("#step3_seg_"+diffs[i]).css("border", "4px solid #FF0000");
+                    }
+                    write_log_in_console("The number of violating slices is "+diffs.length+".");
+                    write_log_in_console("Detecting violation is finished.");
+                }, error: function (){
+                    idx+=1;
+
+                }
+            });
+        });
+
+        $("#btn_remedy_appearance").on("click", function () {
+            write_log_in_console("Remedying violation is started.");
+            $.ajax({
+                url: "/api/remedy_appearance_violation",
+                async: false,
+                method: 'POST',
+                data: {"data": JSON.stringify()},
                 data_type: "text",
                 success: function (data) {
                     d = data["data"];
                     var seqs = d["seqs"];
+                    var imgs = d["imgs"];
+                    for (var i in imgs){
+                        $("#div_enh_step3").append("<div class=\"item\">" +
+                            "<img style='width: 150px; height: 150px;' src='data:image/png;base64,"+imgs[i]+"'/>" +
+                            "</div>");
+                    }
                     for (var i in seqs){
-                        $("#div_seg1").append("<div class=\"title_seg\"><h5 class=\"h-100 mb-0\" style='width: 150px;'>"+seqs[i]+"</h5></div>");
+                        $("#div_seq_enh_ste3").append("<div class=\"title_seg\"><h5 class=\"h-100 mb-0\" style='width: 150px;'>"+seqs[i]+"</h5></div>");
                     }
 
-                write_log_in_console("The number of continuity sequences is "+d["num_seq"]+".");
-                write_log_in_console("Identifying continuity sequences is finished.");
+                    write_log_in_console("Remedying violation is finished.");
                 }, error: function (){
                     idx+=1;
-                    console.log("EERRORR");
+
                 }
             });
         });
 
 
-        $("#btn_lirads_step2_back").on("click", function () {
-            $.ajax({
-                url: "/api/initialize_diagnosis_env",
-                async: true,
-                method: 'POST',
-                data_type: "text",
-                success: function (data) {
-                    console.log("INITIALIZED");
-                }, error: function (){
-                }
-            });
+        $("#btn_step2_back").on("click", function () {
             $("#smartwizard").smartWizard("prev");
             $("#btn_step2").removeClass("done");
             $("#step-2").css("display", "none");
@@ -88,7 +104,7 @@
 
         });
 
-        $("#btn_lirads_step2_next").on("click", function () {
+        $("#btn_step2_next").on("click", function () {
             $("#step-3").empty();
             $("#step-2").css("display", "none");
             $("#step-3").css("display", "block");

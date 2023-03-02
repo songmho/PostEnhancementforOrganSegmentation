@@ -16,7 +16,7 @@
         cur_form_data_tmp.append("data", JSON.stringify(data));
         var splited = selected_img[0].split(".");
         let format = splited[splited.length-1];
-
+        console.log(type);
         $.ajax({
             type:"POST",
             enctype: 'multipart/form-data',
@@ -28,20 +28,19 @@
             timeout: 600000,
             async: false,
             success: function (data) {
-                console.log(data["data"]);
-                var type = data["data"]["type"]
-                var format = data["data"]["format"]
-                if (format === "nii" && type === null) {
-                    $("#modal_img_type").modal("show");
+                if (type === "srs"){
+                    $("#input_num_slices").text(data["data"]["num_slices"]);
+                } else if (type === "label") {
+                    $("#input_num_slices_having_organ_label").text(data["data"]["num_slices"]);
+                } else{
+                    $("#input_num_slices_having_organ").text(data["data"]["num_slices"]);
                 }
-                write_log_in_console("Reading "+phase+" phase.");
             }, error: function (){
             }
         });
     }
 
     $(document).ready(function(){
-
         $.ajax({
             url: "/api/initialize_diagnosis_env",
             async: true,
@@ -67,19 +66,49 @@
 
         });
 
-        $("#btn_load_srs").on("change", function () {
+        $("#input_loader_srs").on("change", function () {
             console.log("btn_loader_seg_result");
-            $("#input_num_slices").text("86");
-            upload_img(get_current_profile().identification_number, "srs","#form_loader_srs", this);
+            upload_img("test", "srs","#form_loader_srs", this);
         });
-        $("#btn_loader_srs").on("change", function () {
-            console.log("btn_loader_srs");
-            upload_img(get_current_profile().identification_number, "seg_result","#form_loader_seg_result", this);
+        $("#btn_loader_seg_result").on("change", function () {
+            upload_img("test", "seg_result","#form_loader_seg_result", this);
         });
-        $("#btn_load_seg_result_uploaded").on("click", function () {
-            console.log("btn_load_seg_result_uploaded");
-            // upload_img($("#input_pat_name").val(), $("#input_pat_birth").val(), $("#input_mrn").val(), $("#input_acq_date").val(), "venous", "#form_loader_pvp", this);
+
+        $("#btn_loader_mask").on("change", function () {
+            upload_img("test", "label","#form_loader_mask", this);
         });
+
+        $("#btn_identify_sequence").on("click", function () {
+            $.ajax({
+                url: "/api/identify_continuity_sequence",
+                async: true,
+                method: 'POST',
+                data: JSON.stringify({"uid": null}),
+                success: function (data) {
+                    console.log(data);
+                    var d = data["data"];
+                    var d1 = d["seg_result"];
+                    var d2 = d["label"];
+
+                    $("#inputNumSequences").text(d1["num_seqs"]);
+                    for (var i = 1; i<=Number.parseInt(d1["num_seqs"]); i++){
+                        $("#thead_step1").append('<th class="">'+(i)+'</th>\n');
+                        $("#tr_step1").append('<td >'+d1["seq"][String(i-1)]["start"]+' - '+d1["seq"][String(i-1)]["end"]+'</td>\n');
+                    }
+
+                    $("#inputNumSequences_label").text(d2["num_seqs"]);
+                    for (var i = 1; i<=Number.parseInt(d2["num_seqs"]); i++){
+                        $("#thead_step1_lb").append('<th class="">'+(i)+'</th>\n');
+                        $("#tr_step1_lb").append('<td >'+d2["seq"][String(i-1)]["start"]+' - '+d2["seq"][String(i-1)]["end"]+'</td>\n');
+                    }
+                }, error: function (){
+
+                }
+
+            });
+
+        });
+
         $("#btn_proceed").on("click", function () {
             $.ajax({
                 url: "/api/encode_medical_img",
@@ -96,7 +125,7 @@
 
                 }
 
-            })
+            });
 
 
         });

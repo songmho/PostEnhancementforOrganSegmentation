@@ -30,6 +30,7 @@ from miaas import container
 
 from miaas.apps import MedicalImageConfig
 from django.http import FileResponse
+import nibabel as nib
 
 
 MSG_DB_FAILED = "Handling DB requests are failed."
@@ -374,25 +375,47 @@ def load_img_list_step2(request):
 @csrf_exempt
 def identify_continuity_sequence(request):
     if request.method == "POST":
-        list_titles = []
-        list_imgs = []
-        list_segs = {}
-        # To load slice
-        path_sqs = r"E:\1. Lab\Daily Results\2022\2204\0425\Enhancement Results,1118a\066\0.sequences"
-        num_true = 1
-        num_false = 1
-        time.sleep(2)
-        cur = -1
-        for i in os.listdir(path_sqs):
-            if cur == -1:
-                cur = i
-            for j in os.listdir(os.path.join(path_sqs, i)):
-                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
-                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
-                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
-                else:
-                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
-        return JsonResponse({"state": True, "data":{"seqs": list_segs, "imgs":list_imgs, "num_seq": len(os.listdir(os.path.join(path_sqs)))}})
+        list_seqs = {}
+        list_seqs_lb = {}
+        cur_type = False
+        p_root = r".\miaas\imgs\test"
+        root_path = os.path.join(p_root, os.listdir(p_root)[-1], "seg_result")
+        for i in os.listdir(root_path):
+            img = cv2.imread(os.path.join(root_path, i), cv2.IMREAD_GRAYSCALE)
+            print(i, cur_type, np.count_nonzero(img)>0)
+            if len(list_seqs.keys()) == 0:
+                cur_type = np.count_nonzero(img)>0
+                list_seqs[len(list_seqs)] = {"start":int(i.split("_")[1].split(".")[0]), "end":-1, "masks": [convert_img_to_bytes(img)]}
+                continue
+            if cur_type == (np.count_nonzero(img)>0):
+                print(list(list_seqs.keys())[-1], int(i.split("_")[1].split(".")[0]))
+                list_seqs[list(list_seqs.keys())[-1]]["end"] = int(i.split("_")[1].split(".")[0])
+                list_seqs[list(list_seqs.keys())[-1]]["masks"].append(convert_img_to_bytes(img))
+            else:
+                cur_type = np.count_nonzero(img) > 0
+                list_seqs[len(list_seqs)] = {"start": int(i.split("_")[1].split(".")[0]), "end": -1, "masks": [convert_img_to_bytes(img)]}
+
+        root_path = os.path.join(p_root, os.listdir(p_root)[-1], "label")
+        for i in os.listdir(root_path):
+            img = cv2.imread(os.path.join(root_path, i), cv2.IMREAD_GRAYSCALE)
+            print(i, cur_type, np.count_nonzero(img)>0)
+            if len(list_seqs_lb.keys()) == 0:
+                cur_type = np.count_nonzero(img)>0
+                list_seqs_lb[len(list_seqs_lb)] = {"start":int(i.split("_")[1].split(".")[0]), "end":-1, "masks": [convert_img_to_bytes(img)]}
+                continue
+            if cur_type == (np.count_nonzero(img)>0):
+                print(list(list_seqs_lb.keys())[-1], int(i.split("_")[1].split(".")[0]))
+                list_seqs_lb[list(list_seqs_lb.keys())[-1]]["end"] = int(i.split("_")[1].split(".")[0])
+                list_seqs_lb[list(list_seqs_lb.keys())[-1]]["masks"].append(convert_img_to_bytes(img))
+            else:
+                cur_type = np.count_nonzero(img) > 0
+                list_seqs_lb[len(list_seqs_lb)] = {"start": int(i.split("_")[1].split(".")[0]), "end": -1, "masks": [convert_img_to_bytes(img)]}
+
+
+        print(list_seqs_lb.keys())
+        print(list_seqs.keys())
+        return JsonResponse({"state": True, "data":{"seg_result":{"num_seqs": len(list_seqs.keys()), "seq": list_seqs},
+                                                    "label": {"num_seqs": len(list_seqs_lb.keys()), "seq": list_seqs_lb}}})
     else:
         return JsonResponse({"state":False})
 
@@ -1412,7 +1435,7 @@ def update_session(old_user, updated_user):
 @csrf_exempt
 def initialize_diagnosis_env(request):
     if request.method == "POST":
-        container.mias_container.lirads_process.initialize_env()
+        # container.mias_container.lirads_process.initialize_env()
         return JsonResponse({'state': True})
     else:
         return JsonResponse({'state': False})
@@ -1450,32 +1473,47 @@ def step1_save_imgs(request):
         type = data["type"]
         files = request.FILES.getlist("files")
 
-        root_path = r"E:\1. Lab\Projects\Medical Image Analytics System\mias_with_lirads\mias\medical_image"
+        root_path = r".\miaas\imgs"
         cur_path = ""
 
         if not os.path.isdir(os.path.join(root_path, pat_name)):
             os.mkdir(os.path.join(root_path, pat_name))
-            cur_path = os.path.join(root_path, pat_name, "0")
-        else:
-            cur_path = os.path.join(root_path, pat_name, str(len(os.path.join(root_path, pat_name))))
+        cur_path = os.path.join(root_path, pat_name)
+
         if type == "srs":
+            cur_path = os.path.join(cur_path, str(len(os.listdir(cur_path))))
+            os.mkdir(cur_path)
             cur_path = os.path.join(cur_path, "srs")
         elif type == "seg_result":
-            cur_path = os.path.join(cur_path, "seg_result")
+            cur_path = os.path.join(cur_path, os.listdir(cur_path)[-1], "seg_result")
+        else:
+            cur_path = os.path.join(cur_path, os.listdir(cur_path)[-1], "label")
 
-        format = None
+        if not os.path.isdir(cur_path):
+            os.mkdir(cur_path)
+        print(cur_path)
+        count = 0
+        fname = ""
         for c, x in enumerate(files):
             def process(f):
                 with open(cur_path + '/' + str(f).zfill(5), 'wb+') as destination:
                     print(destination.name)
-                    format = destination.name.split(".")[-1]
                     for chunk in f.chunks():
                         destination.write(chunk)
-                return format
-            format = process(x)
-        print(format)
-        type = container.mias_container.lirads_process.get_mi_type()
-        return JsonResponse({'state': True, "data":{"format":format, "type":type}})
+                return destination.name
+            fname = process(x)
+
+        if type == "srs":
+            img = nib.load(os.path.join(fname))
+            count = img.get_fdata().shape[-1]
+            print(fname, img.get_fdata().shape)
+        else:
+            count = 0
+            for i in os.listdir(cur_path):
+                img = cv2.imread(os.path.join(cur_path, i), cv2.IMREAD_GRAYSCALE)
+                if np.count_nonzero(img) > 0:
+                    count += 1
+        return JsonResponse({'state': True, "data":{"num_slices":count}})
     else:
         return JsonResponse({'state': False})
 

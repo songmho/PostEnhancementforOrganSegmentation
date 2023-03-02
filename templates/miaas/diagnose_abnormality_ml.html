@@ -12,60 +12,60 @@
 <body>
 
 {% include 'miaas/header.html' %}
-    <div class="container">
-        <div class="mt-5">
+{#    <div class="container">#}
+        <div class="mt-3 mx-auto" style="width:1500px">
             <div id="smartwizard">
                 <ul class="nav">
                     <li id="step1_box" class="nav-item">
                         <a class="nav-link py-0 pr-0" style="align-items: center" href="#step-1" id="btn_step1">
                             <h6 style="margin-bottom: 4px; font-size: 1.2rem"><strong>Step 1</strong></h6>
-                          <h6 class="mx-auto" style="margin-bottom: 4px">Encode Medical Images</h6>
+                          <h6 class="mx-auto" style="margin-bottom: 4px">Identify </br>Continuity Sequences</h6>
                         </a>
                     </li>
                     <li id="step2_box" class="nav-item">
                         <a class="nav-link py-0 pr-0  arrow-border" style="align-items: center" href="#step-2" id="btn_step2" >
                             <h6 style="margin-bottom: 4px; font-size: 1.2rem"><strong>Step 2</strong></h6>
-                            <h6 class="mx-auto" style="margin-bottom: 4px">Identify Continuity Sequences</h6>
+                            <h6 class="mx-auto" style="margin-bottom: 4px">Remedy </br> Appearance Violation</h6>
                         </a>
                     </li>
                     <li id="step3_box"  class="nav-item">
                       <a class="nav-link py-0 pr-0" style="align-items: center" href="#step-3" id="btn_step3">
                           <h6 style="margin-bottom: 4px; font-size: 1.2rem"><strong>Step 3</strong></h6>
-                          <h6 class="mx-auto" style="margin-bottom: 4px">Remedy Appearance Violation</h6>
+                          <h6 class="mx-auto" style="margin-bottom: 4px">Remedy Location Violation</h6>
                       </a>
                     </li>
                     <li id="step4_box"  class="nav-item">
                       <a class="nav-link py-0 pr-0" style="align-items: center" href="#step-4" id="btn_step4">
                           <h6 style="margin-bottom: 4px; font-size: 1.2rem"><strong>Step 4</strong></h6>
-                          <h6 class="mx-auto" style="margin-bottom: 4px">Remedy Location Violation</h6>
+                          <h6 class="mx-auto" style="margin-bottom: 4px">Remedy Size Violation</h6>
                       </a>
                     </li>
                     <li id="step5_box"  class="nav-item">
                       <a class="nav-link py-0 pr-0" style="align-items: center" href="#step-5" id="btn_step5">
                           <h6 style="margin-bottom: 4px; font-size: 1.2rem"><strong>Step 5</strong></h6>
-                          <h6 class="mx-auto" style="margin-bottom: 4px">Remedy Size Violation</h6>
+                          <h6 class="mx-auto" style="margin-bottom: 4px">Remedy Shape Violation</h6>
                       </a>
                     </li>
                     <li id="step6_box"  class="nav-item">
                       <a class="nav-link py-0 pr-0" style="align-items: center" href="#step-6" id="btn_step6">
                           <h6 style="margin-bottom: 4px; font-size: 1.2rem"><strong>Step 6</strong></h6>
-                          <h6 class="mx-auto" style="margin-bottom: 4px">Remedy Shape Violation</h6>
-                      </a>
-                    </li>
-                    <li id="step7_box"  class="nav-item">
-                      <a class="nav-link py-0 pr-0" style="align-items: center"  href="#step-7" id="btn_step7">
-                          <h6 style="margin-bottom: 4px; font-size: 1.2rem"><strong>Step 7</strong></h6>
                           <h6 class="mx-auto" style="margin-bottom: 4px">Remedy HU Scale Violation</h6>
                       </a>
                     </li>
+{#                    <li id="step7_box"  class="nav-item">#}
+{#                      <a class="nav-link py-0 pr-0" style="align-items: center"  href="#step-7" id="btn_step7">#}
+{#                          <h6 style="margin-bottom: 4px; font-size: 1.2rem"><strong>Step 7</strong></h6>#}
+{#                          <h6 class="mx-auto" style="margin-bottom: 4px">Remedy HU Scale Violation</h6>#}
+{#                      </a>#}
+{#                    </li>#}
                 </ul>
 
 
-                <div class="tab-content"  style="height: 700px">
+                <div class="tab-content"  style="height: 1100px">
                     <div id="step-1" class="tab-pane mx-3 mt-2" role="tabpanel" aria-labelledby="step-1">
         {#                {% include 'step1.html' %}#}
                     </div>
-                    <div id="step-2" class="tab-pane  mx-3 mt-2" role="tabpanel" style="display: block" aria-labelledby="step-2">
+                    <div id="step-2" class="tab-pane  mx-3 mt-2" role="tabpanel" aria-labelledby="step-2">
         {#                {% include 'step2.html' %}#}
                     </div>
                     <div id="step-3" class="tab-pane mx-3 mt-2" role="tabpanel" aria-labelledby="step-3">
@@ -80,16 +80,16 @@
                     <div id="step-6" class="tab-pane mx-3 mt-2" role="tabpanel" aria-labelledby="step-6">
         {#                {% include 'step3.html' %}#}
                     </div>
-                    <div id="step-7" class="tab-pane mx-3 mt-2" role="tabpanel" aria-labelledby="step-7">
+{#                    <div id="step-7" class="tab-pane mx-3 mt-2" role="tabpanel" aria-labelledby="step-7">#}
         {#                {% include 'step3.html' %}#}
-                    </div>
+{#                    </div>#}
                 </div>
                 <div id="div_console" class="w-100 border position-static p-2" style="background-color: #000a12; height: 245px;  margin-right:18px">
                 </div>
             </div>
 
         </div>
-    </div>
+{#    </div>#}
 </body>
 
 <script src="{% static "miass/js/sessions.js" %}"></script>

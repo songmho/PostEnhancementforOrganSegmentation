@@ -135,7 +135,7 @@ def lirads_step6(request):
     return render(request, "miaas/lirads_step6.html")
 
 def lirads_step7(request):
-    return render(request, "miaas/lirads_step7.html")
+    return render(request, "miaas/lirads_step6.html")
 
 def main2_page(request):
     context = _get_session_context(request)

@@ -21,7 +21,7 @@ function speech(txt) {
     utterThis.pitch = 1;
     utterThis.rate = 1; //속도
     utterThis.text = txt;
-    window.speechSynthesis.speak(utterThis);
+    // window.speechSynthesis.speak(utterThis);
 }
 
 

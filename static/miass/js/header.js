@@ -2,25 +2,25 @@
     // $('#btn_images').click(function () {
     // });
     $("#nav_register_img").click(function () {
-        location.replace(SERVER_ADDRESS+"/view/register_image");
+        location.replace("/view/register_image");
     });
 
     $("#nav_browse_img").click(function () {
-        location.replace(SERVER_ADDRESS+"/view/browse_image");
+        location.replace("/view/browse_image");
 
     });
 
     $("#nav_annotate_img").click(function () {
-        location.replace(SERVER_ADDRESS+"/view/annotate_image");
+        location.replace("/view/annotate_image");
     });
 
     $("#nav_remove_img").click(function () {
-        location.replace(SERVER_ADDRESS+"/view/remove_image");
+        location.replace("/view/remove_image");
     });
 
 
     $("#nav_brain_abnormality").click(function () {
-        location.replace(SERVER_ADDRESS+"/view/brain_abnormality_diagnosis");
+        location.replace("/view/brain_abnormality_diagnosis");
     });
 
     // $("#nav_liver_abnormality").click(function () {
@@ -28,19 +28,19 @@
     // });
 
     $("#nav_refine_seg_result").click(function () {
-        location.replace(SERVER_ADDRESS+"/view/proceed_post_enhancement#step-1");
+        location.replace("/view/proceed_post_enhancement#step-1");
     });
 
     $("#nav_lung_abnormality").click(function () {
-        location.replace(SERVER_ADDRESS+"/view/lung_abnormality_diagnosis");
+        location.replace("/view/lung_abnormality_diagnosis");
     });
 
     $("#nav_breast_abnormality").click(function () {
-        location.replace(SERVER_ADDRESS+"/view/breast_abnormality_diagnosis");
+        location.replace("/view/breast_abnormality_diagnosis");
     });
 
     $("#nav_stomach_abnormality").click(function () {
-        location.replace(SERVER_ADDRESS+"/view/stomach_abnormality_diagnosis");
+        location.replace("/view/stomach_abnormality_diagnosis");
     });
 
 
@@ -54,7 +54,7 @@
     });
 
     $('#nav_main').click(function () {
-        location.replace(SERVER_ADDRESS);
+        location.href = "/";
     });
 
     $('#nav_log_out').click(function () {

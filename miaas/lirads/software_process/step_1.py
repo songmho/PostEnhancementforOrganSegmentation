@@ -141,7 +141,7 @@ class MedicalImageLoader:
                     else:
                         rescaleSlope = 1
                     if dcm[0x0008, 0x103E].value not in self.setMed_img[study].keys():
-                        if str(dcm[0x0008, 0x0060].value) is "CT":
+                        if str(dcm[0x0008, 0x0060].value) == "CT":
                             if "w/o" in str(dcm[0x0008, 0x103E].value).lower() or "pre" in str(dcm[0x0008, 0x103E].value).lower() or "plain" in str(dcm[0x0008, 0x103E].value).lower() or "non con" in str(dcm[0x0008, 0x103E].value).lower():
                                 if "PLAIN" not in self.setMed_img[study].keys():
                                     self.setMed_img[study]["PLAIN"] = {}
