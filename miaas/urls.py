@@ -48,7 +48,10 @@ urlpatterns = [
 
     ### for APIs ###
     url(r'^api/image_upload$', apis.handle_multple_image_upload),
-    url(r'^api/load_img', apis.step1_save_imgs),
+    url(r'^api/load_img_list_with_seqs', apis.load_img_list_with_seqs),
+    url(r'^api/load_img_list', apis.load_img_list),
+    url(r'^api/load_img', apis.save_imgs_step1),
+    url(r'^api/summary', apis.summary),
     url(r'^api/set_img_type', apis.set_img_type),
     url(r'^api/check_extension', apis.step1_check_extension),
     url(r'^api/load_medical_img', apis.step1_load_medical_img),
@@ -168,7 +171,6 @@ urlpatterns = [
     url(r"^api/get_tumor_group_data", apis.get_tumor_group_data),
     url(r"^api/get_tumor_info", apis.get_tumor_info),
     url(r"^api/predict_stage", apis.predict_stage),
-    url(r"^api/initialize_diagnosis_env", apis.initialize_diagnosis_env),
     url(r"^api/post-process_liver", apis.post_process_liver),
     url(r"^api/register_diagnosis_liver", apis.register_diagnosis),
     url(r"^api/retrieve_diagnosis_liver", apis.retrieve_diagnosis),

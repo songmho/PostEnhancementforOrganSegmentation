@@ -7,55 +7,24 @@ import logging
 import math
 import os
 import time
-from pprint import pprint
 
 import cv2
 import numpy as np
 from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from django.core.cache import cache
 
 import constants
-from image_manager import ImageManager, ImageRetriever
+from image_manager import ImageRetriever
 from miaas.users import User, Staff, Physician, Patient
 from miaas.images import Image
 from miaas.diagnosis import Diagnosis
 from miaas.sessions import Session
 from miaas.mias_smtp import MailSender
 from miaas.generate_random import ActivationKeyGenerator
-from miaas.forms import TestForm
-from django.test import Client
 
 from miaas import container
 
-from miaas.apps import MedicalImageConfig
-from django.http import FileResponse
 import nibabel as nib
-
-
-MSG_DB_FAILED = "Handling DB requests are failed."
-MSG_NO_USER_LOGGEDIN = "There is no loggged in  user."
-MSG_NOT_MATCHED_USER = "Logged in user is not match with request user"
-MSG_NOT_MATCHED_IMAGE = "You accessed wrong path"
-MSG_ALREADY_LOGGEDIN = "You have already logged in."
-MSG_SIGNUP_FAILED = "Signing up is failed."
-MSG_NEED_AUTH = "Your account is not authenticated yet. Please check your email."
-MSG_INVALID_IDPW = "ID and/or PW is/are invalid."
-MSG_INVALID_PARAMS = "There are some invalid parameters."
-MSG_NODATA = "There are no data."
-MSG_NO_FILE = "No file is uploaded."
-MSG_NO_EMAIL = "The email is not entered."
-MSG_NO_USER_FOUND = "There is no user found."
-MSG_UNKNOWN_ERROR = "Unknown error is occured."
-MSG_PROFILE_FAILED = "Updating profile is failed."
-MSG_PROFILE_NO_CHANGED = "There are no changed profiles."
-MSG_ACCOUNT_FAILED = "Updating account is failed."
-MSG_INSERT_ERROR = "To insert data is failed."
-MSG_UPDATE_ERROR = "To update data is failed."
-MSG_DELETE_ERROR = "To delete data is failed."
-MSG_NO_CHANGE = "There is no change."
-MSG_NO_MEDICAL_IMAGE = "It is not the requested medical image."
-MSG_SESSION_ERROR = "Updating interpretation session is failed."
 
 logging.basicConfig(
     format="[%(name)s][%(asctime)s] %(message)s",
@@ -64,6 +33,254 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+
+
+# Step 1
+
+@csrf_exempt
+def save_imgs_step1(request):
+    if request.method == "POST":
+        data = json.loads(request.POST.get("data"))
+
+        pat_name = data["pat_name"]
+        type = data["type"]
+        files = request.FILES.getlist("files")
+
+        root_path = r".\miaas\imgs"
+        cur_path = ""
+
+        if not os.path.isdir(os.path.join(root_path, pat_name)):
+            os.mkdir(os.path.join(root_path, pat_name))
+        cur_path = os.path.join(root_path, pat_name)
+
+        if type == "srs":
+            cur_path = os.path.join(cur_path, str(len(os.listdir(cur_path))).zfill(5))
+            os.mkdir(cur_path)
+            cur_path = os.path.join(cur_path, "srs")
+        elif type == "seg_result":
+            cur_path = os.path.join(cur_path, os.listdir(cur_path)[-1], "seg_result")
+        else:
+            cur_path = os.path.join(cur_path, os.listdir(cur_path)[-1], "label")
+
+        if not os.path.isdir(cur_path):
+            os.mkdir(cur_path)
+        print(cur_path)
+        count = 0
+        fname = ""
+        for c, x in enumerate(files):
+            def process(f):
+                with open(cur_path + '/' + str(f).zfill(5), 'wb+') as destination:
+                    print(destination.name)
+                    for chunk in f.chunks():
+                        destination.write(chunk)
+                return destination.name
+            fname = process(x)
+
+        if type == "srs":
+            img = nib.load(os.path.join(fname))
+            count = img.get_fdata().shape[-1]
+            print(fname, img.get_fdata().shape)
+        else:
+            count = 0
+            for i in os.listdir(cur_path):
+                img = cv2.imread(os.path.join(cur_path, i), cv2.IMREAD_GRAYSCALE)
+                if np.count_nonzero(img) > 0:
+                    count += 1
+
+        container.mias_container.post_enhancement_process.set_img_path(type, cur_path)
+        return JsonResponse({'state': True, "data":{"num_slices":count}})
+    else:
+        return JsonResponse({'state': False})
+
+
+@csrf_exempt
+def identify_continuity_sequence(request):
+    if request.method == "POST":
+        list_seqs = {}
+        list_seqs_lb = {}
+        cur_type = False
+
+        container.mias_container.post_enhancement_process.load_med_imgs()
+        container.mias_container.post_enhancement_process.generate_sequences()
+        p_root = r".\miaas\imgs\test"
+        root_path = os.path.join(p_root, os.listdir(p_root)[-1], "seg_result")
+        for i in os.listdir(root_path):
+            img = cv2.imread(os.path.join(root_path, i), cv2.IMREAD_GRAYSCALE)
+            if len(list_seqs.keys()) == 0:
+                cur_type = np.count_nonzero(img)>0
+                list_seqs[len(list_seqs)] = {"start":int(i.split("_")[1].split(".")[0]), "end":-1, "masks": [convert_img_to_bytes(img)]}
+                continue
+            if cur_type == (np.count_nonzero(img)>0):
+                list_seqs[list(list_seqs.keys())[-1]]["end"] = int(i.split("_")[1].split(".")[0])
+                list_seqs[list(list_seqs.keys())[-1]]["masks"].append(convert_img_to_bytes(img))
+            else:
+                cur_type = np.count_nonzero(img) > 0
+                list_seqs[len(list_seqs)] = {"start": int(i.split("_")[1].split(".")[0]), "end": -1, "masks": [convert_img_to_bytes(img)]}
+
+        root_path = os.path.join(p_root, os.listdir(p_root)[-1], "label")
+        for i in os.listdir(root_path):
+            img = cv2.imread(os.path.join(root_path, i), cv2.IMREAD_GRAYSCALE)
+            if len(list_seqs_lb.keys()) == 0:
+                cur_type = np.count_nonzero(img)>0
+                list_seqs_lb[len(list_seqs_lb)] = {"start":int(i.split("_")[1].split(".")[0]), "end":-1, "masks": [convert_img_to_bytes(img)]}
+                continue
+            if cur_type == (np.count_nonzero(img)>0):
+                list_seqs_lb[list(list_seqs_lb.keys())[-1]]["end"] = int(i.split("_")[1].split(".")[0])
+                list_seqs_lb[list(list_seqs_lb.keys())[-1]]["masks"].append(convert_img_to_bytes(img))
+            else:
+                cur_type = np.count_nonzero(img) > 0
+                list_seqs_lb[len(list_seqs_lb)] = {"start": int(i.split("_")[1].split(".")[0]), "end": -1, "masks": [convert_img_to_bytes(img)]}
+
+        return JsonResponse({"state": True, "data":{"seg_result":{"num_seqs": len(list_seqs.keys()), "seq": list_seqs},
+                                                    "label": {"num_seqs": len(list_seqs_lb.keys()), "seq": list_seqs_lb}}})
+    else:
+        return JsonResponse({"state":False})
+
+# Step 2
+@csrf_exempt
+def load_img_list(request):
+    if request.method == "POST":
+        list_sl_org = []
+        list_sl_seg = []
+        list_so = container.mias_container.post_enhancement_process.get_srs_org_sl()
+        list_ss = container.mias_container.post_enhancement_process.get_srs_seg_sl()
+        for i in range(len(list_so)):
+            list_sl_org.append(convert_img_to_bytes(list_so[i]["img"]))
+        for i in range(len(list_ss)):
+            list_sl_seg.append(convert_img_to_bytes(list_ss[i]["img"]))
+
+        return JsonResponse({"state": True, "data": {"sl_org": list_sl_org, "sl_seg": list_sl_seg}})
+    else:
+        return JsonResponse({"state": False})
+
+@csrf_exempt
+def remedy_appearance_violation(request):
+    if request.method == "POST":
+        # To load slice
+        time.sleep(1)
+        container.mias_container.post_enhancement_process.correct_appearance_inconsistency()
+        ref_seqs = container.mias_container.post_enhancement_process.get_sequences()
+        list_sl_seg = []
+        for i in range(len(ref_seqs)):
+            for j in ref_seqs[i]["data"]:
+                print(type(j), j["img"].shape)
+                list_sl_seg.append(convert_img_to_bytes(j["img"]))
+        print(len(list_sl_seg))
+        return JsonResponse({"state": True, "data": {"sl_enh": list_sl_seg, "summary":{"enh_num":0, "num_seqs":len(ref_seqs)}}})
+    else:
+        return JsonResponse({"state":False})
+
+@csrf_exempt
+def summary(request):
+    if request.method == "POST":
+
+        return JsonResponse({"state":True, "data": {}})
+    else:
+        return JsonResponse({"state":False})
+
+# Step 3
+@csrf_exempt
+def load_img_list_with_seqs(request):
+    if request.method == "POST":
+        list_so = container.mias_container.post_enhancement_process.get_srs_org_sl()
+        ref_seqs = container.mias_container.post_enhancement_process.get_sequences()
+        list_sl_seg = []
+        list_sl_org = []
+        for i in range(len(list_so)):
+            list_sl_org.append(convert_img_to_bytes(list_so[i]["img"]))
+        for i in range(len(ref_seqs)):
+            for j in ref_seqs[i]["data"]:
+                list_sl_seg.append(convert_img_to_bytes(j["img"]))
+
+        return JsonResponse({"state": True, "data": {"sl_org": list_sl_org, "sl_seg": list_sl_seg}})
+    else:
+        return JsonResponse({"state": False})
+
+@csrf_exempt
+def remedy_location_violation(request):
+    if request.method == "POST":
+        # To load slice
+        time.sleep(1)
+        container.mias_container.post_enhancement_process.correct_location_inconsistency()
+        ref_seqs = container.mias_container.post_enhancement_process.get_sequences()
+        list_sl_seg = []
+        for i in range(len(ref_seqs)):
+            for j in ref_seqs[i]["data"]:
+                print(type(j), j["img"].shape)
+                list_sl_seg.append(convert_img_to_bytes(j["img"]))
+        print(len(list_sl_seg))
+        return JsonResponse({"state": True, "data": {"sl_enh": list_sl_seg, "summary":{"enh_num":0, "num_seqs":len(ref_seqs)}}})
+    else:
+        return JsonResponse({"state":False})
+# Step 4
+
+
+@csrf_exempt
+def remedy_size_violation(request):
+    print("remedy_size_violation")
+    if request.method == "POST":
+        # To load slice
+        time.sleep(1)
+        container.mias_container.post_enhancement_process.correct_size_inconsistency()
+        ref_seqs = container.mias_container.post_enhancement_process.get_sequences()
+        list_sl_seg = []
+        for i in range(len(ref_seqs)):
+            for j in ref_seqs[i]["data"]:
+                print(type(j), j["img"].shape)
+                list_sl_seg.append(convert_img_to_bytes(j["img"]))
+        print(len(list_sl_seg))
+        print("remedy_size_violation Done")
+        return JsonResponse({"state": True, "data": {"sl_enh": list_sl_seg, "summary":{"enh_num":0, "num_seqs":len(ref_seqs)}}})
+    else:
+        return JsonResponse({"state":False})
+
+
+
+
+# Step 5
+
+@csrf_exempt
+def remedy_shape_violation(request):
+    if request.method == "POST":
+        # To load slice
+        time.sleep(1)
+        container.mias_container.post_enhancement_process.correct_shape_inconsistency()
+        ref_seqs = container.mias_container.post_enhancement_process.get_sequences()
+        list_sl_seg = []
+        for i in range(len(ref_seqs)):
+            for j in ref_seqs[i]["data"]:
+                print(type(j), j["img"].shape)
+                list_sl_seg.append(convert_img_to_bytes(j["img"]))
+        print(len(list_sl_seg))
+        print("remedy_size_violation Done")
+        return JsonResponse({"state": True, "data": {"sl_enh": list_sl_seg, "summary":{"enh_num":0, "num_seqs":len(ref_seqs)}}})
+    else:
+        return JsonResponse({"state":False})
+
+
+
+
+# Step 6
+
+@csrf_exempt
+def remedy_hu_violation(request):
+    if request.method == "POST":
+        # To load slice
+        time.sleep(1)
+        container.mias_container.post_enhancement_process.correct_HU_scale_inconsistency()
+        ref_seqs = container.mias_container.post_enhancement_process.get_sequences()
+        list_sl_seg = []
+        for i in range(len(ref_seqs)):
+            for j in ref_seqs[i]["data"]:
+                print(type(j), j["img"].shape)
+                list_sl_seg.append(convert_img_to_bytes(j["img"]))
+        print(len(list_sl_seg))
+        print("remedy_size_violation Done")
+        return JsonResponse({"state": True, "data": {"sl_enh": list_sl_seg, "summary":{"enh_num":0, "num_seqs":len(ref_seqs)}}})
+    else:
+        return JsonResponse({"state":False})
+
 
 
 def register_profile_image(request):
@@ -373,53 +590,6 @@ def load_img_list_step2(request):
         return JsonResponse({"state":False})
 
 @csrf_exempt
-def identify_continuity_sequence(request):
-    if request.method == "POST":
-        list_seqs = {}
-        list_seqs_lb = {}
-        cur_type = False
-        p_root = r".\miaas\imgs\test"
-        root_path = os.path.join(p_root, os.listdir(p_root)[-1], "seg_result")
-        for i in os.listdir(root_path):
-            img = cv2.imread(os.path.join(root_path, i), cv2.IMREAD_GRAYSCALE)
-            print(i, cur_type, np.count_nonzero(img)>0)
-            if len(list_seqs.keys()) == 0:
-                cur_type = np.count_nonzero(img)>0
-                list_seqs[len(list_seqs)] = {"start":int(i.split("_")[1].split(".")[0]), "end":-1, "masks": [convert_img_to_bytes(img)]}
-                continue
-            if cur_type == (np.count_nonzero(img)>0):
-                print(list(list_seqs.keys())[-1], int(i.split("_")[1].split(".")[0]))
-                list_seqs[list(list_seqs.keys())[-1]]["end"] = int(i.split("_")[1].split(".")[0])
-                list_seqs[list(list_seqs.keys())[-1]]["masks"].append(convert_img_to_bytes(img))
-            else:
-                cur_type = np.count_nonzero(img) > 0
-                list_seqs[len(list_seqs)] = {"start": int(i.split("_")[1].split(".")[0]), "end": -1, "masks": [convert_img_to_bytes(img)]}
-
-        root_path = os.path.join(p_root, os.listdir(p_root)[-1], "label")
-        for i in os.listdir(root_path):
-            img = cv2.imread(os.path.join(root_path, i), cv2.IMREAD_GRAYSCALE)
-            print(i, cur_type, np.count_nonzero(img)>0)
-            if len(list_seqs_lb.keys()) == 0:
-                cur_type = np.count_nonzero(img)>0
-                list_seqs_lb[len(list_seqs_lb)] = {"start":int(i.split("_")[1].split(".")[0]), "end":-1, "masks": [convert_img_to_bytes(img)]}
-                continue
-            if cur_type == (np.count_nonzero(img)>0):
-                print(list(list_seqs_lb.keys())[-1], int(i.split("_")[1].split(".")[0]))
-                list_seqs_lb[list(list_seqs_lb.keys())[-1]]["end"] = int(i.split("_")[1].split(".")[0])
-                list_seqs_lb[list(list_seqs_lb.keys())[-1]]["masks"].append(convert_img_to_bytes(img))
-            else:
-                cur_type = np.count_nonzero(img) > 0
-                list_seqs_lb[len(list_seqs_lb)] = {"start": int(i.split("_")[1].split(".")[0]), "end": -1, "masks": [convert_img_to_bytes(img)]}
-
-
-        print(list_seqs_lb.keys())
-        print(list_seqs.keys())
-        return JsonResponse({"state": True, "data":{"seg_result":{"num_seqs": len(list_seqs.keys()), "seq": list_seqs},
-                                                    "label": {"num_seqs": len(list_seqs_lb.keys()), "seq": list_seqs_lb}}})
-    else:
-        return JsonResponse({"state":False})
-
-@csrf_exempt
 def load_img_list_step3(request):
     if request.method == "POST":
         list_titles = []
@@ -477,28 +647,6 @@ def detect_appearance_violation(request):
     else:
         return JsonResponse({"state":False})
 
-@csrf_exempt
-def remedy_appearance_violation(request):
-    if request.method == "POST":
-        list_titles = []
-        list_imgs = []
-        list_segs = {}
-        # To load slice
-        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\1.appearance"
-        time.sleep(2)
-        cur = -1
-        for i in os.listdir(path_sqs):
-            if cur == -1:
-                cur = i
-            for j in os.listdir(os.path.join(path_sqs, i)):
-                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
-                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
-                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
-                else:
-                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
-        return JsonResponse({"state": True, "data":{"imgs": list_imgs, "seqs": list_segs}})
-    else:
-        return JsonResponse({"state":False})
 
 @csrf_exempt
 def load_img_list_step4(request):
@@ -554,28 +702,6 @@ def detect_location_violation(request):
     else:
         return JsonResponse({"state":False})
 
-@csrf_exempt
-def remedy_location_violation(request):
-    if request.method == "POST":
-        list_titles = []
-        list_imgs = []
-        list_segs = {}
-        # To load slice
-        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\2.location"
-        time.sleep(2)
-        cur = -1
-        for i in os.listdir(path_sqs):
-            if cur == -1:
-                cur = i
-            for j in os.listdir(os.path.join(path_sqs, i)):
-                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
-                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
-                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
-                else:
-                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
-        return JsonResponse({"state": True, "data":{"imgs": list_imgs, "seqs": list_segs}})
-    else:
-        return JsonResponse({"state":False})
 
 @csrf_exempt
 def load_img_list_step5(request):
@@ -632,29 +758,6 @@ def detect_size_violation(request):
     else:
         return JsonResponse({"state": False})
 
-
-@csrf_exempt
-def remedy_size_violation(request):
-    if request.method == "POST":
-        list_titles = []
-        list_imgs = []
-        list_segs = {}
-        # To load slice
-        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\3.size"
-        time.sleep(2)
-        cur = -1
-        for i in os.listdir(path_sqs):
-            if cur == -1:
-                cur = i
-            for j in os.listdir(os.path.join(path_sqs, i)):
-                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
-                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
-                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
-                else:
-                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
-        return JsonResponse({"state": True, "data":{"imgs": list_imgs, "seqs": list_segs}})
-    else:
-        return JsonResponse({"state":False})
 
 
 @csrf_exempt
@@ -713,29 +816,6 @@ def detect_shape_violation(request):
         return JsonResponse({"state": False})
 
 
-@csrf_exempt
-def remedy_shape_violation(request):
-    if request.method == "POST":
-        list_titles = []
-        list_imgs = []
-        list_segs = {}
-        # To load slice
-        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\4.shape"
-        time.sleep(2)
-        cur = -1
-        for i in os.listdir(path_sqs):
-            if cur == -1:
-                cur = i
-            for j in os.listdir(os.path.join(path_sqs, i)):
-                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
-                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
-                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
-                else:
-                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
-        return JsonResponse({"state": True, "data":{"imgs": list_imgs, "seqs": list_segs}})
-    else:
-        return JsonResponse({"state":False})
-
 
 @csrf_exempt
 def load_img_list_step7(request):
@@ -793,28 +873,6 @@ def detect_hu_violation(request):
         return JsonResponse({"state": False})
 
 
-@csrf_exempt
-def remedy_hu_violation(request):
-    if request.method == "POST":
-        list_titles = []
-        list_imgs = []
-        list_segs = {}
-        # To load slice
-        path_sqs = r"E:\1. Lab\Daily Results\2022\2205\0501\066\5.result"
-        time.sleep(2)
-        cur = -1
-        for i in os.listdir(path_sqs):
-            if cur == -1:
-                cur = i
-            for j in os.listdir(os.path.join(path_sqs, i)):
-                list_imgs.append(convert_img_to_bytes(cv2.imread(os.path.join(path_sqs, i, j), cv2.IMREAD_GRAYSCALE)))
-                if np.count_nonzero(cv2.imread(os.path.join(path_sqs, i, j)))>0:
-                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_True_"+str(int(int(i)/2+1))
-                else:
-                    list_segs["SL"+str(int(j.replace(".png", ""))).zfill(3)] = "Seq_False_"+str(int(math.floor(int(i)/2)+1))
-        return JsonResponse({"state": True, "data":{"imgs": list_imgs, "seqs": list_segs}})
-    else:
-        return JsonResponse({"state":False})
 
 
 
@@ -1433,14 +1491,6 @@ def update_session(old_user, updated_user):
     return old_user
 
 @csrf_exempt
-def initialize_diagnosis_env(request):
-    if request.method == "POST":
-        # container.mias_container.lirads_process.initialize_env()
-        return JsonResponse({'state': True})
-    else:
-        return JsonResponse({'state': False})
-
-@csrf_exempt
 def post_process_liver(request):
     if request.method == "POST":
         data = json.loads(request.POST.get("data"))
@@ -1462,61 +1512,6 @@ def set_img_type(request):
         return JsonResponse({"state":True})
     else:
         return JsonResponse({"state":False})
-
-@csrf_exempt
-def step1_save_imgs(request):
-    if request.method == "POST":
-        data = json.loads(request.POST.get("data"))
-
-        target = data["img"]
-        pat_name = data["pat_name"]
-        type = data["type"]
-        files = request.FILES.getlist("files")
-
-        root_path = r".\miaas\imgs"
-        cur_path = ""
-
-        if not os.path.isdir(os.path.join(root_path, pat_name)):
-            os.mkdir(os.path.join(root_path, pat_name))
-        cur_path = os.path.join(root_path, pat_name)
-
-        if type == "srs":
-            cur_path = os.path.join(cur_path, str(len(os.listdir(cur_path))))
-            os.mkdir(cur_path)
-            cur_path = os.path.join(cur_path, "srs")
-        elif type == "seg_result":
-            cur_path = os.path.join(cur_path, os.listdir(cur_path)[-1], "seg_result")
-        else:
-            cur_path = os.path.join(cur_path, os.listdir(cur_path)[-1], "label")
-
-        if not os.path.isdir(cur_path):
-            os.mkdir(cur_path)
-        print(cur_path)
-        count = 0
-        fname = ""
-        for c, x in enumerate(files):
-            def process(f):
-                with open(cur_path + '/' + str(f).zfill(5), 'wb+') as destination:
-                    print(destination.name)
-                    for chunk in f.chunks():
-                        destination.write(chunk)
-                return destination.name
-            fname = process(x)
-
-        if type == "srs":
-            img = nib.load(os.path.join(fname))
-            count = img.get_fdata().shape[-1]
-            print(fname, img.get_fdata().shape)
-        else:
-            count = 0
-            for i in os.listdir(cur_path):
-                img = cv2.imread(os.path.join(cur_path, i), cv2.IMREAD_GRAYSCALE)
-                if np.count_nonzero(img) > 0:
-                    count += 1
-        return JsonResponse({'state': True, "data":{"num_slices":count}})
-    else:
-        return JsonResponse({'state': False})
-
 
 @csrf_exempt
 def step1_load_prv_img_data_from_local(request):

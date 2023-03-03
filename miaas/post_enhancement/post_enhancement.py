@@ -8,7 +8,7 @@ import cv2
 import os
 import numpy as np
 import nibabel as nib
-from utils.performance_measurement import ImgDataPerformanceMeasurer
+# from utils.performance_measurement import ImgDataPerformanceMeasurer
 from matplotlib import pyplot as plt
 import matplotlib
 import pandas as pd
@@ -17,10 +17,9 @@ matplotlib.use("Qt5Agg")
 
 
 class MedImageEnhancer:
-    def __init__(self, is_display):
+    def __init__(self, is_display=False):
         # self.seg_similarity_measurer = SimilarityMeasurer()
         # self.seg_similarity_measurer.prepare_model()
-        self.path_cmp_organ_imgs = r"E:\2. Project\Python\HighPerformedOrganSegmentation\targets\liver\dataset 1"
         self.wc, self.ww = 40, 400
         self.th_location = 0.3
         self.th_size = 0.20
@@ -57,11 +56,159 @@ class MedImageEnhancer:
         root_path = r".\miaas\imgs"
         self.path_org = os.path.join(root_path)
 
-    def set_current_target(self):
-        if self.target == -1:
-            self.target = len()
+    def get_sequences(self):
+        return self.sequences
 
+    def set_img_path(self, type,cur_path):
+        if type == "srs":
+            self.path_org_mi = cur_path
+            self.path_org_sl = cur_path.replace("srs", "srs_png")
+            os.mkdir(self.path_org_sl)
+        elif type == "seg_result":
+            self.path_seg_result = cur_path
+        elif type == "label":
+            self.path_label = cur_path
+        self.srs_org_mi = []
+        self.srs_org_sl = []
+        self.srs_seg_sl = []
 
+    def load_med_imgs(self):
+        """
+        To load segmentation results
+        :return:
+        """
+        print("load_med_imgs")
+        # To load original medical image series (nii format)
+        self.path_org_mi = os.path.join(self.path_org_mi, os.listdir(self.path_org_mi)[0])
+        self.srs_org_mi = nib.load(self.path_org_mi)  # 3 dimensional array (x, y, # of Slices)
+        self.srs_org_mi = self.srs_org_mi.get_fdata()  # To select only image data
+        self.srs_org_mi = self.srs_org_mi[::-1, ::-1, ::-1]
+        # self.srs_org_mi = self.srs_org_mi[::-1, :, :]
+        self.srs_org_mi = np.transpose(self.srs_org_mi, (1, 0, 2))
+
+        for i in range(self.srs_org_mi.shape[-1]):
+            img = self.__convert_color_depth(self.srs_org_mi[:, :, i])
+            cv2.imwrite(os.path.join(self.path_org_sl, str(i).zfill(5)+".png"), img)
+
+        # TO load slice images
+        list_fname = os.listdir(os.path.join(self.path_org_sl))
+        for i in range(len(list_fname)):
+            img = cv2.imread(os.path.join(self.path_org_sl, list_fname[i]))
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            self.srs_org_sl.append(
+                {"id": i, "img": img, "fname": list_fname[i]})  # [{"id": id, "img":img}, {"id":, "img": }, ...]
+
+        # To load segmentation results
+        list_fname = os.listdir(os.path.join(self.path_seg_result))
+        for i in range(len(list_fname)):
+            img = cv2.imread(os.path.join(self.path_seg_result, list_fname[i]))
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            self.srs_seg_sl.append(
+                {"id": i, "img": img, "fname": list_fname[i]})  # [{"id": id, "img":img}, {"id":, "img": }, ...]
+
+            self.process_statistics["Original"]["num_slices"] += 1
+            if np.count_nonzero(img) > 0:
+                self.process_statistics["Original"]["num_slices_having_organ"] += 1
+            else:
+                self.process_statistics["Original"]["num_slices_not_having_organ"] += 1
+        print("load_med_imgs Done")
+
+    def __convert_color_depth(self, sl):
+        img = 1 * sl + 0
+        ymin = 0
+        ymax = 255
+        idx_high = img >= self.wc + self.ww / 2
+        idx_low = img <= self.wc - self.ww / 2
+        img = np.where(idx_high, ymax, img)
+        img = np.where(idx_low, ymin, img)
+        img = np.where(~idx_high & ~idx_low, ((img - self.wc) / self.ww + 0.5) * (ymax - ymin) + ymin, img)
+        img = np.reshape(img, (512, 512, 1))
+        return img
+
+    def generate_sequences(self):
+        """
+        To generate sequences applying segmentation results
+        :return:
+        """
+        print("generate_sequences")
+        self.sequences = []
+        cur_seq = {"type": False, "data": []}
+        for i in self.srs_seg_sl:  # Loop for whole slices (Segmentation Results)
+            img = i["img"]
+            if len(cur_seq["data"]) == 0:  # If any data is not inserted
+                cur_seq["type"] = (np.count_nonzero(img) > 0)
+                cur_seq["data"].append(copy.deepcopy(i))
+            else:  # If at least one seg data is inserted
+                if cur_seq["type"] == (np.count_nonzero(img) > 0):  # If cur seg data is same to type of sequence
+                    cur_seq["data"].append(copy.deepcopy(i))
+                else:  # If cur seg data is not same to type of sequence
+                    self.sequences.append(cur_seq)
+                    cur_seq = {"type": (np.count_nonzero(img) > 0), "data": [copy.deepcopy(i), ]}
+
+        if len(cur_seq["data"]) > 0:  # If current sequence is not empty
+            self.sequences.append(cur_seq)
+
+        self.process_statistics["Sequence"]["num_sequences"] = len(self.sequences)
+        self.process_statistics["Sequence"]["num_sequences_appeared"] = len(self.sequences)
+        self.process_statistics["Sequence"]["num_sequences_non_appeared"] = len(self.sequences)
+
+        for seq in self.sequences:
+            if seq["type"]:
+                self.process_statistics["Sequence"]["num_sequences_appeared"] += 1
+                list_f_names = []
+                for d in seq["data"]:
+                    list_f_names.append(d["fname"])
+                self.process_statistics["Sequence"]["list_appeared_sequences"].append(list_f_names)
+            else:
+                self.process_statistics["Sequence"]["num_sequences_non_appeared"] += 1
+                list_f_names = []
+                for d in seq["data"]:
+                    list_f_names.append(d["fname"])
+                self.process_statistics["Sequence"]["list_non_appeared_sequences"].append(list_f_names)
+
+        if self.display:
+            list_data = []
+            for id in range(len(self.sequences)):
+                for j in range(len(self.sequences[id]["data"])):
+                    cur_id = self.sequences[id]["data"][j]["id"]
+                    sl = self.__get_current_sl(id, j)
+                    list_data.append([{"Slice": self.srs_org_sl[cur_id]["img"],
+                                     "Seg. Result": self.sequences[id]["data"][j]["img"],
+                                     "Remedied": np.zeros(self.sequences[id]["data"][j]["img"].shape, np.uint8)},
+                        {"Slice": {"fname": self.srs_org_sl[cur_id]["fname"].split(".")[0]},
+                         "Seg. Result": {"sequence": {"id": id, "type": "Appeared" if self.sequences[id]["type"] else "Non-Appeared"},
+                                         "size": format(np.count_nonzero(self.sequences[id]["data"][j]["img"]), ","),
+                                         "HU Scale": self.__compute_HU_scale(sl, self.srs_seg_sl[cur_id]["img"])[0]},
+                         }])
+            self.visualize_sequence_generation(list_data)
+            # cv2.destroyAllWindows()
+        print("generate_sequences Done")
+    def set_img_paths(self, path_org_mi, path_org_sl, path_seg_result, path_save):
+        """
+        Method for setting file path
+        :param path_org_mi: string, path for original medical images (series)
+        :param path_org_sl: string, path for original slices (png data)
+        :param path_seg_result: string, path for segmentation result
+        :param path_save: string, path for saving the enhanced results
+        :return:
+        """
+        self.path_org_mi = path_org_mi
+        self.path_org_sl = path_org_sl
+        self.path_seg_result = path_seg_result
+        self.path_save = path_save
+        self.srs_org_mi = []
+        self.srs_org_sl = []
+        self.srs_seg_sl = []
+
+        self.process_statistics = {
+            "Original": {"num_slices": 0, "num_slices_having_organ": 0, "num_slices_not_having_organ": 0},
+            "Sequence": {"num_sequences": 0, "num_sequences_appeared": 0, "num_sequences_non_appeared": 0, "list_appeared_sequences":[], "list_non_appeared_sequences":[]},
+            "appearance": {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{}},
+            "location": {"num_remedied_SLs": 0, "remedy_states": {}, "location_diff_seg":{}, "location_diff_rmd":{}, },
+            "size": {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{}},
+            "shape": {"num_remedied_SLs": 0, "remedy_states": {}, "shape_diff_seg":{}, "shape_diff_rmd": {}},
+            "HU": {"num_remedied_SLs": 0, "remedy_states": {}, "HU_scales_seg": {}, "HU_scales_remedy": {}}
+        }
 
     # Methods for Correcting Appearance Inconsistency
     def correct_appearance_inconsistency(self):
@@ -98,149 +245,192 @@ class MedImageEnhancer:
             self.visualize_appearance_remedied(list_data)
             # cv2.destroyAllWindows()
 
+    def get_srs_org_sl(self):
+        return self.srs_org_sl
+
+    def get_srs_seg_sl(self):
+        return self.srs_seg_sl
+
     def detect_appearance_inconsistency(self):
         refined_seqs = []  # List for Refined sequences
         cur_ref_seqs = {"type": True, "data": []}  # Current refined sequences
-        for id in range(len(self.sequences)):
-            for sl_id in range(len(self.sequences[id]["data"])):
-                self.process_statistics["appearance"]["remedy_states"][self.sequences[id]["data"][sl_id]["id"]] = "Not Violated"
-                self.list_prv[self.sequences[id]["data"][sl_id]["id"]] = self.sequences[id]["data"][sl_id]["img"]
-
-            if not self.sequences[id]["type"]:
-                for d in self.sequences[id]["data"]:
-                    self.process_statistics["appearance"]["remedy_states"][d["id"]] = "Not Violated"
-                if id == len(self.sequences) - 1:  # when the sequence is the last sequence
-                    refined_seqs.append(cur_ref_seqs)  # To add current refined sequence to the list "refined_seqs"
-                    cur_ref_seqs = self.sequences[id]  # To set the current sequence to cur_ref_seqs
-                continue
-            if len(cur_ref_seqs["data"]) == 0:
-                if id == 0:  # If the true sequence is first sequence
-                    cur_ref_seqs = self.sequences[0]
-                elif id==1:  # If the true sequence is second sequence
-                    refined_seqs.append(self.sequences[0])  # To add first false sequence to refined list
-                    cur_ref_seqs = self.sequences[1]
-                else:
-                    refined_seqs.append(self.sequences[id-1])
-                    cur_ref_seqs = self.sequences[id]
-                continue
-
-            seq_ap_prv = self.sequences[id - 2]["data"]
-            seq_np = self.sequences[id - 1]["data"]
-            seq_ap_cur = self.sequences[id]["data"]
-
-            sl_seg_prv_last = seq_ap_prv[-1]["img"]
-            sl_seg_cur_first = seq_ap_cur[0]["img"]
-            num_between = len(seq_np)
-
-            # Comparing Inclusion relationship and Intersect Size
-            inclusion_prv = self.__check_seq_inclusion(seq_ap_prv)
-            inclusion_cur = self.__check_seq_inclusion(seq_ap_cur)
-            intersect_size = np.count_nonzero(np.bitwise_and(sl_seg_prv_last, sl_seg_cur_first))
-            # print(intersect_size, np.min([np.count_nonzero(sl_seg_prv_last), np.count_nonzero(sl_seg_cur_first)]),
-            #       (intersect_size / np.min([np.count_nonzero(sl_seg_prv_last), np.count_nonzero(sl_seg_cur_first)])))
-            is_intersected = (intersect_size / np.min([np.count_nonzero(sl_seg_prv_last), np.count_nonzero(sl_seg_cur_first)]))> 0.9
-            is_continued_1 = inclusion_prv and inclusion_cur and intersect_size > self.th_size and is_intersected
-
-            # Comparing Expected Organ Size
-            exp_size_prv_last = np.count_nonzero(sl_seg_cur_first) * (
-                    1 - self.__compute_transition(seq_ap_cur, 0)) ** num_between
-            exp_size_cur_first = np.count_nonzero(sl_seg_prv_last) * (
-                    1 + self.__compute_transition(seq_ap_prv, -1)) ** num_between
-            is_diff_size_prv_last = (np.abs(np.count_nonzero(sl_seg_prv_last) - exp_size_prv_last) / np.count_nonzero(
-                sl_seg_prv_last)) < self.th_diff
-            is_diff_size_cur_first = (np.abs(np.count_nonzero(sl_seg_cur_first) - exp_size_cur_first) / np.count_nonzero(
-                sl_seg_cur_first)) < self.th_diff
-            if len(seq_ap_prv) == 1:
-                is_diff_size_cur_first = True
-            if len(seq_ap_cur) == 1:
-                is_diff_size_prv_last = True
-            if len(seq_ap_cur)>1 and len(seq_ap_prv)>1:
-                is_continued_2 = is_diff_size_prv_last and is_diff_size_cur_first
-            elif len(seq_ap_prv)>1 and len(seq_ap_cur)<=1:
-                is_continued_2 = is_diff_size_prv_last
-            elif len(seq_ap_cur)>1 and len(seq_ap_prv)<=1:
-                is_continued_2 = is_diff_size_cur_first
+        # Task 1. To validate Continuity Sequence
+        if len(self.sequences)>3:
+            is_valid = False
+        else:
+            count_ap = 0
+            for id in range(len(self.sequences)):
+                if self.sequences[id]["type"]:
+                    count_ap +=1
+            if count_ap>1:
+                is_valid = False
             else:
-                is_continued_2 = False
+                is_valid = True
 
-            if is_continued_1 and is_continued_2:  # Case 1.
-                # print("CASE 1")
-                cur_ref_seqs = self.revise_appearance_inconsistency(1, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1],seq_ap_nxt=self.sequences[id])[0]
+        if not is_valid:
+            # Task 2. To detect Continuity Sequences Violating appearance Consistency
+            for id in range(len(self.sequences)):
+                for sl_id in range(len(self.sequences[id]["data"])):
+                    self.process_statistics["appearance"]["remedy_states"][self.sequences[id]["data"][sl_id]["id"]] = "Not Violated"
+                    self.list_prv[self.sequences[id]["data"][sl_id]["id"]] = self.sequences[id]["data"][sl_id]["img"]
 
-            else:
-                hu_violation_prv = self.__check_seq_HU_violation(seq_ap_prv)
-                hu_violation_cur = self.__check_seq_HU_violation(seq_ap_cur)
-                do_violation_prv = hu_violation_prv
-                do_violation_cur = hu_violation_cur
-                if do_violation_prv and do_violation_cur:
-                    # print("CASE 6")
-                    cur_ref_seqs = self.revise_appearance_inconsistency(6, cur_ref_seqs, self.sequences[id-1], self.sequences[id])[0]
-                    # if id <= len(self.sequences) - 1:
-                    # refined_seqs.append(self.sequences[id - 1])
-                    # To connect to Next Non-Appeared
-                    # if id + 1 < len(self.sequences):
-                    # print(type(cur_ref_seqs), type(self.sequences[id+1]["data"]))
-                    # cur_ref_seqs["data"].extend(self.sequences[id+1]["data"])
-                    # To set cur_ref_seqs i+2
-                    # if id+2 < len(self.sequences):
-                    #     cur_ref_seqs = self.sequences[id+2]
-                    refined_seqs.append(cur_ref_seqs)  # To put gathered data to refined_seqs
-
-                    cur_ref_seqs = {"type": True, "data": []}  # Current refined sequences
-                else:
-                    do_violation = len(self.sequences[id]["data"]) > len(cur_ref_seqs["data"])
-                    if do_violation:
-                        nxt_sl_seg = self.sequences[id]["data"][0]["img"]
-                        nxt_sl = self.__get_current_sl(id, 0)
-                        cur_sl = self.__get_current_sl(id-1, -1)
-                        nxt_hu = self.__compute_HU_scale(nxt_sl, nxt_sl_seg)[0]
-                        cur_hu = self.__compute_HU_scale(cur_sl, nxt_sl_seg)[0]
-
-                        is_contour, violated_area = self.__check_HU_scale_violated_pixel_location(cur_sl, nxt_sl_seg)
-                        try:
-                            if np.count_nonzero(violated_area)/np.count_nonzero(nxt_sl_seg) > 0.7:
-                                # print("CASE 4")
-                            # if cur_hu[0] == np.inf or (np.abs(nxt_hu[0]-cur_hu[0])>self.ww*0.1 or np.abs(nxt_hu[1]-cur_hu[1])>self.ww*0.1):
-                            #     # print("CASE 2")
-                                results = self.revise_appearance_inconsistency(2, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1], seq_ap_nxt=self.sequences[id])
-                                refined_seqs.append(results[0])
-                                cur_ref_seqs = results[1]
-                            else:
-                                # print("CASE 3")
-                                results = self.revise_appearance_inconsistency(3, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1], seq_ap_nxt=self.sequences[id])
-                                refined_seqs.append(results[0])
-                                cur_ref_seqs = results[1]
-                        except:
-                            refined_seqs.append(cur_ref_seqs)
-                            refined_seqs.append(self.sequences[id-1])
-                            cur_ref_seqs = self.sequences[id]
+                if not self.sequences[id]["type"]:
+                    for d in self.sequences[id]["data"]:
+                        self.process_statistics["appearance"]["remedy_states"][d["id"]] = "Not Violated"
+                    if id == len(self.sequences) - 1:  # when the sequence is the last sequence
+                        refined_seqs.append(cur_ref_seqs)  # To add current refined sequence to the list "refined_seqs"
+                        cur_ref_seqs = self.sequences[id]  # To set the current sequence to cur_ref_seqs
+                    continue
+                if len(cur_ref_seqs["data"]) == 0:
+                    if id == 0:  # If the true sequence is first sequence
+                        cur_ref_seqs = self.sequences[0]
+                    elif id==1:  # If the true sequence is second sequence
+                        refined_seqs.append(self.sequences[0])  # To add first false sequence to refined list
+                        cur_ref_seqs = self.sequences[1]
                     else:
-                        prv_sl_seg = self.sequences[id-2]["data"][-1]["img"]
-                        prv_sl = self.__get_current_sl(id-2, -1)
-                        cur_sl = self.__get_current_sl(id-1, 0)
-                        prv_hu = self.__compute_HU_scale(prv_sl, prv_sl_seg)[0]
-                        cur_hu = self.__compute_HU_scale(cur_sl, prv_sl_seg)[0]
+                        refined_seqs.append(self.sequences[id-1])
+                        cur_ref_seqs = self.sequences[id]
+                    continue
 
-                        is_contour, violated_area = self.__check_HU_scale_violated_pixel_location(cur_sl, prv_sl_seg)
-                        try:
-                            if (np.count_nonzero(violated_area)/np.count_nonzero(prv_sl_seg) > 0.7):
-                            # if cur_hu[0] == np.inf or (np.abs(prv_hu[0]-cur_hu[0])>self.ww*0.1 and np.abs(prv_hu[1]-cur_hu[1])>self.ww*0.1):
-                            #     print("CASE 4")
-                                results = self.revise_appearance_inconsistency(4, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1], seq_ap_nxt=self.sequences[id])
-                            else:
-                                # print("CASE 5")
-                                results = self.revise_appearance_inconsistency(5, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1], seq_ap_nxt=self.sequences[id])
-                            refined_seqs.append(results[0])
-                            refined_seqs.append(results[1])
-                        except:
-                            refined_seqs.append(cur_ref_seqs)
-                            refined_seqs.append(self.sequences[id-1])
+                seq_ap_prv = self.sequences[id - 2]["data"]
+                seq_np = self.sequences[id - 1]["data"]
+                seq_ap_cur = self.sequences[id]["data"]
+
+                sl_seg_prv_last = seq_ap_prv[-1]["img"]
+                sl_seg_cur_first = seq_ap_cur[0]["img"]
+                num_between = len(seq_np)
+
+                # Comparing Inclusion relationship and Intersect Size
+                inclusion_prv = self.__check_seq_inclusion(seq_ap_prv)
+                inclusion_cur = self.__check_seq_inclusion(seq_ap_cur)
+                intersect_size = np.count_nonzero(np.bitwise_and(sl_seg_prv_last, sl_seg_cur_first))
+                # print(intersect_size, np.min([np.count_nonzero(sl_seg_prv_last), np.count_nonzero(sl_seg_cur_first)]),
+                #       (intersect_size / np.min([np.count_nonzero(sl_seg_prv_last), np.count_nonzero(sl_seg_cur_first)])))
+                is_intersected = (intersect_size / np.min([np.count_nonzero(sl_seg_prv_last), np.count_nonzero(sl_seg_cur_first)]))> 0.9
+                is_continued_1 = inclusion_prv and inclusion_cur and intersect_size > self.th_size and is_intersected
+
+                # Comparing Expected Organ Size
+                exp_size_prv_last = np.count_nonzero(sl_seg_cur_first) * (
+                        1 - self.__compute_transition(seq_ap_cur, 0)) ** num_between
+                exp_size_cur_first = np.count_nonzero(sl_seg_prv_last) * (
+                        1 + self.__compute_transition(seq_ap_prv, -1)) ** num_between
+                is_diff_size_prv_last = (np.abs(np.count_nonzero(sl_seg_prv_last) - exp_size_prv_last) / np.count_nonzero(
+                    sl_seg_prv_last)) < self.th_diff
+                is_diff_size_cur_first = (np.abs(np.count_nonzero(sl_seg_cur_first) - exp_size_cur_first) / np.count_nonzero(
+                    sl_seg_cur_first)) < self.th_diff
+                if len(seq_ap_prv) == 1:
+                    is_diff_size_cur_first = True
+                if len(seq_ap_cur) == 1:
+                    is_diff_size_prv_last = True
+                if len(seq_ap_cur)>1 and len(seq_ap_prv)>1:
+                    is_continued_2 = is_diff_size_prv_last and is_diff_size_cur_first
+                elif len(seq_ap_prv)>1 and len(seq_ap_cur)<=1:
+                    is_continued_2 = is_diff_size_prv_last
+                elif len(seq_ap_cur)>1 and len(seq_ap_prv)<=1:
+                    is_continued_2 = is_diff_size_cur_first
+                else:
+                    is_continued_2 = False
+
+                if is_continued_1 and is_continued_2:  # Case 1.
+                    # print("CASE 1")
+                    cur_ref_seqs = self.revise_appearance_inconsistency(1, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1],seq_ap_nxt=self.sequences[id])[0]
+
+                else:
+                    hu_violation_prv = self.__check_seq_HU_violation(seq_ap_prv)
+                    hu_violation_cur = self.__check_seq_HU_violation(seq_ap_cur)
+                    do_violation_prv = hu_violation_prv
+                    do_violation_cur = hu_violation_cur
+                    if do_violation_prv and do_violation_cur:
+                        # print("CASE 6")
+                        cur_ref_seqs = self.revise_appearance_inconsistency(6, cur_ref_seqs, self.sequences[id-1], self.sequences[id])[0]
+                        # if id <= len(self.sequences) - 1:
+                        # refined_seqs.append(self.sequences[id - 1])
+                        # To connect to Next Non-Appeared
+                        # if id + 1 < len(self.sequences):
+                        # print(type(cur_ref_seqs), type(self.sequences[id+1]["data"]))
+                        # cur_ref_seqs["data"].extend(self.sequences[id+1]["data"])
+                        # To set cur_ref_seqs i+2
+                        # if id+2 < len(self.sequences):
+                        #     cur_ref_seqs = self.sequences[id+2]
+                        refined_seqs.append(cur_ref_seqs)  # To put gathered data to refined_seqs
+
                         cur_ref_seqs = {"type": True, "data": []}  # Current refined sequences
-        if len(cur_ref_seqs["data"]) > 0:  # if current refined sequences is remained not appending the refined_seqs
-            refined_seqs.append(cur_ref_seqs)
-            for k in cur_ref_seqs["data"]:
-                if k["id"] not in self.process_statistics["appearance"]["remedy_states"].keys():
-                    self.process_statistics["appearance"]["remedy_states"][k["id"]] = "Not Violated"
+                    else:
+                        do_violation = len(self.sequences[id]["data"]) > len(cur_ref_seqs["data"])
+                        if do_violation:
+                            nxt_sl_seg = self.sequences[id]["data"][0]["img"]
+                            nxt_sl = self.__get_current_sl(id, 0)
+                            cur_sl = self.__get_current_sl(id-1, -1)
+                            nxt_hu = self.__compute_HU_scale(nxt_sl, nxt_sl_seg)[0]
+                            cur_hu = self.__compute_HU_scale(cur_sl, nxt_sl_seg)[0]
+
+                            is_contour, violated_area = self.__check_HU_scale_violated_pixel_location(cur_sl, nxt_sl_seg)
+                            try:
+                                if np.count_nonzero(violated_area)/np.count_nonzero(nxt_sl_seg) > 0.7:
+                                    # print("CASE 4")
+                                # if cur_hu[0] == np.inf or (np.abs(nxt_hu[0]-cur_hu[0])>self.ww*0.1 or np.abs(nxt_hu[1]-cur_hu[1])>self.ww*0.1):
+                                #     # print("CASE 2")
+                                    results = self.revise_appearance_inconsistency(2, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1], seq_ap_nxt=self.sequences[id])
+                                    refined_seqs.append(results[0])
+                                    cur_ref_seqs = results[1]
+                                else:
+                                    # print("CASE 3")
+                                    results = self.revise_appearance_inconsistency(3, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1], seq_ap_nxt=self.sequences[id])
+                                    refined_seqs.append(results[0])
+                                    cur_ref_seqs = results[1]
+                            except:
+                                refined_seqs.append(cur_ref_seqs)
+                                refined_seqs.append(self.sequences[id-1])
+                                cur_ref_seqs = self.sequences[id]
+                        else:
+                            prv_sl_seg = self.sequences[id-2]["data"][-1]["img"]
+                            prv_sl = self.__get_current_sl(id-2, -1)
+                            cur_sl = self.__get_current_sl(id-1, 0)
+                            prv_hu = self.__compute_HU_scale(prv_sl, prv_sl_seg)[0]
+                            cur_hu = self.__compute_HU_scale(cur_sl, prv_sl_seg)[0]
+
+                            is_contour, violated_area = self.__check_HU_scale_violated_pixel_location(cur_sl, prv_sl_seg)
+                            try:
+                                if (np.count_nonzero(violated_area)/np.count_nonzero(prv_sl_seg) > 0.7):
+                                # if cur_hu[0] == np.inf or (np.abs(prv_hu[0]-cur_hu[0])>self.ww*0.1 and np.abs(prv_hu[1]-cur_hu[1])>self.ww*0.1):
+                                #     print("CASE 4")
+                                    results = self.revise_appearance_inconsistency(4, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1], seq_ap_nxt=self.sequences[id])
+                                else:
+                                    # print("CASE 5")
+                                    results = self.revise_appearance_inconsistency(5, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1], seq_ap_nxt=self.sequences[id])
+                                refined_seqs.append(results[0])
+                                refined_seqs.append(results[1])
+                            except:
+                                refined_seqs.append(cur_ref_seqs)
+                                refined_seqs.append(self.sequences[id-1])
+                            cur_ref_seqs = {"type": True, "data": []}  # Current refined sequences
+            if len(cur_ref_seqs["data"]) > 0:  # if current refined sequences is remained not appending the refined_seqs
+                refined_seqs.append(cur_ref_seqs)
+                for k in cur_ref_seqs["data"]:
+                    if k["id"] not in self.process_statistics["appearance"]["remedy_states"].keys():
+                        self.process_statistics["appearance"]["remedy_states"][k["id"]] = "Not Violated"
+
+        # Task 3. To detect CT Slices violating the appearance principle
+        if len(refined_seqs) == 0:
+            refined_seqs = self.sequences
+        for id in range(len(refined_seqs)):
+            if refined_seqs[id]["type"]:
+                print(id, len(refined_seqs))
+                seq_prv = refined_seqs[id-1]
+                if id<1:
+                    seq_prv = None
+                seq_cur = refined_seqs[id]
+
+                seq_nxt = refined_seqs[id+1]
+                if id>len(refined_seqs)-2:
+                    seq_nxt = None
+                results = self.revise_appearance_inconsistency(7, seq_ap_prv=seq_prv, seq_np_cur=seq_cur, seq_ap_nxt=seq_nxt)
+                if id>=1:
+                    refined_seqs[id-1] = results[0]
+                refined_seqs[id] = results[1]
+                if id>len(refined_seqs)-2:
+                    refined_seqs[id+1] = results[2]
+
         return refined_seqs
 
     def revise_appearance_inconsistency(self, case, seq_ap_prv=None, seq_np_cur=None, seq_ap_nxt=None):
@@ -326,10 +516,10 @@ class MedImageEnhancer:
                     list_removed_sl.append(i)
                     sl_seg_nxt = sl_seg_cur
                     sl_nxt = sl_cur
-                    if np.count_nonzero(sl_nxt) == 0:
+                    if np.count_nonzero(sl_seg_nxt) == 0:
                         break
                 for i in list_removed_sl:
-                    seq_ap_prv["data"].insert(-1, seq_np_cur["data"][i])
+                    seq_ap_nxt["data"].insert(0, seq_np_cur["data"][i])
                     seq_np_cur["data"].pop(i)
             for k in range(len(seq_ap_prv["data"])):
                 seq_ap_prv["data"][k]["img"] = np.zeros(seq_ap_prv["data"][k]["img"].shape, np.uint8)
@@ -344,7 +534,7 @@ class MedImageEnhancer:
             if case == 5:
                 # Compare ap_prv and np_cur
                 sl_seg_prv =seq_ap_prv["data"][-1]["img"]
-                sl_prv = self.srs_seg_sl[seq_ap_nxt["data"][-1]["id"]]["img"]
+                sl_prv = self.srs_seg_sl[seq_ap_prv["data"][-1]["id"]]["img"]
                 list_removed_sl = []
                 for i in range(len(seq_np_cur["data"])-1):
                     sl_seg_cur = seq_np_cur["data"][i]["img"]
@@ -355,7 +545,7 @@ class MedImageEnhancer:
                     list_removed_sl.append(i)
                     sl_seg_prv = sl_seg_cur
                     sl_prv = sl_cur
-                    if np.count_nonzero(sl_prv) == 0:
+                    if np.count_nonzero(sl_seg_prv) == 0:
                         break
                 for i in range(len(list_removed_sl)):
                     seq_ap_prv["data"].insert(-1, seq_np_cur["data"][0])
@@ -367,7 +557,7 @@ class MedImageEnhancer:
                 self.process_statistics["appearance"]["num_remedied_SLs"] += 1
             results = [seq_ap_prv, seq_np_cur]
 
-        else:   # Case SEQ_ap_(i-2) and SEQ_ap_(i) violate the principle
+        elif case == 6:   # Case SEQ_ap_(i-2) and SEQ_ap_(i) violate the principle
             # print(">>>>>>  case 6",)
             seq_ap_prv["type"] = False
             for k in range(len(seq_ap_prv["data"])):
@@ -382,6 +572,67 @@ class MedImageEnhancer:
                 self.process_statistics["appearance"]["remedy_states"][seq_ap_nxt["data"][k]["id"]] = "Remedied"
                 self.process_statistics["appearance"]["num_remedied_SLs"] += 1
             results.append(seq_ap_prv)
+        elif case == 7:
+            seq_ap_cur = seq_np_cur
+            seq_np_prv = seq_ap_prv
+            seq_np_nxt = seq_ap_nxt
+
+            if seq_np_prv is not None:
+                transition = self.__compute_transition(seq_ap_cur["data"], 0)
+                # compare ap_nxt and np_cur
+                sl_seg_nxt = seq_ap_cur["data"][0]["img"]
+                sl_nxt = self.srs_seg_sl[seq_ap_cur["data"][0]["id"]]["img"]
+                list_removed_sl = []
+                for i in range(len(seq_np_prv["data"]) - 1, 0):
+                    sl_seg_cur = seq_np_prv["data"][i]["img"]
+                    sl_cur = self.srs_seg_sl[seq_np_prv["data"][i]["id"]]["img"]
+                    msk = self.__revise_slsegs_violating_appearance(None, sl_seg_cur,
+                                                                                             sl_seg_nxt, None, sl_cur,
+                                                                                             sl_nxt, transition)
+                    if np.count_nonzero(msk) < 200 or np.count_nonzero(sl_seg_nxt) <= np.count_nonzero(msk):
+                        break
+                    seq_np_prv["data"][i]["img"] = msk
+                    sl_seg_cur = seq_np_prv["data"][i]["img"]
+                    list_removed_sl.append(i)
+                    sl_seg_nxt = sl_seg_cur
+                    sl_nxt = sl_cur
+                for i in list_removed_sl:
+                    seq_ap_cur["data"].insert(0, seq_np_prv["data"][i])
+                    seq_np_prv["data"].pop(i)
+
+                for k in range(len(seq_np_prv["data"])):
+                    self.process_statistics["appearance"]["remedy_states"][seq_np_prv["data"][k]["id"]] = "Remedied"
+                    self.process_statistics["appearance"]["num_remedied_SLs"] += 1
+
+            if seq_np_nxt is not None:
+                transition = self.__compute_transition(seq_ap_cur["data"], -1)
+                # Compare ap_prv and np_cur
+                sl_seg_prv =seq_ap_cur["data"][-1]["img"]
+                sl_prv = self.srs_seg_sl[seq_ap_cur["data"][-1]["id"]]["img"]
+                list_removed_sl = []
+                print(seq_ap_cur["data"][-1]["id"])
+                for i in range(len(seq_np_nxt["data"])-1):
+                    sl_seg_cur = seq_np_nxt["data"][i]["img"]
+                    sl_cur = self.srs_seg_sl[seq_np_nxt["data"][i]["id"]]["img"]
+                    msk =  self.__revise_slsegs_violating_appearance(sl_seg_prv, sl_seg_cur, None, sl_prv, sl_cur, None, transition)
+
+                    if np.count_nonzero(msk) < 200 or np.count_nonzero(sl_seg_prv) <= np.count_nonzero(msk):
+                        break
+                    seq_np_nxt["data"][i]["img"] = msk
+                    sl_seg_cur = seq_np_nxt["data"][i]["img"]
+
+                    list_removed_sl.append(i)
+                    sl_seg_prv = sl_seg_cur
+                    sl_prv = sl_cur
+                for i in range(len(list_removed_sl)):
+                    seq_ap_cur["data"].insert(-1, seq_np_nxt["data"][0])
+                    seq_np_nxt["data"].pop(0)
+
+                for k in range(len(seq_np_nxt["data"])):
+                    self.process_statistics["appearance"]["remedy_states"][seq_np_nxt["data"][k]["id"]] = "Remedied"
+                    self.process_statistics["appearance"]["num_remedied_SLs"] += 1
+
+            results = [seq_np_prv, seq_ap_cur, seq_np_nxt]
         return results
 
     def visualize_appearance_remedied(self, list_data):
@@ -1023,7 +1274,6 @@ class MedImageEnhancer:
                 if not is_contained:
                     self.sequences[id]["data"][i]["img"] = np.subtract(self.sequences[id]["data"][i]["img"], sec_cur)
             list_prv_sections = self.__divide_sections(self.sequences[id]["data"][i]["img"])
-
 
     def visualize_size_remedied(self, list_data):
         # dsize = (512, 512)
@@ -1699,116 +1949,6 @@ class MedImageEnhancer:
     ####################################################
 
     # Methods for Managing Images
-    def load_med_imgs(self):
-        """
-        To load segmentation results
-        :return:
-        """
-        # TO load slice images
-        list_fname = os.listdir(os.path.join(self.path_org_sl))
-        for i in range(len(list_fname)):
-            img = cv2.imread(os.path.join(self.path_org_sl, list_fname[i]))
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            self.srs_org_sl.append(
-                {"id": i, "img": img, "fname": list_fname[i]})  # [{"id": id, "img":img}, {"id":, "img": }, ...]
-
-        # To load segmentation results
-        list_fname = os.listdir(os.path.join(self.path_seg_result))
-        for i in range(len(list_fname)):
-            img = cv2.imread(os.path.join(self.path_seg_result, list_fname[i]))
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            self.srs_seg_sl.append(
-                {"id": i, "img": img, "fname": list_fname[i]})  # [{"id": id, "img":img}, {"id":, "img": }, ...]
-
-            self.process_statistics["Original"]["num_slices"] += 1
-            if np.count_nonzero(img) > 0:
-                self.process_statistics["Original"]["num_slices_having_organ"] += 1
-            else:
-                self.process_statistics["Original"]["num_slices_not_having_organ"] += 1
-
-        # To load original medical image series (nii format)
-        self.srs_org_mi = nib.load(self.path_org_mi)  # 3 dimensional array (x, y, # of Slices)
-        self.srs_org_mi = self.srs_org_mi.get_fdata()  # To select only image data
-        self.srs_org_mi = self.srs_org_mi[::-1, ::-1, ::-1]
-        self.srs_org_mi = np.transpose(self.srs_org_mi, (1, 0, 2))
-
-        if self.path_org_mi.split("\\")[-1].split(".")[0] not in ["1553442_07272021-Venous", "7006698_07142017-Arterial"]:
-            self.srs_org_mi = self.srs_org_mi[::-1, :, :]
-
-        # os.mkdir(os.path.join(r"E:\1. Lab\Daily Results\2022\2209\0927\01. Selected Series from LITS Dataset\test",self.path_org_mi.split("\\")[-1].split(".")[0]))
-        # print(os.path.join(r"E:\1. Lab\Daily Results\2022\2209\0927\01. Selected Series from LITS Dataset\test",self.path_org_mi.split("\\")[-1].split(".")[0]))
-        # for i in range(len(self.srs_org_mi[0, 0, :])):
-        #     cur_sl = self.srs_org_mi[:, :, i]
-        #     ymin = 0
-        #     ymax = 255
-        #     cur_img = np.reshape(cur_sl, (512, 512, 1))
-        #     # To convert color depth applying numpy where method (To reduce computation time)
-        #     idx_high = cur_img >= self.wc + self.ww / 2
-        #     idx_low = cur_img <= self.wc - self.ww / 2
-        #
-        #     cur_img = np.where(idx_high, ymax, cur_img)
-        #     cur_img = np.where(idx_low, ymin, cur_img)
-        #     cur_img = np.where(~idx_high & ~idx_low, ((cur_img - self.wc) / self.ww + 0.5) * (ymax - ymin) + ymin, cur_img)
-        #     cur_img = cur_img.astype(np.uint8)
-        #     cv2.imwrite(os.path.join(r"E:\1. Lab\Daily Results\2022\2209\0927\01. Selected Series from LITS Dataset\test",
-        #                              self.path_org_mi.split("\\")[-1].split(".")[0],self.srs_seg_sl[i]["fname"]), cur_sl)
-
-    def generate_sequences(self):
-        """
-        To generate sequences applying segmentation results
-        :return:
-        """
-        self.sequences = []
-        cur_seq = {"type": False, "data": []}
-        for i in self.srs_seg_sl:  # Loop for whole slices (Segmentation Results)
-            img = i["img"]
-            if len(cur_seq["data"]) == 0:  # If any data is not inserted
-                cur_seq["type"] = (np.count_nonzero(img) > 0)
-                cur_seq["data"].append(copy.deepcopy(i))
-            else:  # If at least one seg data is inserted
-                if cur_seq["type"] == (np.count_nonzero(img) > 0):  # If cur seg data is same to type of sequence
-                    cur_seq["data"].append(copy.deepcopy(i))
-                else:  # If cur seg data is not same to type of sequence
-                    self.sequences.append(cur_seq)
-                    cur_seq = {"type": (np.count_nonzero(img) > 0), "data": [copy.deepcopy(i), ]}
-
-        if len(cur_seq["data"]) > 0:  # If current sequence is not empty
-            self.sequences.append(cur_seq)
-
-        self.process_statistics["Sequence"]["num_sequences"] = len(self.sequences)
-        self.process_statistics["Sequence"]["num_sequences_appeared"] = len(self.sequences)
-        self.process_statistics["Sequence"]["num_sequences_non_appeared"] = len(self.sequences)
-
-        for seq in self.sequences:
-            if seq["type"]:
-                self.process_statistics["Sequence"]["num_sequences_appeared"] += 1
-                list_f_names = []
-                for d in seq["data"]:
-                    list_f_names.append(d["fname"])
-                self.process_statistics["Sequence"]["list_appeared_sequences"].append(list_f_names)
-            else:
-                self.process_statistics["Sequence"]["num_sequences_non_appeared"] += 1
-                list_f_names = []
-                for d in seq["data"]:
-                    list_f_names.append(d["fname"])
-                self.process_statistics["Sequence"]["list_non_appeared_sequences"].append(list_f_names)
-
-        if self.display:
-            list_data = []
-            for id in range(len(self.sequences)):
-                for j in range(len(self.sequences[id]["data"])):
-                    cur_id = self.sequences[id]["data"][j]["id"]
-                    sl = self.__get_current_sl(id, j)
-                    list_data.append([{"Slice": self.srs_org_sl[cur_id]["img"],
-                                     "Seg. Result": self.sequences[id]["data"][j]["img"],
-                                     "Remedied": np.zeros(self.sequences[id]["data"][j]["img"].shape, np.uint8)},
-                        {"Slice": {"fname": self.srs_org_sl[cur_id]["fname"].split(".")[0]},
-                         "Seg. Result": {"sequence": {"id": id, "type": "Appeared" if self.sequences[id]["type"] else "Non-Appeared"},
-                                         "size": format(np.count_nonzero(self.sequences[id]["data"][j]["img"]), ","),
-                                         "HU Scale": self.__compute_HU_scale(sl, self.srs_seg_sl[cur_id]["img"])[0]},
-                         }])
-            self.visualize_sequence_generation(list_data)
-            # cv2.destroyAllWindows()
 
     def visualize_sequence_generation(self, list_data):
         fig, ax = plt.subplots(1, 1)
@@ -1883,33 +2023,6 @@ class MedImageEnhancer:
                     if is_appeared != (np.count_nonzero(list_data[j][0]["Seg. Result"])>0):
                         idx = j
                         break
-
-    def set_img_paths(self, path_org_mi, path_org_sl, path_seg_result, path_save):
-        """
-        Method for setting file path
-        :param path_org_mi: string, path for original medical images (series)
-        :param path_org_sl: string, path for original slices (png data)
-        :param path_seg_result: string, path for segmentation result
-        :param path_save: string, path for saving the enhanced results
-        :return:
-        """
-        self.path_org_mi = path_org_mi
-        self.path_org_sl = path_org_sl
-        self.path_seg_result = path_seg_result
-        self.path_save = path_save
-        self.srs_org_mi = []
-        self.srs_org_sl = []
-        self.srs_seg_sl = []
-
-        self.process_statistics = {
-            "Original": {"num_slices": 0, "num_slices_having_organ": 0, "num_slices_not_having_organ": 0},
-            "Sequence": {"num_sequences": 0, "num_sequences_appeared": 0, "num_sequences_non_appeared": 0, "list_appeared_sequences":[], "list_non_appeared_sequences":[]},
-            "appearance": {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{}},
-            "location": {"num_remedied_SLs": 0, "remedy_states": {}, "location_diff_seg":{}, "location_diff_rmd":{}, },
-            "size": {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{}},
-            "shape": {"num_remedied_SLs": 0, "remedy_states": {}, "shape_diff_seg":{}, "shape_diff_rmd": {}},
-            "HU": {"num_remedied_SLs": 0, "remedy_states": {}, "HU_scales_seg": {}, "HU_scales_remedy": {}}
-        }
 
     def save_segmentations(self, postfix=None):
         """
@@ -2668,42 +2781,42 @@ if __name__ == '__main__':
 
 
     # Performance Evaluation
-    performance_measurer = ImgDataPerformanceMeasurer()
-    now = datetime.now()
-    p_excel_save = os.path.join(path_save, "result_"+now.strftime("%Y-%m-%d %H-%M-%S")+".xlsx")
-
-    writer_test = pd.ExcelWriter(os.path.join(p_excel_save), engine='xlsxwriter')
-    summary = {"ID": [], "avgDSC_Seg":[], "avgDSC_enh":[]}
-    for i in os.listdir(path_save):
-        if not os.path.isdir(os.path.join(path_save, i)):
-            continue
-        p_label_cur = os.path.join(p_label, i)
-        p_seg_cur = os.path.join(path_test_case, i)
-        p_enh_cur = os.path.join(path_save, i, "result")
-        data={"fileName":[], "areaLabel":[], "areaSeg":[], "areaEnhanced":[], "DSCSeg":[], "DSCEnh":[]}
-
-        labels = []
-        segs = []
-        enhs = []
-        print(i,"  ", len(os.listdir(p_enh_cur)))
-        for j in os.listdir(p_label_cur):
-            cur_label = cv2.imread(os.path.join(p_label_cur, j), cv2.IMREAD_GRAYSCALE)
-            cur_seg = cv2.imread(os.path.join(p_seg_cur, j), cv2.IMREAD_GRAYSCALE)
-            cur_enh = cv2.imread(os.path.join(p_enh_cur, j), cv2.IMREAD_GRAYSCALE)
-            data["fileName"].append(j)
-            data["areaLabel"].append(np.count_nonzero(cur_label))
-            data["areaSeg"].append(np.count_nonzero(cur_seg))
-            data["areaEnhanced"].append(np.count_nonzero(cur_enh))
-            data["DSCSeg"].append(performance_measurer.compute_dsc(cur_label, cur_seg))
-            data["DSCEnh"].append(performance_measurer.compute_dsc(cur_label, cur_enh))
-            labels.append(cur_label)
-            segs.append(cur_seg)
-            enhs.append(cur_enh)
-        data_pd = pd.DataFrame.from_dict(data)
-        data_pd.to_excel(writer_test, sheet_name=str(i))
-        summary["ID"].append(i)
-        summary["avgDSC_Seg"].append(performance_measurer.compute_avg_dsc(labels, segs))
-        summary["avgDSC_enh"].append(performance_measurer.compute_avg_dsc(labels, enhs))
-    summary_pd = pd.DataFrame.from_dict(summary)
-    summary_pd.to_excel(writer_test, sheet_name=str("Summary"))
-    writer_test.save()
+    # performance_measurer = ImgDataPerformanceMeasurer()
+    # now = datetime.now()
+    # p_excel_save = os.path.join(path_save, "result_"+now.strftime("%Y-%m-%d %H-%M-%S")+".xlsx")
+    #
+    # writer_test = pd.ExcelWriter(os.path.join(p_excel_save), engine='xlsxwriter')
+    # summary = {"ID": [], "avgDSC_Seg":[], "avgDSC_enh":[]}
+    # for i in os.listdir(path_save):
+    #     if not os.path.isdir(os.path.join(path_save, i)):
+    #         continue
+    #     p_label_cur = os.path.join(p_label, i)
+    #     p_seg_cur = os.path.join(path_test_case, i)
+    #     p_enh_cur = os.path.join(path_save, i, "result")
+    #     data={"fileName":[], "areaLabel":[], "areaSeg":[], "areaEnhanced":[], "DSCSeg":[], "DSCEnh":[]}
+    #
+    #     labels = []
+    #     segs = []
+    #     enhs = []
+    #     print(i,"  ", len(os.listdir(p_enh_cur)))
+    #     for j in os.listdir(p_label_cur):
+    #         cur_label = cv2.imread(os.path.join(p_label_cur, j), cv2.IMREAD_GRAYSCALE)
+    #         cur_seg = cv2.imread(os.path.join(p_seg_cur, j), cv2.IMREAD_GRAYSCALE)
+    #         cur_enh = cv2.imread(os.path.join(p_enh_cur, j), cv2.IMREAD_GRAYSCALE)
+    #         data["fileName"].append(j)
+    #         data["areaLabel"].append(np.count_nonzero(cur_label))
+    #         data["areaSeg"].append(np.count_nonzero(cur_seg))
+    #         data["areaEnhanced"].append(np.count_nonzero(cur_enh))
+    #         data["DSCSeg"].append(performance_measurer.compute_dsc(cur_label, cur_seg))
+    #         data["DSCEnh"].append(performance_measurer.compute_dsc(cur_label, cur_enh))
+    #         labels.append(cur_label)
+    #         segs.append(cur_seg)
+    #         enhs.append(cur_enh)
+    #     data_pd = pd.DataFrame.from_dict(data)
+    #     data_pd.to_excel(writer_test, sheet_name=str(i))
+    #     summary["ID"].append(i)
+    #     summary["avgDSC_Seg"].append(performance_measurer.compute_avg_dsc(labels, segs))
+    #     summary["avgDSC_enh"].append(performance_measurer.compute_avg_dsc(labels, enhs))
+    # summary_pd = pd.DataFrame.from_dict(summary)
+    # summary_pd.to_excel(writer_test, sheet_name=str("Summary"))
+    # writer_test.save()

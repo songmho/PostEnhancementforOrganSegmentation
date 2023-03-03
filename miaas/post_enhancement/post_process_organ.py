@@ -34,7 +34,7 @@ class MedImageEnhancer:
         self.sequences = []
         self.num_slices = 0
     def get_hu_scale(self):
-        return self.wc-self.ww/2,self.wc+self.ww/2
+        return self.wc-self.ww/2, self.wc+self.ww/2
 
     def get_num_slices(self):
         return self.num_slices

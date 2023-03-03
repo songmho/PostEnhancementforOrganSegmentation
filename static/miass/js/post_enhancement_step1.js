@@ -41,17 +41,6 @@
     }
 
     $(document).ready(function(){
-        $.ajax({
-            url: "/api/initialize_diagnosis_env",
-            async: true,
-            method: 'POST',
-            data_type: "text",
-            success: function (data) {
-                console.log("INITIALIZED");
-            }, error: function (){
-            }
-        });
-
         write_log_in_console("Step 1 is to encode medical images.");
         $("#btn_lirads_step1_next").on("click", function () {
             $("#step-2").empty();
@@ -67,7 +56,6 @@
         });
 
         $("#input_loader_srs").on("change", function () {
-            console.log("btn_loader_seg_result");
             upload_img("test", "srs","#form_loader_srs", this);
         });
         $("#btn_loader_seg_result").on("change", function () {

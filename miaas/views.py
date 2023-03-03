@@ -117,25 +117,25 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def lirads_step1(request):
-    return render(request, "miaas/lirads_step1.html")
+    return render(request, "miaas/post_enhancement_step1.html")
 
 def lirads_step2(request):
-    return render(request, "miaas/lirads_step2.html")
+    return render(request, "miaas/post_enhancement_step2.html")
 
 def lirads_step3(request):
-    return render(request, "miaas/lirads_step3.html")
+    return render(request, "miaas/post_enhancement_step3.html")
 
 def lirads_step4(request):
-    return render(request, "miaas/lirads_step4.html")
+    return render(request, "miaas/post_enhancement_step4.html")
 
 def lirads_step5(request):
-    return render(request, "miaas/lirads_step5.html")
+    return render(request, "miaas/post_enhancement_step5.html")
 
 def lirads_step6(request):
-    return render(request, "miaas/lirads_step6.html")
+    return render(request, "miaas/post_enhancement_step6.html")
 
 def lirads_step7(request):
-    return render(request, "miaas/lirads_step6.html")
+    return render(request, "miaas/post_enhancement_step6.html")
 
 def main2_page(request):
     context = _get_session_context(request)
