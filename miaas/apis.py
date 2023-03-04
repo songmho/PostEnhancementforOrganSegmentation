@@ -37,7 +37,6 @@ logger = logging.getLogger(__name__)
 
 
 # Step 1
-
 @csrf_exempt
 def save_imgs_step1(request):
     if request.method == "POST":
@@ -115,6 +114,8 @@ def identify_continuity_sequence(request):
                 list_seqs[list(list_seqs.keys())[-1]]["end"] = int(i.split("_")[1].split(".")[0])
                 list_seqs[list(list_seqs.keys())[-1]]["masks"].append(convert_img_to_bytes(img))
             else:
+                if list_seqs[list(list_seqs.keys())[-1]]["end"] == -1:
+                    list_seqs[list(list_seqs.keys())[-1]]["end"] = list_seqs[list(list_seqs.keys())[-1]]["start"]
                 cur_type = np.count_nonzero(img) > 0
                 list_seqs[len(list_seqs)] = {"start": int(i.split("_")[1].split(".")[0]), "end": -1, "masks": [convert_img_to_bytes(img)]}
 
@@ -137,6 +138,68 @@ def identify_continuity_sequence(request):
     else:
         return JsonResponse({"state":False})
 
+@csrf_exempt
+def get_summary(request):
+    if request.method == "POST":
+
+        data = json.loads(request.POST.get("data"))
+        step = data['step']
+        summary = {"step1":{"num_slices_organ":0, "num_seqs":0, "min_size":0, "avg_size":0, "max_size":0},
+                   "step2":{"num_slices_organ":0, "num_remedied_slices":0, "num_seqs":0, "min_size":0, "avg_size":0, "max_size":0},
+                   "step3":{"num_slices_organ":0, "num_remedied_slices":0, "num_seqs":0, "min_size":0, "avg_size":0, "max_size":0},
+                   "step4":{"num_slices_organ":0, "num_remedied_slices":0, "num_seqs":0, "min_size":0, "avg_size":0, "max_size":0},
+                   "step5":{"num_slices_organ":0, "num_remedied_slices":0, "num_seqs":0, "min_size":0, "avg_size":0, "max_size":0},
+                   "step6":{"num_slices_organ":0, "num_remedied_slices":0, "num_seqs":0, "min_size":0, "avg_size":0, "max_size":0}}
+
+        smm = container.mias_container.post_enhancement_process.get_summary()
+        if step >= 1:
+            summary["step1"]["num_slices_organ"] = smm["Original"]["num_slices_having_organ"]
+            summary["step1"]["min_size"] = smm["Original"]["min_size"]
+            summary["step1"]["avg_size"] = smm["Original"]["avg_size"]
+            summary["step1"]["max_size"] = smm["Original"]["max_size"]
+            summary["step1"]["num_seqs"] = smm["Sequence"]["num_sequences"]
+        if step >= 2:
+            summary["step2"]["num_slices_organ"] = smm["appearance"]["num_slices_having_organ"]
+            summary["step2"]["num_remedied_slices"] = smm["appearance"]["num_remedied_SLs"]
+            summary["step2"]["min_size"] = smm["appearance"]["min_size"]
+            summary["step2"]["avg_size"] = smm["appearance"]["avg_size"]
+            summary["step2"]["max_size"] = smm["appearance"]["max_size"]
+            summary["step2"]["num_seqs"] = smm["Sequence"]["num_sequences"]
+        if step >= 3:
+            summary["step3"]["num_slices_organ"] = smm["location"]["num_slices_having_organ"]
+            summary["step3"]["num_remedied_slices"] = smm["location"]["num_remedied_SLs"]
+            summary["step3"]["min_size"] = smm["location"]["min_size"]
+            summary["step3"]["avg_size"] = smm["location"]["avg_size"]
+            summary["step3"]["max_size"] = smm["location"]["max_size"]
+            summary["step3"]["num_seqs"] = smm["Sequence"]["num_sequences"]
+        if step >= 4:
+            summary["step4"]["num_slices_organ"] = smm["size"]["num_slices_having_organ"]
+            summary["step4"]["num_remedied_slices"] = smm["size"]["num_remedied_SLs"]
+            summary["step4"]["min_size"] = smm["size"]["min_size"]
+            summary["step4"]["avg_size"] = smm["size"]["avg_size"]
+            summary["step4"]["max_size"] = smm["size"]["max_size"]
+            summary["step4"]["num_seqs"] = smm["Sequence"]["num_sequences"]
+        if step >= 5:
+            summary["step5"]["num_slices_organ"] = smm["shape"]["num_slices_having_organ"]
+            summary["step5"]["num_remedied_slices"] = smm["shape"]["num_remedied_SLs"]
+            summary["step5"]["min_size"] = smm["shape"]["min_size"]
+            summary["step5"]["avg_size"] = smm["shape"]["avg_size"]
+            summary["step5"]["max_size"] = smm["shape"]["max_size"]
+            summary["step5"]["num_seqs"] = smm["Sequence"]["num_sequences"]
+        if step >= 6:
+            summary["step6"]["num_slices_organ"] = smm["HU"]["num_slices_having_organ"]
+            summary["step6"]["num_remedied_slices"] = smm["HU"]["num_remedied_SLs"]
+            summary["step6"]["min_size"] = smm["HU"]["min_size"]
+            summary["step6"]["avg_size"] = smm["HU"]["avg_size"]
+            summary["step6"]["max_size"] = smm["HU"]["max_size"]
+            summary["step6"]["num_seqs"] = smm["HU"]["num_sequences"]
+
+
+
+
+        return JsonResponse({"state": True, "data":summary})
+    else:
+        return JsonResponse({"state": False})
 # Step 2
 @csrf_exempt
 def load_img_list(request):

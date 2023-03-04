@@ -48,6 +48,7 @@ urlpatterns = [
 
     ### for APIs ###
     url(r'^api/image_upload$', apis.handle_multple_image_upload),
+    url(r'^api/get_summary', apis.get_summary),
     url(r'^api/load_img_list_with_seqs', apis.load_img_list_with_seqs),
     url(r'^api/load_img_list', apis.load_img_list),
     url(r'^api/load_img', apis.save_imgs_step1),

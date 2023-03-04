@@ -40,41 +40,104 @@
     </div>
 
     <div class="w-100 mx-0 pt-3" style="height: 90%">
-        <div id="box">
-            <h5>CT Series</h5>
-            <div id="div_slice_step6" class="row mx-0 w-100" style="display: block; overflow-x: hidden; white-space: nowrap;">
-
-            </div>
-
-            <h5 class="mt-2">Segmentation Results</h5>
-            <div id="div_org_step6" class="row mx-0 w-100" style="display: block; overflow-x: hidden; white-space: nowrap;">
-
-            </div>
-
-            <h5 class="mt-2">Enhanced Results</h5>
-            <div id="div_enh_step6" class="row mx-0 w-100" style="display: block; overflow-x: hidden; white-space: nowrap;">
-
-            </div>
-            <div class="my-2 mx-0 row">
-                <div style="width: 95%" class="my-auto">
-                    <input type="range" id="step6_range" min="1" max="100" step="1" value="1" style="width: 99%" class="my-auto">
+        <div class="row mx-0">
+            <div style="width: 14%;">
+                <div style="height: 32px;">
                 </div>
-                <div style="width: 5%" id>
-                    <p style="display: inline;" id="step6_cur_sl">000</p> / <p style="display: inline;" id="step2_max_sl">000</p> </div>
+                <div style="height: 180px;" class="my-auto align-middle" >
+                    <h5 class="align-middle my-auto" style="position:relative; top: 50%;">Original CT Slices</h5>
+                </div>
+                <div style="height: 180px;" class="my-auto align-middle">
+                    <h5 class="align-middle"  style="position:relative; top: 50%;">Segmentation Results</h5>
+                </div>
+                <div style="height: 180px;" class="my-auto align-middle">
+                    <h5 class="align-middle"  style="position:relative; top: 50%;">Enhanced Results</h5>
+                </div>
+
+            </div>
+            <div id="box" style="width: 86%">
+                <div id="div_slice_id_step6" class="row mx-0 w-100" style="display: block; overflow-x: hidden; white-space: nowrap;">
+                </div>
+                <div id="div_slice_step6" class="row mx-0 w-100" style="display: block; overflow-x: hidden; white-space: nowrap;">
+
+                </div>
+                <div id="div_org_step6" class="row mx-0 w-100 mt-2" style="display: block; overflow-x: hidden; white-space: nowrap;">
+
+                </div>
+                <div id="div_enh_step6" class="row mx-0 w-100 mt-2" style="display: block; overflow-x: hidden; white-space: nowrap;">
+
+                </div>
+                <div class="my-2 mx-0 row">
+                    <div style="width: 95%" class="my-auto">
+                        <input type="range" id="step6_range" min="1" max="100" step="1" value="1" style="width: 99%" class="my-auto">
+                    </div>
+                    <div style="width: 5%" id>
+                        <p style="display: inline;" id="step6_cur_sl">000</p> / <p style="display: inline;" id="step6_max_sl">000</p> </div>
+                </div>
             </div>
         </div>
         <div class="w-100 my-2" style="height: 1px; background-color: #030303;"></div>
         <div>
             <h5>Summary</h5>
-            <div class="row ml-1">
-                <h6 class="col-3 px-1"># of Enhanced Slices: </h6>
-                <h6 id="input_step6_num_enhanced">-</h6>
-            </div>
-            <div class="row ml-1">
-                <h6 class="col-3 px-1"># of Continuity Sequences After Enhancement: </h6>
-                <h6 id="input_step6_num_seq_after">-</h6>
-            </div>
-
+{#            <div class="row ml-1">#}
+{#                <h6 class="col-3 px-1"># of Enhanced Slices: </h6>#}
+{#                <h6 id="input_step6_num_enhanced">-</h6>#}
+{#            </div>#}
+{#            <div class="row ml-1">#}
+{#                <h6 class="col-3 px-1"># of Continuity Sequences After Enhancement: </h6>#}
+{#                <h6 id="input_step6_num_seq_after">-</h6>#}
+{#            </div>#}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="col-2">Step</th>
+                        <th scope="col" class="col-1">1</th>
+                        <th scope="col" class="col-1">2</th>
+                        <th scope="col" class="col-1">3</th>
+                        <th scope="col" class="col-1">4</th>
+                        <th scope="col" class="col-1">5</th>
+                        <th scope="col" class="col-1">6</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row"># of Slices Having Organ</th>
+                        <td id="num_sl_org_step1_s6">-</td>
+                        <td id="num_sl_org_step2_s6">-</td>
+                        <td id="num_sl_org_step3_s6">-</td>
+                        <td id="num_sl_org_step4_s6">-</td>
+                        <td id="num_sl_org_step5_s6">-</td>
+                        <td id="num_sl_org_step6_s6">-</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"># of Continuity Sequences</th>
+                        <td id="num_seqs_step1_s6">-</td>
+                        <td id="num_seqs_step2_s6">-</td>
+                        <td id="num_seqs_step3_s6">-</td>
+                        <td id="num_seqs_step4_s6">-</td>
+                        <td id="num_seqs_step5_s6">-</td>
+                        <td id="num_seqs_step6_s6">-</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"># of Remedied Slices</th>
+                        <td id="num_rem_sl_step1_s6">-</td>
+                        <td id="num_rem_sl_step2_s6">-</td>
+                        <td id="num_rem_sl_step3_s6">-</td>
+                        <td id="num_rem_sl_step4_s6">-</td>
+                        <td id="num_rem_sl_step5_s6">-</td>
+                        <td id="num_rem_sl_step6_s6">-</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Organ Size in Slice (Pixels)</th>
+                        <td id="size_step1_s6">-</td>
+                        <td id="size_step2_s6">-</td>
+                        <td id="size_step3_s6">-</td>
+                        <td id="size_step4_s6">-</td>
+                        <td id="size_step5_s6">-</td>
+                        <td id="size_step6_s6">-</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
     </div>

@@ -18,8 +18,6 @@ matplotlib.use("Qt5Agg")
 
 class MedImageEnhancer:
     def __init__(self, is_display=False):
-        # self.seg_similarity_measurer = SimilarityMeasurer()
-        # self.seg_similarity_measurer.prepare_model()
         self.wc, self.ww = 40, 400
         self.th_location = 0.3
         self.th_size = 0.20
@@ -43,35 +41,16 @@ class MedImageEnhancer:
 
         self.hu_max, self.hu_min = self.__compute_HU_scale_organ()
         self.process_statistics = {
-            "Original": {"num_slices": 0, "num_slices_having_organ": 0, "num_slices_not_having_organ": 0},
-            "Sequence": {"num_sequences": 0, "num_sequences_appeared": 0, "num_sequences_non_appeared": 0, "list_appeared_sequences":[], "list_non_appeared_sequences":[]},
-            "appearance": {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{}},
-            "location": {"num_remedied_SLs": 0, "remedy_states": {}},
-            "size": {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{}},
-            "shape": {"num_remedied_SLs": 0, "remedy_states": {}},
-            "HU": {"num_remedied_SLs": 0, "remedy_states": {}, "HU_scales_seg": {}, "HU_scales_remedy": {}}
+            "Original":     {"num_slices": 0, "num_slices_having_organ": 0, "num_slices_not_having_organ": 0, "min_size":10000000, "avg_size":0, "max_size":0},
+            "Sequence":     {"num_sequences": 0, "num_sequences_appeared": 0, "num_sequences_non_appeared": 0, "list_appeared_sequences":[], "list_non_appeared_sequences":[]},
+            "appearance":   {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{},"num_slices_having_organ": 0, "num_sequences":0, "min_size":10000000, "avg_size":0, "max_size":0},
+            "location":     {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{},"num_slices_having_organ": 0, "num_sequences":0,"min_size":10000000, "avg_size":0, "max_size":0},
+            "size":         {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{},"num_slices_having_organ": 0, "num_sequences":0,"min_size":10000000, "avg_size":0, "max_size":0},
+            "shape":        {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{},"num_slices_having_organ": 0, "num_sequences":0,"min_size":10000000, "avg_size":0, "max_size":0},
+            "HU":           {"num_remedied_SLs": 0, "remedy_states": {}, "HU_scales_seg": {}, "HU_scales_remedy": {}, "num_slices_having_organ": 0, "num_sequences":0, "size_seg":{}, "size_rmd":{}, "min_size":10000000, "avg_size":0, "max_size":0}
         }
 
-    def set_current_mi_imgs(self, p):
-        root_path = r".\miaas\imgs"
-        self.path_org = os.path.join(root_path)
-
-    def get_sequences(self):
-        return self.sequences
-
-    def set_img_path(self, type,cur_path):
-        if type == "srs":
-            self.path_org_mi = cur_path
-            self.path_org_sl = cur_path.replace("srs", "srs_png")
-            os.mkdir(self.path_org_sl)
-        elif type == "seg_result":
-            self.path_seg_result = cur_path
-        elif type == "label":
-            self.path_label = cur_path
-        self.srs_org_mi = []
-        self.srs_org_sl = []
-        self.srs_seg_sl = []
-
+    # Methods for Step 1. Identifying Continuity Sequence & Loading CT Series with Segmentation resutls
     def load_med_imgs(self):
         """
         To load segmentation results
@@ -100,6 +79,10 @@ class MedImageEnhancer:
 
         # To load segmentation results
         list_fname = os.listdir(os.path.join(self.path_seg_result))
+        sizes = 0
+        min_size = 1000000
+        max_size = 0
+
         for i in range(len(list_fname)):
             img = cv2.imread(os.path.join(self.path_seg_result, list_fname[i]))
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -109,21 +92,18 @@ class MedImageEnhancer:
             self.process_statistics["Original"]["num_slices"] += 1
             if np.count_nonzero(img) > 0:
                 self.process_statistics["Original"]["num_slices_having_organ"] += 1
+                sizes += np.count_nonzero(img)
+                if min_size>np.count_nonzero(img):
+                    min_size = np.count_nonzero(img)
+                if max_size < np.count_nonzero(img):
+                    max_size = np.count_nonzero(img)
             else:
                 self.process_statistics["Original"]["num_slices_not_having_organ"] += 1
-        print("load_med_imgs Done")
+        self.process_statistics["Original"]["avg_size"] = round(sizes/ self.process_statistics["Original"]["num_slices_having_organ"],2)
+        self.process_statistics["Original"]["min_size"] = min_size
+        self.process_statistics["Original"]["max_size"] = max_size
 
-    def __convert_color_depth(self, sl):
-        img = 1 * sl + 0
-        ymin = 0
-        ymax = 255
-        idx_high = img >= self.wc + self.ww / 2
-        idx_low = img <= self.wc - self.ww / 2
-        img = np.where(idx_high, ymax, img)
-        img = np.where(idx_low, ymin, img)
-        img = np.where(~idx_high & ~idx_low, ((img - self.wc) / self.ww + 0.5) * (ymax - ymin) + ymin, img)
-        img = np.reshape(img, (512, 512, 1))
-        return img
+        print("load_med_imgs Done")
 
     def generate_sequences(self):
         """
@@ -210,7 +190,7 @@ class MedImageEnhancer:
             "HU": {"num_remedied_SLs": 0, "remedy_states": {}, "HU_scales_seg": {}, "HU_scales_remedy": {}}
         }
 
-    # Methods for Correcting Appearance Inconsistency
+    # Methods for Step 2. Correcting Appearance Inconsistency
     def correct_appearance_inconsistency(self):
         """
         To detect appearance consistency violation and remedy them
@@ -220,6 +200,24 @@ class MedImageEnhancer:
         refined_seqs = self.detect_appearance_inconsistency()
         self.sequences = copy.deepcopy(refined_seqs)
         self.__move_empty_to_false_seq()  # To reorganize segmentation results
+        self.process_statistics["appearance"]["num_sequences"] = len(refined_seqs)
+        sizes = 0
+        min_size = 1000000
+        max_size = 0
+        for seq in refined_seqs:
+            for i in seq["data"]:
+                img = i["img"]
+                if np.count_nonzero(img) > 0:
+                    self.process_statistics["appearance"]["num_slices_having_organ"] += 1
+                    sizes += np.count_nonzero(img)
+                    if min_size > np.count_nonzero(img):
+                        min_size = np.count_nonzero(img)
+                    if max_size < np.count_nonzero(img):
+                        max_size = np.count_nonzero(img)
+        self.process_statistics["appearance"]["min_size"] = min_size
+        self.process_statistics["appearance"]["max_size"] = max_size
+        self.process_statistics["appearance"]["avg_size"] = round(sizes / self.process_statistics["appearance"]["num_slices_having_organ"], 2)
+
         if self.display:
             list_data = []
             list_selected_cur_ids = []
@@ -241,6 +239,8 @@ class MedImageEnhancer:
                                       "HU Scale": self.__compute_HU_scale(sl, self.sequences[id]["data"][j]["img"])[0],
                                       "remedy_state": self.process_statistics["appearance"]["remedy_states"][cur_id]}
                          }])
+
+
             self.display_appearance_correction_result()
             self.visualize_appearance_remedied(list_data)
             # cv2.destroyAllWindows()
@@ -576,174 +576,69 @@ class MedImageEnhancer:
             seq_ap_cur = seq_np_cur
             seq_np_prv = seq_ap_prv
             seq_np_nxt = seq_ap_nxt
+            try:
+                if seq_np_prv is not None:
+                    transition = self.__compute_transition(seq_ap_cur["data"], 0)
+                    # compare ap_nxt and np_cur
+                    sl_seg_nxt = seq_ap_cur["data"][0]["img"]
+                    sl_nxt = self.srs_seg_sl[seq_ap_cur["data"][0]["id"]]["img"]
+                    list_removed_sl = []
+                    for i in range(len(seq_np_prv["data"]) - 1, 0):
+                        sl_seg_cur = seq_np_prv["data"][i]["img"]
+                        sl_cur = self.srs_seg_sl[seq_np_prv["data"][i]["id"]]["img"]
+                        msk = self.__revise_slsegs_violating_appearance(None, sl_seg_cur,
+                                                                                                 sl_seg_nxt, None, sl_cur,
+                                                                                                 sl_nxt, transition)
+                        if np.count_nonzero(msk) < 200 or np.count_nonzero(sl_seg_nxt) <= np.count_nonzero(msk):
+                            break
+                        seq_np_prv["data"][i]["img"] = msk
+                        sl_seg_cur = seq_np_prv["data"][i]["img"]
+                        list_removed_sl.append(i)
+                        sl_seg_nxt = sl_seg_cur
+                        sl_nxt = sl_cur
+                    for i in list_removed_sl:
+                        seq_ap_cur["data"].insert(0, seq_np_prv["data"][i])
+                        seq_np_prv["data"].pop(i)
 
-            if seq_np_prv is not None:
-                transition = self.__compute_transition(seq_ap_cur["data"], 0)
-                # compare ap_nxt and np_cur
-                sl_seg_nxt = seq_ap_cur["data"][0]["img"]
-                sl_nxt = self.srs_seg_sl[seq_ap_cur["data"][0]["id"]]["img"]
-                list_removed_sl = []
-                for i in range(len(seq_np_prv["data"]) - 1, 0):
-                    sl_seg_cur = seq_np_prv["data"][i]["img"]
-                    sl_cur = self.srs_seg_sl[seq_np_prv["data"][i]["id"]]["img"]
-                    msk = self.__revise_slsegs_violating_appearance(None, sl_seg_cur,
-                                                                                             sl_seg_nxt, None, sl_cur,
-                                                                                             sl_nxt, transition)
-                    if np.count_nonzero(msk) < 200 or np.count_nonzero(sl_seg_nxt) <= np.count_nonzero(msk):
-                        break
-                    seq_np_prv["data"][i]["img"] = msk
-                    sl_seg_cur = seq_np_prv["data"][i]["img"]
-                    list_removed_sl.append(i)
-                    sl_seg_nxt = sl_seg_cur
-                    sl_nxt = sl_cur
-                for i in list_removed_sl:
-                    seq_ap_cur["data"].insert(0, seq_np_prv["data"][i])
-                    seq_np_prv["data"].pop(i)
+                    for k in range(len(seq_np_prv["data"])):
+                        self.process_statistics["appearance"]["remedy_states"][seq_np_prv["data"][k]["id"]] = "Remedied"
+                        self.process_statistics["appearance"]["num_remedied_SLs"] += 1
 
-                for k in range(len(seq_np_prv["data"])):
-                    self.process_statistics["appearance"]["remedy_states"][seq_np_prv["data"][k]["id"]] = "Remedied"
-                    self.process_statistics["appearance"]["num_remedied_SLs"] += 1
+                if seq_np_nxt is not None:
+                    transition = self.__compute_transition(seq_ap_cur["data"], -1)
+                    # Compare ap_prv and np_cur
+                    sl_seg_prv =seq_ap_cur["data"][-1]["img"]
+                    sl_prv = self.srs_seg_sl[seq_ap_cur["data"][-1]["id"]]["img"]
+                    list_removed_sl = []
+                    print(seq_ap_cur["data"][-1]["id"])
+                    for i in range(len(seq_np_nxt["data"])-1):
+                        sl_seg_cur = seq_np_nxt["data"][i]["img"]
+                        sl_cur = self.srs_seg_sl[seq_np_nxt["data"][i]["id"]]["img"]
+                        msk =  self.__revise_slsegs_violating_appearance(sl_seg_prv, sl_seg_cur, None, sl_prv, sl_cur, None, transition)
 
-            if seq_np_nxt is not None:
-                transition = self.__compute_transition(seq_ap_cur["data"], -1)
-                # Compare ap_prv and np_cur
-                sl_seg_prv =seq_ap_cur["data"][-1]["img"]
-                sl_prv = self.srs_seg_sl[seq_ap_cur["data"][-1]["id"]]["img"]
-                list_removed_sl = []
-                print(seq_ap_cur["data"][-1]["id"])
-                for i in range(len(seq_np_nxt["data"])-1):
-                    sl_seg_cur = seq_np_nxt["data"][i]["img"]
-                    sl_cur = self.srs_seg_sl[seq_np_nxt["data"][i]["id"]]["img"]
-                    msk =  self.__revise_slsegs_violating_appearance(sl_seg_prv, sl_seg_cur, None, sl_prv, sl_cur, None, transition)
+                        if np.count_nonzero(msk) < 200 or np.count_nonzero(sl_seg_prv) <= np.count_nonzero(msk):
+                            break
+                        seq_np_nxt["data"][i]["img"] = msk
+                        sl_seg_cur = seq_np_nxt["data"][i]["img"]
 
-                    if np.count_nonzero(msk) < 200 or np.count_nonzero(sl_seg_prv) <= np.count_nonzero(msk):
-                        break
-                    seq_np_nxt["data"][i]["img"] = msk
-                    sl_seg_cur = seq_np_nxt["data"][i]["img"]
+                        list_removed_sl.append(i)
+                        sl_seg_prv = sl_seg_cur
+                        sl_prv = sl_cur
+                    for i in range(len(list_removed_sl)):
+                        seq_ap_cur["data"].insert(-1, seq_np_nxt["data"][0])
+                        seq_np_nxt["data"].pop(0)
 
-                    list_removed_sl.append(i)
-                    sl_seg_prv = sl_seg_cur
-                    sl_prv = sl_cur
-                for i in range(len(list_removed_sl)):
-                    seq_ap_cur["data"].insert(-1, seq_np_nxt["data"][0])
-                    seq_np_nxt["data"].pop(0)
-
-                for k in range(len(seq_np_nxt["data"])):
-                    self.process_statistics["appearance"]["remedy_states"][seq_np_nxt["data"][k]["id"]] = "Remedied"
-                    self.process_statistics["appearance"]["num_remedied_SLs"] += 1
-
+                    for k in range(len(seq_np_nxt["data"])):
+                        self.process_statistics["appearance"]["remedy_states"][seq_np_nxt["data"][k]["id"]] = "Remedied"
+                        self.process_statistics["appearance"]["num_remedied_SLs"] += 1
+            except:
+                pass
             results = [seq_np_prv, seq_ap_cur, seq_np_nxt]
         return results
 
-    def visualize_appearance_remedied(self, list_data):
-        # dsize = (512, 512)
-        dsize = (665, 665)
-        idx = 0
-        do_visualize = True
-        while do_visualize:
-            imgs, data = list_data[idx][0], list_data[idx][1]
-            sls_rvsd = []
-            for k, v in imgs.items():
-                if v is None:
-                    v = np.zeros(dsize, np.uint8)
-                v = cv2.cv2.resize(v, dsize=dsize, interpolation=cv2.INTER_AREA)
-                v[0, :] = 255
-                v[dsize[1]-1, :] = 255
-                v[:, 0] = 255
-                v[:, dsize[0]-1] = 255
-                sls_rvsd.append(v)
-            img_concat = np.hstack(sls_rvsd)
-            height, width = img_concat.shape
-            img = np.zeros((height+250, width), np.uint8)
-            img[80:height+80, :] = img_concat
-            img[height+80,:]= 255
-            img[-1,:]= 255
-            for i in range(len(list(imgs.keys()))):
-                img[height+50:, i*dsize[0]] = 255
-                img[height+50:, (i+1)*dsize[0]-1] = 255
-
-            # Title
-            cv2.putText(img, "Remedy Result Visualization - Appearance Inconsistency", (20, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "a: Previous Sequence, d:Next Sequence", (img.shape[1]-450, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "z: Previous Slice, x: Next Slice, c: Next Step", (img.shape[1]-510, 60), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
-
-            # Slice Title
-            x_axis = {"Slice": 20, "Seg. Result": dsize[0]+20, "Remedied": dsize[0]*2+20}
-            cv2.putText(img, "[Slice] ", (x_axis["Slice"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "[Segmentation Result] ", (x_axis["Seg. Result"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "[Remedied Result] ", (x_axis["Remedied"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-
-            # Description
-            str_hu_scale_seg = str(data["Seg. Result"]["HU Scale"][0])+" ~ "+str(data["Seg. Result"]["HU Scale"][1])+" (HU)"
-            str_hu_scale_rmd = str(data["Remedied"]["HU Scale"][0])+" ~ "+str(data["Remedied"]["HU Scale"][1])+" (HU)"
-            # Description for Slice
-            cv2.putText(img, "Slice ID: "+data["Slice"]["fname"], (x_axis["Slice"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            # Description for Segmentation Result
-            cv2.putText(img, "Sequence ID    : "+str(data["Seg. Result"]["sequence"]["id"])+" ("+data["Seg. Result"]["sequence"]["type"]+")",
-                        (x_axis["Seg. Result"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ Size     : "+data["Seg. Result"]["size"]+" (Pixels)", (x_axis["Seg. Result"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ HU Scale: "+str_hu_scale_seg, (x_axis["Seg. Result"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            # Description for Remedied Result
-            cv2.putText(img, "Remedy State  :".ljust(16)+data["Remedied"]["remedy_state"], (x_axis["Remedied"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ Size     :".ljust(17)+data["Remedied"]["size"]+" (Pixels)", (x_axis["Remedied"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ HU Scale:".ljust(16)+str_hu_scale_rmd, (x_axis["Remedied"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-
-            cv2.imshow("Visualization", img)
-            cv2.moveWindow("Visualization", 922, 20)
-            key = cv2.waitKey()
-            if key == ord('c'):
-                do_visualize = False
-            elif key == ord('z'):
-                if idx>0:
-                    idx-=1
-            elif key == ord('x'):
-                if idx<len(list_data)-1:
-                    idx+=1
-            elif key == ord("d"):
-                is_appeared = np.count_nonzero(imgs["Remedied"])>0
-                for j in range(idx+1, len(list_data)):
-                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
-                        idx = j
-                        break
-            elif key == ord("a"):
-                is_appeared = np.count_nonzero(imgs["Remedied"])>0
-                for j in range(idx-1, -1, -1):
-                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
-                        idx = j
-                        break
-
-    def display_appearance_correction_result(self):
-        for id in range(len(self.sequences)):  # Loop for sequences
-            for sl_id in range(len(self.sequences[id]["data"])):  # To check empty slice
-                cur_id = self.sequences[id]["data"][sl_id]["id"]
-                self.process_statistics["appearance"]["size_seg"][cur_id] = np.count_nonzero(self.list_prv[cur_id])
-                self.process_statistics["appearance"]["size_rmd"][cur_id] = np.count_nonzero(self.sequences[id]["data"][sl_id]["img"])
-
-        ids = list(self.process_statistics["appearance"]["size_seg"].keys())
-        list_size_segs = list(self.process_statistics["appearance"]["size_seg"].values())
-        list_size_remedies = list(self.process_statistics["appearance"]["size_rmd"].values())
-
-        plt.rc("font", size=10)
-        fig, ax = plt.subplots(1, 1)
-        width = 1995/ fig.dpi
-        height = 915/fig.dpi
-        fig.set_figwidth(width)
-        fig.set_figheight(height)
-        ax.plot(ids, list_size_segs, marker="s", color="r", label="Segmentation Result")
-        ax.plot(ids, list_size_remedies, marker="*", color="g", label="Remedied Result")
-
-        ax.set_xlabel("Slice ID")
-        ax.set_ylabel("Segmented Organ Area (Pixels)")
-        ax.legend(loc=2)
-        fig.canvas.draw()
-        img = np.array(fig.canvas.get_renderer()._renderer, np.uint8)
-        img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
-        cv2.imshow("Correction Result", img)
-        cv2.moveWindow("Correction Result", 922, 1000)
-
     ####################################################
 
-    # Methods for Correcting Location Inconsistency
+    # Methods for Step 3. Correcting Location Inconsistency
     def correct_location_inconsistency(self):
         """
         To detect location consistency violation and remedy the violation
@@ -767,6 +662,23 @@ class MedImageEnhancer:
             self.detect_location_inconsistency(id)
 
         self.__move_empty_to_false_seq()
+        self.process_statistics["location"]["num_sequences"] = len(self.sequences)
+        sizes = 0
+        min_size = 1000000
+        max_size = 0
+        for seq in self.sequences:
+            for i in seq["data"]:
+                img = i["img"]
+                if np.count_nonzero(img) > 0:
+                    self.process_statistics["location"]["num_slices_having_organ"] += 1
+                    sizes += np.count_nonzero(img)
+                    if min_size > np.count_nonzero(img):
+                        min_size = np.count_nonzero(img)
+                    if max_size < np.count_nonzero(img):
+                        max_size = np.count_nonzero(img)
+        self.process_statistics["location"]["min_size"] = min_size
+        self.process_statistics["location"]["max_size"] = max_size
+        self.process_statistics["location"]["avg_size"] = round(sizes / self.process_statistics["location"]["num_slices_having_organ"], 2)
         if self.display:
             list_data = []
             list_selected_cur_ids = []
@@ -789,6 +701,8 @@ class MedImageEnhancer:
                                       "HU Scale": self.__compute_HU_scale(sl, self.sequences[id]["data"][j]["img"])[0],
                                       "remedy_state": self.process_statistics["location"]["remedy_states"][cur_id]}
                          }])
+
+
             self.display_location_correction_result()
             self.visualize_location_remedied(list_data)
             # cv2.destroyAllWindows()
@@ -870,146 +784,9 @@ class MedImageEnhancer:
             sl_trg = sl_cur
             slseg_trg = slseg_cur
 
-    def visualize_location_remedied(self, list_data):
-        # dsize = (512, 512)
-        dsize = (665, 665)
-        idx = 0
-        do_visualize = True
-        while do_visualize:
-            imgs, data = list_data[idx][0], list_data[idx][1]
-            sls_rvsd = []
-            for k, v in imgs.items():
-                if v is None:
-                    v = np.zeros(dsize, np.uint8)
-                v = cv2.cv2.resize(v, dsize=dsize, interpolation=cv2.INTER_AREA)
-                v[0, :] = 255
-                v[dsize[1]-1, :] = 255
-                v[:, 0] = 255
-                v[:, dsize[0]-1] = 255
-                sls_rvsd.append(v)
-            img_concat = np.hstack(sls_rvsd)
-            height, width = img_concat.shape
-            img = np.zeros((height+250, width), np.uint8)
-            img[80:height+80, :] = img_concat
-            img[height+80,:]= 255
-            img[-1,:]= 255
-            for i in range(len(list(imgs.keys()))):
-                img[height+50:, i*dsize[0]] = 255
-                img[height+50:, (i+1)*dsize[0]-1] = 255
-
-            # Title
-            cv2.putText(img, "Remedy Result Visualization - Location Inconsistency", (20, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "a: Previous Sequence, d:Next Sequence", (img.shape[1]-450, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "z: Previous Slice, x: Next Slice, c: Next Step", (img.shape[1]-510, 60), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
-
-            # Slice Title
-            x_axis = {"Slice": 20, "Seg. Result": dsize[0]+20, "Remedied": dsize[0]*2+20}
-            cv2.putText(img, "[Slice] ", (x_axis["Slice"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "[Segmentation Result] ", (x_axis["Seg. Result"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "[Remedied Result] ", (x_axis["Remedied"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-
-            # Description
-            str_hu_scale_seg = str(data["Seg. Result"]["HU Scale"][0])+" ~ "+str(data["Seg. Result"]["HU Scale"][1])+" (HU)"
-            str_hu_scale_rmd = str(data["Remedied"]["HU Scale"][0])+" ~ "+str(data["Remedied"]["HU Scale"][1])+" (HU)"
-            # Description for Slice
-            cv2.putText(img, "Slice ID: "+data["Slice"]["fname"], (x_axis["Slice"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            # Description for Segmentation Result
-            cv2.putText(img, "Sequence ID    : "+str(data["Seg. Result"]["sequence"]["id"])+" ("+data["Seg. Result"]["sequence"]["type"]+")",
-                        (x_axis["Seg. Result"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ Size     : "+data["Seg. Result"]["size"]+" (Pixels)", (x_axis["Seg. Result"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ HU Scale: "+str_hu_scale_seg, (x_axis["Seg. Result"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            # Description for Remedied Result
-            cv2.putText(img, "Remedy State  :".ljust(16)+data["Remedied"]["remedy_state"], (x_axis["Remedied"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ Size     :".ljust(17)+data["Remedied"]["size"]+" (Pixels)", (x_axis["Remedied"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ HU Scale:".ljust(16)+str_hu_scale_rmd, (x_axis["Remedied"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-
-            cv2.imshow("Visualization", img)
-            cv2.moveWindow("Visualization", 922, 20)
-            key = cv2.waitKey()
-            if key == ord('c'):
-                do_visualize = False
-            elif key == ord('z'):
-                if idx>0:
-                    idx-=1
-            elif key == ord('x'):
-                if idx<len(list_data)-1:
-                    idx+=1
-            elif key == ord("d"):
-                is_appeared = np.count_nonzero(imgs["Remedied"])>0
-                for j in range(idx+1, len(list_data)):
-                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
-                        idx = j
-                        break
-
-            elif key == ord("a"):
-                is_appeared = np.count_nonzero(imgs["Remedied"])>0
-                for j in range(idx-1, -1, -1):
-                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
-                        idx = j
-                        break
-
-    def display_location_correction_result(self):
-        idx = -1
-        prv_cn_seg = None
-        prv_cn_rmd = None
-        prv_rst_seg = None
-        prv_rst_rmd = None
-        for id in range(len(self.sequences)):  # Loop for sequences
-            for sl_id in range(len(self.sequences[id]["data"])):  # To check empty slice
-                cur_id = self.sequences[id]["data"][sl_id]["id"]
-                idx += 1
-                if prv_rst_seg is None and prv_rst_rmd is None:
-                    prv_rst_seg = self.list_prv[cur_id]
-                    prv_rst_rmd = self.sequences[id]['data'][sl_id]["img"]
-                    continue
-                rate_seg = self.__compute_inclusion_rate(prv_rst_seg, self.list_prv[cur_id])
-                rate_rmd = self.__compute_inclusion_rate(prv_rst_seg, self.sequences[id]['data'][sl_id]["img"])
-                self.process_statistics["location"]["location_diff_seg"][idx] = rate_seg
-                self.process_statistics["location"]["location_diff_rmd"][idx] = rate_rmd
-                prv_rst_seg = self.list_prv[cur_id]
-                prv_rst_rmd = self.sequences[id]['data'][sl_id]["img"]
-                # if prv_cn_seg == None:
-                #     prv_cn_seg, _ = self.__find_center_and_bounding_box(self.list_prv[cur_id])
-                #     prv_cn_rmd, _ = self.__find_center_and_bounding_box(self.sequences[id]["data"][sl_id]["img"])
-                #     continue
-                # cn_seg, _ = self.__find_center_and_bounding_box(self.list_prv[cur_id]["img"])
-                # cn_rmd, _ = self.__find_center_and_bounding_box(self.sequences[id]["data"][sl_id]["img"])
-                # diff_seg = np.sqrt((cn_seg[1]-prv_cn_seg[1])**2+(cn_seg[0]-prv_cn_seg[0])**2)
-                # if prv_cn_seg == (0,0): diff_seg = 0
-                # diff_rmd = np.sqrt((cn_rmd[1]-prv_cn_rmd[1])**2+(cn_rmd[0]-prv_cn_rmd[0])**2)
-                # if prv_cn_rmd == (0,0): diff_rmd = 0
-                # self.process_statistics["location"]["location_diff_seg"][idx] = diff_seg
-                # self.process_statistics["location"]["location_diff_rmd"][idx] = diff_rmd
-                # prv_cn_seg = cn_seg
-                # prv_cn_rmd = cn_rmd
-
-        ids = list(self.process_statistics["location"]["location_diff_seg"].keys())
-        list_loc_diff_segs = list(self.process_statistics["location"]["location_diff_seg"].values())
-        list_loc_diff_remedys = list(self.process_statistics["location"]["location_diff_rmd"].values())
-
-        plt.rc("font", size=10)
-        fig, ax = plt.subplots(1, 1)
-        width = 1995/ fig.dpi
-        height = 915/fig.dpi
-        fig.set_figwidth(width)
-        fig.set_figheight(height)
-        plt.plot(ids, list_loc_diff_segs, marker="s", color="r", label="Segmentation Result")
-        plt.plot(ids, list_loc_diff_remedys, marker="*", color="g", label="Remedied Result")
-
-        ax.set_xlabel("Slice ID")
-        # ax.set_ylabel("Difference of Location Between Adjacent Slice (Pixels)")
-        ax.set_ylabel("Location Similarity Rate Between Adjacent Slices (%)")
-        ax.legend(loc=2)
-        # fig.tight_layout()
-        fig.canvas.draw()
-        img = np.array(fig.canvas.get_renderer()._renderer, np.uint8)
-        img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
-        cv2.imshow("Correction Result", img)
-        cv2.moveWindow("Correction Result", 922, 1000)
-
     ####################################################
 
-    # Methods for Correcting Size Inconsistency
+    # Methods for Step 4. Correcting Size Inconsistency
     def correct_size_inconsistency(self):
         """
         To detect and remedy the shape consistency violation
@@ -1026,7 +803,24 @@ class MedImageEnhancer:
                 continue
             list_groups = self.detect_size_inconsistency(id)
             self.revise_size_inconsistency(list_groups, id)
-
+        self.__move_empty_to_false_seq()
+        self.process_statistics["size"]["num_sequences"] = len(self.sequences)
+        sizes = 0
+        min_size = 1000000
+        max_size = 0
+        for seq in self.sequences:
+            for i in seq["data"]:
+                img = i["img"]
+                if np.count_nonzero(img) > 0:
+                    self.process_statistics["size"]["num_slices_having_organ"] += 1
+                    sizes += np.count_nonzero(img)
+                    if min_size > np.count_nonzero(img):
+                        min_size = np.count_nonzero(img)
+                    if max_size < np.count_nonzero(img):
+                        max_size = np.count_nonzero(img)
+        self.process_statistics["size"]["min_size"] = min_size
+        self.process_statistics["size"]["max_size"] = max_size
+        self.process_statistics["size"]["avg_size"] = round(sizes / self.process_statistics["size"]["num_slices_having_organ"], 2)
         if self.display:
             list_data = []
             list_selected_cur_ids = []
@@ -1051,7 +845,6 @@ class MedImageEnhancer:
             self.display_size_correction_result()
             self.visualize_size_remedied(list_data)
             # cv2.destroyAllWindows()
-            # self.__move_empty_to_false_seq()
 
     def detect_size_inconsistency(self, id):
         list_groups = []
@@ -1275,116 +1068,9 @@ class MedImageEnhancer:
                     self.sequences[id]["data"][i]["img"] = np.subtract(self.sequences[id]["data"][i]["img"], sec_cur)
             list_prv_sections = self.__divide_sections(self.sequences[id]["data"][i]["img"])
 
-    def visualize_size_remedied(self, list_data):
-        # dsize = (512, 512)
-        dsize = (665, 665)
-        idx = 0
-        do_visualize = True
-        while do_visualize:
-            imgs, data = list_data[idx][0], list_data[idx][1]
-            sls_rvsd = []
-            for k, v in imgs.items():
-                if v is None:
-                    v = np.zeros(dsize, np.uint8)
-                v = cv2.cv2.resize(v, dsize=dsize, interpolation=cv2.INTER_AREA)
-                v[0, :] = 255
-                v[dsize[1]-1, :] = 255
-                v[:, 0] = 255
-                v[:, dsize[0]-1] = 255
-                sls_rvsd.append(v)
-            img_concat = np.hstack(sls_rvsd)
-            height, width = img_concat.shape
-            img = np.zeros((height+250, width), np.uint8)
-            img[80:height+80, :] = img_concat
-            img[height+80,:]= 255
-            img[-1,:]= 255
-            for i in range(len(list(imgs.keys()))):
-                img[height+50:, i*dsize[0]] = 255
-                img[height+50:, (i+1)*dsize[0]-1] = 255
-
-            # Title
-            cv2.putText(img, "Remedy Result Visualization - Size Inconsistency", (20, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "a: Previous Sequence, d:Next Sequence", (img.shape[1]-450, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "z: Previous Slice, x: Next Slice, c: Next Step", (img.shape[1]-510, 60), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
-
-            # Slice Title
-            x_axis = {"Slice": 20, "Seg. Result": dsize[0]+20, "Remedied": dsize[0]*2+20}
-            cv2.putText(img, "[Slice] ", (x_axis["Slice"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "[Segmentation Result] ", (x_axis["Seg. Result"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "[Remedied Result] ", (x_axis["Remedied"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-
-            # Description
-            str_hu_scale_seg = str(data["Seg. Result"]["HU Scale"][0])+" ~ "+str(data["Seg. Result"]["HU Scale"][1])+" (HU)"
-            str_hu_scale_rmd = str(data["Remedied"]["HU Scale"][0])+" ~ "+str(data["Remedied"]["HU Scale"][1])+" (HU)"
-            # Description for Slice
-            cv2.putText(img, "Slice ID: "+data["Slice"]["fname"], (x_axis["Slice"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            # Description for Segmentation Result
-            cv2.putText(img, "Sequence ID    : "+str(data["Seg. Result"]["sequence"]["id"])+" ("+data["Seg. Result"]["sequence"]["type"]+")",
-                        (x_axis["Seg. Result"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ Size     : "+data["Seg. Result"]["size"]+" (Pixels)", (x_axis["Seg. Result"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ HU Scale: "+str_hu_scale_seg, (x_axis["Seg. Result"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            # Description for Remedied Result
-            cv2.putText(img, "Remedy State  :".ljust(16)+data["Remedied"]["remedy_state"], (x_axis["Remedied"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ Size     :".ljust(17)+data["Remedied"]["size"]+" (Pixels)", (x_axis["Remedied"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ HU Scale:".ljust(16)+str_hu_scale_rmd, (x_axis["Remedied"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-
-            cv2.imshow("Visualization", img)
-            cv2.moveWindow("Visualization", 922, 20)
-            key = cv2.waitKey()
-            if key == ord('c'):
-                do_visualize = False
-            elif key == ord('z'):
-                if idx>0:
-                    idx-=1
-            elif key == ord('x'):
-                if idx<len(list_data)-1:
-                    idx+=1
-            elif key == ord("d"):
-                is_appeared = np.count_nonzero(imgs["Remedied"])>0
-                for j in range(idx+1, len(list_data)):
-                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
-                        idx = j
-                        break
-
-            elif key == ord("a"):
-                is_appeared = np.count_nonzero(imgs["Remedied"])>0
-                for j in range(idx-1, -1, -1):
-                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
-                        idx = j
-                        break
-
-    def display_size_correction_result(self):
-        for id in range(len(self.sequences)):  # Loop for sequences
-            for sl_id in range(len(self.sequences[id]["data"])):  # To check empty slice
-                cur_id = self.sequences[id]["data"][sl_id]["id"]
-                self.process_statistics["size"]["size_seg"][cur_id] = np.count_nonzero(self.list_prv[cur_id])
-                self.process_statistics["size"]["size_rmd"][cur_id] = np.count_nonzero(self.sequences[id]["data"][sl_id]["img"])
-
-        ids = list(self.process_statistics["size"]["size_seg"].keys())
-        list_size_segs = list(self.process_statistics["size"]["size_seg"].values())
-        list_size_remedys = list(self.process_statistics["size"]["size_rmd"].values())
-
-        plt.rc("font", size=10)
-        fig, ax = plt.subplots(1, 1)
-        width = 1995/ fig.dpi
-        height = 915/fig.dpi
-        fig.set_figwidth(width)
-        fig.set_figheight(height)
-        plt.plot(ids, list_size_segs, marker="s", color="r", label="Segmentation Result")
-        plt.plot(ids, list_size_remedys, marker="*", color="g", label="Remedied Result")
-
-        ax.set_xlabel("Slice ID")
-        ax.set_ylabel("Segmented Organ Area (Pixels)")
-        ax.legend(loc=2)
-        fig.canvas.draw()
-        img = np.array(fig.canvas.get_renderer()._renderer, np.uint8)
-        img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
-        cv2.imshow("Correction Result", img)
-        cv2.moveWindow("Correction Result", 922, 1000)
-
     ####################################################
 
-    # Methods for Correcting Shape Inconsistency
+    # Methods for Step 5. Correcting Shape Inconsistency
     def correct_shape_inconsistency(self):
         """
         To detect and remedy the shape consistency violation
@@ -1405,7 +1091,24 @@ class MedImageEnhancer:
             if len(list_groups)>1:
                 self.sequences[id]["data"] = copy.deepcopy(self.revise_shape_inconsistency(list_groups))
         self.__move_empty_to_false_seq()
-
+        self.process_statistics["shape"]["num_sequences"] = len(self.sequences)
+        sizes = 0
+        min_size = 1000000
+        max_size = 0
+        for seq in self.sequences:
+            for i in seq["data"]:
+                img = i["img"]
+                if np.count_nonzero(img) > 0:
+                    self.process_statistics["shape"]["num_slices_having_organ"] += 1
+                    sizes += np.count_nonzero(img)
+                    if min_size > np.count_nonzero(img):
+                        min_size = np.count_nonzero(img)
+                    if max_size < np.count_nonzero(img):
+                        max_size = np.count_nonzero(img)
+        self.process_statistics["shape"]["min_size"] = min_size
+        self.process_statistics["shape"]["max_size"] = max_size
+        self.process_statistics["shape"]["avg_size"] = round(
+            sizes / self.process_statistics["shape"]["num_slices_having_organ"], 2)
         if self.display:
             list_data = []
 
@@ -1522,197 +1225,92 @@ class MedImageEnhancer:
         max_size = 0
         max_group_idx = -1
         # print("<<<<", len(list_groups), len(list_groups[0]), np.unique(list_groups[0][0]["img"]),np.count_nonzero(list_groups[0][0]["img"]))
-        if len(list_groups)>1:
-            for i in range(len(list_groups)):
-                if max_size < len(list_groups[i]):
-                    max_size = len(list_groups[i])
-                    max_group_idx = i
-            sl_seg_nxt = list_groups[max_group_idx][0]["img"]
-            max_id = 0
-            max_size = 0
-            start_id = list_groups[0][0]["id"]
-            for i in list_groups:
-                for j in i:
-                    if np.count_nonzero(j["img"])>max_size:
-                        max_size = np.count_nonzero(j["img"])
-                        max_id = j["id"]
+        for i in range(len(list_groups)):
+            if max_size < len(list_groups[i]):
+                max_size = len(list_groups[i])
+                max_group_idx = i
+        sl_seg_nxt = list_groups[max_group_idx][0]["img"]
+        max_id = 0
+        max_size = 0
+        start_id = list_groups[0][0]["id"]
+        for i in list_groups:
+            for j in i:
+                if np.count_nonzero(j["img"])>max_size:
+                    max_size = np.count_nonzero(j["img"])
+                    max_id = j["id"]
 
-            for i in range(max_group_idx-1, -1, -1):
-                diff_shape = self.__compute_shape_difference(list_groups[i][-1]["img"], sl_seg_nxt)
-                cur_th_shape = self.th_shape+0.1*(np.abs(max_id-list_groups[i][-1]["id"])/(max_id-start_id))
-                if diff_shape < cur_th_shape:
-                    for j in range(len(list_groups[i])-1, -1, -1):
-                        list_groups[i + 1].insert(0, list_groups[i][j])
-                        del list_groups[i][j]
-                    del list_groups[i]
-                    continue
+        for i in range(max_group_idx-1, -1, -1):
+            diff_shape = self.__compute_shape_difference(list_groups[i][-1]["img"], sl_seg_nxt)
+            cur_th_shape = self.th_shape+0.1*(np.abs(max_id-list_groups[i][-1]["id"])/(max_id-start_id))
+            if diff_shape < cur_th_shape:
                 for j in range(len(list_groups[i])-1, -1, -1):
-                    sl_seg_trg = list_groups[i][j]["img"]
-                    cur_sl_org = self.srs_org_mi[:, :, list_groups[i][j]["id"]]
-                    if self.process_statistics["shape"]["remedy_states"][list_groups[i][j]["id"]] != "Remedied":
-                        self.process_statistics["shape"]["num_remedied_SLs"] += 1
-                    self.process_statistics["shape"]["remedy_states"][list_groups[i][j]["id"]] = "Remedied"
-                    if np.count_nonzero(sl_seg_trg)==0:
-                        list_groups[i][j]["img"] = sl_seg_trg
-                        list_groups[i + 1].insert(0, list_groups[i][j])
-                        del list_groups[i][j]
-                        sl_seg_nxt = sl_seg_trg
-                        continue
-                    if np.count_nonzero(sl_seg_nxt) == 0:
-                        sl_seg_trg = np.zeros(sl_seg_nxt.shape, np.uint8)
-                    else:
-                        sl_seg_trg = self.__revise_slseg_violating_shape(sl_seg_trg, sl_seg_nxt, cur_sl_org)
+                    list_groups[i + 1].insert(0, list_groups[i][j])
+                    del list_groups[i][j]
+                del list_groups[i]
+                continue
+            for j in range(len(list_groups[i])-1, -1, -1):
+                sl_seg_trg = list_groups[i][j]["img"]
+                cur_sl_org = self.srs_org_mi[:, :, list_groups[i][j]["id"]]
+                if self.process_statistics["shape"]["remedy_states"][list_groups[i][j]["id"]] != "Remedied":
+                    self.process_statistics["shape"]["num_remedied_SLs"] += 1
+                self.process_statistics["shape"]["remedy_states"][list_groups[i][j]["id"]] = "Remedied"
+                if np.count_nonzero(sl_seg_trg)==0:
                     list_groups[i][j]["img"] = sl_seg_trg
-                    list_groups[i+1].insert(0, list_groups[i][j])
+                    list_groups[i + 1].insert(0, list_groups[i][j])
                     del list_groups[i][j]
                     sl_seg_nxt = sl_seg_trg
-                del list_groups[i]
-
-            max_size = 0
-            max_group_idx = -1
-            for i in range(len(list_groups)):
-                if max_size < len(list_groups[i]):
-                    max_size = len(list_groups[i])
-                    max_group_idx = i
-            sl_seg_prv = list_groups[max_group_idx][-1]["img"]
-            while len(list_groups)>1:
-                diff_shape = self.__compute_shape_difference(sl_seg_prv, list_groups[max_group_idx+1][0]["img"])
-                if diff_shape < self.th_shape:
-                    for j in range(len(list_groups[max_group_idx+1])):
-                        list_groups[max_group_idx].append(list_groups[max_group_idx+1][j])
-                    del list_groups[max_group_idx+1]
                     continue
-                while len(list_groups[max_group_idx+1])>0:
-                    sl_seg_trg = list_groups[max_group_idx+1][0]["img"]
-                    cur_sl_org = self.srs_org_mi[:, :, list_groups[max_group_idx+1][0]["id"]]
-                    if self.process_statistics["shape"]["remedy_states"][list_groups[max_group_idx+1][0]["id"]] != "Remedied":
-                        self.process_statistics["shape"]["num_remedied_SLs"] += 1
-                    self.process_statistics["shape"]["remedy_states"][list_groups[max_group_idx+1][0]["id"]] = "Remedied"
-                    if np.count_nonzero(sl_seg_trg)==0:
-                        list_groups[max_group_idx + 1][0]["img"] = sl_seg_trg
-                        list_groups[max_group_idx].append(list_groups[max_group_idx + 1][0])
-                        del list_groups[max_group_idx + 1][0]
-                        sl_seg_prv = sl_seg_trg
-                        continue
+                if np.count_nonzero(sl_seg_nxt) == 0:
+                    sl_seg_trg = np.zeros(sl_seg_nxt.shape, np.uint8)
+                else:
+                    sl_seg_trg = self.__revise_slseg_violating_shape(sl_seg_trg, sl_seg_nxt, cur_sl_org)
+                list_groups[i][j]["img"] = sl_seg_trg
+                list_groups[i+1].insert(0, list_groups[i][j])
+                del list_groups[i][j]
+                sl_seg_nxt = sl_seg_trg
+            del list_groups[i]
 
-                    if np.count_nonzero(sl_seg_prv) == 0:
-                        sl_seg_trg = np.zeros(sl_seg_prv.shape, np.uint8)
-                    else:
-                        sl_seg_trg = self.__revise_slseg_violating_shape(sl_seg_trg, sl_seg_prv, cur_sl_org)
-                    list_groups[max_group_idx+1][0]["img"] = sl_seg_trg
-                    list_groups[max_group_idx].append(list_groups[max_group_idx+1][0])
-                    del list_groups[max_group_idx+1][0]
-                    sl_seg_prv = sl_seg_trg
+        max_size = 0
+        max_group_idx = -1
+        for i in range(len(list_groups)):
+            if max_size < len(list_groups[i]):
+                max_size = len(list_groups[i])
+                max_group_idx = i
+        sl_seg_prv = list_groups[max_group_idx][-1]["img"]
+        while len(list_groups)>1:
+            diff_shape = self.__compute_shape_difference(sl_seg_prv, list_groups[max_group_idx+1][0]["img"])
+            if diff_shape < self.th_shape:
+                for j in range(len(list_groups[max_group_idx+1])):
+                    list_groups[max_group_idx].append(list_groups[max_group_idx+1][j])
                 del list_groups[max_group_idx+1]
-        else:
-            print("<<<<", len(list_groups), len(list_groups[0]), np.unique(list_groups[0][0]["img"]),np.count_nonzero(list_groups[0][0]["img"]))
+                continue
+            while len(list_groups[max_group_idx+1])>0:
+                sl_seg_trg = list_groups[max_group_idx+1][0]["img"]
+                cur_sl_org = self.srs_org_mi[:, :, list_groups[max_group_idx+1][0]["id"]]
+                if self.process_statistics["shape"]["remedy_states"][list_groups[max_group_idx+1][0]["id"]] != "Remedied":
+                    self.process_statistics["shape"]["num_remedied_SLs"] += 1
+                self.process_statistics["shape"]["remedy_states"][list_groups[max_group_idx+1][0]["id"]] = "Remedied"
+                if np.count_nonzero(sl_seg_trg)==0:
+                    list_groups[max_group_idx + 1][0]["img"] = sl_seg_trg
+                    list_groups[max_group_idx].append(list_groups[max_group_idx + 1][0])
+                    del list_groups[max_group_idx + 1][0]
+                    sl_seg_prv = sl_seg_trg
+                    continue
+
+                if np.count_nonzero(sl_seg_prv) == 0:
+                    sl_seg_trg = np.zeros(sl_seg_prv.shape, np.uint8)
+                else:
+                    sl_seg_trg = self.__revise_slseg_violating_shape(sl_seg_trg, sl_seg_prv, cur_sl_org)
+                list_groups[max_group_idx+1][0]["img"] = sl_seg_trg
+                list_groups[max_group_idx].append(list_groups[max_group_idx+1][0])
+                del list_groups[max_group_idx+1][0]
+                sl_seg_prv = sl_seg_trg
+            del list_groups[max_group_idx+1]
         return list_groups[0]
-
-    def visualize_shape_remedied(self, list_data):
-        # dsize = (512, 512)
-        dsize = (665, 665)
-        idx = 0
-        do_visualize = True
-        while do_visualize:
-            imgs, data = list_data[idx][0], list_data[idx][1]
-            sls_rvsd = []
-            for k, v in imgs.items():
-                if v is None:
-                    v = np.zeros(dsize, np.uint8)
-                v = cv2.cv2.resize(v, dsize=dsize, interpolation=cv2.INTER_AREA)
-                v[0, :] = 255
-                v[dsize[1]-1, :] = 255
-                v[:, 0] = 255
-                v[:, dsize[0]-1] = 255
-                sls_rvsd.append(v)
-            img_concat = np.hstack(sls_rvsd)
-            height, width = img_concat.shape
-            img = np.zeros((height+250, width), np.uint8)
-            img[80:height+80, :] = img_concat
-            img[height+80,:]= 255
-            img[-1,:]= 255
-            for i in range(len(list(imgs.keys()))):
-                img[height+50:, i*dsize[0]] = 255
-                img[height+50:, (i+1)*dsize[0]-1] = 255
-
-            # Title
-            cv2.putText(img, "Remedy Result Visualization - Shape Inconsistency", (20, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "a: Previous Sequence, d:Next Sequence", (img.shape[1]-450, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "z: Previous Slice, x: Next Slice, c: Next Step", (img.shape[1]-510, 60), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
-
-            # Slice Title
-            x_axis = {"Slice": 20, "Seg. Result": dsize[0]+20, "Remedied": dsize[0]*2+20}
-            cv2.putText(img, "[Slice] ", (x_axis["Slice"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "[Segmentation Result] ", (x_axis["Seg. Result"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "[Remedied Result] ", (x_axis["Remedied"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-
-            # Description
-            str_hu_scale_seg = str(data["Seg. Result"]["HU Scale"][0])+" ~ "+str(data["Seg. Result"]["HU Scale"][1])+" (HU)"
-            str_hu_scale_rmd = str(data["Remedied"]["HU Scale"][0])+" ~ "+str(data["Remedied"]["HU Scale"][1])+" (HU)"
-            # Description for Slice
-            cv2.putText(img, "Slice ID: "+data["Slice"]["fname"], (x_axis["Slice"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            # Description for Segmentation Result
-            cv2.putText(img, "Sequence ID    : "+str(data["Seg. Result"]["sequence"]["id"])+" ("+data["Seg. Result"]["sequence"]["type"]+")",
-                        (x_axis["Seg. Result"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ Size     : "+data["Seg. Result"]["size"]+" (Pixels)", (x_axis["Seg. Result"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ HU Scale: "+str_hu_scale_seg, (x_axis["Seg. Result"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            # Description for Remedied Result
-            cv2.putText(img, "Remedy State  :".ljust(16)+data["Remedied"]["remedy_state"], (x_axis["Remedied"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ Size     :".ljust(17)+data["Remedied"]["size"]+" (Pixels)", (x_axis["Remedied"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ HU Scale:".ljust(16)+str_hu_scale_rmd, (x_axis["Remedied"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-
-            cv2.imshow("Visualization", img)
-            cv2.moveWindow("Visualization", 922, 20)
-            key = cv2.waitKey()
-            if key == ord('c'):
-                do_visualize = False
-            elif key == ord('z'):
-                if idx>0:
-                    idx-=1
-            elif key == ord('x'):
-                if idx<len(list_data)-1:
-                    idx+=1
-            elif key == ord("d"):
-                is_appeared = np.count_nonzero(imgs["Remedied"])>0
-                for j in range(idx+1, len(list_data)):
-                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
-                        idx = j
-                        break
-
-            elif key == ord("a"):
-                is_appeared = np.count_nonzero(imgs["Remedied"])>0
-                for j in range(idx-1, -1, -1):
-                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
-                        idx = j
-                        break
-
-    def display_shape_correction_result(self):
-        ids = list(self.process_statistics["shape"]["shape_diff_seg"].keys())
-        list_loc_diff_segs = list(self.process_statistics["shape"]["shape_diff_seg"].values())
-        list_loc_diff_remedys = list(self.process_statistics["shape"]["shape_diff_rmd"].values())
-
-        plt.rc("font", size=10)
-        fig, ax = plt.subplots(1, 1)
-        width = 1995/ fig.dpi
-        height = 915/fig.dpi
-        fig.set_figwidth(width)
-        fig.set_figheight(height)
-        plt.plot(ids, list_loc_diff_segs, marker="s", color="r", label="Segmentation Result")
-        plt.plot(ids, list_loc_diff_remedys, marker="*", color="g", label="Remedied Result")
-
-        ax.set_xlabel("Slice ID")
-        ax.set_ylabel("Shape Difference Rate")
-        ax.set_ylim([0, 0.3])
-        ax.legend(loc=2)
-        fig.canvas.draw()
-        img = np.array(fig.canvas.get_renderer()._renderer, np.uint8)
-        img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
-        cv2.imshow("Correction Result", img)
-        cv2.moveWindow("Correction Result", 922, 1000)
 
     ####################################################
 
-    # Methods for Correcting HU Scale Inconsistency
+    # Methods for Step 6. Correcting HU Scale Inconsistency
     def correct_HU_scale_inconsistency(self):
         """
         To detect and remedy HU scale consistency violation
@@ -1731,7 +1329,24 @@ class MedImageEnhancer:
                     self.list_prv[self.sequences[id]["data"][sl_id]["id"]] = self.sequences[id]["data"][sl_id]["img"]
                 continue
             self.detect_HU_scale_inconsistency(id)
-
+        self.process_statistics["HU"]["num_sequences"] = len(self.sequences)
+        sizes = 0
+        min_size = 1000000
+        max_size = 0
+        for seq in self.sequences:
+            for i in seq["data"]:
+                img = i["img"]
+                if np.count_nonzero(img) > 0:
+                    self.process_statistics["HU"]["num_slices_having_organ"] += 1
+                    sizes += np.count_nonzero(img)
+                    if min_size > np.count_nonzero(img):
+                        min_size = np.count_nonzero(img)
+                    if max_size < np.count_nonzero(img):
+                        max_size = np.count_nonzero(img)
+        self.process_statistics["HU"]["min_size"] = min_size
+        self.process_statistics["HU"]["max_size"] = max_size
+        self.process_statistics["HU"]["avg_size"] = round(
+            sizes / self.process_statistics["HU"]["num_slices_having_organ"], 2)
         # self.__move_empty_to_false_seq()
         if self.display:
             list_data = []
@@ -1828,126 +1443,7 @@ class MedImageEnhancer:
             self.process_statistics["HU"]["remedy_states"][self.sequences[seq_id]["data"][sl_id]["id"]] = state
         return result
 
-    def visualize_HU_scale_remedied(self, list_data):
-        # dsize = (512, 512)
-        dsize = (665, 665)
-        idx = 0
-        do_visualize = True
-        while do_visualize:
-            imgs, data = list_data[idx][0], list_data[idx][1]
-            sls_rvsd = []
-            for k, v in imgs.items():
-                if v is None:
-                    v = np.zeros(dsize, np.uint8)
-                v = cv2.cv2.resize(v, dsize=dsize, interpolation=cv2.INTER_AREA)
-                v[0, :] = 255
-                v[dsize[1]-1, :] = 255
-                v[:, 0] = 255
-                v[:, dsize[0]-1] = 255
-                sls_rvsd.append(v)
-            img_concat = np.hstack(sls_rvsd)
-            height, width = img_concat.shape
-            img = np.zeros((height+250, width), np.uint8)
-            img[80:height+80, :] = img_concat
-            img[height+80,:]= 255
-            img[-1,:]= 255
-            for i in range(len(list(imgs.keys()))):
-                img[height+50:, i*dsize[0]] = 255
-                img[height+50:, (i+1)*dsize[0]-1] = 255
-
-            # Title
-            cv2.putText(img, "Remedy Result Visualization - HU Scale Inconsistency", (20, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "a: Previous Sequence, d:Next Sequence", (img.shape[1]-450, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "z: Previous Slice, x: Next Slice, c: Next Step", (img.shape[1]-510, 60), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
-
-            # Slice Title
-            x_axis = {"Slice": 20, "Seg. Result": dsize[0]+20, "Remedied": dsize[0]*2+20}
-            cv2.putText(img, "[Slice] ", (x_axis["Slice"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "[Segmentation Result] ", (x_axis["Seg. Result"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-            cv2.putText(img, "[Remedied Result] ", (x_axis["Remedied"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
-
-            # Description
-            str_hu_scale_seg = str(data["Seg. Result"]["HU Scale"][0])+" ~ "+str(data["Seg. Result"]["HU Scale"][1])+" (HU)"
-            str_hu_scale_rmd = str(data["Remedied"]["HU Scale"][0])+" ~ "+str(data["Remedied"]["HU Scale"][1])+" (HU)"
-            # Description for Slice
-            cv2.putText(img, "Slice ID: "+data["Slice"]["fname"], (x_axis["Slice"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            # Description for Segmentation Result
-            cv2.putText(img, "Sequence ID    : "+str(data["Seg. Result"]["sequence"]["id"])+" ("+data["Seg. Result"]["sequence"]["type"]+")",
-                        (x_axis["Seg. Result"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ Size     : "+data["Seg. Result"]["size"]+" (Pixels)", (x_axis["Seg. Result"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ HU Scale: "+str_hu_scale_seg, (x_axis["Seg. Result"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            # Description for Remedied Result
-            cv2.putText(img, "Remedy State  :".ljust(16)+data["Remedied"]["remedy_state"], (x_axis["Remedied"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ Size     :".ljust(17)+data["Remedied"]["size"]+" (Pixels)", (x_axis["Remedied"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-            cv2.putText(img, "Organ HU Scale:".ljust(16)+str_hu_scale_rmd, (x_axis["Remedied"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
-
-            cv2.imshow("Visualization", img)
-            cv2.moveWindow("Visualization", 922, 20)
-            key = cv2.waitKey()
-            if key == ord('c'):
-                do_visualize = False
-            elif key == ord('z'):
-                if idx>0:
-                    idx-=1
-            elif key == ord('x'):
-                if idx<len(list_data)-1:
-                    idx+=1
-            elif key == ord("d"):
-                is_appeared = np.count_nonzero(imgs["Remedied"])>0
-                for j in range(idx+1, len(list_data)):
-                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
-                        idx = j
-                        break
-            elif key == ord("a"):
-                is_appeared = np.count_nonzero(imgs["Remedied"])>0
-                for j in range(idx-1, -1, -1):
-                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
-                        idx = j
-                        break
-
-    def display_HU_scale_correction_result(self):
-        ids = list(self.process_statistics["HU"]["HU_scales_seg"].keys())
-        list_hu_max_segs = []
-        list_hu_min_segs = []
-        list_hu_max_rmds = []
-        list_hu_min_rmds = []
-        for i in list(self.process_statistics["HU"]["HU_scales_seg"].values()):
-            if i[0] is np.inf:
-                i[0] = -1025
-            if i[1] is np.inf:
-                i[1] = -1025
-            list_hu_max_segs.append(i[1])
-            list_hu_min_segs.append(i[0])
-        for i in list(self.process_statistics["HU"]["HU_scales_remedy"].values()):
-            if i[0] is np.inf:
-                i[0] = -1025
-            if i[1] is np.inf:
-                i[1] = -1025
-            list_hu_max_rmds.append(i[1])
-            list_hu_min_rmds.append(i[0])
-        plt.rc("font", size=10)
-        fig, ax = plt.subplots(1, 1)
-        width = 1995/ fig.dpi
-        height = 915/fig.dpi
-        fig.set_figwidth(width)
-        fig.set_figheight(height)
-        plt.plot(ids, list_hu_max_segs, "rs-", label="Maximum HU Scale (Seg. Result)")
-        plt.plot(ids, list_hu_max_rmds, "g*-", label="Maximum HU Scale (Remedied)")
-        plt.plot(ids, list_hu_min_segs, "rs:", label="Minimum HU Scale (Seg. Result)")
-        plt.plot(ids, list_hu_min_rmds, "g*:", label="Minimum HU Scale (Remedied)")
-
-        ax.set_xlabel("Slice ID")
-        ax.set_ylabel("HU Scale")
-        ax.set_ylim([-1100, 4000])
-        ax.legend(loc=2)
-        fig.canvas.draw()
-        img = np.array(fig.canvas.get_renderer()._renderer, np.uint8)
-        img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
-        cv2.imshow("Correction Result", img)
-        cv2.moveWindow("Correction Result", 922, 1000)
-
     ####################################################
-
     # Methods for Managing Images
 
     def visualize_sequence_generation(self, list_data):
@@ -2077,6 +1573,249 @@ class MedImageEnhancer:
                                                          " ("+self.sequences[id]["data"][0]["fname"].split(".")[0]+"-"+self.sequences[id]["data"][-1]["fname"].split(".")[0]+")",
                                          cur_seq[sl_id]["fname"]), img=img)
 
+    def visualize_appearance_remedied(self, list_data):
+        # dsize = (512, 512)
+        dsize = (665, 665)
+        idx = 0
+        do_visualize = True
+        while do_visualize:
+            imgs, data = list_data[idx][0], list_data[idx][1]
+            sls_rvsd = []
+            for k, v in imgs.items():
+                if v is None:
+                    v = np.zeros(dsize, np.uint8)
+                v = cv2.cv2.resize(v, dsize=dsize, interpolation=cv2.INTER_AREA)
+                v[0, :] = 255
+                v[dsize[1]-1, :] = 255
+                v[:, 0] = 255
+                v[:, dsize[0]-1] = 255
+                sls_rvsd.append(v)
+            img_concat = np.hstack(sls_rvsd)
+            height, width = img_concat.shape
+            img = np.zeros((height+250, width), np.uint8)
+            img[80:height+80, :] = img_concat
+            img[height+80,:]= 255
+            img[-1,:]= 255
+            for i in range(len(list(imgs.keys()))):
+                img[height+50:, i*dsize[0]] = 255
+                img[height+50:, (i+1)*dsize[0]-1] = 255
+
+            # Title
+            cv2.putText(img, "Remedy Result Visualization - Appearance Inconsistency", (20, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "a: Previous Sequence, d:Next Sequence", (img.shape[1]-450, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "z: Previous Slice, x: Next Slice, c: Next Step", (img.shape[1]-510, 60), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
+
+            # Slice Title
+            x_axis = {"Slice": 20, "Seg. Result": dsize[0]+20, "Remedied": dsize[0]*2+20}
+            cv2.putText(img, "[Slice] ", (x_axis["Slice"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "[Segmentation Result] ", (x_axis["Seg. Result"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "[Remedied Result] ", (x_axis["Remedied"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+
+            # Description
+            str_hu_scale_seg = str(data["Seg. Result"]["HU Scale"][0])+" ~ "+str(data["Seg. Result"]["HU Scale"][1])+" (HU)"
+            str_hu_scale_rmd = str(data["Remedied"]["HU Scale"][0])+" ~ "+str(data["Remedied"]["HU Scale"][1])+" (HU)"
+            # Description for Slice
+            cv2.putText(img, "Slice ID: "+data["Slice"]["fname"], (x_axis["Slice"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            # Description for Segmentation Result
+            cv2.putText(img, "Sequence ID    : "+str(data["Seg. Result"]["sequence"]["id"])+" ("+data["Seg. Result"]["sequence"]["type"]+")",
+                        (x_axis["Seg. Result"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ Size     : "+data["Seg. Result"]["size"]+" (Pixels)", (x_axis["Seg. Result"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ HU Scale: "+str_hu_scale_seg, (x_axis["Seg. Result"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            # Description for Remedied Result
+            cv2.putText(img, "Remedy State  :".ljust(16)+data["Remedied"]["remedy_state"], (x_axis["Remedied"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ Size     :".ljust(17)+data["Remedied"]["size"]+" (Pixels)", (x_axis["Remedied"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ HU Scale:".ljust(16)+str_hu_scale_rmd, (x_axis["Remedied"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+
+            cv2.imshow("Visualization", img)
+            cv2.moveWindow("Visualization", 922, 20)
+            key = cv2.waitKey()
+            if key == ord('c'):
+                do_visualize = False
+            elif key == ord('z'):
+                if idx>0:
+                    idx-=1
+            elif key == ord('x'):
+                if idx<len(list_data)-1:
+                    idx+=1
+            elif key == ord("d"):
+                is_appeared = np.count_nonzero(imgs["Remedied"])>0
+                for j in range(idx+1, len(list_data)):
+                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
+                        idx = j
+                        break
+            elif key == ord("a"):
+                is_appeared = np.count_nonzero(imgs["Remedied"])>0
+                for j in range(idx-1, -1, -1):
+                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
+                        idx = j
+                        break
+
+    def display_appearance_correction_result(self):
+        for id in range(len(self.sequences)):  # Loop for sequences
+            for sl_id in range(len(self.sequences[id]["data"])):  # To check empty slice
+                cur_id = self.sequences[id]["data"][sl_id]["id"]
+                self.process_statistics["appearance"]["size_seg"][cur_id] = np.count_nonzero(self.list_prv[cur_id])
+                self.process_statistics["appearance"]["size_rmd"][cur_id] = np.count_nonzero(self.sequences[id]["data"][sl_id]["img"])
+
+        ids = list(self.process_statistics["appearance"]["size_seg"].keys())
+        list_size_segs = list(self.process_statistics["appearance"]["size_seg"].values())
+        list_size_remedies = list(self.process_statistics["appearance"]["size_rmd"].values())
+
+        plt.rc("font", size=10)
+        fig, ax = plt.subplots(1, 1)
+        width = 1995/ fig.dpi
+        height = 915/fig.dpi
+        fig.set_figwidth(width)
+        fig.set_figheight(height)
+        ax.plot(ids, list_size_segs, marker="s", color="r", label="Segmentation Result")
+        ax.plot(ids, list_size_remedies, marker="*", color="g", label="Remedied Result")
+
+        ax.set_xlabel("Slice ID")
+        ax.set_ylabel("Segmented Organ Area (Pixels)")
+        ax.legend(loc=2)
+        fig.canvas.draw()
+        img = np.array(fig.canvas.get_renderer()._renderer, np.uint8)
+        img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
+        cv2.imshow("Correction Result", img)
+        cv2.moveWindow("Correction Result", 922, 1000)
+
+    def visualize_location_remedied(self, list_data):
+        # dsize = (512, 512)
+        dsize = (665, 665)
+        idx = 0
+        do_visualize = True
+        while do_visualize:
+            imgs, data = list_data[idx][0], list_data[idx][1]
+            sls_rvsd = []
+            for k, v in imgs.items():
+                if v is None:
+                    v = np.zeros(dsize, np.uint8)
+                v = cv2.cv2.resize(v, dsize=dsize, interpolation=cv2.INTER_AREA)
+                v[0, :] = 255
+                v[dsize[1]-1, :] = 255
+                v[:, 0] = 255
+                v[:, dsize[0]-1] = 255
+                sls_rvsd.append(v)
+            img_concat = np.hstack(sls_rvsd)
+            height, width = img_concat.shape
+            img = np.zeros((height+250, width), np.uint8)
+            img[80:height+80, :] = img_concat
+            img[height+80,:]= 255
+            img[-1,:]= 255
+            for i in range(len(list(imgs.keys()))):
+                img[height+50:, i*dsize[0]] = 255
+                img[height+50:, (i+1)*dsize[0]-1] = 255
+
+            # Title
+            cv2.putText(img, "Remedy Result Visualization - Location Inconsistency", (20, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "a: Previous Sequence, d:Next Sequence", (img.shape[1]-450, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "z: Previous Slice, x: Next Slice, c: Next Step", (img.shape[1]-510, 60), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
+
+            # Slice Title
+            x_axis = {"Slice": 20, "Seg. Result": dsize[0]+20, "Remedied": dsize[0]*2+20}
+            cv2.putText(img, "[Slice] ", (x_axis["Slice"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "[Segmentation Result] ", (x_axis["Seg. Result"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "[Remedied Result] ", (x_axis["Remedied"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+
+            # Description
+            str_hu_scale_seg = str(data["Seg. Result"]["HU Scale"][0])+" ~ "+str(data["Seg. Result"]["HU Scale"][1])+" (HU)"
+            str_hu_scale_rmd = str(data["Remedied"]["HU Scale"][0])+" ~ "+str(data["Remedied"]["HU Scale"][1])+" (HU)"
+            # Description for Slice
+            cv2.putText(img, "Slice ID: "+data["Slice"]["fname"], (x_axis["Slice"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            # Description for Segmentation Result
+            cv2.putText(img, "Sequence ID    : "+str(data["Seg. Result"]["sequence"]["id"])+" ("+data["Seg. Result"]["sequence"]["type"]+")",
+                        (x_axis["Seg. Result"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ Size     : "+data["Seg. Result"]["size"]+" (Pixels)", (x_axis["Seg. Result"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ HU Scale: "+str_hu_scale_seg, (x_axis["Seg. Result"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            # Description for Remedied Result
+            cv2.putText(img, "Remedy State  :".ljust(16)+data["Remedied"]["remedy_state"], (x_axis["Remedied"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ Size     :".ljust(17)+data["Remedied"]["size"]+" (Pixels)", (x_axis["Remedied"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ HU Scale:".ljust(16)+str_hu_scale_rmd, (x_axis["Remedied"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+
+            cv2.imshow("Visualization", img)
+            cv2.moveWindow("Visualization", 922, 20)
+            key = cv2.waitKey()
+            if key == ord('c'):
+                do_visualize = False
+            elif key == ord('z'):
+                if idx>0:
+                    idx-=1
+            elif key == ord('x'):
+                if idx<len(list_data)-1:
+                    idx+=1
+            elif key == ord("d"):
+                is_appeared = np.count_nonzero(imgs["Remedied"])>0
+                for j in range(idx+1, len(list_data)):
+                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
+                        idx = j
+                        break
+
+            elif key == ord("a"):
+                is_appeared = np.count_nonzero(imgs["Remedied"])>0
+                for j in range(idx-1, -1, -1):
+                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
+                        idx = j
+                        break
+
+    def display_location_correction_result(self):
+        idx = -1
+        prv_cn_seg = None
+        prv_cn_rmd = None
+        prv_rst_seg = None
+        prv_rst_rmd = None
+        for id in range(len(self.sequences)):  # Loop for sequences
+            for sl_id in range(len(self.sequences[id]["data"])):  # To check empty slice
+                cur_id = self.sequences[id]["data"][sl_id]["id"]
+                idx += 1
+                if prv_rst_seg is None and prv_rst_rmd is None:
+                    prv_rst_seg = self.list_prv[cur_id]
+                    prv_rst_rmd = self.sequences[id]['data'][sl_id]["img"]
+                    continue
+                rate_seg = self.__compute_inclusion_rate(prv_rst_seg, self.list_prv[cur_id])
+                rate_rmd = self.__compute_inclusion_rate(prv_rst_seg, self.sequences[id]['data'][sl_id]["img"])
+                self.process_statistics["location"]["location_diff_seg"][idx] = rate_seg
+                self.process_statistics["location"]["location_diff_rmd"][idx] = rate_rmd
+                prv_rst_seg = self.list_prv[cur_id]
+                prv_rst_rmd = self.sequences[id]['data'][sl_id]["img"]
+                # if prv_cn_seg == None:
+                #     prv_cn_seg, _ = self.__find_center_and_bounding_box(self.list_prv[cur_id])
+                #     prv_cn_rmd, _ = self.__find_center_and_bounding_box(self.sequences[id]["data"][sl_id]["img"])
+                #     continue
+                # cn_seg, _ = self.__find_center_and_bounding_box(self.list_prv[cur_id]["img"])
+                # cn_rmd, _ = self.__find_center_and_bounding_box(self.sequences[id]["data"][sl_id]["img"])
+                # diff_seg = np.sqrt((cn_seg[1]-prv_cn_seg[1])**2+(cn_seg[0]-prv_cn_seg[0])**2)
+                # if prv_cn_seg == (0,0): diff_seg = 0
+                # diff_rmd = np.sqrt((cn_rmd[1]-prv_cn_rmd[1])**2+(cn_rmd[0]-prv_cn_rmd[0])**2)
+                # if prv_cn_rmd == (0,0): diff_rmd = 0
+                # self.process_statistics["location"]["location_diff_seg"][idx] = diff_seg
+                # self.process_statistics["location"]["location_diff_rmd"][idx] = diff_rmd
+                # prv_cn_seg = cn_seg
+                # prv_cn_rmd = cn_rmd
+
+        ids = list(self.process_statistics["location"]["location_diff_seg"].keys())
+        list_loc_diff_segs = list(self.process_statistics["location"]["location_diff_seg"].values())
+        list_loc_diff_remedys = list(self.process_statistics["location"]["location_diff_rmd"].values())
+
+        plt.rc("font", size=10)
+        fig, ax = plt.subplots(1, 1)
+        width = 1995/ fig.dpi
+        height = 915/fig.dpi
+        fig.set_figwidth(width)
+        fig.set_figheight(height)
+        plt.plot(ids, list_loc_diff_segs, marker="s", color="r", label="Segmentation Result")
+        plt.plot(ids, list_loc_diff_remedys, marker="*", color="g", label="Remedied Result")
+
+        ax.set_xlabel("Slice ID")
+        # ax.set_ylabel("Difference of Location Between Adjacent Slice (Pixels)")
+        ax.set_ylabel("Location Similarity Rate Between Adjacent Slices (%)")
+        ax.legend(loc=2)
+        # fig.tight_layout()
+        fig.canvas.draw()
+        img = np.array(fig.canvas.get_renderer()._renderer, np.uint8)
+        img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
+        cv2.imshow("Correction Result", img)
+        cv2.moveWindow("Correction Result", 922, 1000)
+
     def display_post_enhancement_results(self):
         """
         To display the post-enhancement result
@@ -2117,9 +1856,370 @@ class MedImageEnhancer:
         cv2.waitKey()
         cv2.destroyAllWindows()
 
+    def visualize_size_remedied(self, list_data):
+        # dsize = (512, 512)
+        dsize = (665, 665)
+        idx = 0
+        do_visualize = True
+        while do_visualize:
+            imgs, data = list_data[idx][0], list_data[idx][1]
+            sls_rvsd = []
+            for k, v in imgs.items():
+                if v is None:
+                    v = np.zeros(dsize, np.uint8)
+                v = cv2.cv2.resize(v, dsize=dsize, interpolation=cv2.INTER_AREA)
+                v[0, :] = 255
+                v[dsize[1]-1, :] = 255
+                v[:, 0] = 255
+                v[:, dsize[0]-1] = 255
+                sls_rvsd.append(v)
+            img_concat = np.hstack(sls_rvsd)
+            height, width = img_concat.shape
+            img = np.zeros((height+250, width), np.uint8)
+            img[80:height+80, :] = img_concat
+            img[height+80,:]= 255
+            img[-1,:]= 255
+            for i in range(len(list(imgs.keys()))):
+                img[height+50:, i*dsize[0]] = 255
+                img[height+50:, (i+1)*dsize[0]-1] = 255
+
+            # Title
+            cv2.putText(img, "Remedy Result Visualization - Size Inconsistency", (20, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "a: Previous Sequence, d:Next Sequence", (img.shape[1]-450, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "z: Previous Slice, x: Next Slice, c: Next Step", (img.shape[1]-510, 60), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
+
+            # Slice Title
+            x_axis = {"Slice": 20, "Seg. Result": dsize[0]+20, "Remedied": dsize[0]*2+20}
+            cv2.putText(img, "[Slice] ", (x_axis["Slice"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "[Segmentation Result] ", (x_axis["Seg. Result"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "[Remedied Result] ", (x_axis["Remedied"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+
+            # Description
+            str_hu_scale_seg = str(data["Seg. Result"]["HU Scale"][0])+" ~ "+str(data["Seg. Result"]["HU Scale"][1])+" (HU)"
+            str_hu_scale_rmd = str(data["Remedied"]["HU Scale"][0])+" ~ "+str(data["Remedied"]["HU Scale"][1])+" (HU)"
+            # Description for Slice
+            cv2.putText(img, "Slice ID: "+data["Slice"]["fname"], (x_axis["Slice"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            # Description for Segmentation Result
+            cv2.putText(img, "Sequence ID    : "+str(data["Seg. Result"]["sequence"]["id"])+" ("+data["Seg. Result"]["sequence"]["type"]+")",
+                        (x_axis["Seg. Result"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ Size     : "+data["Seg. Result"]["size"]+" (Pixels)", (x_axis["Seg. Result"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ HU Scale: "+str_hu_scale_seg, (x_axis["Seg. Result"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            # Description for Remedied Result
+            cv2.putText(img, "Remedy State  :".ljust(16)+data["Remedied"]["remedy_state"], (x_axis["Remedied"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ Size     :".ljust(17)+data["Remedied"]["size"]+" (Pixels)", (x_axis["Remedied"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ HU Scale:".ljust(16)+str_hu_scale_rmd, (x_axis["Remedied"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+
+            cv2.imshow("Visualization", img)
+            cv2.moveWindow("Visualization", 922, 20)
+            key = cv2.waitKey()
+            if key == ord('c'):
+                do_visualize = False
+            elif key == ord('z'):
+                if idx>0:
+                    idx-=1
+            elif key == ord('x'):
+                if idx<len(list_data)-1:
+                    idx+=1
+            elif key == ord("d"):
+                is_appeared = np.count_nonzero(imgs["Remedied"])>0
+                for j in range(idx+1, len(list_data)):
+                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
+                        idx = j
+                        break
+
+            elif key == ord("a"):
+                is_appeared = np.count_nonzero(imgs["Remedied"])>0
+                for j in range(idx-1, -1, -1):
+                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
+                        idx = j
+                        break
+
+    def display_size_correction_result(self):
+        for id in range(len(self.sequences)):  # Loop for sequences
+            for sl_id in range(len(self.sequences[id]["data"])):  # To check empty slice
+                cur_id = self.sequences[id]["data"][sl_id]["id"]
+                self.process_statistics["size"]["size_seg"][cur_id] = np.count_nonzero(self.list_prv[cur_id])
+                self.process_statistics["size"]["size_rmd"][cur_id] = np.count_nonzero(self.sequences[id]["data"][sl_id]["img"])
+
+        ids = list(self.process_statistics["size"]["size_seg"].keys())
+        list_size_segs = list(self.process_statistics["size"]["size_seg"].values())
+        list_size_remedys = list(self.process_statistics["size"]["size_rmd"].values())
+
+        plt.rc("font", size=10)
+        fig, ax = plt.subplots(1, 1)
+        width = 1995/ fig.dpi
+        height = 915/fig.dpi
+        fig.set_figwidth(width)
+        fig.set_figheight(height)
+        plt.plot(ids, list_size_segs, marker="s", color="r", label="Segmentation Result")
+        plt.plot(ids, list_size_remedys, marker="*", color="g", label="Remedied Result")
+
+        ax.set_xlabel("Slice ID")
+        ax.set_ylabel("Segmented Organ Area (Pixels)")
+        ax.legend(loc=2)
+        fig.canvas.draw()
+        img = np.array(fig.canvas.get_renderer()._renderer, np.uint8)
+        img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
+        cv2.imshow("Correction Result", img)
+        cv2.moveWindow("Correction Result", 922, 1000)
+
+    def visualize_shape_remedied(self, list_data):
+        # dsize = (512, 512)
+        dsize = (665, 665)
+        idx = 0
+        do_visualize = True
+        while do_visualize:
+            imgs, data = list_data[idx][0], list_data[idx][1]
+            sls_rvsd = []
+            for k, v in imgs.items():
+                if v is None:
+                    v = np.zeros(dsize, np.uint8)
+                v = cv2.cv2.resize(v, dsize=dsize, interpolation=cv2.INTER_AREA)
+                v[0, :] = 255
+                v[dsize[1]-1, :] = 255
+                v[:, 0] = 255
+                v[:, dsize[0]-1] = 255
+                sls_rvsd.append(v)
+            img_concat = np.hstack(sls_rvsd)
+            height, width = img_concat.shape
+            img = np.zeros((height+250, width), np.uint8)
+            img[80:height+80, :] = img_concat
+            img[height+80,:]= 255
+            img[-1,:]= 255
+            for i in range(len(list(imgs.keys()))):
+                img[height+50:, i*dsize[0]] = 255
+                img[height+50:, (i+1)*dsize[0]-1] = 255
+
+            # Title
+            cv2.putText(img, "Remedy Result Visualization - Shape Inconsistency", (20, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "a: Previous Sequence, d:Next Sequence", (img.shape[1]-450, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "z: Previous Slice, x: Next Slice, c: Next Step", (img.shape[1]-510, 60), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
+
+            # Slice Title
+            x_axis = {"Slice": 20, "Seg. Result": dsize[0]+20, "Remedied": dsize[0]*2+20}
+            cv2.putText(img, "[Slice] ", (x_axis["Slice"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "[Segmentation Result] ", (x_axis["Seg. Result"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "[Remedied Result] ", (x_axis["Remedied"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+
+            # Description
+            str_hu_scale_seg = str(data["Seg. Result"]["HU Scale"][0])+" ~ "+str(data["Seg. Result"]["HU Scale"][1])+" (HU)"
+            str_hu_scale_rmd = str(data["Remedied"]["HU Scale"][0])+" ~ "+str(data["Remedied"]["HU Scale"][1])+" (HU)"
+            # Description for Slice
+            cv2.putText(img, "Slice ID: "+data["Slice"]["fname"], (x_axis["Slice"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            # Description for Segmentation Result
+            cv2.putText(img, "Sequence ID    : "+str(data["Seg. Result"]["sequence"]["id"])+" ("+data["Seg. Result"]["sequence"]["type"]+")",
+                        (x_axis["Seg. Result"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ Size     : "+data["Seg. Result"]["size"]+" (Pixels)", (x_axis["Seg. Result"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ HU Scale: "+str_hu_scale_seg, (x_axis["Seg. Result"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            # Description for Remedied Result
+            cv2.putText(img, "Remedy State  :".ljust(16)+data["Remedied"]["remedy_state"], (x_axis["Remedied"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ Size     :".ljust(17)+data["Remedied"]["size"]+" (Pixels)", (x_axis["Remedied"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ HU Scale:".ljust(16)+str_hu_scale_rmd, (x_axis["Remedied"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+
+            cv2.imshow("Visualization", img)
+            cv2.moveWindow("Visualization", 922, 20)
+            key = cv2.waitKey()
+            if key == ord('c'):
+                do_visualize = False
+            elif key == ord('z'):
+                if idx>0:
+                    idx-=1
+            elif key == ord('x'):
+                if idx<len(list_data)-1:
+                    idx+=1
+            elif key == ord("d"):
+                is_appeared = np.count_nonzero(imgs["Remedied"])>0
+                for j in range(idx+1, len(list_data)):
+                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
+                        idx = j
+                        break
+
+            elif key == ord("a"):
+                is_appeared = np.count_nonzero(imgs["Remedied"])>0
+                for j in range(idx-1, -1, -1):
+                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
+                        idx = j
+                        break
+
+    def display_shape_correction_result(self):
+        ids = list(self.process_statistics["shape"]["shape_diff_seg"].keys())
+        list_loc_diff_segs = list(self.process_statistics["shape"]["shape_diff_seg"].values())
+        list_loc_diff_remedys = list(self.process_statistics["shape"]["shape_diff_rmd"].values())
+
+        plt.rc("font", size=10)
+        fig, ax = plt.subplots(1, 1)
+        width = 1995/ fig.dpi
+        height = 915/fig.dpi
+        fig.set_figwidth(width)
+        fig.set_figheight(height)
+        plt.plot(ids, list_loc_diff_segs, marker="s", color="r", label="Segmentation Result")
+        plt.plot(ids, list_loc_diff_remedys, marker="*", color="g", label="Remedied Result")
+
+        ax.set_xlabel("Slice ID")
+        ax.set_ylabel("Shape Difference Rate")
+        ax.set_ylim([0, 0.3])
+        ax.legend(loc=2)
+        fig.canvas.draw()
+        img = np.array(fig.canvas.get_renderer()._renderer, np.uint8)
+        img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
+        cv2.imshow("Correction Result", img)
+        cv2.moveWindow("Correction Result", 922, 1000)
+
+    def visualize_HU_scale_remedied(self, list_data):
+        # dsize = (512, 512)
+        dsize = (665, 665)
+        idx = 0
+        do_visualize = True
+        while do_visualize:
+            imgs, data = list_data[idx][0], list_data[idx][1]
+            sls_rvsd = []
+            for k, v in imgs.items():
+                if v is None:
+                    v = np.zeros(dsize, np.uint8)
+                v = cv2.cv2.resize(v, dsize=dsize, interpolation=cv2.INTER_AREA)
+                v[0, :] = 255
+                v[dsize[1]-1, :] = 255
+                v[:, 0] = 255
+                v[:, dsize[0]-1] = 255
+                sls_rvsd.append(v)
+            img_concat = np.hstack(sls_rvsd)
+            height, width = img_concat.shape
+            img = np.zeros((height+250, width), np.uint8)
+            img[80:height+80, :] = img_concat
+            img[height+80,:]= 255
+            img[-1,:]= 255
+            for i in range(len(list(imgs.keys()))):
+                img[height+50:, i*dsize[0]] = 255
+                img[height+50:, (i+1)*dsize[0]-1] = 255
+
+            # Title
+            cv2.putText(img, "Remedy Result Visualization - HU Scale Inconsistency", (20, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "a: Previous Sequence, d:Next Sequence", (img.shape[1]-450, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "z: Previous Slice, x: Next Slice, c: Next Step", (img.shape[1]-510, 60), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, 255, 1, cv2.LINE_AA)
+
+            # Slice Title
+            x_axis = {"Slice": 20, "Seg. Result": dsize[0]+20, "Remedied": dsize[0]*2+20}
+            cv2.putText(img, "[Slice] ", (x_axis["Slice"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "[Segmentation Result] ", (x_axis["Seg. Result"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+            cv2.putText(img, "[Remedied Result] ", (x_axis["Remedied"], 80+40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.7, 255, 2, cv2.LINE_AA)
+
+            # Description
+            str_hu_scale_seg = str(data["Seg. Result"]["HU Scale"][0])+" ~ "+str(data["Seg. Result"]["HU Scale"][1])+" (HU)"
+            str_hu_scale_rmd = str(data["Remedied"]["HU Scale"][0])+" ~ "+str(data["Remedied"]["HU Scale"][1])+" (HU)"
+            # Description for Slice
+            cv2.putText(img, "Slice ID: "+data["Slice"]["fname"], (x_axis["Slice"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            # Description for Segmentation Result
+            cv2.putText(img, "Sequence ID    : "+str(data["Seg. Result"]["sequence"]["id"])+" ("+data["Seg. Result"]["sequence"]["type"]+")",
+                        (x_axis["Seg. Result"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ Size     : "+data["Seg. Result"]["size"]+" (Pixels)", (x_axis["Seg. Result"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ HU Scale: "+str_hu_scale_seg, (x_axis["Seg. Result"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            # Description for Remedied Result
+            cv2.putText(img, "Remedy State  :".ljust(16)+data["Remedied"]["remedy_state"], (x_axis["Remedied"], dsize[0]+80+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ Size     :".ljust(17)+data["Remedied"]["size"]+" (Pixels)", (x_axis["Remedied"], dsize[0]+80+35+35), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+            cv2.putText(img, "Organ HU Scale:".ljust(16)+str_hu_scale_rmd, (x_axis["Remedied"], dsize[0]+80+35+35*2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.3, 255, 1, cv2.LINE_AA)
+
+            cv2.imshow("Visualization", img)
+            cv2.moveWindow("Visualization", 922, 20)
+            key = cv2.waitKey()
+            if key == ord('c'):
+                do_visualize = False
+            elif key == ord('z'):
+                if idx>0:
+                    idx-=1
+            elif key == ord('x'):
+                if idx<len(list_data)-1:
+                    idx+=1
+            elif key == ord("d"):
+                is_appeared = np.count_nonzero(imgs["Remedied"])>0
+                for j in range(idx+1, len(list_data)):
+                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
+                        idx = j
+                        break
+            elif key == ord("a"):
+                is_appeared = np.count_nonzero(imgs["Remedied"])>0
+                for j in range(idx-1, -1, -1):
+                    if is_appeared != (np.count_nonzero(list_data[j][0]["Remedied"])>0):
+                        idx = j
+                        break
+
+    def display_HU_scale_correction_result(self):
+        ids = list(self.process_statistics["HU"]["HU_scales_seg"].keys())
+        list_hu_max_segs = []
+        list_hu_min_segs = []
+        list_hu_max_rmds = []
+        list_hu_min_rmds = []
+        for i in list(self.process_statistics["HU"]["HU_scales_seg"].values()):
+            if i[0] is np.inf:
+                i[0] = -1025
+            if i[1] is np.inf:
+                i[1] = -1025
+            list_hu_max_segs.append(i[1])
+            list_hu_min_segs.append(i[0])
+        for i in list(self.process_statistics["HU"]["HU_scales_remedy"].values()):
+            if i[0] is np.inf:
+                i[0] = -1025
+            if i[1] is np.inf:
+                i[1] = -1025
+            list_hu_max_rmds.append(i[1])
+            list_hu_min_rmds.append(i[0])
+        plt.rc("font", size=10)
+        fig, ax = plt.subplots(1, 1)
+        width = 1995/ fig.dpi
+        height = 915/fig.dpi
+        fig.set_figwidth(width)
+        fig.set_figheight(height)
+        plt.plot(ids, list_hu_max_segs, "rs-", label="Maximum HU Scale (Seg. Result)")
+        plt.plot(ids, list_hu_max_rmds, "g*-", label="Maximum HU Scale (Remedied)")
+        plt.plot(ids, list_hu_min_segs, "rs:", label="Minimum HU Scale (Seg. Result)")
+        plt.plot(ids, list_hu_min_rmds, "g*:", label="Minimum HU Scale (Remedied)")
+
+        ax.set_xlabel("Slice ID")
+        ax.set_ylabel("HU Scale")
+        ax.set_ylim([-1100, 4000])
+        ax.legend(loc=2)
+        fig.canvas.draw()
+        img = np.array(fig.canvas.get_renderer()._renderer, np.uint8)
+        img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
+        cv2.imshow("Correction Result", img)
+        cv2.moveWindow("Correction Result", 922, 1000)
+
+    def set_current_mi_imgs(self, p):
+        root_path = r".\miaas\imgs"
+        self.path_org = os.path.join(root_path)
+
+    def get_sequences(self):
+        return self.sequences
+
+    def set_img_path(self, type, cur_path):
+        if type == "srs":
+            self.path_org_mi = cur_path
+            self.path_org_sl = cur_path.replace("srs", "srs_png")
+            os.mkdir(self.path_org_sl)
+        elif type == "seg_result":
+            self.path_seg_result = cur_path
+        elif type == "label":
+            self.path_label = cur_path
+        self.srs_org_mi = []
+        self.srs_org_sl = []
+        self.srs_seg_sl = []
+
+    def get_summary(self):
+        return self.process_statistics
+
     ####################################################
 
     # Private Methods
+    def __convert_color_depth(self, sl):
+        img = 1 * sl + 0
+        ymin = 0
+        ymax = 255
+        idx_high = img >= self.wc + self.ww / 2
+        idx_low = img <= self.wc - self.ww / 2
+        img = np.where(idx_high, ymax, img)
+        img = np.where(idx_low, ymin, img)
+        img = np.where(~idx_high & ~idx_low, ((img - self.wc) / self.ww + 0.5) * (ymax - ymin) + ymin, img)
+        img = np.reshape(img, (512, 512, 1))
+        return img
     def __check_seq_HU_violation(self, seq):
         do_violate = False
         count = 0
@@ -2381,6 +2481,20 @@ class MedImageEnhancer:
             for sl_id in range(len(self.sequences[id]["data"])):
                 if np.count_nonzero(self.sequences[id]["data"][sl_id]["img"])< 10:
                     self.sequences[id]["data"][sl_id]["img"] = np.zeros(self.sequences[id]["data"][sl_id]["img"].shape, np.uint8)
+
+        count_appeared_seq = True
+        idx_longest = -1
+        length_seq = 0
+        for i in range(len(self.sequences)):
+            if self.sequences[i]["type"]:
+                count_appeared_seq += 1
+                if length_seq < len(self.sequences[i]["data"]):
+                    idx_longest = i
+                    length_seq = len(self.sequences[i]["data"])
+        for i in range(len(self.sequences)):
+            if self.sequences[i]["type"] and i != idx_longest:
+                for sl_id in range(len(self.sequences[i]["data"])):
+                    self.sequences[i]["data"][sl_id]["img"] = np.zeros((512, 512), dtype=np.uint8)
 
         refined_sequence = []
         for seq_id in range(len(self.sequences)):

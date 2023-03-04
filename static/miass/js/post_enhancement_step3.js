@@ -31,25 +31,52 @@ function sleep (delay) {
 
                 for (var i = 0; i<sl_org.length; i++){
                     console.log(i);
+                    $("#div_slice_id_step3").append(
+                        '<div class="mx-1" style="display: inline-block; width: 180px;">\n' +
+                        '    <h5 class="text-center" id="step3_sl_title_"'+i+'>Slice #'+(i+1)+'</h5>\n' +
+                        '</div>');
                     $("#div_slice_step3").append(
                         '<div class="mx-1" style="display: inline-block;">\n' +
-                        '    <h5 class="text-center" id="step3_sl_title_"'+i+'>Slice #'+(i+1)+'</h5>\n' +
-                        '    <img style="width: 150px; height: 150px;" class="border" id="step3_sl_'+i+'" src="data:image/png;base64,'+sl_org[i]+'">\n' +
+                        '    <img style="width: 180px; height: 180px;" class="border" id="step3_sl_'+i+'" src="data:image/png;base64,'+sl_org[i]+'">\n' +
                         '</div>');
 
                     $("#div_org_step3").append(
                         '<div class="mx-1" style="display: inline-block;">\n' +
-                        '    <h5 class="text-center" id="step3_seg_title_"'+i+'>Slice #'+(i+1)+'</h5>\n' +
-                        '    <img style="width: 150px; height: 150px;" class="border" id="step3_seg_'+i+'" src="data:image/png;base64,'+sl_seg[i]+'">\n' +
+                        '    <img style="width: 180px; height: 180px;" class="border" id="step3_seg_'+i+'" src="data:image/png;base64,'+sl_seg[i]+'">\n' +
+                        // '    <div class="mx-auto inline" style="text-align: center;"> <h5 style="display: inline">SEQ #</h5> <h5 style="display: inline">(88888)</h5> </div>' +
                         '</div>');
 
                     $("#div_enh_step3").append(
                         '<div class="mx-1" style="display: inline-block;">\n' +
-                        '    <h5 class="text-center" id="step3_enh_title_"'+i+'>Slice #'+(i+1)+'</h5>\n' +
-                        '    <img style="width: 150px; height: 150px;" class="border" id="step3_enh_'+i+'" src="data:image/png;base64,0">\n' +
+                        '    <img style="width: 180px; height: 180px;" class="border" id="step3_enh_'+i+'" src="data:image/png;base64,0">\n' +
+                        // '    <div class="mx-auto inline" style="text-align: center;"> <h5 style="display: inline" id="seq_enh_step3_'+i+'">SEQ #</h5> <h5 style="display: inline" id="num_pix_enh_step3_'+i+'">(.)</h5> </div>' +
                         '</div>');
                 }
             }, error: function (){
+
+            }
+        });
+
+        $.ajax({
+            url: "/api/get_summary",
+            async: true,
+            method: 'POST',
+            data: {"data": JSON.stringify({"step": 2})},
+            data_type: "text",
+            success: function (data) {
+                // var data = JSON.parse(data);
+                d = data["data"];
+                var step1 = d["step1"];
+                var step2 = d["step2"];
+                console.log(d);
+                $("#num_sl_org_step1_s3").text(step1["num_slices_organ"]);
+                $("#num_seqs_step1_s3").text(step1["num_slices_organ"]);
+                $("#size_step1_s3").text(String(step1["min_size"]) + " ↤ " + step1["avg_size"] + " ↦ " + step1["max_size"]);
+                $("#num_sl_org_step2_s3").text(step2["num_slices_organ"]);
+                $("#num_seqs_step2_s3").text(step2["num_slices_organ"]);
+                $("#num_rem_sl_step2_s3").text(step2["num_remedied_slices"]);
+                $("#size_step2_s3").text(String(step2["min_size"]) + " ↤ " + step2["avg_size"] + " ↦ " + step2["max_size"]);
+            }, error: function () {
 
             }
         });
@@ -74,6 +101,35 @@ function sleep (delay) {
                     $("#input_step3_num_enhanced").text(summary["enh_num"]);
                     $("#input_step3_num_seq_after").text(summary["num_seqs"]);
                     write_log_in_console("Remedying violation is finished.");
+
+                    $.ajax({
+                        url: "/api/get_summary",
+                        async: true,
+                        method: 'POST',
+                        data: {"data": JSON.stringify({"step": 3})},
+                        data_type: "text",
+                        success: function (data) {
+                            // var data = JSON.parse(data);
+                            d = data["data"];
+                            var step1 = d["step1"];
+                            var step2 = d["step2"];
+                            var step3 = d["step3"];
+                            console.log(d);
+                            $("#num_sl_org_step1_s3").text(step1["num_slices_organ"]);
+                            $("#num_seqs_step1_s3").text(step1["num_slices_organ"]);
+                            $("#size_step1_s3").text(String(step1["min_size"]) + " ↤ " + step1["avg_size"] + " ↦ " + step1["max_size"]);
+                            $("#num_sl_org_step2_s3").text(step2["num_slices_organ"]);
+                            $("#num_rem_sl_step2_s3").text(step2["num_remedied_slices"]);
+                            $("#num_seqs_step2_s3").text(step2["num_slices_organ"]);
+                            $("#size_step2_s3").text(String(step2["min_size"]) + " ↤ " + step2["avg_size"] + " ↦ " + step2["max_size"]);
+                            $("#num_sl_org_step3_s3").text(step3["num_slices_organ"]);
+                            $("#num_rem_sl_step3_s3").text(step3["num_remedied_slices"]);
+                            $("#num_seqs_step3_s3").text(step3["num_slices_organ"]);
+                            $("#size_step3_s3").text(String(step3["min_size"]) + " ↤ " + step3["avg_size"] + " ↦ " + step3["max_size"]);
+                        }, error: function () {
+
+                        }
+                    });
                 }, error: function (){
                     idx+=1;
 
@@ -85,9 +141,9 @@ function sleep (delay) {
         $('input[type=range]').on('change input', function() {
             var value = $(this).val();
             $("#step3_cur_sl").text(value);
-            var val_move = 150*Number.parseInt(value-1);
+            var val_move = 180*Number.parseInt(value-1);
 
-            console.log(value, val_move);
+            $('#div_slice_id_step3').scrollLeft(val_move);
             $('#div_slice_step3').scrollLeft(val_move);
             $('#div_org_step3').scrollLeft(val_move);
             $('#div_enh_step3').scrollLeft(val_move);
