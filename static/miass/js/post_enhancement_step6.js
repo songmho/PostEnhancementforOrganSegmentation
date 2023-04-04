@@ -63,22 +63,22 @@
                 var step5 = d["step5"];
                 console.log(d);
                 $("#num_sl_org_step1_s6").text(step1["num_slices_organ"]);
-                $("#num_seqs_step1_s6").text(step1["num_slices_organ"]);
+                $("#num_seqs_step1_s6").text(step1["num_seqs"]);
                 $("#size_step1_s6").text(String(step1["min_size"]) + " ↤ " + step1["avg_size"] + " ↦ " + step1["max_size"]);
                 $("#num_sl_org_step2_s6").text(step2["num_slices_organ"]);
-                $("#num_seqs_step2_s6").text(step2["num_slices_organ"]);
+                $("#num_seqs_step2_s6").text(step2["num_seqs"]);
                 $("#num_rem_sl_step2_s6").text(step2["num_remedied_slices"]);
                 $("#size_step2_s6").text(String(step2["min_size"]) + " ↤ " + step2["avg_size"] + " ↦ " + step2["max_size"]);
                 $("#num_sl_org_step3_s6").text(step3["num_slices_organ"]);
-                $("#num_seqs_step3_s6").text(step3["num_slices_organ"]);
+                $("#num_seqs_step3_s6").text(step3["num_seqs"]);
                 $("#num_rem_sl_step3_s6").text(step3["num_remedied_slices"]);
                 $("#size_step3_s6").text(String(step3["min_size"]) + " ↤ " + step3["avg_size"] + " ↦ " + step3["max_size"]);
                 $("#num_sl_org_step4_s6").text(step4["num_slices_organ"]);
-                $("#num_seqs_step4_s6").text(step4["num_slices_organ"]);
+                $("#num_seqs_step4_s6").text(step4["num_seqs"]);
                 $("#num_rem_sl_step4_s6").text(step4["num_remedied_slices"]);
                 $("#size_step4_s6").text(String(step4["min_size"]) + " ↤ " + step4["avg_size"] + " ↦ " + step4["max_size"]);
                 $("#num_sl_org_step5_s6").text(step5["num_slices_organ"]);
-                $("#num_seqs_step5_s6").text(step5["num_slices_organ"]);
+                $("#num_seqs_step5_s6").text(step5["num_seqs"]);
                 $("#num_rem_sl_step5_s6").text(step5["num_remedied_slices"]);
                 $("#size_step5_s6").text(String(step5["min_size"]) + " ↤ " + step5["avg_size"] + " ↦ " + step5["max_size"]);
             }, error: function () {
@@ -148,26 +148,31 @@
                             var step6 = d["step5"];
                             console.log(d);
                             $("#num_sl_org_step1_s6").text(step1["num_slices_organ"]);
-                            $("#num_seqs_step1_s6").text(step1["num_slices_organ"]);
+                            $("#num_seqs_step1_s6").text(step1["num_seqs"]);
                             $("#size_step1_s6").text(String(step1["min_size"]) + " ↤ " + step1["avg_size"] + " ↦ " + step1["max_size"]);
                             $("#num_sl_org_step2_s6").text(step2["num_slices_organ"]);
-                            $("#num_seqs_step2_s6").text(step2["num_slices_organ"]);
+                            $("#num_seqs_step2_s6").text(step2["num_seqs"]);
+                            $("#num_rem_sl_appearance_s6").text(step2["num_seqs"]);
                             $("#num_rem_sl_step2_s6").text(step2["num_remedied_slices"]);
                             $("#size_step2_s6").text(String(step2["min_size"]) + " ↤ " + step2["avg_size"] + " ↦ " + step2["max_size"]);
                             $("#num_sl_org_step3_s6").text(step3["num_slices_organ"]);
-                            $("#num_seqs_step3_s6").text(step3["num_slices_organ"]);
+                            $("#num_seqs_step3_s6").text(step3["num_seqs"]);
+                            $("#num_rem_sl_location_s6").text(step3["num_seqs"]);
                             $("#num_rem_sl_step3_s6").text(step3["num_remedied_slices"]);
                             $("#size_step3_s6").text(String(step3["min_size"]) + " ↤ " + step3["avg_size"] + " ↦ " + step3["max_size"]);
                             $("#num_sl_org_step4_s6").text(step4["num_slices_organ"]);
-                            $("#num_seqs_step4_s6").text(step4["num_slices_organ"]);
+                            $("#num_seqs_step4_s6").text(step4["num_seqs"]);
+                            $("#num_rem_sl_size_s6").text(step4["num_seqs"]);
                             $("#num_rem_sl_step4_s6").text(step4["num_remedied_slices"]);
                             $("#size_step4_s6").text(String(step4["min_size"]) + " ↤ " + step4["avg_size"] + " ↦ " + step4["max_size"]);
                             $("#num_sl_org_step5_s6").text(step5["num_slices_organ"]);
-                            $("#num_seqs_step5_s6").text(step5["num_slices_organ"]);
+                            $("#num_seqs_step5_s6").text(step5["num_seqs"]);
+                            $("#num_rem_sl_shape_s6").text(step5["num_seqs"]);
                             $("#num_rem_sl_step5_s6").text(step5["num_remedied_slices"]);
                             $("#size_step5_s6").text(String(step5["min_size"]) + " ↤ " + step5["avg_size"] + " ↦ " + step5["max_size"]);
                             $("#num_sl_org_step6_s6").text(step6["num_slices_organ"]);
-                            $("#num_seqs_step6_s6").text(step6["num_slices_organ"]);
+                            $("#num_seqs_step6_s6").text(step6["num_seqs"]);
+                            $("#num_rem_sl_hu_scale_s6").text(step6["num_seqs"]);
                             $("#num_rem_sl_step6_s6").text(step6["num_remedied_slices"]);
                             $("#size_step6_s6").text(String(step6["min_size"]) + " ↤ " + step6["avg_size"] + " ↦ " + step6["max_size"]);
                         }, error: function () {
@@ -227,6 +232,36 @@
             // $("#btn_step7").addClass("active");
             // $("#smartwizard").smartWizard("next");
 
+        });
+
+        $("#btn_statistics").on("click", function () {
+            $("#modal_statistics").modal("show");
+            $.ajax({
+                url: "/api/summarize_statistics",
+                async: false,
+                method: 'POST',
+                data: {"data": JSON.stringify()},
+                data_type: "text",
+                success: function (data) {
+                    var d = data["data"];
+                    console.log(d);
+                    $("#num_sl_before_appearance").html(d["step2_before"]);
+                    $("#num_sl_after_appearance").html(d["step2_after"]);
+                    $("#num_sl_before_location").html(d["step3_before"]);
+                    $("#num_sl_after_location").html(d["step3_after"]);
+                    $("#num_sl_before_size").html(d["step4_before"]);
+                    $("#num_sl_after_size").html(d["step4_after"]);
+                    $("#num_sl_before_shape").html(d["step5_before"]);
+                    $("#num_sl_after_shape").html(d["step5_after"]);
+                    $("#num_sl_before_hu_scale").html(d["step6_before"]);
+                    $("#num_sl_after_hu_scale").html(d["step6_after"]);
+                    write_log_in_console("The number of violating slices is "+diffs.length+".");
+                    write_log_in_console("Detecting violation is finished.");
+                }, error: function (){
+                    idx+=1;
+
+                }
+            });
         });
     });
 })(jQuery);

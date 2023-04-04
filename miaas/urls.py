@@ -62,6 +62,7 @@ urlpatterns = [
     url(r"^api/segment_liver", apis.segment_liver),
     url(r"^api/load_setCT_a", apis.load_setCT_a),
     url(r"^api/segment_tumor", apis.segment_tumor),
+    url(r"^api/summarize_statistics", apis.summarize_statistics),
 
 
     url(r'^api/archive$', apis.handle_archive),

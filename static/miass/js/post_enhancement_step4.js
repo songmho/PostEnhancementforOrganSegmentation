@@ -65,13 +65,14 @@
                 var step3 = d["step3"];
                 console.log(d);
                 $("#num_sl_org_step1_s4").text(step1["num_slices_organ"]);
-                $("#num_seqs_step1_s4").text(step1["num_slices_organ"]);
+                $("#num_seqs_step1_s4").text(step1["num_seqs"]);
                 $("#size_step1_s4").text(String(step1["min_size"]) + " ↤ " + step1["avg_size"] + " ↦ " + step1["max_size"]);
                 $("#num_sl_org_step2_s4").text(step2["num_slices_organ"]);
+                $("#num_seqs_step2_s4").text(step2["num_seqs"]);
                 $("#num_rem_sl_step2_s4").text(step2["num_remedied_slices"]);
                 $("#size_step2_s4").text(String(step2["min_size"]) + " ↤ " + step2["avg_size"] + " ↦ " + step2["max_size"]);
                 $("#num_sl_org_step3_s4").text(step3["num_slices_organ"]);
-                $("#num_seqs_step3_s4").text(step3["num_slices_organ"]);
+                $("#num_seqs_step3_s4").text(step3["num_seqs"]);
                 $("#num_rem_sl_step3_s4").text(step3["num_remedied_slices"]);
                 $("#size_step3_s4").text(String(step3["min_size"]) + " ↤ " + step3["avg_size"] + " ↦ " + step3["max_size"]);
             }, error: function () {
@@ -139,18 +140,18 @@
                             var step4 = d["step4"];
                             console.log(d);
                             $("#num_sl_org_step1_s4").text(step1["num_slices_organ"]);
-                            $("#num_seqs_step1_s4").text(step1["num_slices_organ"]);
+                            $("#num_seqs_step1_s4").text(step1["num_seqs"]);
                             $("#size_step1_s4").text(String(step1["min_size"]) + " ↤ " + step1["avg_size"] + " ↦ " + step1["max_size"]);
                             $("#num_sl_org_step2_s4").text(step2["num_slices_organ"]);
-                            $("#num_seqs_step2_s4").text(step2["num_slices_organ"]);
+                            $("#num_seqs_step2_s4").text(step2["num_seqs"]);
                             $("#num_rem_sl_step2_s4").text(step2["num_remedied_slices"]);
                             $("#size_step2_s4").text(String(step2["min_size"]) + " ↤ " + step2["avg_size"] + " ↦ " + step2["max_size"]);
                             $("#num_sl_org_step3_s4").text(step3["num_slices_organ"]);
-                            $("#num_seqs_step3_s4").text(step3["num_slices_organ"]);
+                            $("#num_seqs_step3_s4").text(step3["num_seqs"]);
                             $("#num_rem_sl_step3_s4").text(step3["num_remedied_slices"]);
                             $("#size_step3_s4").text(String(step3["min_size"]) + " ↤ " + step3["avg_size"] + " ↦ " + step3["max_size"]);
                             $("#num_sl_org_step4_s4").text(step4["num_slices_organ"]);
-                            $("#num_seqs_step4_s4").text(step4["num_slices_organ"]);
+                            $("#num_seqs_step4_s4").text(step4["num_seqs"]);
                             $("#num_rem_sl_step4_s4").text(step4["num_remedied_slices"]);
                             $("#size_step4_s4").text(String(step4["min_size"]) + " ↤ " + step4["avg_size"] + " ↦ " + step4["max_size"]);
                         }, error: function () {

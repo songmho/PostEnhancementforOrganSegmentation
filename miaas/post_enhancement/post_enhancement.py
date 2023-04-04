@@ -43,11 +43,11 @@ class MedImageEnhancer:
         self.process_statistics = {
             "Original":     {"num_slices": 0, "num_slices_having_organ": 0, "num_slices_not_having_organ": 0, "min_size":10000000, "avg_size":0, "max_size":0},
             "Sequence":     {"num_sequences": 0, "num_sequences_appeared": 0, "num_sequences_non_appeared": 0, "list_appeared_sequences":[], "list_non_appeared_sequences":[]},
-            "appearance":   {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{},"num_slices_having_organ": 0, "num_sequences":0, "min_size":10000000, "avg_size":0, "max_size":0},
-            "location":     {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{},"num_slices_having_organ": 0, "num_sequences":0,"min_size":10000000, "avg_size":0, "max_size":0},
-            "size":         {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{},"num_slices_having_organ": 0, "num_sequences":0,"min_size":10000000, "avg_size":0, "max_size":0},
-            "shape":        {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{},"num_slices_having_organ": 0, "num_sequences":0,"min_size":10000000, "avg_size":0, "max_size":0},
-            "HU":           {"num_remedied_SLs": 0, "remedy_states": {}, "HU_scales_seg": {}, "HU_scales_remedy": {}, "num_slices_having_organ": 0, "num_sequences":0, "size_seg":{}, "size_rmd":{}, "min_size":10000000, "avg_size":0, "max_size":0}
+            "appearance":   {"num_remedied_SLs": 0, "num_detected_violation":0, "remedy_states": {}, "size_seg":{}, "size_rmd":{},"num_slices_having_organ": 0, "num_sequences":0, "min_size":10000000, "avg_size":0, "max_size":0},
+            "location":     {"num_remedied_SLs": 0, "num_detected_violation":0, "remedy_states": {}, "size_seg":{}, "size_rmd":{},"num_slices_having_organ": 0, "num_sequences":0,"min_size":10000000, "avg_size":0, "max_size":0},
+            "size":         {"num_remedied_SLs": 0, "num_detected_violation":0, "remedy_states": {}, "size_seg":{}, "size_rmd":{},"num_slices_having_organ": 0, "num_sequences":0,"min_size":10000000, "avg_size":0, "max_size":0},
+            "shape":        {"num_remedied_SLs": 0, "num_detected_violation":0, "remedy_states": {}, "size_seg":{}, "size_rmd":{},"num_slices_having_organ": 0, "num_sequences":0,"min_size":10000000, "avg_size":0, "max_size":0},
+            "HU":           {"num_remedied_SLs": 0, "num_detected_violation":0, "remedy_states": {}, "HU_scales_seg": {}, "HU_scales_remedy": {}, "num_slices_having_organ": 0, "num_sequences":0, "size_seg":{}, "size_rmd":{}, "min_size":10000000, "avg_size":0, "max_size":0}
         }
 
     # Methods for Step 1. Identifying Continuity Sequence & Loading CT Series with Segmentation resutls
@@ -182,12 +182,12 @@ class MedImageEnhancer:
 
         self.process_statistics = {
             "Original": {"num_slices": 0, "num_slices_having_organ": 0, "num_slices_not_having_organ": 0},
-            "Sequence": {"num_sequences": 0, "num_sequences_appeared": 0, "num_sequences_non_appeared": 0, "list_appeared_sequences":[], "list_non_appeared_sequences":[]},
-            "appearance": {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{}},
-            "location": {"num_remedied_SLs": 0, "remedy_states": {}, "location_diff_seg":{}, "location_diff_rmd":{}, },
-            "size": {"num_remedied_SLs": 0, "remedy_states": {}, "size_seg":{}, "size_rmd":{}},
-            "shape": {"num_remedied_SLs": 0, "remedy_states": {}, "shape_diff_seg":{}, "shape_diff_rmd": {}},
-            "HU": {"num_remedied_SLs": 0, "remedy_states": {}, "HU_scales_seg": {}, "HU_scales_remedy": {}}
+            "Sequence": {"num_sequences": 0, "num_sequences_appeared": 0, "num_detected_violation":0, "num_sequences_non_appeared": 0, "list_appeared_sequences":[], "list_non_appeared_sequences":[]},
+            "appearance": {"num_remedied_SLs": 0, "num_detected_violation":0, "remedy_states": {}, "size_seg":{}, "size_rmd":{}},
+            "location": {"num_remedied_SLs": 0, "num_detected_violation":0, "remedy_states": {}, "location_diff_seg":{}, "location_diff_rmd":{}, },
+            "size": {"num_remedied_SLs": 0, "num_detected_violation":0, "remedy_states": {}, "size_seg":{}, "size_rmd":{}},
+            "shape": {"num_remedied_SLs": 0, "num_detected_violation":0, "remedy_states": {}, "shape_diff_seg":{}, "shape_diff_rmd": {}},
+            "HU": {"num_remedied_SLs": 0, "num_detected_violation":0, "remedy_states": {}, "HU_scales_seg": {}, "HU_scales_remedy": {}}
         }
 
     # Methods for Step 2. Correcting Appearance Inconsistency
@@ -333,6 +333,8 @@ class MedImageEnhancer:
 
                 if is_continued_1 and is_continued_2:  # Case 1.
                     # print("CASE 1")
+
+                    self.process_statistics["appearance"]["num_detected_violation"] += len(self.sequences[id - 1])
                     cur_ref_seqs = self.revise_appearance_inconsistency(1, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1],seq_ap_nxt=self.sequences[id])[0]
 
                 else:
@@ -342,6 +344,8 @@ class MedImageEnhancer:
                     do_violation_cur = hu_violation_cur
                     if do_violation_prv and do_violation_cur:
                         # print("CASE 6")
+                        self.process_statistics["appearance"]["num_detected_violation"] += len(cur_ref_seqs)
+                        self.process_statistics["appearance"]["num_detected_violation"] += len(self.sequences[id])
                         cur_ref_seqs = self.revise_appearance_inconsistency(6, cur_ref_seqs, self.sequences[id-1], self.sequences[id])[0]
                         # if id <= len(self.sequences) - 1:
                         # refined_seqs.append(self.sequences[id - 1])
@@ -370,11 +374,15 @@ class MedImageEnhancer:
                                     # print("CASE 4")
                                 # if cur_hu[0] == np.inf or (np.abs(nxt_hu[0]-cur_hu[0])>self.ww*0.1 or np.abs(nxt_hu[1]-cur_hu[1])>self.ww*0.1):
                                 #     # print("CASE 2")
+
+                                    self.process_statistics["appearance"]["num_detected_violation"] += len(self.sequences[id])
                                     results = self.revise_appearance_inconsistency(2, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1], seq_ap_nxt=self.sequences[id])
                                     refined_seqs.append(results[0])
                                     cur_ref_seqs = results[1]
                                 else:
                                     # print("CASE 3")
+                                    self.process_statistics["appearance"]["num_detected_violation"] += len(self.sequences[id-1])
+                                    self.process_statistics["appearance"]["num_detected_violation"] += len(self.sequences[id])
                                     results = self.revise_appearance_inconsistency(3, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1], seq_ap_nxt=self.sequences[id])
                                     refined_seqs.append(results[0])
                                     cur_ref_seqs = results[1]
@@ -394,9 +402,12 @@ class MedImageEnhancer:
                                 if (np.count_nonzero(violated_area)/np.count_nonzero(prv_sl_seg) > 0.7):
                                 # if cur_hu[0] == np.inf or (np.abs(prv_hu[0]-cur_hu[0])>self.ww*0.1 and np.abs(prv_hu[1]-cur_hu[1])>self.ww*0.1):
                                 #     print("CASE 4")
+                                    self.process_statistics["appearance"]["num_detected_violation"] += len(cur_ref_seqs)
                                     results = self.revise_appearance_inconsistency(4, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1], seq_ap_nxt=self.sequences[id])
                                 else:
                                     # print("CASE 5")
+                                    self.process_statistics["appearance"]["num_detected_violation"] += len(self.sequences[id-1])
+                                    self.process_statistics["appearance"]["num_detected_violation"] += len(cur_ref_seqs)
                                     results = self.revise_appearance_inconsistency(5, seq_ap_prv=cur_ref_seqs, seq_np_cur=self.sequences[id-1], seq_ap_nxt=self.sequences[id])
                                 refined_seqs.append(results[0])
                                 refined_seqs.append(results[1])
@@ -459,6 +470,7 @@ class MedImageEnhancer:
 
                 transition = self.__compute_transition(seq_ap_prv["data"], -1)
                 # print("Transition", transition, revised_seq["data"][-1]["fname"])
+                self.process_statistics["appearance"]["num_detected_violation"] += len(seq_np_cur["data"])
                 for i in range(len(seq_np_cur["data"])):  # To repeat whole slices in false sequence
                     cur_img = self.srs_org_sl[seq_np_cur["data"][i]["id"]]["img"]
                     cur_seg = seq_np_cur["data"][i]["img"]
@@ -479,6 +491,7 @@ class MedImageEnhancer:
                 nxt_img = self.srs_org_sl[seq_ap_nxt["data"][0]["id"]]["img"]
                 transition = self.__compute_transition(seq_ap_nxt["data"], 0)
                 list_reverse = []
+                self.process_statistics["appearance"]["num_detected_violation"] += len(seq_np_cur["data"])
                 for i in range(len(seq_np_cur["data"])-1, -1,
                                -1):  # To repeat whole slices in false sequence (reverse)
                     cur_seg = seq_np_cur["data"][i]["img"]
@@ -531,6 +544,7 @@ class MedImageEnhancer:
 
         elif case in [4, 5]:    # Case SEQ_ap_i violates the principle
             transition = self.__compute_transition(seq_ap_prv["data"], -1)
+            self.process_statistics["appearance"]["num_detected_violation"] += len(seq_ap_nxt["data"])
             if case == 5:
                 # Compare ap_prv and np_cur
                 sl_seg_prv =seq_ap_prv["data"][-1]["img"]
@@ -539,6 +553,7 @@ class MedImageEnhancer:
                 for i in range(len(seq_np_cur["data"])-1):
                     sl_seg_cur = seq_np_cur["data"][i]["img"]
                     sl_cur = self.srs_seg_sl[seq_np_cur["data"][i]["id"]]["img"]
+                    self.process_statistics["appearance"]["num_detected_violation"] += 1
                     seq_np_cur["data"][i]["img"] = self.__revise_slsegs_violating_appearance(sl_seg_prv, sl_seg_cur, None, sl_prv, sl_cur, None, transition)
                     sl_seg_cur = seq_np_cur["data"][i]["img"]
 
@@ -558,6 +573,8 @@ class MedImageEnhancer:
             results = [seq_ap_prv, seq_np_cur]
 
         elif case == 6:   # Case SEQ_ap_(i-2) and SEQ_ap_(i) violate the principle
+            self.process_statistics["appearance"]["num_detected_violation"] += len(seq_ap_prv["data"])
+            self.process_statistics["appearance"]["num_detected_violation"] += len(seq_ap_nxt["data"])
             # print(">>>>>>  case 6",)
             seq_ap_prv["type"] = False
             for k in range(len(seq_ap_prv["data"])):
@@ -596,6 +613,8 @@ class MedImageEnhancer:
                         list_removed_sl.append(i)
                         sl_seg_nxt = sl_seg_cur
                         sl_nxt = sl_cur
+
+                        self.process_statistics["appearance"]["num_detected_violation"] += 1
                     for i in list_removed_sl:
                         seq_ap_cur["data"].insert(0, seq_np_prv["data"][i])
                         seq_np_prv["data"].pop(i)
@@ -624,6 +643,8 @@ class MedImageEnhancer:
                         list_removed_sl.append(i)
                         sl_seg_prv = sl_seg_cur
                         sl_prv = sl_cur
+
+                        self.process_statistics["appearance"]["num_detected_violation"] += 1
                     for i in range(len(list_removed_sl)):
                         seq_ap_cur["data"].insert(-1, seq_np_nxt["data"][0])
                         seq_np_nxt["data"].pop(0)
@@ -654,11 +675,13 @@ class MedImageEnhancer:
                 continue
             if len(self.sequences[id]["data"]) < len(self.srs_org_sl)*0.1:
                 self.sequences[id]["type"] = False
+                self.process_statistics["location"]["num_detected_violation"] += len(self.sequences[id]["data"])
                 for j in range(len(self.sequences[id]["data"])):
                     self.sequences[id]["data"][j]["img"] = np.zeros(self.sequences[id]["data"][j]["img"].shape, np.uint8)
                     self.process_statistics["location"]["num_remedied_SLs"] += 1
                     self.process_statistics["location"]["remedy_states"][self.sequences[id]["data"][j]["id"]] = "Remedied"
                 continue
+
             self.detect_location_inconsistency(id)
 
         self.__move_empty_to_false_seq()
@@ -737,6 +760,7 @@ class MedImageEnhancer:
             slseg_cur = self.sequences[id]["data"][sl_id]["img"]
             sl_cur = self.__get_current_sl(id, sl_id)
             list_not_contained_secs = list(range(len(list_sl_seg_sections)))
+            is_not_violated = True
             for sec_cur in list_sl_seg_sections_cur:
                 is_contained = False
                 idx = -1
@@ -751,6 +775,15 @@ class MedImageEnhancer:
                         continue
                 if not is_contained:
                     slseg_cur = np.subtract(slseg_cur, sec_cur)
+                    if self.process_statistics["location"]["remedy_states"][self.sequences[id]["data"][sl_id]["id"]] != "Remedied":
+                        self.process_statistics["location"]["num_remedied_SLs"] += 1
+                    self.process_statistics["location"]["remedy_states"][
+                        self.sequences[id]["data"][sl_id]["id"]] = "Remedied"
+                    if is_not_violated:
+                        is_not_violated = is_contained
+            if not is_not_violated:
+                print(self.process_statistics["location"])
+                self.process_statistics["location"]["num_detected_violation"] += 1
 
             if prv_id is None:
                 range_trend = range(sl_id-1, -1, -1)
@@ -766,6 +799,8 @@ class MedImageEnhancer:
                     if inclusion_rate_x >self.th_inclusion and np.count_nonzero(slseg_trg) > np.count_nonzero(slseg_x):
                         need_to_connect = True
                 if need_to_connect:
+                    if self.process_statistics["location"]["remedy_states"][self.sequences[id]["data"][sl_id]["id"]] != "Remedied":
+                        self.process_statistics["location"]["num_detected_violation"] += 1
                     new_sec = np.zeros(sec_trg.shape, np.uint8)
                     if prv_id is None:
                         new_sec = self.__revise_slsegs_violating_appearance(sec_trg, new_sec, None, sl_trg, sl_cur, None, 0.8)
@@ -912,6 +947,7 @@ class MedImageEnhancer:
                 del list_groups[i]
                 continue
             is_empty = False
+            self.process_statistics["size"]["num_detected_violation"] += len(list_groups[i])
             for j in reversed(range(len(list_groups[i]))):
                 slseg_cur = list_groups[i][j]["img"]
                 diff = np.inf
@@ -983,6 +1019,8 @@ class MedImageEnhancer:
                 continue
 
             is_empty = False
+
+            self.process_statistics["size"]["num_detected_violation"] += len(list_groups[i])
             for j in range(len(list_groups[i])):
                 slseg_cur = list_groups[i][j]["img"]
                 diff = np.inf
@@ -1183,6 +1221,7 @@ class MedImageEnhancer:
             else:
                 max_diff = len(self.sequences[seq_id]["data"]) - max_id
             cur_th_shape = self.th_shape+0.1*(np.abs(max_id-sl_id)/max_diff)
+
             if len(sl_seg_cur_secs) == 1 and len(sl_seg_prv_secs) == 1:
                 # Case 1. SLSegSec_cur == 1 and SLSegSec_prv == 1, compare shape difference
                 diff_shape = self.__compute_shape_difference(sl_seg_prv, sl_seg_cur)
@@ -1248,6 +1287,8 @@ class MedImageEnhancer:
                     del list_groups[i][j]
                 del list_groups[i]
                 continue
+
+            self.process_statistics["shape"]["num_detected_violation"] += len(list_groups[i])
             for j in range(len(list_groups[i])-1, -1, -1):
                 sl_seg_trg = list_groups[i][j]["img"]
                 cur_sl_org = self.srs_org_mi[:, :, list_groups[i][j]["id"]]
@@ -1284,6 +1325,8 @@ class MedImageEnhancer:
                     list_groups[max_group_idx].append(list_groups[max_group_idx+1][j])
                 del list_groups[max_group_idx+1]
                 continue
+
+            self.process_statistics["shape"]["num_detected_violation"] += len(list_groups[max_group_idx+1])
             while len(list_groups[max_group_idx+1])>0:
                 sl_seg_trg = list_groups[max_group_idx+1][0]["img"]
                 cur_sl_org = self.srs_org_mi[:, :, list_groups[max_group_idx+1][0]["id"]]
@@ -1396,6 +1439,9 @@ class MedImageEnhancer:
                     if hu < self.hu_min or hu > self.hu_max:
                         violated_area += frequency[hu]
                 violated_rate = violated_area / sect_area
+
+                if violated_rate > 0.0:
+                    self.process_statistics["HU"]["num_detected_violation"] += 1
                 if violated_rate == 0.0:  # Case 0. Not Violated. If all HU scales satisfy the range
                     if self.sequences[id]["data"][sl_id]["id"] not in self.process_statistics["HU"][
                         "remedy_states"].keys():

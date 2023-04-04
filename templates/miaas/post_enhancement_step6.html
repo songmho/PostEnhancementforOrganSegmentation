@@ -78,7 +78,12 @@
         </div>
         <div class="w-100 my-2" style="height: 1px; background-color: #030303;"></div>
         <div>
-            <h5>Summary</h5>
+            <div class="row mx-0">
+            <h5 class="col-11">Summary</h5>
+            <div class="col-1 float-rt">
+                <button class="btn btn-outline-primary" id="btn_statistics">Statistics</button>
+            </div>
+            </div>
 {#            <div class="row ml-1">#}
 {#                <h6 class="col-3 px-1"># of Enhanced Slices: </h6>#}
 {#                <h6 id="input_step6_num_enhanced">-</h6>#}
@@ -146,6 +151,65 @@
         <button id="btn_step6_back" class="col-1 btn btn-primary float-right mr-1">Previous Step</button>
     </div>
 </body>
+
+<div class="modal fade" id="modal_statistics" tabindex="-1" role="dialog" aria-labelledby="modal_statistics_title" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal_statistics_title">Statistics</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="col-2">Consistency Principle</th>
+                        <th scope="col" class="col-1">Appearance</th>
+                        <th scope="col" class="col-1">Location</th>
+                        <th scope="col" class="col-1">Size</th>
+                        <th scope="col" class="col-1">Shape</th>
+                        <th scope="col" class="col-1">HU Scale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">[Before] # of Violated Segmentations</th>
+                        <td id="num_sl_before_appearance">-</td>
+                        <td id="num_sl_before_location">-</td>
+                        <td id="num_sl_before_size">-</td>
+                        <td id="num_sl_before_shape">-</td>
+                        <td id="num_sl_before_hu_scale">-</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">[After] # of Remedied Segmentations</th>
+                        <td id="num_sl_after_appearance">-</td>
+                        <td id="num_sl_after_location">-</td>
+                        <td id="num_sl_after_size">-</td>
+                        <td id="num_sl_after_shape">-</td>
+                        <td id="num_sl_after_hu_scale">-</td>
+                    <tr>
+                        <th scope="row"># of Continuity Sequences</th>
+                        <td id="num_rem_sl_appearance_s6">-</td>
+                        <td id="num_rem_sl_location_s6">-</td>
+                        <td id="num_rem_sl_size_s6">-</td>
+                        <td id="num_rem_sl_shape_s6">-</td>
+                        <td id="num_rem_sl_hu_scale_s6">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script src="{% static "miass/js/console.js" %}"></script>
 <script src="{% static "miass/js/post_enhancement_step6.js" %}"></script>
 

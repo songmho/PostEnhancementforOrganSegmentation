@@ -157,42 +157,42 @@ def get_summary(request):
             summary["step1"]["min_size"] = smm["Original"]["min_size"]
             summary["step1"]["avg_size"] = smm["Original"]["avg_size"]
             summary["step1"]["max_size"] = smm["Original"]["max_size"]
-            summary["step1"]["num_seqs"] = smm["Sequence"]["num_sequences"]
+            summary["step1"]["num_seqs"] = smm["Sequence"]["num_sequences"]+1
         if step >= 2:
             summary["step2"]["num_slices_organ"] = smm["appearance"]["num_slices_having_organ"]
             summary["step2"]["num_remedied_slices"] = smm["appearance"]["num_remedied_SLs"]
             summary["step2"]["min_size"] = smm["appearance"]["min_size"]
             summary["step2"]["avg_size"] = smm["appearance"]["avg_size"]
             summary["step2"]["max_size"] = smm["appearance"]["max_size"]
-            summary["step2"]["num_seqs"] = smm["Sequence"]["num_sequences"]
+            summary["step2"]["num_seqs"] = smm["Sequence"]["num_sequences"]+1
         if step >= 3:
             summary["step3"]["num_slices_organ"] = smm["location"]["num_slices_having_organ"]
             summary["step3"]["num_remedied_slices"] = smm["location"]["num_remedied_SLs"]
             summary["step3"]["min_size"] = smm["location"]["min_size"]
             summary["step3"]["avg_size"] = smm["location"]["avg_size"]
             summary["step3"]["max_size"] = smm["location"]["max_size"]
-            summary["step3"]["num_seqs"] = smm["Sequence"]["num_sequences"]
+            summary["step3"]["num_seqs"] = smm["Sequence"]["num_sequences"]+1
         if step >= 4:
             summary["step4"]["num_slices_organ"] = smm["size"]["num_slices_having_organ"]
             summary["step4"]["num_remedied_slices"] = smm["size"]["num_remedied_SLs"]
             summary["step4"]["min_size"] = smm["size"]["min_size"]
             summary["step4"]["avg_size"] = smm["size"]["avg_size"]
             summary["step4"]["max_size"] = smm["size"]["max_size"]
-            summary["step4"]["num_seqs"] = smm["Sequence"]["num_sequences"]
+            summary["step4"]["num_seqs"] = smm["Sequence"]["num_sequences"]+1
         if step >= 5:
             summary["step5"]["num_slices_organ"] = smm["shape"]["num_slices_having_organ"]
             summary["step5"]["num_remedied_slices"] = smm["shape"]["num_remedied_SLs"]
             summary["step5"]["min_size"] = smm["shape"]["min_size"]
             summary["step5"]["avg_size"] = smm["shape"]["avg_size"]
             summary["step5"]["max_size"] = smm["shape"]["max_size"]
-            summary["step5"]["num_seqs"] = smm["Sequence"]["num_sequences"]
+            summary["step5"]["num_seqs"] = smm["Sequence"]["num_sequences"]+1
         if step >= 6:
             summary["step6"]["num_slices_organ"] = smm["HU"]["num_slices_having_organ"]
             summary["step6"]["num_remedied_slices"] = smm["HU"]["num_remedied_SLs"]
             summary["step6"]["min_size"] = smm["HU"]["min_size"]
             summary["step6"]["avg_size"] = smm["HU"]["avg_size"]
             summary["step6"]["max_size"] = smm["HU"]["max_size"]
-            summary["step6"]["num_seqs"] = smm["HU"]["num_sequences"]
+            summary["step6"]["num_seqs"] = smm["HU"]["num_sequences"]+1
 
 
 
@@ -200,6 +200,30 @@ def get_summary(request):
         return JsonResponse({"state": True, "data":summary})
     else:
         return JsonResponse({"state": False})
+
+
+@csrf_exempt
+def summarize_statistics(request):
+    if request.method == "POST":
+
+        smm = container.mias_container.post_enhancement_process.get_summary()
+        summary={
+            "step2_before": smm["appearance"]["num_detected_violation"],
+            "step2_after": smm["appearance"]["num_remedied_SLs"],
+            "step3_before": smm["location"]["num_detected_violation"],
+            "step3_after": smm["location"]["num_remedied_SLs"],
+            "step4_before": smm["size"]["num_detected_violation"],
+            "step4_after": smm["size"]["num_remedied_SLs"],
+            "step5_before": smm["shape"]["num_detected_violation"],
+            "step5_after": smm["shape"]["num_remedied_SLs"],
+            "step6_before": smm["HU"]["num_detected_violation"],
+            "step6_after": smm["HU"]["num_remedied_SLs"],
+        }
+        return JsonResponse({"state":True, "data":summary})
+    else:
+        return JsonResponse({"state":False})
+
+
 # Step 2
 @csrf_exempt
 def load_img_list(request):
