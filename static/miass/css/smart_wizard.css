@@ -303,29 +303,29 @@
 }
 
 .sw-theme-arrows > .nav .nav-link.active {
-  color: #000000;
-  border-color: #ff8a65;
-  background: #ff8a65;
+  color: #ffffff;
+  border-color: #5AA3DB;
+  background: #5AA3DB;
   cursor: pointer;
-  font-size: large;
+  /*font-size: large;*/
   font-weight: 700;
 }
 
 .sw-theme-arrows > .nav .nav-link.active::after {
-  border-left-color: #ff8a65;
+  border-left-color: #5AA3DB;
 }
 
 .sw-theme-arrows > .nav .nav-link.done {
-  color: #ffffff;
-  border-color: #43a047;
-  background: #43a047;
+  color: #000000;
+  border-color: #9CD4FF;
+  background: #9CD4FF;
   cursor: pointer;
-  font-size: large;
+  /*font-size: large;*/
   font-weight: 400;
 }
 
 .sw-theme-arrows > .nav .nav-link.done::after {
-  border-left-color: #43a047;
+  border-left-color: #9CD4FF;
 }
 
 .sw-theme-arrows > .nav .nav-link.disabled {

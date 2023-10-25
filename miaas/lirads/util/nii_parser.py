@@ -144,10 +144,10 @@ class SinglePhaseNIIParser:
         print(self.img_header.get_data_shape())
 
         # print(self.img_data.shape)
-        for i in range(self.img_header.get_data_shape()[0]):
+        for i in reversed(range(self.img_header.get_data_shape()[2])):
             # cur_img = self.img_data[:, ::-1, self.img_header.get_data_shape()[2] - (i + 1)]     # To need to change direction of series (x, y, z)
-            # cur_img = np.rot90(cur_img, 1)
-            cur_img = self.img_data[i, :, :]     # To need to change direction of series (z, y, x) for kidney
+            cur_img = self.img_data[::-1, :, i]     # To need to change direction of series (z, y, x) for kidney
+            cur_img = np.rot90(cur_img, 3)
             #
             # print(cur_img.shape, "   ", np.unique(cur_img))
             cur_liver_img = cur_img
@@ -183,7 +183,7 @@ class SinglePhaseNIIParser:
             # if np.max(cur_img)/1000 > 10:
             #     cur_img = cur_img/10
             #     cur_img = cur_img[::-1, ::-1]
-            cur_img = np.rot90(cur_img, -1)
+            cur_img = np.rot90(cur_img, 1)
             print(np.max(cur_img), np.min(cur_img))
             cur_img = self.scl_slope*cur_img + self.scl_inter
             print(np.max(cur_img), np.min(cur_img))
@@ -371,8 +371,8 @@ if __name__ == '__main__':
     #     jg.generate_json_file(result, os.path.join(path_img, i), "liver")
 
     spnp = SinglePhaseNIIParser()
-    path_root = r"D:\Dataset\LLU Dataset\7083077_10302013\01. Original CT Study\01. DICOM\niff"
-    path_save_root_img = r"E:\1. Lab\Daily Results\2022\2203\0314\series_img"
+    path_root = r"D:\Daily Result\2304\0428\segmentation result - MedSeg (with range)"
+    path_save_root_img = r"D:\Daily Result\2304\0428\segmentation result - MedSeg (with range) - png"
     # path_save_root_mask = r"E:\2. Project\Python\kits21\kits21\mask"
 
     # for id in os.listdir(path_root):
@@ -397,6 +397,6 @@ if __name__ == '__main__':
         # elif f == "imaging.nii.gz":
         print("IMG : ", end="")
         spnp.set_save_file_path(path_cur_save_img)
-        spnp.load_slice()
-        spnp.save_slice()
+        spnp.load_mask()
+        spnp.save_mask()
         print("================================")

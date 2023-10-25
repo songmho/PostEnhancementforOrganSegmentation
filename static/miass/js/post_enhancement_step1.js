@@ -3,7 +3,7 @@
     var is_prv_data_selected = false;
     var cur_img_path = -1;
 
-    function upload_img(pat_name,type, form_loader_name, cur) {
+    function upload_img(pat_name, type, form_loader_name, cur) {
         var cur_form_data_tmp = new FormData($(form_loader_name)[0]);
         var fileList= cur.files;
         isAnnoFileSelect = true;
@@ -66,36 +66,6 @@
             upload_img("test", "label","#form_loader_mask", this);
         });
 
-        $("#btn_identify_sequence").on("click", function () {
-            $.ajax({
-                url: "/api/identify_continuity_sequence",
-                async: true,
-                method: 'POST',
-                data: JSON.stringify({"uid": null}),
-                success: function (data) {
-                    console.log(data);
-                    var d = data["data"];
-                    var d1 = d["seg_result"];
-                    var d2 = d["label"];
-
-                    $("#inputNumSequences").text(d1["num_seqs"]);
-                    for (var i = 1; i<=Number.parseInt(d1["num_seqs"]); i++){
-                        $("#thead_step1").append('<th class="">'+(i)+'</th>\n');
-                        $("#tr_step1").append('<td >'+d1["seq"][String(i-1)]["start"]+' - '+d1["seq"][String(i-1)]["end"]+'</td>\n');
-                    }
-
-                    $("#inputNumSequences_label").text(d2["num_seqs"]);
-                    for (var i = 1; i<=Number.parseInt(d2["num_seqs"]); i++){
-                        $("#thead_step1_lb").append('<th class="">'+(i)+'</th>\n');
-                        $("#tr_step1_lb").append('<td >'+d2["seq"][String(i-1)]["start"]+' - '+d2["seq"][String(i-1)]["end"]+'</td>\n');
-                    }
-                }, error: function (){
-
-                }
-
-            });
-
-        });
 
         $("#btn_proceed").on("click", function () {
             $.ajax({

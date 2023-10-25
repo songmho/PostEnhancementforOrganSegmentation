@@ -13,136 +13,74 @@
     <title>Title</title>
 </head>
 <body>
-    <div class="w-100 row" style="height: 3%;">
-        <div class="col-6 row mx-0">
+    <div class="w-100" style="height: 93%;">
 
-            <div class="col-10 my-auto">
-{#                <h5 class="step2_task1 my-auto" style="display: block">Task 1. ...</h5>#}
-{#                <h5 class="step2_task2" style="display: none">Task 2. ...</h5>#}
-{#                <h5 class="step2_task3" style="display: none">Task 3. ...</h5>#}
+        <div class="mt-4">
+            <div class="row">
+                <h5 class="col-3">Identify Continuity Sequences </h5>
+                <button class="btn btn-outline-info col-1 ml-3" id="btn_identify_sequence">Start</button>
             </div>
-{#            <button class="btn btn-sm btn-primary disabled my-auto" id="btn_step2_task_prv" style="width: 32px; height: 35px;"><i class="arr-left"></i></button>#}
-{#            <button class="btn btn-sm btn-primary ml-1 my-auto" id="btn_step2_task_nxt" style="width: 32px; height: 35px;"><i class="arr-right"></i></button>#}
-        </div>
-        <div class="col-6 my-auto">
-            <div id="div_init">
-                <button class="btn btn-outline-info float-right step2_task1" id="btn_task1_step2" style="display: block">Start</button>
-                <button class="btn btn-outline-info float-right step2_task2" id="btn_task2_step2" style="display: none">Start</button>
-                <button class="btn btn-outline-info float-right step2_task3" id="btn_task3_step2" style="display: none">Start</button>
-            </div>
-            <div id="div_start" style="display: none;">
-                <button class="btn btn-outline-info float-right" id="btn_stop_segment_liver">Stop</button>
-                <button class="btn btn-outline-info float-right mr-2" id="btn_pause_segment_liver">Pause</button>
-            </div>
-            <div id="div_pause"  style="display: none;">
-                <button class="btn btn-outline-info float-right" id="btn_resume_segment_liver">Resume</button>
-            </div>
-        </div>
-    </div>
+            <div>
 
-    <div class="w-100 mx-0 pt-3" style="height: 90%">
-        <div class="row mx-0">
-            <div style="width: 14%;">
-                <div style="height: 32px;">
-                </div>
-                <div style="height: 180px;" class="my-auto align-middle" >
-                    <h5 class="align-middle my-auto" style="position:relative; top: 50%;">Original CT Slices</h5>
-                </div>
-                <div style="height: 180px;" class="my-auto align-middle">
-                    <h5 class="align-middle"  style="position:relative; top: 50%;">Segmentation Results</h5>
-                </div>
-                <div style="height: 180px;" class="my-auto align-middle">
-                    <h5 class="align-middle"  style="position:relative; top: 50%;">Enhanced Results</h5>
+                <h6 class="ml-2">Result for Segmentation Result</h6>
+                <div class="row ml-2 mb-1">
+                    <p class="col-3 my-auto">Number of Continuity Sequences</p>
+                    <label class="col-3 px-1 ml-1 form-control-plaintext" id="inputNumSequences" style="padding-top: 1px; padding-bottom: 1px;"/>
                 </div>
 
-            </div>
-            <div id="box" style="width: 86%">
-                <div id="div_slice_id_step2" class="row mx-0 w-100" style="display: block; overflow-x: hidden; white-space: nowrap;">
-                </div>
-                <div id="div_slice_step2" class="row mx-0 w-100" style="display: block; overflow-x: hidden; white-space: nowrap;">
-
-                </div>
-                <div id="div_org_step2" class="row mx-0 w-100 mt-2" style="display: block; overflow-x: hidden; white-space: nowrap;">
-
-                </div>
-                <div id="div_enh_step2" class="row mx-0 w-100 mt-2" style="display: block; overflow-x: hidden; white-space: nowrap;">
-
-                </div>
-                <div class="my-2 mx-0 row">
-                    <div style="width: 95%" class="my-auto">
-                        <input type="range" id="step2_range" min="1" max="100" step="1" value="1" style="width: 99%" class="my-auto">
+                <div style="position: relative; display: flex; align-items: flex-start;" class="ml-3">
+                    <div class="col-2">
+                        <table class="table mb-0">
+                            <tr class=" col-3">
+                                <th scope="col" class="summary_th">Sequence ID</th>
+                            </tr>
+                            <tr class=" col-3">
+                                <th scope="col" class="summary_th">CT Slices</th>
+                            </tr>
+                        </table>
                     </div>
-                    <div style="width: 5%" id>
-                        <p style="display: inline;" id="step2_cur_sl">000</p> / <p style="display: inline;" id="step2_max_sl">000</p> </div>
+                    <div style="overflow-x: auto;" class="col-11">
+                        <table class="table w-100" style="">
+                            <tr  id="thead_step1" class="w-100 summary_tr summary_tr_id">
+                            </tr>
+                            <tr id="tr_step1" class="summary_tr">
+                            </tr>
+                        </table>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="w-100 my-2" style="height: 1px; background-color: #030303;"></div>
-        <div>
-            <h5>Summary</h5>
-{#            <div class="row ml-1">#}
-{#                <h6 class="col-3 px-1"># of Enhanced Slices: </h6>#}
-{#                <h6 id="input_step2_num_enhanced">-</h6>#}
-{#            </div>#}
-{#            <div class="row ml-1">#}
-{#                <h6 class="col-3 px-1"># of Continuity Sequences After Enhancement: </h6>#}
-{#                <h6 id="input_step2_num_seq_after">-</h6>#}
-{#            </div>#}
 
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col" class="col-2">Step</th>
-                        <th scope="col" class="col-1">1</th>
-                        <th scope="col" class="col-1">2</th>
-                        <th scope="col" class="col-1">3</th>
-                        <th scope="col" class="col-1">4</th>
-                        <th scope="col" class="col-1">5</th>
-                        <th scope="col" class="col-1">6</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row"># of Slices Having Organ</th>
-                        <td id="num_sl_org_step1_s2">-</td>
-                        <td id="num_sl_org_step2_s2">-</td>
-                        <td id="num_sl_org_step3_s2">-</td>
-                        <td id="num_sl_org_step4_s2">-</td>
-                        <td id="num_sl_org_step5_s2">-</td>
-                        <td id="num_sl_org_step6_s2">-</td>
-                    </tr>
-                    <tr>
-                        <th scope="row"># of Continuity Sequences</th>
-                        <td id="num_seqs_step1_s2">-</td>
-                        <td id="num_seqs_step2_s2">-</td>
-                        <td id="num_seqs_step3_s2">-</td>
-                        <td id="num_seqs_step4_s2">-</td>
-                        <td id="num_seqs_step5_s2">-</td>
-                        <td id="num_seqs_step6_s2">-</td>
-                    </tr>
-                    <tr>
-                        <th scope="row"># of Remedied Slices</th>
-                        <td id="num_rem_sl_step1_s2">-</td>
-                        <td id="num_rem_sl_step2_s2">-</td>
-                        <td id="num_rem_sl_step3_s2">-</td>
-                        <td id="num_rem_sl_step4_s2">-</td>
-                        <td id="num_rem_sl_step5_s2">-</td>
-                        <td id="num_rem_sl_step6_s2">-</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Organ Size in Slice (Pixels)</th>
-                        <td id="size_step1_s2">-</td>
-                        <td id="size_step2_s2">-</td>
-                        <td id="size_step3_s2">-</td>
-                        <td id="size_step4_s2">-</td>
-                        <td id="size_step5_s2">-</td>
-                        <td id="size_step6_s2">-</td>
-                    </tr>
-                </tbody>
-            </table>
+                <h6 class="ml-2 mt-2">Result for Label Data</h6>
+                <div class="row ml-2 mb-1">
+                    <p class="col-3 my-auto">Number of Continuity Sequences</p>
+                    <label class="col-3 px-1 ml-1 form-control-plaintext" id="inputNumSequences_label" style="padding-top: 1px; padding-bottom: 1px;"/>
+                </div>
+
+                <div style="position: relative; display: flex; align-items: flex-start;" class="ml-3">
+                    <div class="col-2">
+                        <table class="table mb-0">
+                            <tr class=" col-3">
+                                <th scope="col" class="summary_th_label">Sequence ID</th>
+                            </tr>
+                            <tr class=" col-3">
+                                <th scope="col" class="summary_th_label">CT Slices</th>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="overflow-x: auto;" class="col-11">
+                        <table class="table w-100" style="">
+                            <tr  id="thead_step1_lb" class="w-100 summary_tr summary_tr_id">
+                            </tr>
+                            <tr id="tr_step1_lb" class="summary_tr">
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
     </div>
+
     <div class="bottom-">
         <button id="btn_step2_next" class="col-1 btn btn-primary float-right">Next Step</button>
         <button id="btn_step2_back" class="col-1 btn btn-primary float-right mr-1">Previous Step</button>

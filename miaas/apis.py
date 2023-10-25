@@ -133,6 +133,7 @@ def identify_continuity_sequence(request):
                 cur_type = np.count_nonzero(img) > 0
                 list_seqs_lb[len(list_seqs_lb)] = {"start": int(i.split("_")[1].split(".")[0]), "end": -1, "masks": [convert_img_to_bytes(img)]}
 
+        container.mias_container.post_enhancement_process.remedy_appearance_consistency_violation()
         return JsonResponse({"state": True, "data":{"seg_result":{"num_seqs": len(list_seqs.keys()), "seq": list_seqs},
                                                     "label": {"num_seqs": len(list_seqs_lb.keys()), "seq": list_seqs_lb}}})
     else:
@@ -157,42 +158,44 @@ def get_summary(request):
             summary["step1"]["min_size"] = smm["Original"]["min_size"]
             summary["step1"]["avg_size"] = smm["Original"]["avg_size"]
             summary["step1"]["max_size"] = smm["Original"]["max_size"]
-            summary["step1"]["num_seqs"] = smm["Sequence"]["num_sequences"]+1
+            summary["step1"]["num_seqs"] = smm["Sequence"]["num_sequences"]
         if step >= 2:
             summary["step2"]["num_slices_organ"] = smm["appearance"]["num_slices_having_organ"]
             summary["step2"]["num_remedied_slices"] = smm["appearance"]["num_remedied_SLs"]
             summary["step2"]["min_size"] = smm["appearance"]["min_size"]
             summary["step2"]["avg_size"] = smm["appearance"]["avg_size"]
             summary["step2"]["max_size"] = smm["appearance"]["max_size"]
-            summary["step2"]["num_seqs"] = smm["Sequence"]["num_sequences"]+1
+            summary["step2"]["num_seqs"] = smm["appearance"]["num_sequences"]
         if step >= 3:
             summary["step3"]["num_slices_organ"] = smm["location"]["num_slices_having_organ"]
             summary["step3"]["num_remedied_slices"] = smm["location"]["num_remedied_SLs"]
             summary["step3"]["min_size"] = smm["location"]["min_size"]
             summary["step3"]["avg_size"] = smm["location"]["avg_size"]
             summary["step3"]["max_size"] = smm["location"]["max_size"]
-            summary["step3"]["num_seqs"] = smm["Sequence"]["num_sequences"]+1
+            summary["step3"]["num_seqs"] = smm["location"]["num_sequences"]
         if step >= 4:
             summary["step4"]["num_slices_organ"] = smm["size"]["num_slices_having_organ"]
             summary["step4"]["num_remedied_slices"] = smm["size"]["num_remedied_SLs"]
             summary["step4"]["min_size"] = smm["size"]["min_size"]
             summary["step4"]["avg_size"] = smm["size"]["avg_size"]
             summary["step4"]["max_size"] = smm["size"]["max_size"]
-            summary["step4"]["num_seqs"] = smm["Sequence"]["num_sequences"]+1
+            summary["step4"]["num_seqs"] = smm["size"]["num_sequences"]
         if step >= 5:
             summary["step5"]["num_slices_organ"] = smm["shape"]["num_slices_having_organ"]
-            summary["step5"]["num_remedied_slices"] = smm["shape"]["num_remedied_SLs"]
+            summary["step5"]["num_remedied_slices"] = 0
+            # summary["step5"]["num_remedied_slices"] = smm["shape"]["num_remedied_SLs"]
             summary["step5"]["min_size"] = smm["shape"]["min_size"]
             summary["step5"]["avg_size"] = smm["shape"]["avg_size"]
             summary["step5"]["max_size"] = smm["shape"]["max_size"]
-            summary["step5"]["num_seqs"] = smm["Sequence"]["num_sequences"]+1
+            summary["step5"]["num_seqs"] = smm["shape"]["num_sequences"]
         if step >= 6:
             summary["step6"]["num_slices_organ"] = smm["HU"]["num_slices_having_organ"]
-            summary["step6"]["num_remedied_slices"] = smm["HU"]["num_remedied_SLs"]
+            # summary["step6"]["num_remedied_slices"] = smm["HU"]["num_remedied_SLs"]
+            summary["step6"]["num_remedied_slices"] = 0
             summary["step6"]["min_size"] = smm["HU"]["min_size"]
             summary["step6"]["avg_size"] = smm["HU"]["avg_size"]
             summary["step6"]["max_size"] = smm["HU"]["max_size"]
-            summary["step6"]["num_seqs"] = smm["HU"]["num_sequences"]+1
+            summary["step6"]["num_seqs"] = smm["HU"]["num_sequences"]
 
 
 
@@ -214,10 +217,14 @@ def summarize_statistics(request):
             "step3_after": smm["location"]["num_remedied_SLs"],
             "step4_before": smm["size"]["num_detected_violation"],
             "step4_after": smm["size"]["num_remedied_SLs"],
-            "step5_before": smm["shape"]["num_detected_violation"],
-            "step5_after": smm["shape"]["num_remedied_SLs"],
-            "step6_before": smm["HU"]["num_detected_violation"],
-            "step6_after": smm["HU"]["num_remedied_SLs"],
+            # "step5_before": smm["shape"]["num_detected_violation"],
+            # "step5_after": smm["shape"]["num_remedied_SLs"],
+            # "step6_before": smm["HU"]["num_detected_violation"],
+            # "step6_after": smm["HU"]["num_remedied_SLs"],
+            "step5_before": 0,
+            "step5_after": 0,
+            "step6_before": 0,
+            "step6_after": 0,
         }
         return JsonResponse({"state":True, "data":summary})
     else:
@@ -246,7 +253,7 @@ def remedy_appearance_violation(request):
     if request.method == "POST":
         # To load slice
         time.sleep(1)
-        container.mias_container.post_enhancement_process.correct_appearance_inconsistency()
+        container.mias_container.post_enhancement_process.remedy_appearance_consistency_violation()
         ref_seqs = container.mias_container.post_enhancement_process.get_sequences()
         list_sl_seg = []
         for i in range(len(ref_seqs)):
@@ -289,7 +296,7 @@ def remedy_location_violation(request):
     if request.method == "POST":
         # To load slice
         time.sleep(1)
-        container.mias_container.post_enhancement_process.correct_location_inconsistency()
+        container.mias_container.post_enhancement_process.remedy_location_consistency_violation()
         ref_seqs = container.mias_container.post_enhancement_process.get_sequences()
         list_sl_seg = []
         for i in range(len(ref_seqs)):
@@ -309,7 +316,7 @@ def remedy_size_violation(request):
     if request.method == "POST":
         # To load slice
         time.sleep(1)
-        container.mias_container.post_enhancement_process.correct_size_inconsistency()
+        container.mias_container.post_enhancement_process.remedy_size_consistency_violation()
         ref_seqs = container.mias_container.post_enhancement_process.get_sequences()
         list_sl_seg = []
         for i in range(len(ref_seqs)):
@@ -332,7 +339,7 @@ def remedy_shape_violation(request):
     if request.method == "POST":
         # To load slice
         time.sleep(1)
-        container.mias_container.post_enhancement_process.correct_shape_inconsistency()
+        container.mias_container.post_enhancement_process.remedy_shape_consistency_violation()
         ref_seqs = container.mias_container.post_enhancement_process.get_sequences()
         list_sl_seg = []
         for i in range(len(ref_seqs)):
@@ -355,7 +362,7 @@ def remedy_hu_violation(request):
     if request.method == "POST":
         # To load slice
         time.sleep(1)
-        container.mias_container.post_enhancement_process.correct_HU_scale_inconsistency()
+        container.mias_container.post_enhancement_process.remedy_HU_scale_consistency_violation()
         ref_seqs = container.mias_container.post_enhancement_process.get_sequences()
         list_sl_seg = []
         for i in range(len(ref_seqs)):

@@ -70,11 +70,11 @@ function sleep (delay) {
                 var step2 = d["step2"];
                 console.log(d);
                 $("#num_sl_org_step1_s3").text(step1["num_slices_organ"]);
-                $("#num_seqs_step1_s3").text(step1["num_seqs"]);
-                $("#size_step1_s3").text(String(step1["min_size"]) + " ↤ " + step1["avg_size"] + " ↦ " + step1["max_size"]);
-                $("#num_sl_org_step2_s3").text(step2["num_slices_organ"]);
+                $("#num_seqs_step1_s3").text("-");
+                $("#size_step1_s3").text("-");
+                $("#num_sl_org_step2_s3").text(step1["num_slices_organ"]);
                 $("#num_seqs_step2_s3").text(step2["num_seqs"]);
-                $("#num_rem_sl_step2_s3").text(step2["num_remedied_slices"]);
+                $("#num_rem_sl_step2_s3").text("-");
                 $("#size_step2_s3").text(String(step2["min_size"]) + " ↤ " + step2["avg_size"] + " ↦ " + step2["max_size"]);
             }, error: function () {
 
@@ -116,10 +116,10 @@ function sleep (delay) {
                             var step3 = d["step3"];
                             console.log(d);
                             $("#num_sl_org_step1_s3").text(step1["num_slices_organ"]);
-                            $("#num_seqs_step1_s3").text(step1["num_seqs"]);
-                            $("#size_step1_s3").text(String(step1["min_size"]) + " ↤ " + step1["avg_size"] + " ↦ " + step1["max_size"]);
-                            $("#num_sl_org_step2_s3").text(step2["num_slices_organ"]);
-                            $("#num_rem_sl_step2_s3").text(step2["num_remedied_slices"]);
+                            $("#num_seqs_step1_s3").text("-");
+                            $("#size_step1_s3").text("-");
+                            $("#num_sl_org_step2_s3").text(step1["num_slices_organ"]);
+                            $("#num_rem_sl_step2_s3").text("-");
                             $("#num_seqs_step2_s3").text(step2["num_seqs"]);
                             $("#size_step2_s3").text(String(step2["min_size"]) + " ↤ " + step2["avg_size"] + " ↦ " + step2["max_size"]);
                             $("#num_sl_org_step3_s3").text(step3["num_slices_organ"]);
